@@ -285,18 +285,6 @@ export default function AgendaPage() {
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
                 <CardTitle>Eventos para {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}</CardTitle>
-                <Button
-                  onClick={() => {
-                    setNovoEvento({
-                      ...novoEvento,
-                      data: selectedDate,
-                    })
-                    setIsDialogOpen(true)
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Novo Evento
-                </Button>
               </div>
             </CardHeader>
             <CardContent>
