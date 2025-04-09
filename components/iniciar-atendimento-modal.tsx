@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/use-toast"
+import { useEventos } from "@/contexts/EventosContext"
 
 interface IniciarAtendimentoModalProps {
   open: boolean
@@ -43,6 +44,7 @@ const CLIENTES_MOCK = [
 
 export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimentoModalProps) {
   const router = useRouter()
+  const { adicionarEvento } = useEventos()
   const [tipoCliente, setTipoCliente] = useState<"cadastrado" | "novo" | "sem-registro">("cadastrado")
   const [tipoContato, setTipoContato] = useState<"ativo" | "receptivo">("ativo")
   const [searchTerm, setSearchTerm] = useState("")
@@ -62,6 +64,8 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     email: "",
     telefone: "",
     autorizaRetorno: "sim",
+    dataRetorno: "",
+    horaRetorno: "",
   })
 
   // Campos para cliente sem registro
@@ -144,6 +148,8 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       email: "",
       telefone: "",
       autorizaRetorno: "sim",
+      dataRetorno: "",
+      horaRetorno: "",
     })
   }
 
@@ -214,6 +220,18 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       return
     }
 
+    // Validar campos de retorno se autorizado
+    if (formData.autorizaRetorno === "sim") {
+      if (!formData.dataRetorno || !formData.horaRetorno) {
+        toast({
+          title: "Erro",
+          description: "Data e horário do retorno são obrigatórios quando autorizado",
+          variant: "destructive",
+        })
+        return
+      }
+    }
+
     // Gerar número de protocolo
     const dataAtual = new Date()
     const ano = dataAtual.getFullYear()
@@ -222,12 +240,41 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       .padStart(4, "0")
     const novoProtocolo = `AT-${ano}-${numeroAleatorio}`
 
+    // Se autorizado retorno, criar evento na agenda
+    if (formData.autorizaRetorno === "sim" && formData.dataRetorno && formData.horaRetorno) {
+      const nomeCliente = selectedCliente?.nome || nomeSemRegistro || "Cliente"
+      const dataRetorno = new Date(formData.dataRetorno + "T" + formData.horaRetorno)
+      
+      // Criar evento na agenda
+      const novoEvento = {
+        id: `RET-${novoProtocolo}`,
+        titulo: `Retorno - ${nomeCliente}`,
+        data: dataRetorno,
+        horaInicio: formData.horaRetorno,
+        horaFim: new Date(dataRetorno.getTime() + 30 * 60000).toTimeString().slice(0, 5), // Adiciona 30 minutos
+        participantes: [],
+        comentarios: `Retorno do protocolo ${novoProtocolo}`,
+        tipo: "retorno" as const
+      }
+
+      // Adicionar evento à agenda usando o contexto
+      adicionarEvento(novoEvento)
+    }
+
     // Simular criação de protocolo
     toast({
       title: "Protocolo criado com sucesso",
       description: `Protocolo ${novoProtocolo} registrado`,
       variant: "default",
     })
+
+    // Se houver retorno agendado, mostrar toast adicional
+    if (formData.autorizaRetorno === "sim") {
+      toast({
+        title: "Retorno agendado",
+        description: `Retorno agendado para ${new Date(formData.dataRetorno).toLocaleDateString()} às ${formData.horaRetorno}`,
+      })
+    }
 
     // Fechar modal
     onOpenChange(false)
@@ -902,6 +949,37 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {formData.autorizaRetorno === "sim" && (
+                    <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 p-4 bg-teal-50 rounded-lg border border-teal-100">
+                      <div className="space-y-2">
+                        <Label htmlFor="dataRetorno">
+                          Data do Retorno <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="dataRetorno"
+                          type="date"
+                          value={formData.dataRetorno}
+                          onChange={(e) => setFormData(prev => ({ ...prev, dataRetorno: e.target.value }))}
+                          className="h-11"
+                          min={new Date().toISOString().split('T')[0]}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="horaRetorno">
+                          Horário do Retorno <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="horaRetorno"
+                          type="time"
+                          value={formData.horaRetorno}
+                          onChange={(e) => setFormData(prev => ({ ...prev, horaRetorno: e.target.value }))}
+                          className="h-11"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
