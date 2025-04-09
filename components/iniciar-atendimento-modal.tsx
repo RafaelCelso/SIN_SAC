@@ -58,6 +58,10 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     tipoContato: "telefone",
     motivo: "",
     descricao: "",
+    nome: "",
+    email: "",
+    telefone: "",
+    autorizaRetorno: "sim",
   })
 
   // Campos para cliente sem registro
@@ -136,6 +140,10 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       tipoContato: "telefone",
       motivo: "",
       descricao: "",
+      nome: "",
+      email: "",
+      telefone: "",
+      autorizaRetorno: "sim",
     })
   }
 
@@ -873,6 +881,24 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                         <SelectItem value="telefone">Telefone</SelectItem>
                         <SelectItem value="email">E-mail</SelectItem>
                         <SelectItem value="presencial">Presencial</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="autorizaRetorno">
+                      Autoriza retorno de contato <span className="text-red-500">*</span>
+                    </Label>
+                    <Select
+                      value={formData.autorizaRetorno}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, autorizaRetorno: value }))}
+                    >
+                      <SelectTrigger id="autorizaRetorno" className="h-11">
+                        <SelectValue placeholder="Selecione uma opção" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sim">Sim</SelectItem>
+                        <SelectItem value="nao">Não</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
