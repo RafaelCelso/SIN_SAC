@@ -316,7 +316,6 @@ export default function ProtocolosPage() {
                     <TableHead>Cliente</TableHead>
                     <TableHead>Tipo</TableHead>
                     <TableHead>Produto</TableHead>
-                    <TableHead>Status</TableHead>
                     <TableHead className="text-right">Ação</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -333,26 +332,6 @@ export default function ProtocolosPage() {
                         </TableCell>
                         <TableCell>{protocolo.tipo}</TableCell>
                         <TableCell>{protocolo.produto}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            {protocolo.statusVariant === "completed" ? (
-                              <>
-                                <CheckCircle className="h-4 w-4 text-teal-500" />
-                                <span>{protocolo.status}</span>
-                              </>
-                            ) : protocolo.status === "Em análise" ? (
-                              <>
-                                <Clock className="h-4 w-4 text-amber-500" />
-                                <span>{protocolo.status}</span>
-                              </>
-                            ) : (
-                              <>
-                                <AlertTriangle className="h-4 w-4 text-amber-500" />
-                                <span>{protocolo.status}</span>
-                              </>
-                            )}
-                          </div>
-                        </TableCell>
                         <TableCell className="text-right">
                           <Button
                             variant="outline"

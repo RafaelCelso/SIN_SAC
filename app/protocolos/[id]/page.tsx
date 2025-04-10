@@ -415,12 +415,6 @@ export default function ProtocoloPage({ params }: { params: { id: string } }) {
                         <p>{protocolo.id}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">Status</p>
-                        <Badge variant={protocolo.status === "Aberto" ? "default" : "secondary"}>
-                          {protocolo.status}
-                        </Badge>
-                      </div>
-                      <div>
                         <p className="text-sm text-gray-500">Data de Abertura</p>
                         <p className="flex items-center gap-1">
                           <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
