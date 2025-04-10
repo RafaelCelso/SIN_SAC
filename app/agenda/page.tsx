@@ -279,140 +279,6 @@ export default function AgendaPage() {
           </div>
         </div>
 
-        {/* Eventos do dia selecionado */}
-        {selectedDate && (
-          <Card className="mb-4">
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle>Eventos para {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {eventosDoDia.length > 0 ? (
-                <div className="space-y-3">
-                  {eventosDoDia.map((evento) => (
-                    <Card key={evento.id} className="overflow-hidden">
-                      <div
-                        className={`h-1 ${
-                          evento.tipo === "reuniao"
-                            ? "bg-blue-500"
-                            : evento.tipo === "tarefa"
-                              ? "bg-amber-500"
-                              : evento.tipo === "lembrete"
-                                ? "bg-purple-500"
-                                : evento.tipo === "retorno"
-                                  ? "bg-green-500"
-                                  : "bg-gray-500"
-                        }`}
-                      />
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-medium">{evento.titulo}</h3>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                              <div className="flex items-center">
-                                <Clock className="h-3.5 w-3.5 mr-1" />
-                                <span>
-                                  {evento.horaInicio} - {evento.horaFim}
-                                </span>
-                              </div>
-                              {evento.participantes.length > 0 && (
-                                <div className="flex items-center">
-                                  <Users className="h-3.5 w-3.5 mr-1" />
-                                  <span>{evento.participantes.length} participante(s)</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge
-                              className={`${
-                                evento.tipo === "reuniao"
-                                  ? "bg-blue-100 text-blue-800 border-blue-200"
-                                  : evento.tipo === "tarefa"
-                                    ? "bg-amber-100 text-amber-800 border-amber-200"
-                                    : evento.tipo === "lembrete"
-                                      ? "bg-purple-100 text-purple-800 border-purple-200"
-                                      : evento.tipo === "retorno"
-                                        ? "bg-green-100 text-green-800 border-green-200"
-                                        : "bg-gray-100 text-gray-800 border-gray-200"
-                              }`}
-                            >
-                              {evento.tipo === "reuniao"
-                                ? "Reunião"
-                                : evento.tipo === "tarefa"
-                                  ? "Tarefa"
-                                  : evento.tipo === "lembrete"
-                                    ? "Lembrete"
-                                    : evento.tipo === "retorno"
-                                      ? "Retorno"
-                                      : "Outro"}
-                            </Badge>
-                            <div className="flex">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setEditingEvento(evento)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-destructive"
-                                onClick={() => handleDeleteEvento(evento.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-
-                        {evento.comentarios && (
-                          <div className="mt-3 text-sm bg-muted p-2 rounded-md">{evento.comentarios}</div>
-                        )}
-
-                        {evento.participantes.length > 0 && (
-                          <div className="mt-3">
-                            <p className="text-xs text-muted-foreground mb-1">Participantes:</p>
-                            <div className="flex flex-wrap gap-1">
-                              {evento.participantes.map((p, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                  {p}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <CalendarIcon className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-lg font-medium">Nenhum evento para este dia</p>
-                  <Button
-                    variant="outline"
-                    className="mt-4"
-                    onClick={() => {
-                      setNovoEvento({
-                        ...novoEvento,
-                        data: selectedDate,
-                      })
-                      setIsDialogOpen(true)
-                    }}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Adicionar Evento
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
         <div className="border rounded-lg overflow-hidden">
           {/* Cabeçalho com dias da semana */}
           <div className="grid grid-cols-7 border-b">
@@ -436,10 +302,10 @@ export default function AgendaPage() {
                   key={index}
                   className={`border-r border-b last:border-r-0 p-1 relative ${
                     !isCurrentMonth ? "bg-gray-50 text-gray-400" : ""
-                  } ${isSelected ? "bg-blue-50" : ""}`}
+                  } ${isSelected ? "bg-blue-50" : ""} ${isCurrentDay ? "bg-teal-50" : ""}`}
                   onClick={() => setSelectedDate(day)}
                 >
-                  <div className={`text-right p-1 ${isCurrentDay ? "font-bold text-blue-600" : ""}`}>
+                  <div className={`text-right p-1 ${isCurrentDay ? "font-bold text-teal-600" : ""}`}>
                     {day.getDate()}
                   </div>
 
