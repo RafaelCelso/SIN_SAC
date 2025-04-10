@@ -303,7 +303,14 @@ export default function AgendaPage() {
                   className={`border-r border-b last:border-r-0 p-1 relative ${
                     !isCurrentMonth ? "bg-gray-50 text-gray-400" : ""
                   } ${isSelected ? "bg-blue-50" : ""} ${isCurrentDay ? "bg-teal-50" : ""}`}
-                  onClick={() => setSelectedDate(day)}
+                  onClick={() => {
+                    setSelectedDate(day)
+                    setNovoEvento({
+                      ...novoEvento,
+                      data: day,
+                    })
+                    setIsDialogOpen(true)
+                  }}
                 >
                   <div className={`text-right p-1 ${isCurrentDay ? "font-bold text-teal-600" : ""}`}>
                     {day.getDate()}
