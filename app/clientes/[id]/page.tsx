@@ -458,7 +458,6 @@ export default function ClientePage() {
                           <TableHead>Data</TableHead>
                           <TableHead>Motivo</TableHead>
                           <TableHead>Produto</TableHead>
-                          <TableHead>Status</TableHead>
                           <TableHead className="text-right">Ações</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -469,19 +468,6 @@ export default function ClientePage() {
                             <TableCell>{protocolo.data}</TableCell>
                             <TableCell>{protocolo.tipo}</TableCell>
                             <TableCell>{protocolo.produto}</TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  protocolo.status === "Em análise"
-                                    ? "default"
-                                    : protocolo.status === "Pendente"
-                                      ? "secondary"
-                                      : "outline"
-                                }
-                              >
-                                {protocolo.status}
-                              </Badge>
-                            </TableCell>
                             <TableCell className="text-right">
                               <Button
                                 variant="outline"
