@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { CalendarIcon, Plus, Clock, Users, Save, X, Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
+import { CalendarIcon, Plus, Clock, Users, Save, X, Edit, Trash2, ChevronLeft, ChevronRight, Search } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import {
   format,
@@ -31,6 +31,38 @@ import {
   isToday,
 } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { Table, TableBody, TableCell, TableHeader, TableRow, TableHead } from "@/components/ui/table"
+
+// Dados simulados de clientes
+const CLIENTES_MOCK = [
+  {
+    id: "1",
+    nome: "Maria Silva",
+    documento: "123.456.789-00",
+    telefone: "(11) 98765-4321",
+    email: "maria.silva@email.com",
+    endereco: "Av. Paulista, 1000 - São Paulo/SP",
+    tipo: "Pessoa Física",
+  },
+  {
+    id: "2",
+    nome: "João Santos",
+    documento: "987.654.321-00",
+    telefone: "(11) 91234-5678",
+    email: "joao.santos@email.com",
+    endereco: "Rua Augusta, 500 - São Paulo/SP",
+    tipo: "Pessoa Física",
+  },
+  {
+    id: "3",
+    nome: "Farmácia Saúde Ltda",
+    documento: "12.345.678/0001-90",
+    telefone: "(11) 3456-7890",
+    email: "contato@farmaciasaude.com.br",
+    endereco: "Av. Rebouças, 1500 - São Paulo/SP",
+    tipo: "Pessoa Jurídica",
+  },
+]
 
 // Tipos para os eventos
 interface Evento {
@@ -108,6 +140,9 @@ export default function AgendaPage() {
   const [editingEvento, setEditingEvento] = useState<Evento | null>(null)
   const [participante, setParticipante] = useState("")
   const [viewMode, setViewMode] = useState<"mes" | "semana" | "lista">("mes")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [searchResults, setSearchResults] = useState<typeof CLIENTES_MOCK>([])
+  const [showResults, setShowResults] = useState(false)
 
   // Gerar dias do mês atual
   const monthStart = startOfMonth(currentDate)
@@ -196,23 +231,41 @@ export default function AgendaPage() {
     })
   }
 
-  // Função para adicionar participante
-  const handleAddParticipante = () => {
-    if (!participante.trim()) return
+  // Função para buscar participantes
+  const handleSearch = () => {
+    if (!searchTerm.trim()) {
+      setSearchResults([])
+      setShowResults(false)
+      return
+    }
 
+    const results = CLIENTES_MOCK.filter(
+      (cliente) =>
+        cliente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        cliente.documento.includes(searchTerm) ||
+        cliente.telefone.includes(searchTerm) ||
+        cliente.email.toLowerCase().includes(searchTerm.toLowerCase()),
+    )
+
+    setSearchResults(results)
+    setShowResults(true)
+  }
+
+  // Função para adicionar participante
+  const handleAddParticipante = (cliente: (typeof CLIENTES_MOCK)[0]) => {
     if (editingEvento) {
       setEditingEvento({
         ...editingEvento,
-        participantes: [...editingEvento.participantes, participante],
+        participantes: [...editingEvento.participantes, cliente.nome],
       })
     } else {
       setNovoEvento({
         ...novoEvento,
-        participantes: [...novoEvento.participantes, participante],
+        participantes: [...novoEvento.participantes, cliente.nome],
       })
     }
-
-    setParticipante("")
+    setSearchTerm("")
+    setShowResults(false)
   }
 
   // Função para remover participante
@@ -351,7 +404,7 @@ export default function AgendaPage() {
 
         {/* Dialog para adicionar evento */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Adicionar Novo Evento</DialogTitle>
               <DialogDescription>Preencha os detalhes do evento abaixo.</DialogDescription>
@@ -425,33 +478,86 @@ export default function AgendaPage() {
 
               <div className="space-y-2">
                 <Label>Participantes</Label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Nome do participante"
-                    value={participante}
-                    onChange={(e) => setParticipante(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleAddParticipante()}
-                  />
-                  <Button type="button" onClick={handleAddParticipante} size="sm">
-                    Adicionar
-                  </Button>
-                </div>
-
-                {novoEvento.participantes.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {novoEvento.participantes.map((p, index) => (
-                      <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                        {p}
-                        <button
-                          onClick={() => handleRemoveParticipante(index)}
-                          className="ml-1 rounded-full hover:bg-gray-200 p-0.5"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </Badge>
-                    ))}
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <div className="flex-1 relative">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="search"
+                        placeholder="Buscar por nome, CPF, telefone ou email"
+                        className="pl-8 h-11"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      />
+                    </div>
+                    <Button onClick={handleSearch} className="bg-teal-600 hover:bg-teal-700 h-11">
+                      <Search className="mr-2 h-4 w-4" />
+                      Buscar
+                    </Button>
                   </div>
-                )}
+
+                  {showResults && (
+                    <div className="max-h-[200px] overflow-y-auto border rounded-md">
+                      <table className="w-full">
+                        <thead className="bg-gray-50 sticky top-0">
+                          <tr>
+                            <th className="text-left p-2 text-sm font-medium text-gray-500">Nome</th>
+                            <th className="text-left p-2 text-sm font-medium text-gray-500">CPF</th>
+                            <th className="text-right p-2 text-sm font-medium text-gray-500">Ação</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y">
+                          {searchResults.length > 0 ? (
+                            searchResults.map((cliente) => (
+                              <tr key={cliente.id} className="hover:bg-gray-50">
+                                <td className="p-2">
+                                  <div className="font-medium">{cliente.nome}</div>
+                                  <div className="text-sm text-gray-500">{cliente.email}</div>
+                                </td>
+                                <td className="p-2">
+                                  <div>{cliente.documento}</div>
+                                  <div className="text-sm text-gray-500">{cliente.telefone}</div>
+                                </td>
+                                <td className="p-2 text-right">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleAddParticipante(cliente)}
+                                    className="bg-teal-600 hover:bg-teal-700"
+                                  >
+                                    Adicionar
+                                  </Button>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan={3} className="text-center py-4 text-gray-500">
+                                Nenhum cliente encontrado. Verifique os critérios de busca.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {(editingEvento?.participantes.length || novoEvento.participantes.length) > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {(editingEvento?.participantes || novoEvento.participantes).map((p, index) => (
+                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                          {p}
+                          <button
+                            onClick={() => handleRemoveParticipante(index)}
+                            className="ml-1 rounded-full hover:bg-gray-200 p-0.5"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -480,7 +586,7 @@ export default function AgendaPage() {
         {/* Dialog para edição de evento */}
         {editingEvento && (
           <Dialog open={!!editingEvento} onOpenChange={(open) => !open && setEditingEvento(null)}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Editar Evento</DialogTitle>
                 <DialogDescription>Edite os detalhes do evento abaixo.</DialogDescription>
@@ -554,33 +660,86 @@ export default function AgendaPage() {
 
                 <div className="space-y-2">
                   <Label>Participantes</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Nome do participante"
-                      value={participante}
-                      onChange={(e) => setParticipante(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleAddParticipante()}
-                    />
-                    <Button type="button" onClick={handleAddParticipante} size="sm">
-                      Adicionar
-                    </Button>
-                  </div>
-
-                  {editingEvento.participantes.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {editingEvento.participantes.map((p, index) => (
-                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                          {p}
-                          <button
-                            onClick={() => handleRemoveParticipante(index)}
-                            className="ml-1 rounded-full hover:bg-gray-200 p-0.5"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex gap-2">
+                      <div className="flex-1 relative">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          type="search"
+                          placeholder="Buscar por nome, CPF, telefone ou email"
+                          className="pl-8 h-11"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                        />
+                      </div>
+                      <Button onClick={handleSearch} className="bg-teal-600 hover:bg-teal-700 h-11">
+                        <Search className="mr-2 h-4 w-4" />
+                        Buscar
+                      </Button>
                     </div>
-                  )}
+
+                    {showResults && (
+                      <div className="max-h-[200px] overflow-y-auto border rounded-md">
+                        <table className="w-full">
+                          <thead className="bg-gray-50 sticky top-0">
+                            <tr>
+                              <th className="text-left p-2 text-sm font-medium text-gray-500">Nome</th>
+                              <th className="text-left p-2 text-sm font-medium text-gray-500">CPF</th>
+                              <th className="text-right p-2 text-sm font-medium text-gray-500">Ação</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y">
+                            {searchResults.length > 0 ? (
+                              searchResults.map((cliente) => (
+                                <tr key={cliente.id} className="hover:bg-gray-50">
+                                  <td className="p-2">
+                                    <div className="font-medium">{cliente.nome}</div>
+                                    <div className="text-sm text-gray-500">{cliente.email}</div>
+                                  </td>
+                                  <td className="p-2">
+                                    <div>{cliente.documento}</div>
+                                    <div className="text-sm text-gray-500">{cliente.telefone}</div>
+                                  </td>
+                                  <td className="p-2 text-right">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleAddParticipante(cliente)}
+                                      className="bg-teal-600 hover:bg-teal-700"
+                                    >
+                                      Adicionar
+                                    </Button>
+                                  </td>
+                                </tr>
+                              ))
+                            ) : (
+                              <tr>
+                                <td colSpan={3} className="text-center py-4 text-gray-500">
+                                  Nenhum cliente encontrado. Verifique os critérios de busca.
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    {(editingEvento?.participantes.length || novoEvento.participantes.length) > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {(editingEvento?.participantes || novoEvento.participantes).map((p, index) => (
+                          <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                            {p}
+                            <button
+                              onClick={() => handleRemoveParticipante(index)}
+                              className="ml-1 rounded-full hover:bg-gray-200 p-0.5"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2">
