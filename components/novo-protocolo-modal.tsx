@@ -189,19 +189,10 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
                   <Label htmlFor="cliente">
                     Cliente <span className="text-red-500">*</span>
                   </Label>
-                  <Select
-                    value={cliente.id}
-                    onValueChange={(value) => {}}
-                  >
-                    <SelectTrigger id="cliente" className="h-11">
-                      <SelectValue placeholder="Selecione o cliente" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cliente1">Cliente 1</SelectItem>
-                      <SelectItem value="cliente2">Cliente 2</SelectItem>
-                      <SelectItem value="cliente3">Cliente 3</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
+                    <User className="h-4 w-4 text-gray-500" />
+                    <span>{cliente.nome}</span>
+                  </div>
                 </div>
               </div>
             </div>
