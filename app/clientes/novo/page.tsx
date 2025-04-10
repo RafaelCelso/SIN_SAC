@@ -130,10 +130,10 @@ export default function NovoClientePage() {
                       <SelectContent>
                         <SelectItem value="aut-reg-orgao-publico">Aut. Reg./Órgão Público</SelectItem>
                         <SelectItem value="colaborador">Colaborador/Força de Vendas</SelectItem>
-                        <SelectItem value="convenio">Convênio/Outros PJ</SelectItem>
+                        <SelectItem value="convenio"> Colaborador Convênio</SelectItem>
                         <SelectItem value="distribuidor">Distribuidor</SelectItem>
-                        <SelectItem value="farmacia">Farmácia/Drogaria</SelectItem>
-                        <SelectItem value="hospital">Hospital/Clínica</SelectItem>
+                        <SelectItem value="farmacia">Farmacêutico</SelectItem>
+                        <SelectItem value="hospital">Colaborador Hospital/Clínica</SelectItem>
                         <SelectItem value="medico">Médico</SelectItem>
                         <SelectItem value="nao-informado">Não informado</SelectItem>
                         <SelectItem value="outros">Outros</SelectItem>

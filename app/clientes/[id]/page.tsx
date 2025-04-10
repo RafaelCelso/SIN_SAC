@@ -28,11 +28,14 @@ import {
   Shield,
   Plus,
   Clock,
+  ChevronDown,
 } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
 import { NovoProtocoloModal } from "@/components/novo-protocolo-modal"
 import { DetalhesRegistroModal } from "@/components/detalhes-registro-modal"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 // Dados simulados de clientes
 const CLIENTES_MOCK = [
@@ -331,7 +334,7 @@ export default function ClientePage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="documento">CPF/CNPJ</Label>
+                      <Label htmlFor="documento">CPF</Label>
                       {isEditing ? (
                         <Input
                           id="documento"
@@ -392,18 +395,27 @@ export default function ClientePage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="tipo">Tipo de Cliente</Label>
+                      <Label htmlFor="tipo">Tipo do Cliente</Label>
                       {isEditing ? (
-                        <select
-                          id="tipo"
-                          name="tipo"
-                          value={formData.tipo}
-                          onChange={(e) => setFormData((prev) => ({ ...prev, tipo: e.target.value }))}
-                          className="w-full p-2 border rounded-md"
-                        >
-                          <option value="Pessoa Física">Pessoa Física</option>
-                          <option value="Pessoa Jurídica">Pessoa Jurídica</option>
-                        </select>
+                        <Select value={formData.tipo} onValueChange={(value) => setFormData((prev) => ({ ...prev, tipo: value }))}>
+                          <SelectTrigger id="tipo">
+                            <SelectValue placeholder="Selecione o tipo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="aut-reg-orgao-publico">Aut. Reg./Órgão Público</SelectItem>
+                            <SelectItem value="colaborador">Colaborador/Força de Vendas</SelectItem>
+                            <SelectItem value="convenio">Convênio/Outros PJ</SelectItem>
+                            <SelectItem value="distribuidor">Distribuidor</SelectItem>
+                            <SelectItem value="farmacia">Farmácia/Drogaria</SelectItem>
+                            <SelectItem value="hospital">Hospital/Clínica</SelectItem>
+                            <SelectItem value="medico">Médico</SelectItem>
+                            <SelectItem value="nao-informado">Não informado</SelectItem>
+                            <SelectItem value="outros">Outros</SelectItem>
+                            <SelectItem value="paciente">Paciente</SelectItem>
+                            <SelectItem value="prestador">Prestador de Serviço</SelectItem>
+                            <SelectItem value="profissional-saude">Profissional de Saúde</SelectItem>
+                          </SelectContent>
+                        </Select>
                       ) : (
                         <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
                           <User className="h-4 w-4 text-gray-500" />
@@ -451,40 +463,208 @@ export default function ClientePage() {
                       </div>
                     </div>
 
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Protocolo</TableHead>
-                          <TableHead>Data</TableHead>
-                          <TableHead>Motivo</TableHead>
-                          <TableHead>Produto</TableHead>
-                          <TableHead className="text-right">Ações</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {protocolos.map((protocolo) => (
-                          <TableRow key={protocolo.id}>
-                            <TableCell className="font-medium">{protocolo.id}</TableCell>
-                            <TableCell>{protocolo.data}</TableCell>
-                            <TableCell>{protocolo.tipo}</TableCell>
-                            <TableCell>{protocolo.produto}</TableCell>
-                            <TableCell className="text-right">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="hover:bg-teal-50 hover:text-teal-600"
-                                asChild
-                              >
-                                <Link href={`/protocolos/${protocolo.id}?tab=all`}>
-                                  <FileText className="h-4 w-4 mr-2" />
-                                  Ver detalhes
-                                </Link>
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                    <div className="space-y-2">
+                      {protocolos.map((protocolo) => (
+                        <Collapsible key={protocolo.id} className="border rounded-md data-[state=open]:bg-[#F7FDFC]">
+                          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-gray-50">
+                            <div className="flex items-center gap-4">
+                              <div className="flex flex-col">
+                                <span className="font-medium">{protocolo.id}</span>
+                                <span className="text-sm text-gray-500">{protocolo.data}</span>
+                              </div>
+                            </div>
+                            <ChevronDown className="h-4 w-4 text-gray-500 transition-transform duration-200 data-[state=open]:rotate-180" />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="p-4 pt-6 border-t">
+                              {/* Informações Principais */}
+                              <div className="mb-6 grid grid-cols-3 gap-4 bg-white border rounded-lg shadow-sm">
+                                <div className="p-4 border-r">
+                                  <p className="text-sm font-medium text-gray-600 mb-1">Criado por</p>
+                                  <p className="text-gray-900">Rafael Celso</p>
+                                </div>
+                                <div className="p-4 border-r">
+                                  <p className="text-sm font-medium text-gray-600 mb-1">Data de Criação</p>
+                                  <p className="text-gray-900">{protocolo.data}</p>
+                                </div>
+                                <div className="p-4">
+                                  <p className="text-sm font-medium text-gray-600 mb-1">Última Atualização</p>
+                                  <p className="text-gray-900">{protocolo.data}</p>
+                                </div>
+                              </div>
+
+                              {/* Abas de Navegação */}
+                              <Tabs defaultValue="contatos" className="w-full">
+                                <TabsList className="w-full grid grid-cols-4 gap-2 bg-gray-100 p-1 rounded-lg">
+                                  <TabsTrigger value="contatos" className="data-[state=active]:bg-[#26B99D] data-[state=active]:text-white">
+                                    <Phone className="h-4 w-4 mr-2" />
+                                    Contatos
+                                  </TabsTrigger>
+                                  <TabsTrigger value="queixas" className="data-[state=active]:bg-[#26B99D] data-[state=active]:text-white">
+                                    <AlertTriangle className="h-4 w-4 mr-2" />
+                                    Queixas Técnicas
+                                  </TabsTrigger>
+                                  <TabsTrigger value="informacoes" className="data-[state=active]:bg-[#26B99D] data-[state=active]:text-white">
+                                    <FileText className="h-4 w-4 mr-2" />
+                                    Informações Médicas
+                                  </TabsTrigger>
+                                  <TabsTrigger value="farmacovigilancia" className="data-[state=active]:bg-[#26B99D] data-[state=active]:text-white">
+                                    <Shield className="h-4 w-4 mr-2" />
+                                    Farmacovigilância
+                                  </TabsTrigger>
+                                </TabsList>
+
+                                <TabsContent value="contatos" className="mt-4">
+                                  <div className="space-y-4">
+                                    <div className="bg-white border rounded-lg shadow-sm">
+                                      <div className="border-b bg-gray-50 p-4 rounded-t-lg">
+                                        <div className="flex items-center">
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                              <Phone className="h-4 w-4 text-blue-600" />
+                                            </div>
+                                            <div>
+                                              <p className="font-semibold text-gray-900">Contato Inicial</p>
+                                              <p className="text-sm text-gray-600">15/06/2023 10:30</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="p-4">
+                                        <p className="text-gray-700">Cliente entrou em contato relatando problema com o produto.</p>
+                                      </div>
+                                    </div>
+                                    <div className="bg-white border rounded-lg shadow-sm">
+                                      <div className="border-b bg-gray-50 p-4 rounded-t-lg">
+                                        <div className="flex items-center">
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
+                                              <Mail className="h-4 w-4 text-purple-600" />
+                                            </div>
+                                            <div>
+                                              <p className="font-semibold text-gray-900">Retorno ao Cliente</p>
+                                              <p className="text-sm text-gray-600">16/06/2023 14:15</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="p-4">
+                                        <p className="text-gray-700">Enviado email com instruções e formulário para preenchimento.</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </TabsContent>
+
+                                <TabsContent value="queixas" className="mt-4">
+                                  <div className="space-y-4">
+                                    <div className="bg-white border rounded-lg shadow-sm">
+                                      <div className="border-b bg-gray-50 p-4 rounded-t-lg">
+                                        <div className="flex items-center">
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
+                                              <AlertTriangle className="h-4 w-4 text-amber-600" />
+                                            </div>
+                                            <div>
+                                              <p className="font-semibold text-gray-900">Registro da Queixa</p>
+                                              <p className="text-sm text-gray-600">15/06/2023 11:00</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="p-4">
+                                        <div className="grid grid-cols-2 gap-6">
+                                          <div className="bg-gray-50 p-3 rounded-md">
+                                            <p className="text-sm font-medium text-gray-600 mb-1">Produto</p>
+                                            <p className="text-gray-900">Medicamento A</p>
+                                          </div>
+                                          <div className="bg-gray-50 p-3 rounded-md">
+                                            <p className="text-sm font-medium text-gray-600 mb-1">Lote</p>
+                                            <p className="text-gray-900">ABC123</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </TabsContent>
+
+                                <TabsContent value="informacoes" className="mt-4">
+                                  <div className="space-y-4">
+                                    <div className="bg-white border rounded-lg shadow-sm">
+                                      <div className="border-b bg-gray-50 p-4 rounded-t-lg">
+                                        <div className="flex items-center">
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                                              <FileText className="h-4 w-4 text-indigo-600" />
+                                            </div>
+                                            <div>
+                                              <p className="font-semibold text-gray-900">Solicitação de Informação</p>
+                                              <p className="text-sm text-gray-600">15/06/2023 10:45</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="p-4">
+                                        <p className="text-gray-700">Solicitação de informações sobre dosagem e forma de administração.</p>
+                                      </div>
+                                    </div>
+                                    <div className="bg-white border rounded-lg shadow-sm">
+                                      <div className="border-b bg-gray-50 p-4 rounded-t-lg">
+                                        <div className="flex items-center">
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                              <CheckCircle className="h-4 w-4 text-green-600" />
+                                            </div>
+                                            <div>
+                                              <p className="font-semibold text-gray-900">Resposta Técnica</p>
+                                              <p className="text-sm text-gray-600">16/06/2023 09:30</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="p-4">
+                                        <p className="text-gray-700">Enviada orientação técnica sobre posologia conforme bula.</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </TabsContent>
+
+                                <TabsContent value="farmacovigilancia" className="mt-4">
+                                  <div className="space-y-4">
+                                    <div className="bg-white border rounded-lg shadow-sm">
+                                      <div className="border-b bg-gray-50 p-4 rounded-t-lg">
+                                        <div className="flex items-center">
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-rose-100 flex items-center justify-center">
+                                              <Shield className="h-4 w-4 text-rose-600" />
+                                            </div>
+                                            <div>
+                                              <p className="font-semibold text-gray-900">Notificação de Evento Adverso</p>
+                                              <p className="text-sm text-gray-600">15/06/2023 11:15</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="p-4">
+                                        <div className="grid grid-cols-2 gap-6">
+                                          <div className="bg-gray-50 p-3 rounded-md">
+                                            <p className="text-sm font-medium text-gray-600 mb-1">Reação Adversa</p>
+                                            <p className="text-gray-900">Náusea</p>
+                                          </div>
+                                          <div className="bg-gray-50 p-3 rounded-md">
+                                            <p className="text-sm font-medium text-gray-600 mb-1">Status</p>
+                                            <p className="text-gray-900">Concluído</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </TabsContent>
+                              </Tabs>
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-10">
@@ -511,7 +691,8 @@ export default function ClientePage() {
                       <TableHeader>
                         <TableRow>
                           <TableHead>Protocolo</TableHead>
-                          <TableHead>Data</TableHead>
+                          <TableHead>Criado em</TableHead>
+                          <TableHead>Criado por</TableHead>
                           <TableHead>Produto</TableHead>
                           <TableHead>Lote</TableHead>
                           <TableHead>Tipo</TableHead>
@@ -525,6 +706,7 @@ export default function ClientePage() {
                             <TableRow>
                               <TableCell className="font-medium">QT-2023-0001</TableCell>
                               <TableCell>15/06/2023</TableCell>
+                              <TableCell>Rafael Celso</TableCell>
                               <TableCell>Medicamento A</TableCell>
                               <TableCell>ABC123</TableCell>
                               <TableCell>Problema na embalagem</TableCell>
@@ -553,6 +735,7 @@ export default function ClientePage() {
                           <TableRow>
                             <TableCell className="font-medium">QT-2023-0002</TableCell>
                             <TableCell>16/06/2023</TableCell>
+                            <TableCell>Rafael Celso</TableCell>
                             <TableCell>Medicamento B</TableCell>
                             <TableCell>DEF456</TableCell>
                             <TableCell>Problema no conteúdo</TableCell>
@@ -578,7 +761,7 @@ export default function ClientePage() {
                           </TableRow>
                         ) : (
                           <TableRow>
-                            <TableCell colSpan={7} className="text-center py-6">
+                            <TableCell colSpan={8} className="text-center py-6">
                               Este cliente não possui queixas técnicas registradas.
                             </TableCell>
                           </TableRow>
@@ -605,7 +788,8 @@ export default function ClientePage() {
                       <TableHeader>
                         <TableRow>
                           <TableHead>Protocolo</TableHead>
-                          <TableHead>Data</TableHead>
+                          <TableHead>Criado em</TableHead>
+                          <TableHead>Criado por</TableHead>
                           <TableHead>Produto</TableHead>
                           <TableHead>Assunto</TableHead>
                           <TableHead>Status</TableHead>
@@ -617,6 +801,7 @@ export default function ClientePage() {
                           <TableRow>
                             <TableCell className="font-medium">IM-2023-0001</TableCell>
                             <TableCell>15/06/2023</TableCell>
+                            <TableCell>Rafael Celso</TableCell>
                             <TableCell>Medicamento A</TableCell>
                             <TableCell>Posologia</TableCell>
                             <TableCell>
@@ -643,6 +828,7 @@ export default function ClientePage() {
                           <TableRow>
                             <TableCell className="font-medium">IM-2023-0002</TableCell>
                             <TableCell>16/06/2023</TableCell>
+                            <TableCell>Rafael Celso</TableCell>
                             <TableCell>Medicamento B</TableCell>
                             <TableCell>Interações medicamentosas</TableCell>
                             <TableCell>
@@ -667,7 +853,7 @@ export default function ClientePage() {
                           </TableRow>
                         ) : (
                           <TableRow>
-                            <TableCell colSpan={6} className="text-center py-6">
+                            <TableCell colSpan={7} className="text-center py-6">
                               Este cliente não possui solicitações de informações médicas registradas.
                             </TableCell>
                           </TableRow>
@@ -694,7 +880,8 @@ export default function ClientePage() {
                       <TableHeader>
                         <TableRow>
                           <TableHead>Protocolo</TableHead>
-                          <TableHead>Data</TableHead>
+                          <TableHead>Criado em</TableHead>
+                          <TableHead>Criado por</TableHead>
                           <TableHead>Produto</TableHead>
                           <TableHead>Reação Adversa</TableHead>
                           <TableHead>Gravidade</TableHead>
@@ -707,6 +894,7 @@ export default function ClientePage() {
                           <TableRow>
                             <TableCell className="font-medium">FV-2023-0001</TableCell>
                             <TableCell>15/06/2023</TableCell>
+                            <TableCell>Rafael Celso</TableCell>
                             <TableCell>Medicamento A</TableCell>
                             <TableCell>Náusea</TableCell>
                             <TableCell>
@@ -736,6 +924,7 @@ export default function ClientePage() {
                           <TableRow>
                             <TableCell className="font-medium">FV-2023-0002</TableCell>
                             <TableCell>16/06/2023</TableCell>
+                            <TableCell>Rafael Celso</TableCell>
                             <TableCell>Medicamento B</TableCell>
                             <TableCell>Erupção cutânea</TableCell>
                             <TableCell>
@@ -763,7 +952,7 @@ export default function ClientePage() {
                           </TableRow>
                         ) : (
                           <TableRow>
-                            <TableCell colSpan={7} className="text-center py-6">
+                            <TableCell colSpan={8} className="text-center py-6">
                               Este cliente não possui registros de farmacovigilância.
                             </TableCell>
                           </TableRow>
