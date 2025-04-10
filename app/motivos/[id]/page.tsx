@@ -8,39 +8,51 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pencil } from "lucide-react";
 
-interface MotivoDetalhes {
+interface Motivo {
   id: string;
   nome: string;
   status: "Ativo" | "Inativo";
+  tipo: "Principal" | "Subcategoria" | "Detalhe";
+  categoriaPrincipal?: string;
+  subcategoria?: string;
 }
+
+const categoriasPrincipais = ["Reclamação", "Solicitação", "Dúvida", "Sugestão"];
+const subcategorias = ["Produto", "Atendimento", "Entrega", "Preço"];
 
 export default function MotivoDetalhesPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
-  const [motivo, setMotivo] = useState<MotivoDetalhes>({
+  const [motivo, setMotivo] = useState<Motivo>({
     id: params.id,
-    nome: "Devolução por defeito", // Mock - substituir por dados da API
-    status: "Ativo", // Mock - substituir por dados da API
+    nome: "Devolução por defeito",
+    status: "Ativo",
+    tipo: "Principal"
   });
   const [novoNome, setNovoNome] = useState(motivo.nome);
+  const [novoTipo, setNovoTipo] = useState<"Principal" | "Subcategoria" | "Detalhe">(motivo.tipo);
+  const [novaCategoria, setNovaCategoria] = useState<string | undefined>(motivo.categoriaPrincipal);
+  const [novaSubcategoria, setNovaSubcategoria] = useState<string | undefined>(motivo.subcategoria);
 
   const handleStatusChange = () => {
     setMotivo(prev => ({
       ...prev,
       status: prev.status === "Ativo" ? "Inativo" : "Ativo"
     }));
-    // Aqui você chamaria a API para atualizar o status
   };
 
   const handleSaveEdit = () => {
     setMotivo(prev => ({
       ...prev,
-      nome: novoNome
+      nome: novoNome,
+      tipo: novoTipo,
+      categoriaPrincipal: novaCategoria,
+      subcategoria: novaSubcategoria
     }));
     setIsEditing(false);
-    // Aqui você chamaria a API para atualizar o nome
   };
 
   return (
@@ -98,6 +110,9 @@ export default function MotivoDetalhesPage({ params }: { params: { id: string } 
                     <Button variant="outline" onClick={() => {
                       setIsEditing(false);
                       setNovoNome(motivo.nome);
+                      setNovoTipo(motivo.tipo);
+                      setNovaCategoria(motivo.categoriaPrincipal);
+                      setNovaSubcategoria(motivo.subcategoria);
                     }}>
                       Cancelar
                     </Button>
@@ -108,12 +123,74 @@ export default function MotivoDetalhesPage({ params }: { params: { id: string } 
               </div>
 
               <div className="space-y-2">
+                <Label>Tipo</Label>
+                {isEditing ? (
+                  <Select value={novoTipo} onValueChange={(value: "Principal" | "Subcategoria" | "Detalhe") => setNovoTipo(value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Principal">Principal</SelectItem>
+                      <SelectItem value="Subcategoria">Subcategoria</SelectItem>
+                      <SelectItem value="Detalhe">Detalhe</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="p-2 bg-gray-50 rounded-md">{motivo.tipo}</div>
+                )}
+              </div>
+
+              {(novoTipo === "Subcategoria" || novoTipo === "Detalhe" || motivo.tipo === "Subcategoria" || motivo.tipo === "Detalhe") && (
+                <div className="space-y-2">
+                  <Label>Categoria Principal</Label>
+                  {isEditing ? (
+                    <Select value={novaCategoria} onValueChange={setNovaCategoria}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a categoria principal" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categoriasPrincipais.map((categoria) => (
+                          <SelectItem key={categoria} value={categoria}>
+                            {categoria}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <div className="p-2 bg-gray-50 rounded-md">{motivo.categoriaPrincipal || "-"}</div>
+                  )}
+                </div>
+              )}
+
+              {(novoTipo === "Detalhe" || motivo.tipo === "Detalhe") && (
+                <div className="space-y-2">
+                  <Label>Subcategoria</Label>
+                  {isEditing ? (
+                    <Select value={novaSubcategoria} onValueChange={setNovaSubcategoria}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a subcategoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {subcategorias.map((subcategoria) => (
+                          <SelectItem key={subcategoria} value={subcategoria}>
+                            {subcategoria}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <div className="p-2 bg-gray-50 rounded-md">{motivo.subcategoria || "-"}</div>
+                  )}
+                </div>
+              )}
+
+              <div className="space-y-2">
                 <Label>Status</Label>
-                <div className="p-2">
-                  <Badge 
-                    variant="outline" 
-                    className={motivo.status === "Ativo" 
-                      ? "bg-green-50 text-green-700 border-green-200" 
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className={motivo.status === "Ativo"
+                      ? "bg-green-50 text-green-700 border-green-200"
                       : "bg-red-50 text-red-700 border-red-200"}
                   >
                     {motivo.status}
