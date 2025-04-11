@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/use-toast"
-import { CheckCircle, Package, FileText, AlertTriangle, Info, Activity, Phone } from "lucide-react"
+import { CheckCircle, User, FileText, AlertTriangle, Info, Activity, Phone, Package, Search } from "lucide-react"
 
 interface NovoRegistroModalProps {
   open: boolean
@@ -22,6 +22,35 @@ interface NovoRegistroModalProps {
     nome: string
   }
 }
+
+// Dados simulados de produtos
+const PRODUTOS_MOCK = [
+  {
+    nome: "Medicamento A",
+    ean: "7891234567890",
+    lote: "L2024001"
+  },
+  {
+    nome: "Medicamento B",
+    ean: "7891234567891",
+    lote: "L2024002"
+  },
+  {
+    nome: "Dispositivo Médico X",
+    ean: "7891234567892",
+    lote: "L2024003"
+  },
+  {
+    nome: "Dispositivo Médico Y",
+    ean: "7891234567893",
+    lote: "L2024004"
+  },
+  {
+    nome: "Medicamento C",
+    ean: "7891234567894",
+    lote: "L2024005"
+  },
+]
 
 export function NovoRegistroModal({ open, onOpenChange, tipo, cliente, clienteId }: NovoRegistroModalProps) {
   // Estado para o formulário
@@ -43,8 +72,17 @@ export function NovoRegistroModal({ open, onOpenChange, tipo, cliente, clienteId
 
     // Campos específicos para contato
     tipoContato: "telefone",
-    motivo: "",
+    autorizaRetorno: "sim",
+    dataRetorno: "",
+    horarioRetorno: "",
+    motivoContato: "",
   })
+
+  // Estado para busca de produtos
+  const [produtoSearch, setProdutoSearch] = useState("")
+  const [showProdutosList, setShowProdutosList] = useState(false)
+  const [produtosFiltrados, setProdutosFiltrados] = useState(PRODUTOS_MOCK)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Buscar dados do cliente se apenas o ID for fornecido
   const [clienteData, setClienteData] = useState<{ id: string; nome: string } | null>(cliente ? cliente : null)
@@ -64,6 +102,42 @@ export function NovoRegistroModal({ open, onOpenChange, tipo, cliente, clienteId
       setClienteData(clienteEncontrado)
     }
   }, [cliente, clienteId])
+
+  // Efeito para filtrar produtos baseado na busca
+  useEffect(() => {
+    const termoBusca = produtoSearch.toLowerCase()
+    const produtos = PRODUTOS_MOCK.filter(
+      produto =>
+        produto.nome.toLowerCase().includes(termoBusca) ||
+        produto.ean.includes(termoBusca) ||
+        produto.lote.toLowerCase().includes(termoBusca)
+    )
+    setProdutosFiltrados(produtos)
+  }, [produtoSearch])
+
+  // Função para selecionar um produto
+  const handleSelectProduto = (produto: typeof PRODUTOS_MOCK[0]) => {
+    setFormData(prev => ({
+      ...prev,
+      produto: produto.nome
+    }))
+    setProdutoSearch("")
+    setShowProdutosList(false)
+  }
+
+  // Efeito para fechar a lista quando clicar fora
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchInputRef.current && !searchInputRef.current.contains(event.target as Node)) {
+        setShowProdutosList(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -111,13 +185,26 @@ export function NovoRegistroModal({ open, onOpenChange, tipo, cliente, clienteId
       return
     }
 
-    if (tipo === "contato" && (!formData.tipoContato || !formData.motivo)) {
-      toast({
-        title: "Erro",
-        description: "Preencha todos os campos obrigatórios",
-        variant: "destructive",
-      })
-      return
+    if (tipo === "contato") {
+      // Validação básica dos campos de contato
+      if (!formData.tipoContato || !formData.descricao || !formData.motivoContato || !formData.produto) {
+        toast({
+          title: "Erro",
+          description: "Preencha todos os campos obrigatórios",
+          variant: "destructive",
+        })
+        return
+      }
+
+      // Validação adicional se autorizar retorno
+      if (formData.autorizaRetorno === "sim" && (!formData.dataRetorno || !formData.horarioRetorno)) {
+        toast({
+          title: "Erro",
+          description: "Preencha a data e horário do retorno",
+          variant: "destructive",
+        })
+        return
+      }
     }
 
     // Simulação de envio
@@ -168,7 +255,7 @@ export function NovoRegistroModal({ open, onOpenChange, tipo, cliente, clienteId
             {/* Informações do Cliente */}
             <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
               <div className="flex items-center gap-2 mb-3">
-                <Package className="h-5 w-5 text-teal-600" />
+                <User className="h-5 w-5 text-teal-600" />
                 <h3 className="font-medium text-lg text-gray-800">Informações do Cliente</h3>
               </div>
 
@@ -380,50 +467,175 @@ export function NovoRegistroModal({ open, onOpenChange, tipo, cliente, clienteId
             )}
 
             {tipo === "contato" && (
-              <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
-                <div className="flex items-center gap-2 mb-3">
-                  <Phone className="h-5 w-5 text-teal-600" />
-                  <h3 className="font-medium text-lg text-gray-800">Detalhes do Contato</h3>
-                </div>
-
-                <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="tipoContato">
-                      Tipo de Contato <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                      name="tipoContato"
-                      value={formData.tipoContato}
-                      onValueChange={(value) => handleSelectChange("tipoContato", value)}
-                      required
-                    >
-                      <SelectTrigger id="tipoContato" className="h-11">
-                        <SelectValue placeholder="Selecione o tipo de contato" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="telefone">Telefone</SelectItem>
-                        <SelectItem value="email">E-mail</SelectItem>
-                        <SelectItem value="presencial">Presencial</SelectItem>
-                      </SelectContent>
-                    </Select>
+              <>
+                {/* Seção Produto */}
+                <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Package className="h-5 w-5 text-teal-600" />
+                    <h3 className="font-medium text-lg text-gray-800">Produto</h3>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="motivo">
-                      Motivo do Contato <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="motivo"
-                      name="motivo"
-                      value={formData.motivo}
-                      onChange={handleInputChange}
-                      placeholder="Ex: Dúvida sobre produto"
-                      required
-                      className="h-11"
-                    />
+                  <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
+                    <div className="space-y-2">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          type="text"
+                          placeholder="Buscar produto por nome, lote ou EAN"
+                          className="h-11 pl-10"
+                          value={produtoSearch}
+                          onChange={(e) => setProdutoSearch(e.target.value)}
+                          onFocus={() => setShowProdutosList(true)}
+                          ref={searchInputRef}
+                        />
+                        {showProdutosList && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
+                            {produtosFiltrados.length > 0 ? (
+                              produtosFiltrados.map((produto, index) => (
+                                <button
+                                  key={produto.ean}
+                                  className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
+                                    index !== produtosFiltrados.length - 1 ? "border-b" : ""
+                                  }`}
+                                  onClick={() => handleSelectProduto(produto)}
+                                >
+                                  <div className="font-medium text-gray-900">{produto.nome}</div>
+                                  <div className="text-sm text-gray-500">
+                                    EAN: {produto.ean} | Lote: {produto.lote}
+                                  </div>
+                                </button>
+                              ))
+                            ) : (
+                              <div className="px-4 py-3 text-sm text-gray-500">
+                                Nenhum produto encontrado
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {formData.produto && (
+                        <div className="mt-2 p-3 bg-gray-50 rounded-lg border">
+                          <div className="font-medium text-gray-900">{formData.produto}</div>
+                          <div className="text-sm text-gray-500">
+                            EAN: {PRODUTOS_MOCK.find(p => p.nome === formData.produto)?.ean} | 
+                            Lote: {PRODUTOS_MOCK.find(p => p.nome === formData.produto)?.lote}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+
+                {/* Seção Informações do Contato */}
+                <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Phone className="h-5 w-5 text-teal-600" />
+                    <h3 className="font-medium text-lg text-gray-800">Informações do Contato</h3>
+                  </div>
+
+                  <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="motivoContato">
+                        Motivo do Contato <span className="text-red-500">*</span>
+                      </Label>
+                      <Select
+                        name="motivoContato"
+                        value={formData.motivoContato}
+                        onValueChange={(value) => handleSelectChange("motivoContato", value)}
+                        required
+                      >
+                        <SelectTrigger id="motivoContato" className="h-11">
+                          <SelectValue placeholder="Selecione o motivo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="duvida">Dúvida</SelectItem>
+                          <SelectItem value="reclamacao">Reclamação</SelectItem>
+                          <SelectItem value="solicitacao">Solicitação</SelectItem>
+                          <SelectItem value="informacao">Informação</SelectItem>
+                          <SelectItem value="outro">Outro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="tipoContato">
+                          Tipo de Contato <span className="text-red-500">*</span>
+                        </Label>
+                        <Select
+                          name="tipoContato"
+                          value={formData.tipoContato}
+                          onValueChange={(value) => handleSelectChange("tipoContato", value)}
+                          required
+                        >
+                          <SelectTrigger id="tipoContato" className="h-11">
+                            <SelectValue placeholder="Selecione o tipo de contato" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="telefone">Telefone</SelectItem>
+                            <SelectItem value="email">E-mail</SelectItem>
+                            <SelectItem value="presencial">Presencial</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="autorizaRetorno">
+                          Autoriza retorno de contato <span className="text-red-500">*</span>
+                        </Label>
+                        <Select
+                          name="autorizaRetorno"
+                          value={formData.autorizaRetorno}
+                          onValueChange={(value) => handleSelectChange("autorizaRetorno", value)}
+                          required
+                        >
+                          <SelectTrigger id="autorizaRetorno" className="h-11">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="sim">Sim</SelectItem>
+                            <SelectItem value="nao">Não</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {formData.autorizaRetorno === "sim" && (
+                      <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div className="space-y-2">
+                          <Label htmlFor="dataRetorno">
+                            Data do Retorno <span className="text-red-500">*</span>
+                          </Label>
+                          <Input
+                            type="date"
+                            id="dataRetorno"
+                            name="dataRetorno"
+                            value={formData.dataRetorno}
+                            onChange={handleInputChange}
+                            className="h-11"
+                            required
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="horarioRetorno">
+                            Horário do Retorno <span className="text-red-500">*</span>
+                          </Label>
+                          <Input
+                            type="time"
+                            id="horarioRetorno"
+                            name="horarioRetorno"
+                            value={formData.horarioRetorno}
+                            onChange={handleInputChange}
+                            className="h-11"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
             )}
 
             {/* Descrição */}

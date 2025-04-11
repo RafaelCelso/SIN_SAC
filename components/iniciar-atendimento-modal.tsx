@@ -454,7 +454,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                         <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[400px] p-0">
+                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
                       <Command>
                         <CommandInput 
                           placeholder="Digite para buscar por nome, lote ou EAN..." 
@@ -471,6 +471,13 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                               onSelect={() => {
                                 setSelectedProduto(produto)
                                 setProdutoSearchTerm("")
+                                const button = document.querySelector('[role="combobox"]')
+                                const event = new MouseEvent('click', {
+                                  bubbles: true,
+                                  cancelable: true,
+                                  view: window
+                                })
+                                button?.dispatchEvent(event)
                               }}
                               className="py-2"
                             >
@@ -495,14 +502,10 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
 
                   {selectedProduto && (
                     <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-3 gap-4">
                         <div>
                           <span className="text-sm text-gray-500">Nome do Produto</span>
                           <p className="font-medium">{selectedProduto.nome}</p>
-                        </div>
-                        <div>
-                          <span className="text-sm text-gray-500">Categoria</span>
-                          <p className="font-medium">{selectedProduto.categoria}</p>
                         </div>
                         <div>
                           <span className="text-sm text-gray-500">EAN</span>

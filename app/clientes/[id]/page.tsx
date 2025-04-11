@@ -34,6 +34,7 @@ import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
 import { NovoProtocoloModal } from "@/components/novo-protocolo-modal"
 import { DetalhesRegistroModal } from "@/components/detalhes-registro-modal"
+import { NovoRegistroModal } from "@/components/novo-registro-modal"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
@@ -147,6 +148,8 @@ export default function ClientePage() {
 
   const [showNovoProtocoloModal, setShowNovoProtocoloModal] = useState(false)
   const [showDetalhesModal, setShowDetalhesModal] = useState(false)
+  const [showNovoRegistroModal, setShowNovoRegistroModal] = useState(false)
+  const [tipoRegistro, setTipoRegistro] = useState<"queixa" | "informacao" | "farmacovigilancia" | "contato">("contato")
   const [registroSelecionado, setRegistroSelecionado] = useState<any>(null)
 
   // Carregar dados do cliente
@@ -517,7 +520,13 @@ export default function ClientePage() {
                                 <TabsContent value="contatos" className="mt-4">
                                   <div className="space-y-4">
                                     <div className="flex items-center justify-between mb-4">
-                                      <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
+                                      <Button 
+                                        className="bg-[#26B99D] hover:bg-[#1E9A82]"
+                                        onClick={() => {
+                                          setTipoRegistro("contato")
+                                          setShowNovoRegistroModal(true)
+                                        }}
+                                      >
                                         <Plus className="h-4 w-4 mr-2" />
                                         Novo Contato
                                       </Button>
@@ -1006,6 +1015,13 @@ export default function ClientePage() {
             registro={registroSelecionado}
           />
         )}
+
+        <NovoRegistroModal
+          open={showNovoRegistroModal}
+          onOpenChange={setShowNovoRegistroModal}
+          tipo={tipoRegistro}
+          cliente={cliente}
+        />
       </div>
     </DashboardLayout>
   )

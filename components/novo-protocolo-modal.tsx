@@ -73,6 +73,8 @@ const PRODUTOS_MOCK = [
 export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocoloModalProps) {
   const router = useRouter()
   const [motivoSelecionado, setMotivoSelecionado] = useState<string>("")
+  const [subCategoriaSelecionada, setSubCategoriaSelecionada] = useState<string>("")
+  const [detalheSelecionado, setDetalheSelecionado] = useState<string>("")
   const [produtoSearchTerm, setProdutoSearchTerm] = useState("")
   const [selectedProduto, setSelectedProduto] = useState<(typeof PRODUTOS_MOCK)[0] | null>(null)
   const [observacoes, setObservacoes] = useState<string>("")
@@ -94,6 +96,8 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
 
   const resetForm = () => {
     setMotivoSelecionado("")
+    setSubCategoriaSelecionada("")
+    setDetalheSelecionado("")
     setSelectedProduto(null)
     setProdutoSearchTerm("")
     setObservacoes("")
@@ -110,6 +114,24 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
       toast({
         title: "Erro",
         description: "Selecione o motivo do atendimento",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!subCategoriaSelecionada) {
+      toast({
+        title: "Erro",
+        description: "Selecione a subcategoria do atendimento",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!detalheSelecionado) {
+      toast({
+        title: "Erro",
+        description: "Selecione o detalhe do atendimento",
         variant: "destructive",
       })
       return
@@ -176,10 +198,13 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
     // Fechar modal
     onOpenChange(false)
 
-    // Mapear motivo para URL
+    // Construir URL com parâmetros
     const urlBase = `/clientes/${cliente.id}`
     const urlParams = new URLSearchParams({
       protocolo: novoProtocolo,
+      motivo: motivoSelecionado,
+      subcategoria: subCategoriaSelecionada,
+      detalhe: detalheSelecionado,
       produto: selectedProduto.nome,
       ean: selectedProduto.ean,
       lote: lote || selectedProduto.lote
@@ -204,20 +229,18 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
             <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
               <div className="flex items-center gap-2 mb-3">
                 <Clipboard className="h-5 w-5 text-teal-600" />
-                <h3 className="font-medium text-lg text-gray-800">Motivo do Protocolo</h3>
+                <h3 className="font-medium text-lg text-gray-800">Motivo do Atendimento</h3>
               </div>
 
               <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-                <div className="space-y-2">
-                  <Label htmlFor="motivo">
-                    Motivo <span className="text-red-500">*</span>
-                  </Label>
-                  <Select
-                    value={motivoSelecionado}
-                    onValueChange={setMotivoSelecionado}
-                  >
-                    <SelectTrigger id="motivo" className="h-11">
-                      <SelectValue placeholder="Selecione o motivo" />
+                <div className="space-y-4">
+                  <Select onValueChange={(value) => {
+                    setMotivoSelecionado(value)
+                    setSubCategoriaSelecionada("")
+                    setDetalheSelecionado("")
+                  }} value={motivoSelecionado}>
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder="Selecione o motivo principal" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="queixa">Queixa Técnica</SelectItem>
@@ -227,6 +250,32 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
                       <SelectItem value="outro">Outro</SelectItem>
                     </SelectContent>
                   </Select>
+
+                  {motivoSelecionado && (
+                    <Select value={subCategoriaSelecionada} onValueChange={setSubCategoriaSelecionada}>
+                      <SelectTrigger className="h-11">
+                        <SelectValue placeholder="Selecione a subcategoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="subcategoria1">Subcategoria 1</SelectItem>
+                        <SelectItem value="subcategoria2">Subcategoria 2</SelectItem>
+                        <SelectItem value="subcategoria3">Subcategoria 3</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+
+                  {subCategoriaSelecionada && (
+                    <Select value={detalheSelecionado} onValueChange={setDetalheSelecionado}>
+                      <SelectTrigger className="h-11">
+                        <SelectValue placeholder="Selecione o detalhe" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="detalhe1">Detalhe 1</SelectItem>
+                        <SelectItem value="detalhe2">Detalhe 2</SelectItem>
+                        <SelectItem value="detalhe3">Detalhe 3</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
               </div>
             </div>
@@ -274,7 +323,7 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
                         <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[400px] p-0">
+                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
                       <Command>
                         <CommandInput 
                           placeholder="Digite para buscar por nome, lote ou EAN..." 
@@ -291,7 +340,14 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
                               onSelect={() => {
                                 setSelectedProduto(produto)
                                 setProdutoSearchTerm("")
-                                setLote(produto.lote) // Preenche automaticamente o lote quando seleciona o produto
+                                setLote(produto.lote)
+                                const button = document.querySelector('[role="combobox"]')
+                                const event = new MouseEvent('click', {
+                                  bubbles: true,
+                                  cancelable: true,
+                                  view: window
+                                })
+                                button?.dispatchEvent(event)
                               }}
                               className="py-2"
                             >
@@ -316,14 +372,10 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
 
                   {selectedProduto && (
                     <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-3 gap-4">
                         <div>
                           <span className="text-sm text-gray-500">Nome do Produto</span>
                           <p className="font-medium">{selectedProduto.nome}</p>
-                        </div>
-                        <div>
-                          <span className="text-sm text-gray-500">Categoria</span>
-                          <p className="font-medium">{selectedProduto.categoria}</p>
                         </div>
                         <div>
                           <span className="text-sm text-gray-500">EAN</span>
