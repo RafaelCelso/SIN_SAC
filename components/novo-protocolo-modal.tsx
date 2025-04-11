@@ -6,13 +6,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Clipboard, User, Package, FileText } from "lucide-react"
+import { Clipboard, User, Package, FileText, Search, Check } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 interface NovoProtocoloModalProps {
   open: boolean
@@ -28,10 +31,50 @@ interface NovoProtocoloModalProps {
   }
 }
 
+// Dados simulados de produtos
+const PRODUTOS_MOCK = [
+  {
+    id: "1",
+    nome: "Medicamento A",
+    ean: "7891234567890",
+    lote: "L2024001",
+    categoria: "Medicamento"
+  },
+  {
+    id: "2",
+    nome: "Medicamento B",
+    ean: "7891234567891",
+    lote: "L2024002",
+    categoria: "Medicamento"
+  },
+  {
+    id: "3",
+    nome: "Dispositivo Médico X",
+    ean: "7891234567892",
+    lote: "L2024003",
+    categoria: "Dispositivo Médico"
+  },
+  {
+    id: "4",
+    nome: "Dispositivo Médico Y",
+    ean: "7891234567893",
+    lote: "L2024004",
+    categoria: "Dispositivo Médico"
+  },
+  {
+    id: "5",
+    nome: "Medicamento C",
+    ean: "7891234567894",
+    lote: "L2024005",
+    categoria: "Medicamento"
+  }
+]
+
 export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocoloModalProps) {
   const router = useRouter()
   const [motivoSelecionado, setMotivoSelecionado] = useState<string>("")
-  const [produtoSelecionado, setProdutoSelecionado] = useState<string>("")
+  const [produtoSearchTerm, setProdutoSearchTerm] = useState("")
+  const [selectedProduto, setSelectedProduto] = useState<(typeof PRODUTOS_MOCK)[0] | null>(null)
   const [observacoes, setObservacoes] = useState<string>("")
   const [lote, setLote] = useState<string>("")
   const [tipoQueixa, setTipoQueixa] = useState<string>("")
@@ -39,9 +82,20 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
   const [reacaoAdversa, setReacaoAdversa] = useState<string>("")
   const [gravidade, setGravidade] = useState<string>("")
 
+  // Função para filtrar produtos
+  const filteredProdutos = PRODUTOS_MOCK.filter((produto) => {
+    const searchTerm = produtoSearchTerm.toLowerCase()
+    return (
+      produto.nome.toLowerCase().includes(searchTerm) ||
+      produto.lote.toLowerCase().includes(searchTerm) ||
+      produto.ean.includes(searchTerm)
+    )
+  })
+
   const resetForm = () => {
     setMotivoSelecionado("")
-    setProdutoSelecionado("")
+    setSelectedProduto(null)
+    setProdutoSearchTerm("")
     setObservacoes("")
     setLote("")
     setTipoQueixa("")
@@ -61,7 +115,7 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
       return
     }
 
-    if (!produtoSelecionado) {
+    if (!selectedProduto) {
       toast({
         title: "Erro",
         description: "Selecione um produto",
@@ -123,15 +177,15 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
     onOpenChange(false)
 
     // Mapear motivo para URL
-    const motivoParaURL: Record<string, string> = {
-      queixa: "/atendimentos/queixas/nova",
-      informacao: "/atendimentos/info/nova",
-      farmacovigilancia: "/atendimentos/farmacovigilancia/novo",
-      outro: "/atendimentos/contatos/novo",
-    }
+    const urlBase = `/clientes/${cliente.id}`
+    const urlParams = new URLSearchParams({
+      protocolo: novoProtocolo,
+      produto: selectedProduto.nome,
+      ean: selectedProduto.ean,
+      lote: lote || selectedProduto.lote
+    })
 
-    // Redirecionar para a página específica do motivo ou para a página do cliente com o novo protocolo
-    router.push(`/clientes/${cliente.id}?protocolo=${novoProtocolo}`)
+    router.push(`${urlBase}?${urlParams.toString()}`)
   }
 
   return (
@@ -205,23 +259,98 @@ export function NovoProtocoloModal({ open, onOpenChange, cliente }: NovoProtocol
               </div>
 
               <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <Label htmlFor="produto">
                     Produto <span className="text-red-500">*</span>
                   </Label>
-                  <Select
-                    value={produtoSelecionado}
-                    onValueChange={setProdutoSelecionado}
-                  >
-                    <SelectTrigger id="produto" className="h-11">
-                      <SelectValue placeholder="Selecione o produto" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="produto1">Medicamento A</SelectItem>
-                      <SelectItem value="produto2">Medicamento B</SelectItem>
-                      <SelectItem value="produto3">Medicamento C</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between h-11"
+                      >
+                        {selectedProduto ? selectedProduto.nome : "Buscar produto por nome, lote ou EAN"}
+                        <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[400px] p-0">
+                      <Command>
+                        <CommandInput 
+                          placeholder="Digite para buscar por nome, lote ou EAN..." 
+                          className="h-9"
+                          value={produtoSearchTerm}
+                          onValueChange={setProdutoSearchTerm}
+                        />
+                        <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
+                        <CommandGroup>
+                          {filteredProdutos.map((produto) => (
+                            <CommandItem
+                              key={produto.id}
+                              value={produto.nome}
+                              onSelect={() => {
+                                setSelectedProduto(produto)
+                                setProdutoSearchTerm("")
+                                setLote(produto.lote) // Preenche automaticamente o lote quando seleciona o produto
+                              }}
+                              className="py-2"
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedProduto?.id === produto.id ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              <div className="flex flex-col">
+                                <span className="font-medium">{produto.nome}</span>
+                                <span className="text-sm text-gray-500">
+                                  EAN: {produto.ean} | Lote: {produto.lote}
+                                </span>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+
+                  {selectedProduto && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <span className="text-sm text-gray-500">Nome do Produto</span>
+                          <p className="font-medium">{selectedProduto.nome}</p>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-500">Categoria</span>
+                          <p className="font-medium">{selectedProduto.categoria}</p>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-500">EAN</span>
+                          <p className="font-medium">{selectedProduto.ean}</p>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-500">Lote</span>
+                          <p className="font-medium">{selectedProduto.lote}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {motivoSelecionado === "queixa" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="lote">
+                        Lote <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="lote"
+                        value={lote}
+                        onChange={(e) => setLote(e.target.value)}
+                        placeholder="Informe o lote do produto"
+                        className="h-11"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

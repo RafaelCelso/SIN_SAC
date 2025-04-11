@@ -9,13 +9,16 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin } from "lucide-react"
+import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/use-toast"
 import { useEventos } from "@/contexts/EventosContext"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 interface IniciarAtendimentoModalProps {
   open: boolean
@@ -42,6 +45,45 @@ const CLIENTES_MOCK = [
   },
 ]
 
+// Dados simulados de produtos
+const PRODUTOS_MOCK = [
+  {
+    id: "1",
+    nome: "Medicamento A",
+    ean: "7891234567890",
+    lote: "L2024001",
+    categoria: "Medicamento"
+  },
+  {
+    id: "2",
+    nome: "Medicamento B",
+    ean: "7891234567891",
+    lote: "L2024002",
+    categoria: "Medicamento"
+  },
+  {
+    id: "3",
+    nome: "Dispositivo Médico X",
+    ean: "7891234567892",
+    lote: "L2024003",
+    categoria: "Dispositivo Médico"
+  },
+  {
+    id: "4",
+    nome: "Dispositivo Médico Y",
+    ean: "7891234567893",
+    lote: "L2024004",
+    categoria: "Dispositivo Médico"
+  },
+  {
+    id: "5",
+    nome: "Medicamento C",
+    ean: "7891234567894",
+    lote: "L2024005",
+    categoria: "Medicamento"
+  }
+]
+
 export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimentoModalProps) {
   const router = useRouter()
   const { adicionarEvento } = useEventos()
@@ -56,6 +98,8 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
   const [subCategoriaSelecionada, setSubCategoriaSelecionada] = useState<string>("")
   const [detalheSelecionado, setDetalheSelecionado] = useState<string>("")
   const [currentStep, setCurrentStep] = useState<"info" | "contato">("info")
+  const [produtoSearchTerm, setProdutoSearchTerm] = useState("")
+  const [selectedProduto, setSelectedProduto] = useState<(typeof PRODUTOS_MOCK)[0] | null>(null)
   const [formData, setFormData] = useState({
     tipoContato: "telefone",
     motivo: "",
@@ -100,6 +144,16 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       clienteId: "2",
     },
   ]
+
+  // Função para filtrar produtos
+  const filteredProdutos = PRODUTOS_MOCK.filter((produto) => {
+    const searchTerm = produtoSearchTerm.toLowerCase()
+    return (
+      produto.nome.toLowerCase().includes(searchTerm) ||
+      produto.lote.toLowerCase().includes(searchTerm) ||
+      produto.ean.includes(searchTerm)
+    )
+  })
 
   const handleSearch = () => {
     if (!searchTerm.trim()) {
@@ -327,13 +381,13 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
 
         <div className="p-6">
           {currentStep === "info" ? (
-        <div className="space-y-8">
-          {/* Seção 1: Motivo do Atendimento */}
+            <div className="space-y-8">
+              {/* Seção 1: Motivo do Atendimento */}
               <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
                 <div className="flex items-center gap-2 mb-3">
                   <Clipboard className="h-5 w-5 text-teal-600" />
-              <h3 className="font-medium text-lg text-gray-800">Motivo do Atendimento</h3>
-            </div>
+                  <h3 className="font-medium text-lg text-gray-800">Motivo do Atendimento</h3>
+                </div>
 
                 <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
                   <Select onValueChange={(value) => {
@@ -342,264 +396,347 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                     setDetalheSelecionado("")
                   }} value={motivoSelecionado}>
                     <SelectTrigger className="h-11">
-                  <SelectValue placeholder="Selecione o motivo principal" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="queixa">Queixa Técnica</SelectItem>
-                  <SelectItem value="evento">Evento Adverso</SelectItem>
-                  <SelectItem value="informacao">Informação Médica</SelectItem>
-                  <SelectItem value="farmacovigilancia">Farmacovigilância</SelectItem>
-                  <SelectItem value="outro">Outro</SelectItem>
-                </SelectContent>
-              </Select>
+                      <SelectValue placeholder="Selecione o motivo principal" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="queixa">Queixa Técnica</SelectItem>
+                      <SelectItem value="evento">Evento Adverso</SelectItem>
+                      <SelectItem value="informacao">Informação Médica</SelectItem>
+                      <SelectItem value="farmacovigilancia">Farmacovigilância</SelectItem>
+                      <SelectItem value="outro">Outro</SelectItem>
+                    </SelectContent>
+                  </Select>
 
                   {motivoSelecionado && (
                     <Select value={subCategoriaSelecionada} onValueChange={setSubCategoriaSelecionada}>
                       <SelectTrigger className="h-11">
-                  <SelectValue placeholder="Selecione a subcategoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="subcategoria1">Subcategoria 1</SelectItem>
-                  <SelectItem value="subcategoria2">Subcategoria 2</SelectItem>
-                  <SelectItem value="subcategoria3">Subcategoria 3</SelectItem>
-                </SelectContent>
-              </Select>
+                        <SelectValue placeholder="Selecione a subcategoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="subcategoria1">Subcategoria 1</SelectItem>
+                        <SelectItem value="subcategoria2">Subcategoria 2</SelectItem>
+                        <SelectItem value="subcategoria3">Subcategoria 3</SelectItem>
+                      </SelectContent>
+                    </Select>
                   )}
 
                   {subCategoriaSelecionada && (
                     <Select value={detalheSelecionado} onValueChange={setDetalheSelecionado}>
                       <SelectTrigger className="h-11">
-                  <SelectValue placeholder="Selecione o detalhe" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="detalhe1">Detalhe 1</SelectItem>
-                  <SelectItem value="detalhe2">Detalhe 2</SelectItem>
-                  <SelectItem value="detalhe3">Detalhe 3</SelectItem>
-                </SelectContent>
-              </Select>
+                        <SelectValue placeholder="Selecione o detalhe" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="detalhe1">Detalhe 1</SelectItem>
+                        <SelectItem value="detalhe2">Detalhe 2</SelectItem>
+                        <SelectItem value="detalhe3">Detalhe 3</SelectItem>
+                      </SelectContent>
+                    </Select>
                   )}
-            </div>
-          </div>
+                </div>
+              </div>
 
-          {/* Seção 2: Informações do Cliente */}
+              {/* Seção 2: Produto */}
+              <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
+                <div className="flex items-center gap-2 mb-3">
+                  <Package className="h-5 w-5 text-teal-600" />
+                  <h3 className="font-medium text-lg text-gray-800">Produto</h3>
+                </div>
+
+                <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between h-11"
+                      >
+                        {selectedProduto ? selectedProduto.nome : "Buscar produto por nome, lote ou EAN"}
+                        <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[400px] p-0">
+                      <Command>
+                        <CommandInput 
+                          placeholder="Digite para buscar por nome, lote ou EAN..." 
+                          className="h-9"
+                          value={produtoSearchTerm}
+                          onValueChange={setProdutoSearchTerm}
+                        />
+                        <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
+                        <CommandGroup>
+                          {filteredProdutos.map((produto) => (
+                            <CommandItem
+                              key={produto.id}
+                              value={produto.nome}
+                              onSelect={() => {
+                                setSelectedProduto(produto)
+                                setProdutoSearchTerm("")
+                              }}
+                              className="py-2"
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedProduto?.id === produto.id ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              <div className="flex flex-col">
+                                <span className="font-medium">{produto.nome}</span>
+                                <span className="text-sm text-gray-500">
+                                  EAN: {produto.ean} | Lote: {produto.lote}
+                                </span>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+
+                  {selectedProduto && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <span className="text-sm text-gray-500">Nome do Produto</span>
+                          <p className="font-medium">{selectedProduto.nome}</p>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-500">Categoria</span>
+                          <p className="font-medium">{selectedProduto.categoria}</p>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-500">EAN</span>
+                          <p className="font-medium">{selectedProduto.ean}</p>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-500">Lote</span>
+                          <p className="font-medium">{selectedProduto.lote}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Seção 3: Informações do Cliente */}
               <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
                 <div className="flex items-center gap-2 mb-3">
                   <User className="h-5 w-5 text-teal-600" />
-              <h3 className="font-medium text-lg text-gray-800">Informações do Cliente</h3>
-            </div>
+                  <h3 className="font-medium text-lg text-gray-800">Informações do Cliente</h3>
+                </div>
 
                 <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-              <RadioGroup
-                defaultValue="cadastrado"
-                className="flex flex-wrap gap-4 mb-4"
-                onValueChange={(value) => {
-                  setTipoCliente(value as "cadastrado" | "novo" | "sem-registro")
-                  setShowClienteForm(value === "novo")
-                  setSelectedCliente(null)
-                  setShowResults(false)
-                }}
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="cadastrado" id="cliente-cadastrado" />
-                  <Label htmlFor="cliente-cadastrado" className="font-medium">
-                    Cliente Cadastrado
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="novo" id="novo-cliente" />
-                  <Label htmlFor="novo-cliente" className="font-medium">
-                    Novo Cliente
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="sem-registro" id="sem-registro" />
-                  <Label htmlFor="sem-registro" className="font-medium">
-                    Sem Registro
-                  </Label>
-                </div>
-              </RadioGroup>
-
-              {tipoCliente === "cadastrado" ? (
-                <div className="space-y-4">
-                  <div className="flex flex-col md:flex-row gap-2">
-                    <div className="flex-1 relative">
-                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        type="search"
-                        placeholder="Buscar por nome, CPF, telefone ou email"
-                            className="pl-8 h-11"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                      />
+                  <RadioGroup
+                    defaultValue="cadastrado"
+                    className="flex flex-wrap gap-4 mb-4"
+                    onValueChange={(value) => {
+                      setTipoCliente(value as "cadastrado" | "novo" | "sem-registro")
+                      setShowClienteForm(value === "novo")
+                      setSelectedCliente(null)
+                      setShowResults(false)
+                    }}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="cadastrado" id="cliente-cadastrado" />
+                      <Label htmlFor="cliente-cadastrado" className="font-medium">
+                        Cliente Cadastrado
+                      </Label>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="novo" id="novo-cliente" />
+                      <Label htmlFor="novo-cliente" className="font-medium">
+                        Novo Cliente
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="sem-registro" id="sem-registro" />
+                      <Label htmlFor="sem-registro" className="font-medium">
+                        Sem Registro
+                      </Label>
+                    </div>
+                  </RadioGroup>
+
+                  {tipoCliente === "cadastrado" ? (
+                    <div className="space-y-4">
+                      <div className="flex flex-col md:flex-row gap-2">
+                        <div className="flex-1 relative">
+                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="search"
+                            placeholder="Buscar por nome, CPF, telefone ou email"
+                            className="pl-8 h-11"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                          />
+                        </div>
                         <Button onClick={handleSearch} className="bg-teal-600 hover:bg-teal-700 h-11">
-                      <Search className="mr-2 h-4 w-4" />
-                      Buscar
-                    </Button>
-                  </div>
+                          <Search className="mr-2 h-4 w-4" />
+                          Buscar
+                        </Button>
+                      </div>
 
-                  {showResults && (
+                      {showResults && (
                         <Card className="border-teal-100 shadow-sm">
-                      <CardContent className="p-0">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Nome</TableHead>
-                              <TableHead>CPF</TableHead>
-                              <TableHead>Telefone</TableHead>
-                              <TableHead>Email</TableHead>
-                              <TableHead className="text-right">Ação</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {searchResults.length > 0 ? (
-                              searchResults.map((cliente) => (
-                                    <TableRow key={cliente.id} className="hover:bg-gray-50 transition-colors">
-                                  <TableCell className="font-medium">{cliente.nome}</TableCell>
-                                  <TableCell>{cliente.documento}</TableCell>
-                                  <TableCell>{cliente.telefone}</TableCell>
-                                  <TableCell>{cliente.email}</TableCell>
-                                  <TableCell className="text-right">
-                                    <Button
-                                      size="sm"
-                                      onClick={() => handleClienteSelect(cliente)}
-                                      className="bg-teal-600 hover:bg-teal-700"
-                                    >
-                                      Selecionar
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              ))
-                            ) : (
-                              <TableRow>
-                                <TableCell colSpan={5} className="text-center py-4">
-                                  Nenhum cliente encontrado. Verifique os critérios de busca ou cadastre um novo
-                                  cliente.
-                                </TableCell>
-                              </TableRow>
-                            )}
-                          </TableBody>
-                        </Table>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {selectedCliente && (
-                    <>
-                          <Card className="border-teal-100 bg-gray-50 shadow-sm">
-                            <CardContent className="p-5">
-                          <div className="flex items-start gap-4">
-                            <div className="h-12 w-12 rounded-full bg-teal-100 flex items-center justify-center">
-                              <User className="h-6 w-6 text-teal-600" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <h3 className="text-lg font-medium">{selectedCliente.nome}</h3>
-                              </div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 mt-2 text-sm">
-                                <div className="flex items-center gap-1 text-gray-600">
-                                  <span>{selectedCliente.email}</span>
-                                </div>
-                                <div className="flex items-center gap-1 text-gray-600">
-                                  <span>{selectedCliente.telefone}</span>
-                                </div>
-                                <div className="flex items-center gap-1 text-gray-600">
-                                  <span>{selectedCliente.documento}</span>
-                                </div>
-                                <div className="flex items-center gap-1 text-gray-600">
-                                  <span>{selectedCliente.endereco}</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      {/* Protocolos Abertos do Cliente */}
-                      {clienteProtocolos.length > 0 && (
-                            <Card className="border-amber-100 shadow-sm">
-                          <CardHeader className="pb-2">
-                            <div className="flex items-center justify-between">
-                              <CardTitle className="text-base font-medium text-amber-800">Protocolos Abertos</CardTitle>
-                              <Badge variant="outline" className="bg-amber-50 text-amber-700">
-                                {clienteProtocolos.length} protocolo(s)
-                              </Badge>
-                            </div>
-                          </CardHeader>
                           <CardContent className="p-0">
                             <Table>
                               <TableHeader>
                                 <TableRow>
-                                  <TableHead>Protocolo</TableHead>
-                                  <TableHead>Data</TableHead>
-                                  <TableHead>Motivo</TableHead>
-                                  <TableHead>Produto</TableHead>
-                                  <TableHead>Status</TableHead>
+                                  <TableHead>Nome</TableHead>
+                                  <TableHead>CPF</TableHead>
+                                  <TableHead>Telefone</TableHead>
+                                  <TableHead>Email</TableHead>
                                   <TableHead className="text-right">Ação</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {clienteProtocolos.map((protocolo) => (
-                                      <TableRow key={protocolo.id} className="hover:bg-gray-50 transition-colors">
-                                    <TableCell className="font-medium">{protocolo.id}</TableCell>
-                                    <TableCell>{protocolo.data}</TableCell>
-                                    <TableCell>{protocolo.tipo}</TableCell>
-                                    <TableCell>{protocolo.produto}</TableCell>
-                                    <TableCell>
-                                      <Badge
-                                        variant={
-                                          protocolo.status === "Em análise"
-                                            ? "default"
-                                            : protocolo.status === "Pendente"
-                                              ? "secondary"
-                                              : "outline"
-                                        }
-                                      >
-                                        {protocolo.status}
-                                      </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 flex items-center gap-1"
-                                      >
-                                        <FileText className="h-4 w-4" />
-                                        Ver detalhes
-                                      </Button>
+                                {searchResults.length > 0 ? (
+                                  searchResults.map((cliente) => (
+                                    <TableRow key={cliente.id} className="hover:bg-gray-50 transition-colors">
+                                      <TableCell className="font-medium">{cliente.nome}</TableCell>
+                                      <TableCell>{cliente.documento}</TableCell>
+                                      <TableCell>{cliente.telefone}</TableCell>
+                                      <TableCell>{cliente.email}</TableCell>
+                                      <TableCell className="text-right">
+                                        <Button
+                                          size="sm"
+                                          onClick={() => handleClienteSelect(cliente)}
+                                          className="bg-teal-600 hover:bg-teal-700"
+                                        >
+                                          Selecionar
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))
+                                ) : (
+                                  <TableRow>
+                                    <TableCell colSpan={5} className="text-center py-4">
+                                      Nenhum cliente encontrado. Verifique os critérios de busca ou cadastre um novo
+                                      cliente.
                                     </TableCell>
                                   </TableRow>
-                                ))}
+                                )}
                               </TableBody>
                             </Table>
                           </CardContent>
                         </Card>
                       )}
-                    </>
-                  )}
-                </div>
-              ) : tipoCliente === "novo" ? (
+
+                      {selectedCliente && (
+                        <>
+                          <Card className="border-teal-100 bg-gray-50 shadow-sm">
+                            <CardContent className="p-5">
+                              <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-full bg-teal-100 flex items-center justify-center">
+                                  <User className="h-6 w-6 text-teal-600" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <h3 className="text-lg font-medium">{selectedCliente.nome}</h3>
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 mt-2 text-sm">
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                      <span>{selectedCliente.email}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                      <span>{selectedCliente.telefone}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                      <span>{selectedCliente.documento}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                      <span>{selectedCliente.endereco}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          {/* Protocolos Abertos do Cliente */}
+                          {clienteProtocolos.length > 0 && (
+                            <Card className="border-amber-100 shadow-sm">
+                              <CardHeader className="pb-2">
+                                <div className="flex items-center justify-between">
+                                  <CardTitle className="text-base font-medium text-amber-800">Protocolos Abertos</CardTitle>
+                                  <Badge variant="outline" className="bg-amber-50 text-amber-700">
+                                    {clienteProtocolos.length} protocolo(s)
+                                  </Badge>
+                                </div>
+                              </CardHeader>
+                              <CardContent className="p-0">
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead>Protocolo</TableHead>
+                                      <TableHead>Data</TableHead>
+                                      <TableHead>Motivo</TableHead>
+                                      <TableHead>Produto</TableHead>
+                                      <TableHead>Status</TableHead>
+                                      <TableHead className="text-right">Ação</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {clienteProtocolos.map((protocolo) => (
+                                      <TableRow key={protocolo.id} className="hover:bg-gray-50 transition-colors">
+                                        <TableCell className="font-medium">{protocolo.id}</TableCell>
+                                        <TableCell>{protocolo.data}</TableCell>
+                                        <TableCell>{protocolo.tipo}</TableCell>
+                                        <TableCell>{protocolo.produto}</TableCell>
+                                        <TableCell>
+                                          <Badge
+                                            variant={
+                                              protocolo.status === "Em análise"
+                                                ? "default"
+                                                : protocolo.status === "Pendente"
+                                                  ? "secondary"
+                                                  : "outline"
+                                            }
+                                          >
+                                            {protocolo.status}
+                                          </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 flex items-center gap-1"
+                                          >
+                                            <FileText className="h-4 w-4" />
+                                            Ver detalhes
+                                          </Button>
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  ) : tipoCliente === "novo" ? (
                     <Card className="border-dashed border-2 border-teal-200 shadow-sm">
-                  <CardHeader className="pb-2">
-                    <h3 className="text-lg flex items-center font-medium">
-                      <UserPlus className="mr-2 h-5 w-5 text-teal-500" />
-                      Cadastro de Novo Cliente
-                    </h3>
-                    <p className="text-sm text-muted-foreground">Preencha os dados do novo cliente</p>
-                  </CardHeader>
-                  <CardContent>
+                      <CardHeader className="pb-2">
+                        <h3 className="text-lg flex items-center font-medium">
+                          <UserPlus className="mr-2 h-5 w-5 text-teal-500" />
+                          Cadastro de Novo Cliente
+                        </h3>
+                        <p className="text-sm text-muted-foreground">Preencha os dados do novo cliente</p>
+                      </CardHeader>
+                      <CardContent>
                         {/* Informações Básicas */}
                         <div>
                           <h3 className="text-lg font-medium flex items-center mb-4">
                             <User className="mr-2 h-5 w-5 text-primary" />
                             Informações Básicas
                           </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="nome">
-                          Nome Completo <span className="text-red-500">*</span>
-                        </Label>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="nome">
+                                Nome Completo <span className="text-red-500">*</span>
+                              </Label>
                               <Input id="nome" placeholder="Nome completo do cliente" required className="h-11" />
                             </div>
 
@@ -659,10 +796,10 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                                 required
                                 className="h-11"
                               />
-                      </div>
+                            </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
+                            <div className="space-y-2">
+                              <Label htmlFor="email">Email</Label>
                               <Input
                                 id="email"
                                 type="email"
@@ -693,9 +830,9 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                               <div className="space-y-2">
                                 <Label htmlFor="cidade">Cidade</Label>
                                 <Input id="cidade" placeholder="Cidade" className="h-11" />
-                      </div>
+                              </div>
 
-                      <div className="space-y-2">
+                              <div className="space-y-2">
                                 <Label htmlFor="estado">Estado</Label>
                                 <Select>
                                   <SelectTrigger id="estado" className="h-11">
@@ -731,9 +868,9 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                                     <SelectItem value="TO">Tocantins</SelectItem>
                                   </SelectContent>
                                 </Select>
-                      </div>
+                              </div>
 
-                      <div className="space-y-2">
+                              <div className="space-y-2">
                                 <Label htmlFor="cep">CEP</Label>
                                 <Input
                                   id="cep"
@@ -742,151 +879,140 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                                 />
                               </div>
                             </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="space-y-4 p-5 border rounded-lg bg-white shadow-sm">
+                      <div className="space-y-2">
+                        <Label htmlFor="nome-sem-registro" className="font-medium">
+                          Nome <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="nome-sem-registro"
+                          placeholder="Nome do cliente"
+                          value={nomeSemRegistro}
+                          onChange={(e) => setNomeSemRegistro(e.target.value)}
+                          required
+                          className="h-11"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="telefone-sem-registro">Telefone</Label>
+                        <Input
+                          id="telefone-sem-registro"
+                          placeholder="(00) 00000-0000"
+                          value={telefoneSemRegistro}
+                          onChange={(e) => setTelefoneSemRegistro(e.target.value)}
+                          className="h-11"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email-sem-registro">E-mail</Label>
+                        <Input
+                          id="email-sem-registro"
+                          type="email"
+                          placeholder="email@exemplo.com"
+                          value={emailSemRegistro}
+                          onChange={(e) => setEmailSemRegistro(e.target.value)}
+                          className="h-11"
+                        />
                       </div>
                     </div>
-
-                        {/* Observações */}
-                        <div className="mt-6 space-y-2">
-                          <Label htmlFor="observacoes">Observações</Label>
-                          <Textarea
-                            id="observacoes"
-                            placeholder="Informações adicionais sobre o cliente"
-                            rows={4}
-                            className="resize-none"
-                          />
-                        </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                    <div className="space-y-4 p-5 border rounded-lg bg-white shadow-sm">
-                  <div className="space-y-2">
-                    <Label htmlFor="nome-sem-registro" className="font-medium">
-                      Nome <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="nome-sem-registro"
-                      placeholder="Nome do cliente"
-                      value={nomeSemRegistro}
-                      onChange={(e) => setNomeSemRegistro(e.target.value)}
-                      required
-                          className="h-11"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="telefone-sem-registro">Telefone</Label>
-                    <Input
-                      id="telefone-sem-registro"
-                      placeholder="(00) 00000-0000"
-                      value={telefoneSemRegistro}
-                      onChange={(e) => setTelefoneSemRegistro(e.target.value)}
-                          className="h-11"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email-sem-registro">E-mail</Label>
-                    <Input
-                      id="email-sem-registro"
-                      type="email"
-                      placeholder="email@exemplo.com"
-                      value={emailSemRegistro}
-                      onChange={(e) => setEmailSemRegistro(e.target.value)}
-                          className="h-11"
-                    />
-                  </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
 
-          {/* Seção 3: Informações do Contato - Mostrar apenas para "Sem Registro" */}
-          {tipoCliente === "sem-registro" && (
+              {/* Seção 3: Informações do Contato - Mostrar apenas para "Sem Registro" */}
+              {tipoCliente === "sem-registro" && (
                 <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
                   <div className="flex items-center gap-2 mb-3">
                     <Phone className="h-5 w-5 text-teal-600" />
-                <h3 className="font-medium text-lg text-gray-800">Informações do Contato</h3>
-              </div>
+                    <h3 className="font-medium text-lg text-gray-800">Informações do Contato</h3>
+                  </div>
 
                   <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label className="font-medium">Tipo de Contato</Label>
-                    <RadioGroup
-                      defaultValue="ativo"
-                      className="flex gap-4"
-                      onValueChange={(value) => setTipoContato(value as "ativo" | "receptivo")}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="ativo" id="ativo" />
-                        <Label htmlFor="ativo">Ativo</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label className="font-medium">Tipo de Contato</Label>
+                        <RadioGroup
+                          defaultValue="ativo"
+                          className="flex gap-4"
+                          onValueChange={(value) => setTipoContato(value as "ativo" | "receptivo")}
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="ativo" id="ativo" />
+                            <Label htmlFor="ativo">Ativo</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="receptivo" id="receptivo" />
+                            <Label htmlFor="receptivo">Receptivo</Label>
+                          </div>
+                        </RadioGroup>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="receptivo" id="receptivo" />
-                        <Label htmlFor="receptivo">Receptivo</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="contato-via" className="font-medium">
-                      Contato via
-                    </Label>
-                    <Select>
+                      <div className="space-y-2">
+                        <Label htmlFor="contato-via" className="font-medium">
+                          Contato via
+                        </Label>
+                        <Select>
                           <SelectTrigger id="contato-via" className="h-11">
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="telefone">Telefone</SelectItem>
-                        <SelectItem value="email">Email</SelectItem>
-                        <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                        <SelectItem value="presencial">Presencial</SelectItem>
-                        <SelectItem value="outro">Outro</SelectItem>
-                      </SelectContent>
-                    </Select>
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="telefone">Telefone</SelectItem>
+                            <SelectItem value="email">Email</SelectItem>
+                            <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                            <SelectItem value="presencial">Presencial</SelectItem>
+                            <SelectItem value="outro">Outro</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
+              )}
 
-          {/* Seção 4: Detalhes Adicionais - Mostrar apenas para "Sem Registro" */}
-          {tipoCliente === "sem-registro" && (
+              {/* Seção 4: Detalhes Adicionais - Mostrar apenas para "Sem Registro" */}
+              {tipoCliente === "sem-registro" && (
                 <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
                   <div className="flex items-center gap-2 mb-3">
                     <Info className="h-5 w-5 text-teal-600" />
-                <h3 className="font-medium text-lg text-gray-800">Detalhes Adicionais</h3>
-              </div>
+                    <h3 className="font-medium text-lg text-gray-800">Detalhes Adicionais</h3>
+                  </div>
 
                   <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm space-y-4">
-                {/* Produtos do Atendimento */}
-                <div className="space-y-2">
-                  <Label htmlFor="produtos" className="font-medium">
-                    Produtos do Atendimento
-                  </Label>
-                  <Select>
+                    {/* Produtos do Atendimento */}
+                    <div className="space-y-2">
+                      <Label htmlFor="produtos" className="font-medium">
+                        Produtos do Atendimento
+                      </Label>
+                      <Select>
                         <SelectTrigger id="produtos" className="h-11 bg-gray-50">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="produto1">Medicamento A</SelectItem>
-                      <SelectItem value="produto2">Medicamento B</SelectItem>
-                      <SelectItem value="produto3">Medicamento C</SelectItem>
-                      <SelectItem value="produto4">Dispositivo Médico X</SelectItem>
-                      <SelectItem value="produto5">Dispositivo Médico Y</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="produto1">Medicamento A</SelectItem>
+                          <SelectItem value="produto2">Medicamento B</SelectItem>
+                          <SelectItem value="produto3">Medicamento C</SelectItem>
+                          <SelectItem value="produto4">Dispositivo Médico X</SelectItem>
+                          <SelectItem value="produto5">Dispositivo Médico Y</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <Separator />
+                    <Separator />
 
-                {/* Observações */}
-                <div className="space-y-2">
-                  <Label htmlFor="observacoes" className="font-medium">
-                    Observações
-                  </Label>
-                  <Textarea
-                    id="observacoes"
-                    placeholder="Adicione informações relevantes sobre o atendimento"
-                    rows={4}
+                    {/* Observações */}
+                    <div className="space-y-2">
+                      <Label htmlFor="observacoes" className="font-medium">
+                        Observações
+                      </Label>
+                      <Textarea
+                        id="observacoes"
+                        placeholder="Adicione informações relevantes sobre o atendimento"
+                        rows={4}
                         className="resize-none"
                       />
                     </div>
@@ -1005,10 +1131,9 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
           )}
         </div>
 
-        <DialogFooter className="flex justify-end gap-2 p-6 border-t bg-gray-50 rounded-b-lg">
+        <DialogFooter className="p-6 bg-gray-50 border-t">
           <Button
             variant="outline"
-            className="bg-red-100 hover:bg-red-200 text-red-600 border-red-200 h-11"
             onClick={() => {
               if (currentStep === "contato") {
                 setCurrentStep("info")
@@ -1019,12 +1144,15 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
           >
             {currentStep === "contato" ? "Voltar" : "Cancelar"}
           </Button>
-          <Button 
-            className="bg-teal-600 hover:bg-teal-700 h-11" 
-            onClick={currentStep === "info" ? handleNextStep : handleCriarProtocolo}
-          >
-            {currentStep === "info" ? "Próximo" : "Criar Protocolo"}
-          </Button>
+          {currentStep === "info" ? (
+            <Button onClick={handleNextStep} className="bg-teal-600 hover:bg-teal-700">
+              Próximo
+            </Button>
+          ) : (
+            <Button onClick={handleCriarProtocolo} className="bg-teal-600 hover:bg-teal-700">
+              Criar Protocolo
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
