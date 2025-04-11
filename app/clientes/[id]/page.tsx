@@ -516,6 +516,12 @@ export default function ClientePage() {
 
                                 <TabsContent value="contatos" className="mt-4">
                                   <div className="space-y-4">
+                                    <div className="flex items-center justify-between mb-4">
+                                      <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Novo Contato
+                                      </Button>
+                                    </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <div className="border-b bg-gray-50 p-4 rounded-t-lg">
                                         <div className="flex items-center">
@@ -557,6 +563,12 @@ export default function ClientePage() {
 
                                 <TabsContent value="queixas" className="mt-4">
                                   <div className="space-y-4">
+                                    <div className="flex items-center justify-between mb-4">
+                                      <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Nova Queixa Técnica
+                                      </Button>
+                                    </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <div className="border-b bg-gray-50 p-4 rounded-t-lg">
                                         <div className="flex items-center">
@@ -589,6 +601,12 @@ export default function ClientePage() {
 
                                 <TabsContent value="informacoes" className="mt-4">
                                   <div className="space-y-4">
+                                    <div className="flex items-center justify-between mb-4">
+                                      <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Nova Informação Médica
+                                      </Button>
+                                    </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <div className="border-b bg-gray-50 p-4 rounded-t-lg">
                                         <div className="flex items-center">
@@ -630,6 +648,12 @@ export default function ClientePage() {
 
                                 <TabsContent value="farmacovigilancia" className="mt-4">
                                   <div className="space-y-4">
+                                    <div className="flex items-center justify-between mb-4">
+                                      <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Nova Farmacovigilância
+                                      </Button>
+                                    </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <div className="border-b bg-gray-50 p-4 rounded-t-lg">
                                         <div className="flex items-center">
