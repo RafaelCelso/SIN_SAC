@@ -109,8 +109,7 @@ export function NovoRegistroModal({ open, onOpenChange, tipo, cliente, clienteId
     const produtos = PRODUTOS_MOCK.filter(
       produto =>
         produto.nome.toLowerCase().includes(termoBusca) ||
-        produto.ean.includes(termoBusca) ||
-        produto.lote.toLowerCase().includes(termoBusca)
+        produto.ean.includes(termoBusca)
     )
     setProdutosFiltrados(produtos)
   }, [produtoSearch])
@@ -476,12 +475,13 @@ export function NovoRegistroModal({ open, onOpenChange, tipo, cliente, clienteId
                   </div>
 
                   <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-                    <div className="space-y-2">
+                    <div className="space-y-4">
+                      {/* Campo de busca por produto */}
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <Input
                           type="text"
-                          placeholder="Buscar produto por nome, lote ou EAN"
+                          placeholder="Buscar produto por nome ou EAN"
                           className="h-11 pl-10"
                           value={produtoSearch}
                           onChange={(e) => setProdutoSearch(e.target.value)}
@@ -501,7 +501,7 @@ export function NovoRegistroModal({ open, onOpenChange, tipo, cliente, clienteId
                                 >
                                   <div className="font-medium text-gray-900">{produto.nome}</div>
                                   <div className="text-sm text-gray-500">
-                                    EAN: {produto.ean} | Lote: {produto.lote}
+                                    EAN: {produto.ean}
                                   </div>
                                 </button>
                               ))
@@ -513,12 +513,26 @@ export function NovoRegistroModal({ open, onOpenChange, tipo, cliente, clienteId
                           </div>
                         )}
                       </div>
+
+                      {/* Campo de busca por lote */}
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          type="text"
+                          placeholder="Buscar por lote"
+                          className="h-11 pl-10"
+                          value={formData.lote}
+                          onChange={(e) => handleInputChange(e)}
+                          name="lote"
+                        />
+                      </div>
+
+                      {/* Produto selecionado */}
                       {formData.produto && (
                         <div className="mt-2 p-3 bg-gray-50 rounded-lg border">
                           <div className="font-medium text-gray-900">{formData.produto}</div>
                           <div className="text-sm text-gray-500">
-                            EAN: {PRODUTOS_MOCK.find(p => p.nome === formData.produto)?.ean} | 
-                            Lote: {PRODUTOS_MOCK.find(p => p.nome === formData.produto)?.lote}
+                            EAN: {PRODUTOS_MOCK.find(p => p.nome === formData.produto)?.ean}
                           </div>
                         </div>
                       )}

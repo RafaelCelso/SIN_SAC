@@ -100,6 +100,9 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
   const [currentStep, setCurrentStep] = useState<"info" | "contato">("info")
   const [produtoSearchTerm, setProdutoSearchTerm] = useState("")
   const [selectedProduto, setSelectedProduto] = useState<(typeof PRODUTOS_MOCK)[0] | null>(null)
+  const [showProdutosList, setShowProdutosList] = useState(false)
+  const [loteSearchTerm, setLoteSearchTerm] = useState("")
+  const [showLotesList, setShowLotesList] = useState(false)
   const [formData, setFormData] = useState({
     tipoContato: "telefone",
     motivo: "",
@@ -110,6 +113,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     autorizaRetorno: "sim",
     dataRetorno: "",
     horaRetorno: "",
+    lote: "",
   })
 
   // Campos para cliente sem registro
@@ -145,6 +149,13 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     },
   ]
 
+  // Função para selecionar um produto
+  const handleProdutoSelect = (produto: (typeof PRODUTOS_MOCK)[0]) => {
+    setSelectedProduto(produto)
+    setShowProdutosList(false)
+    setProdutoSearchTerm(produto.nome)
+  }
+
   // Função para filtrar produtos
   const filteredProdutos = PRODUTOS_MOCK.filter((produto) => {
     const searchTerm = produtoSearchTerm.toLowerCase()
@@ -154,6 +165,17 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       produto.ean.includes(searchTerm)
     )
   })
+
+  const handleProdutoSearchFocus = () => {
+    setShowProdutosList(true)
+  }
+
+  const handleProdutoSearchBlur = () => {
+    // Pequeno delay para permitir que o clique no item seja processado
+    setTimeout(() => {
+      setShowProdutosList(false)
+    }, 200)
+  }
 
   const handleSearch = () => {
     if (!searchTerm.trim()) {
@@ -194,6 +216,11 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     setSubCategoriaSelecionada("")
     setDetalheSelecionado("")
     setCurrentStep("info")
+    setProdutoSearchTerm("")
+    setSelectedProduto(null)
+    setShowProdutosList(false)
+    setLoteSearchTerm("")
+    setShowLotesList(false)
     setFormData({
       tipoContato: "telefone",
       motivo: "",
@@ -204,6 +231,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       autorizaRetorno: "sim",
       dataRetorno: "",
       horaRetorno: "",
+      lote: "",
     })
   }
 
@@ -366,6 +394,85 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     ? protocolosAbertos.filter((protocolo) => protocolo.clienteId === selectedCliente.id)
     : []
 
+  // Função para filtrar produtos por lote
+  const filteredProdutosByLote = PRODUTOS_MOCK.filter((produto) => {
+    const searchTerm = loteSearchTerm.toLowerCase()
+    return produto.lote.toLowerCase().includes(searchTerm)
+  })
+
+  const handleLoteSelect = (produto: (typeof PRODUTOS_MOCK)[0]) => {
+    setSelectedProduto(produto)
+    setLoteSearchTerm(produto.lote)
+    setShowLotesList(false)
+    setFormData(prev => ({ ...prev, lote: produto.lote }))
+  }
+
+  const handleLoteSearchFocus = () => {
+    setShowLotesList(true)
+  }
+
+  const handleLoteSearchBlur = () => {
+    setTimeout(() => {
+      setShowLotesList(false)
+    }, 200)
+  }
+
+  const validarDados = () => {
+    const errors: string[] = []
+
+    // Validação do cliente
+    if (tipoCliente === "cadastrado" && !selectedCliente) {
+      errors.push("Selecione um cliente cadastrado")
+    }
+
+    if (tipoCliente === "sem-registro") {
+      if (!nomeSemRegistro.trim()) {
+        errors.push("Nome do cliente é obrigatório")
+      }
+      if (!telefoneSemRegistro.trim()) {
+        errors.push("Telefone do cliente é obrigatório")
+      }
+    }
+
+    // Validação do motivo
+    if (!motivoSelecionado) {
+      errors.push("Selecione o motivo do atendimento")
+    }
+
+    // Validação de produto para motivos específicos
+    if (["queixa-tecnica", "evento-adverso", "farmacovigilancia"].includes(motivoSelecionado)) {
+      if (!selectedProduto) {
+        errors.push("Selecione um produto")
+      }
+      if (!formData.lote.trim()) {
+        errors.push("Informe o lote do produto")
+      }
+    }
+
+    // Validação do agendamento de retorno
+    if (formData.autorizaRetorno === "sim") {
+      if (!formData.dataRetorno) {
+        errors.push("Data de retorno é obrigatória")
+      }
+      if (!formData.horaRetorno) {
+        errors.push("Hora de retorno é obrigatória")
+      }
+    }
+
+    if (errors.length > 0) {
+      errors.forEach(error => {
+        toast({
+          variant: "destructive",
+          title: "Erro de validação",
+          description: error
+        })
+      })
+      return false
+    }
+
+    return true
+  }
+
   return (
     <Dialog
       open={open}
@@ -443,79 +550,117 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                 </div>
 
                 <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className="w-full justify-between h-11"
-                      >
-                        {selectedProduto ? selectedProduto.nome : "Buscar produto por nome, lote ou EAN"}
-                        <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-                      <Command>
-                        <CommandInput 
-                          placeholder="Digite para buscar por nome, lote ou EAN..." 
-                          className="h-9"
-                          value={produtoSearchTerm}
-                          onValueChange={setProdutoSearchTerm}
-                        />
-                        <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
-                        <CommandGroup>
-                          {filteredProdutos.map((produto) => (
-                            <CommandItem
-                              key={produto.id}
-                              value={produto.nome}
-                              onSelect={() => {
-                                setSelectedProduto(produto)
-                                setProdutoSearchTerm("")
-                                const button = document.querySelector('[role="combobox"]')
-                                const event = new MouseEvent('click', {
-                                  bubbles: true,
-                                  cancelable: true,
-                                  view: window
-                                })
-                                button?.dispatchEvent(event)
-                              }}
-                              className="py-2"
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  selectedProduto?.id === produto.id ? "opacity-100" : "opacity-0"
-                                )}
-                              />
-                              <div className="flex flex-col">
-                                <span className="font-medium">{produto.nome}</span>
-                                <span className="text-sm text-gray-500">
-                                  EAN: {produto.ean} | Lote: {produto.lote}
-                                </span>
-                              </div>
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  {/* Campo de busca por produto */}
+                  <div className="space-y-2">
+                    <Label htmlFor="busca-produto" className="font-medium">
+                      Buscar Produto
+                    </Label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Input
+                        id="busca-produto"
+                        type="text"
+                        placeholder="Buscar produto por nome ou EAN"
+                        className="h-11 pl-10"
+                        value={produtoSearchTerm}
+                        onChange={(e) => {
+                          setProdutoSearchTerm(e.target.value)
+                          if (e.target.value === "") {
+                            setSelectedProduto(null)
+                          }
+                        }}
+                        onFocus={handleProdutoSearchFocus}
+                        onBlur={handleProdutoSearchBlur}
+                      />
+                      {showProdutosList && (
+                        <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
+                          {filteredProdutos.length > 0 ? (
+                            filteredProdutos.map((produto, index) => (
+                              <button
+                                key={produto.id}
+                                className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
+                                  index !== filteredProdutos.length - 1 ? "border-b" : ""
+                                }`}
+                                onClick={() => handleProdutoSelect(produto)}
+                              >
+                                <div className="font-medium text-gray-900">{produto.nome}</div>
+                                <div className="text-sm text-gray-500">
+                                  EAN: {produto.ean}
+                                </div>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="px-4 py-3 text-sm text-gray-500">
+                              Nenhum produto encontrado
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
+                  {/* Campo de busca por lote */}
+                  <div className="space-y-2">
+                    <Label htmlFor="busca-lote" className="font-medium">
+                      Buscar Lote
+                    </Label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Input
+                        id="busca-lote"
+                        type="text"
+                        placeholder="Buscar por lote"
+                        className="h-11 pl-10"
+                        value={loteSearchTerm}
+                        onChange={(e) => {
+                          setLoteSearchTerm(e.target.value)
+                          setFormData(prev => ({ ...prev, lote: e.target.value }))
+                        }}
+                        onFocus={handleLoteSearchFocus}
+                        onBlur={handleLoteSearchBlur}
+                      />
+                      {showLotesList && (
+                        <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
+                          {filteredProdutosByLote.length > 0 ? (
+                            filteredProdutosByLote.map((produto, index) => (
+                              <button
+                                key={produto.id}
+                                className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
+                                  index !== filteredProdutosByLote.length - 1 ? "border-b" : ""
+                                }`}
+                                onClick={() => handleLoteSelect(produto)}
+                              >
+                                <div className="font-medium text-gray-900">Lote: {produto.lote}</div>
+                                <div className="text-sm text-gray-500">
+                                  {produto.nome}
+                                </div>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="px-4 py-3 text-sm text-gray-500">
+                              Nenhum lote encontrado
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Produto selecionado */}
                   {selectedProduto && (
-                    <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div>
-                          <span className="text-sm text-gray-500">Nome do Produto</span>
-                          <p className="font-medium">{selectedProduto.nome}</p>
-                        </div>
-                        <div>
-                          <span className="text-sm text-gray-500">EAN</span>
-                          <p className="font-medium">{selectedProduto.ean}</p>
-                        </div>
-                        <div>
-                          <span className="text-sm text-gray-500">Lote</span>
-                          <p className="font-medium">{selectedProduto.lote}</p>
+                    <div className="mt-2 p-3 bg-gray-50 rounded-lg border space-y-2">
+                      <div>
+                        <div className="font-medium text-gray-900">{selectedProduto.nome}</div>
+                        <div className="text-sm text-gray-500">
+                          EAN: {selectedProduto.ean}
                         </div>
                       </div>
+                      {formData.lote && (
+                        <div className="p-2 bg-white rounded border border-teal-100">
+                          <div className="text-sm font-medium text-teal-700">Lote Selecionado</div>
+                          <div className="text-base text-gray-900">{formData.lote}</div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
