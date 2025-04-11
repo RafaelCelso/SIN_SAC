@@ -111,6 +111,13 @@ export default function ProdutosPage() {
           </Button>
           <Button 
             className="bg-[#26B99D] hover:bg-[#1E9A82]"
+            onClick={() => router.push("/produtos/lotes/novo")}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Adicionar Lote
+          </Button>
+          <Button 
+            className="bg-[#26B99D] hover:bg-[#1E9A82]"
             onClick={() => router.push("/produtos/novo")}
           >
             <Plus className="mr-2 h-4 w-4" />

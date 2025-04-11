@@ -16,9 +16,6 @@ export default function NovoProdutoPage() {
     nome: "",
     ean: "",
     sku: "",
-    lote: "",
-    dataFabricacao: "",
-    dataValidade: "",
     status: "Ativo",
   });
 
@@ -106,54 +103,19 @@ export default function NovoProdutoPage() {
                     required
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="lote">Número do Lote</Label>
-                  <Input
-                    id="lote"
-                    name="lote"
-                    value={formData.lote}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="dataFabricacao">Data de Fabricação</Label>
-                  <Input
-                    id="dataFabricacao"
-                    name="dataFabricacao"
-                    type="date"
-                    value={formData.dataFabricacao}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="dataValidade">Data de Validade</Label>
-                  <Input
-                    id="dataValidade"
-                    name="dataValidade"
-                    type="date"
-                    value={formData.dataValidade}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
               </div>
 
-              <div className="flex gap-4">
-                <Button type="submit" className="bg-[#26B99D] hover:bg-[#1E9A82]">
-                  Salvar
-                </Button>
+              <div className="flex justify-end gap-4">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => router.push("/produtos")}
+                  onClick={() => router.back()}
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Cancelar
+                  Voltar
+                </Button>
+                <Button type="submit" className="bg-[#26B99D] hover:bg-[#1E9A82]">
+                  Salvar Produto
                 </Button>
               </div>
             </form>

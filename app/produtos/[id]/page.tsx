@@ -8,16 +8,15 @@ import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Edit2, Check, X } from "lucide-react";
+import { Table, TableHeader, TableBody, TableCell, TableRow, TableHead } from "@/components/ui/table";
 
 interface Produto {
   id: string;
   nome: string;
   ean: string;
   sku: string;
-  lote: string;
-  dataFabricacao: string;
-  dataValidade: string;
   status: "Ativo" | "Inativo";
+  lotes: { id: string; numero: string; dataFabricacao: string; dataValidade: string }[];
 }
 
 export default function DetalhesProdutoPage({
@@ -32,10 +31,21 @@ export default function DetalhesProdutoPage({
     nome: "Produto Exemplo",
     ean: "7891234567890",
     sku: "SKU001",
-    lote: "LOT001",
-    dataFabricacao: "2024-01-01",
-    dataValidade: "2025-01-01",
     status: "Ativo",
+    lotes: [
+      {
+        id: "1",
+        numero: "LOT001",
+        dataFabricacao: "2024-01-01",
+        dataValidade: "2025-01-01"
+      },
+      {
+        id: "2",
+        numero: "LOT002",
+        dataFabricacao: "2024-02-01",
+        dataValidade: "2025-02-01"
+      }
+    ]
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,38 +158,27 @@ export default function DetalhesProdutoPage({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="lote">Número do Lote</Label>
-                  <Input
-                    id="lote"
-                    name="lote"
-                    value={produto.lote}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="dataFabricacao">Data de Fabricação</Label>
-                  <Input
-                    id="dataFabricacao"
-                    name="dataFabricacao"
-                    type="date"
-                    value={produto.dataFabricacao}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="dataValidade">Data de Validade</Label>
-                  <Input
-                    id="dataValidade"
-                    name="dataValidade"
-                    type="date"
-                    value={produto.dataValidade}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                  />
+                  <Label htmlFor="status">Status</Label>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant={produto.status === "Ativo" ? "default" : "outline"}
+                      className={produto.status === "Ativo" ? "bg-[#26B99D] hover:bg-[#1E9A82]" : ""}
+                      onClick={() => handleStatusChange()}
+                      disabled={!isEditing}
+                    >
+                      {produto.status === "Ativo" ? (
+                        <>
+                          <Check className="mr-2 h-4 w-4" />
+                          Ativo
+                        </>
+                      ) : (
+                        <>
+                          <X className="mr-2 h-4 w-4" />
+                          Inativo
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -202,6 +201,31 @@ export default function DetalhesProdutoPage({
             </form>
           </CardContent>
         </Card>
+
+        {/* Seção de Lotes */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Lotes do Produto</h2>
+          <div className="border rounded-lg">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Número do Lote</TableHead>
+                  <TableHead>Data de Fabricação</TableHead>
+                  <TableHead>Data de Validade</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {produto.lotes.map((lote) => (
+                  <TableRow key={lote.id}>
+                    <TableCell>{lote.numero}</TableCell>
+                    <TableCell>{new Date(lote.dataFabricacao).toLocaleDateString('pt-BR')}</TableCell>
+                    <TableCell>{new Date(lote.dataValidade).toLocaleDateString('pt-BR')}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

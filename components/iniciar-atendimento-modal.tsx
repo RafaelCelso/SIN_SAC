@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check } from "lucide-react"
+import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -99,9 +99,10 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
   const [detalheSelecionado, setDetalheSelecionado] = useState<string>("")
   const [currentStep, setCurrentStep] = useState<"info" | "contato">("info")
   const [produtoSearchTerm, setProdutoSearchTerm] = useState("")
-  const [selectedProduto, setSelectedProduto] = useState<(typeof PRODUTOS_MOCK)[0] | null>(null)
+  const [selectedProdutos, setSelectedProdutos] = useState<typeof PRODUTOS_MOCK[0]>([])
   const [showProdutosList, setShowProdutosList] = useState(false)
   const [loteSearchTerm, setLoteSearchTerm] = useState("")
+  const [selectedLotes, setSelectedLotes] = useState<string[]>([])
   const [showLotesList, setShowLotesList] = useState(false)
   const [formData, setFormData] = useState({
     tipoContato: "telefone",
@@ -149,11 +150,24 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     },
   ]
 
-  // Função para selecionar um produto
-  const handleProdutoSelect = (produto: (typeof PRODUTOS_MOCK)[0]) => {
-    setSelectedProduto(produto)
-    setShowProdutosList(false)
-    setProdutoSearchTerm(produto.nome)
+  type Produto = {
+    id: string
+    nome: string
+    ean: string
+    lote: string
+    categoria: string
+  }
+
+  const handleProdutoSelect = (produto: Produto) => {
+    const isAlreadySelected = selectedProdutos.some(p => p.id === produto.id)
+    if (!isAlreadySelected) {
+      setSelectedProdutos(prev => [...prev, produto])
+      setProdutoSearchTerm("")
+    }
+  }
+
+  const handleRemoveProduto = (produtoId: string) => {
+    setSelectedProdutos(prev => prev.filter(p => p.id !== produtoId))
   }
 
   // Função para filtrar produtos
@@ -217,10 +231,11 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     setDetalheSelecionado("")
     setCurrentStep("info")
     setProdutoSearchTerm("")
-    setSelectedProduto(null)
+    setSelectedProdutos([])
     setShowProdutosList(false)
     setLoteSearchTerm("")
     setShowLotesList(false)
+    setSelectedLotes([])
     setFormData({
       tipoContato: "telefone",
       motivo: "",
@@ -400,11 +415,27 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     return produto.lote.toLowerCase().includes(searchTerm)
   })
 
-  const handleLoteSelect = (produto: (typeof PRODUTOS_MOCK)[0]) => {
-    setSelectedProduto(produto)
-    setLoteSearchTerm(produto.lote)
-    setShowLotesList(false)
-    setFormData(prev => ({ ...prev, lote: produto.lote }))
+  const handleLoteSelect = (produto: Produto) => {
+    const isAlreadySelected = selectedLotes.includes(produto.lote)
+    if (!isAlreadySelected) {
+      setSelectedLotes(prev => [...prev, produto.lote])
+      setLoteSearchTerm("")
+      setFormData(prev => ({
+        ...prev,
+        lote: [...selectedLotes, produto.lote].join(", ")
+      }))
+    }
+  }
+
+  const handleRemoveLote = (lote: string) => {
+    setSelectedLotes(prev => {
+      const newLotes = prev.filter(l => l !== lote)
+      setFormData(prev => ({
+        ...prev,
+        lote: newLotes.join(", ")
+      }))
+      return newLotes
+    })
   }
 
   const handleLoteSearchFocus = () => {
@@ -441,8 +472,8 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
 
     // Validação de produto para motivos específicos
     if (["queixa-tecnica", "evento-adverso", "farmacovigilancia"].includes(motivoSelecionado)) {
-      if (!selectedProduto) {
-        errors.push("Selecione um produto")
+      if (!selectedProdutos.length) {
+        errors.push("Selecione pelo menos um produto")
       }
       if (!formData.lote.trim()) {
         errors.push("Informe o lote do produto")
@@ -555,45 +586,64 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                     <Label htmlFor="busca-produto" className="font-medium">
                       Buscar Produto
                     </Label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <Input
-                        id="busca-produto"
-                        type="text"
-                        placeholder="Buscar produto por nome ou EAN"
-                        className="h-11 pl-10"
-                        value={produtoSearchTerm}
-                        onChange={(e) => {
-                          setProdutoSearchTerm(e.target.value)
-                          if (e.target.value === "") {
-                            setSelectedProduto(null)
-                          }
-                        }}
-                        onFocus={handleProdutoSearchFocus}
-                        onBlur={handleProdutoSearchBlur}
-                      />
-                      {showProdutosList && (
-                        <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
-                          {filteredProdutos.length > 0 ? (
-                            filteredProdutos.map((produto, index) => (
-                              <button
-                                key={produto.id}
-                                className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
-                                  index !== filteredProdutos.length - 1 ? "border-b" : ""
-                                }`}
-                                onClick={() => handleProdutoSelect(produto)}
+                    <div className="space-y-2">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          id="busca-produto"
+                          type="text"
+                          placeholder="Buscar produto por nome ou EAN"
+                          className="h-11 pl-10"
+                          value={produtoSearchTerm}
+                          onChange={(e) => setProdutoSearchTerm(e.target.value)}
+                          onFocus={handleProdutoSearchFocus}
+                          onBlur={handleProdutoSearchBlur}
+                        />
+                        {showProdutosList && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
+                            {filteredProdutos.length > 0 ? (
+                              filteredProdutos.map((produto, index) => (
+                                <button
+                                  key={produto.id}
+                                  className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
+                                    index !== filteredProdutos.length - 1 ? "border-b" : ""
+                                  }`}
+                                  onClick={() => handleProdutoSelect(produto)}
+                                >
+                                  <div className="font-medium text-gray-900">{produto.nome}</div>
+                                  <div className="text-sm text-gray-500">
+                                    EAN: {produto.ean}
+                                  </div>
+                                </button>
+                              ))
+                            ) : (
+                              <div className="px-4 py-3 text-sm text-gray-500">
+                                Nenhum produto encontrado
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Lista de produtos selecionados */}
+                      {selectedProdutos.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {selectedProdutos.map((produto) => (
+                            <div
+                              key={produto.id}
+                              className="inline-flex items-center gap-1 px-3 py-1 bg-teal-50 text-teal-700 rounded-full border border-teal-200"
+                            >
+                              <span className="text-sm font-medium">{produto.nome}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0 hover:bg-teal-100"
+                                onClick={() => handleRemoveProduto(produto.id)}
                               >
-                                <div className="font-medium text-gray-900">{produto.nome}</div>
-                                <div className="text-sm text-gray-500">
-                                  EAN: {produto.ean}
-                                </div>
-                              </button>
-                            ))
-                          ) : (
-                            <div className="px-4 py-3 text-sm text-gray-500">
-                              Nenhum produto encontrado
+                                <X className="h-3 w-3" />
+                              </Button>
                             </div>
-                          )}
+                          ))}
                         </div>
                       )}
                     </div>
@@ -604,65 +654,66 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                     <Label htmlFor="busca-lote" className="font-medium">
                       Buscar Lote
                     </Label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <Input
-                        id="busca-lote"
-                        type="text"
-                        placeholder="Buscar por lote"
-                        className="h-11 pl-10"
-                        value={loteSearchTerm}
-                        onChange={(e) => {
-                          setLoteSearchTerm(e.target.value)
-                          setFormData(prev => ({ ...prev, lote: e.target.value }))
-                        }}
-                        onFocus={handleLoteSearchFocus}
-                        onBlur={handleLoteSearchBlur}
-                      />
-                      {showLotesList && (
-                        <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
-                          {filteredProdutosByLote.length > 0 ? (
-                            filteredProdutosByLote.map((produto, index) => (
-                              <button
-                                key={produto.id}
-                                className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
-                                  index !== filteredProdutosByLote.length - 1 ? "border-b" : ""
-                                }`}
-                                onClick={() => handleLoteSelect(produto)}
+                    <div className="space-y-2">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          id="busca-lote"
+                          type="text"
+                          placeholder="Buscar por lote"
+                          className="h-11 pl-10"
+                          value={loteSearchTerm}
+                          onChange={(e) => setLoteSearchTerm(e.target.value)}
+                          onFocus={handleLoteSearchFocus}
+                          onBlur={handleLoteSearchBlur}
+                        />
+                        {showLotesList && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
+                            {filteredProdutosByLote.length > 0 ? (
+                              filteredProdutosByLote.map((produto, index) => (
+                                <button
+                                  key={produto.id}
+                                  className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
+                                    index !== filteredProdutosByLote.length - 1 ? "border-b" : ""
+                                  }`}
+                                  onClick={() => handleLoteSelect(produto)}
+                                >
+                                  <div className="font-medium text-gray-900">Lote: {produto.lote}</div>
+                                  <div className="text-sm text-gray-500">{produto.nome}</div>
+                                </button>
+                              ))
+                            ) : (
+                              <div className="px-4 py-3 text-sm text-gray-500">
+                                Nenhum lote encontrado
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Lista de lotes selecionados */}
+                      {selectedLotes.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {selectedLotes.map((lote) => (
+                            <div
+                              key={lote}
+                              className="inline-flex items-center gap-1 px-3 py-1 bg-gray-50 text-gray-700 rounded-full border border-gray-200"
+                            >
+                              <span className="text-sm font-medium">Lote: {lote}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0 hover:bg-gray-100"
+                                onClick={() => handleRemoveLote(lote)}
                               >
-                                <div className="font-medium text-gray-900">Lote: {produto.lote}</div>
-                                <div className="text-sm text-gray-500">
-                                  {produto.nome}
-                                </div>
-                              </button>
-                            ))
-                          ) : (
-                            <div className="px-4 py-3 text-sm text-gray-500">
-                              Nenhum lote encontrado
+                                <X className="h-3 w-3" />
+                              </Button>
                             </div>
-                          )}
+                          ))}
                         </div>
                       )}
                     </div>
                   </div>
-
-                  {/* Produto selecionado */}
-                  {selectedProduto && (
-                    <div className="mt-2 p-3 bg-gray-50 rounded-lg border space-y-2">
-                      <div>
-                        <div className="font-medium text-gray-900">{selectedProduto.nome}</div>
-                        <div className="text-sm text-gray-500">
-                          EAN: {selectedProduto.ean}
-                        </div>
-                      </div>
-                      {formData.lote && (
-                        <div className="p-2 bg-white rounded border border-teal-100">
-                          <div className="text-sm font-medium text-teal-700">Lote Selecionado</div>
-                          <div className="text-base text-gray-900">{formData.lote}</div>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               </div>
 
