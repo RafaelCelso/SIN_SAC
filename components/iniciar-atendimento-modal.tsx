@@ -1738,11 +1738,14 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
 
                   {/* Data e Hora do Retorno */}
                   {formData.autorizaRetorno === "sim" && (
-                    <div className="relative overflow-hidden rounded-xl border border-teal-100 bg-gradient-to-br from-teal-50 to-white p-6">
+                    <div className="relative overflow-hidden rounded-xl border border-teal-100 bg-gradient-to-br from-teal-50 via-teal-50/80 to-white p-6">
                       <div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-teal-100/50 blur-2xl" />
+                      <div className="absolute left-0 bottom-0 h-32 w-32 translate-y-1/2 -translate-x-1/2 rounded-full bg-teal-100/30 blur-2xl" />
                       <div className="relative space-y-4">
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-5 w-5 text-teal-600" />
+                          <div className="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center">
+                            <Calendar className="h-4 w-4 text-teal-600" />
+                          </div>
                           <h4 className="text-lg font-medium text-gray-900">Agendamento do Retorno</h4>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
