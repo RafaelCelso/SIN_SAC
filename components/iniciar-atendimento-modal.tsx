@@ -524,7 +524,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
               <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
                 <div className="flex items-center gap-2 mb-3">
                   <Clipboard className="h-5 w-5 text-teal-600" />
-                  <h3 className="font-medium text-lg text-gray-800">Motivo do Atendimento</h3>
+                  <h3 className="font-medium text-lg text-gray-800">Motivo do Atendimento <span className="text-red-500">*</span></h3>
                 </div>
 
                 <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
@@ -1041,7 +1041,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
               <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
                 <div className="flex items-center gap-2 mb-3">
                   <User className="h-5 w-5 text-teal-600" />
-                  <h3 className="font-medium text-lg text-gray-800">Informações do Cliente</h3>
+                  <h3 className="font-medium text-lg text-gray-800">Informações do Cliente <span className="text-red-500">*</span></h3>
                 </div>
 
                 <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
