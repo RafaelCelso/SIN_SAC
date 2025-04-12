@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus } from "lucide-react"
+import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -932,63 +932,77 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
 
                           {/* Protocolos Abertos do Cliente */}
                           {clienteProtocolos.length > 0 && (
-                            <Card className="border-amber-100 shadow-sm">
-                              <CardHeader className="pb-2">
+                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
+                              <div className="p-6 border-b border-gray-200">
                                 <div className="flex items-center justify-between">
-                                  <CardTitle className="text-base font-medium text-amber-800">Protocolos Abertos</CardTitle>
-                                  <Badge variant="outline" className="bg-amber-50 text-amber-700">
+                                  <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
+                                      <Clipboard className="h-5 w-5 text-blue-600" />
+                                    </div>
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-gray-900">Protocolos Abertos</h3>
+                                      <p className="text-sm text-gray-500">Protocolos em andamento do cliente</p>
+                                    </div>
+                                  </div>
+                                  <Badge className="bg-gray-100 text-gray-700 border-gray-200">
                                     {clienteProtocolos.length} protocolo(s)
                                   </Badge>
                                 </div>
-                              </CardHeader>
-                              <CardContent className="p-0">
-                                <Table>
-                                  <TableHeader>
-                                    <TableRow>
-                                      <TableHead>Protocolo</TableHead>
-                                      <TableHead>Data</TableHead>
-                                      <TableHead>Motivo</TableHead>
-                                      <TableHead>Produto</TableHead>
-                                      <TableHead>Status</TableHead>
-                                      <TableHead className="text-right">Ação</TableHead>
-                                    </TableRow>
-                                  </TableHeader>
-                                  <TableBody>
-                                    {clienteProtocolos.map((protocolo) => (
-                                      <TableRow key={protocolo.id} className="hover:bg-gray-50 transition-colors">
-                                        <TableCell className="font-medium">{protocolo.id}</TableCell>
-                                        <TableCell>{protocolo.data}</TableCell>
-                                        <TableCell>{protocolo.tipo}</TableCell>
-                                        <TableCell>{protocolo.produto}</TableCell>
-                                        <TableCell>
-                                          <Badge
-                                            variant={
-                                              protocolo.status === "Em análise"
-                                                ? "default"
-                                                : protocolo.status === "Pendente"
-                                                  ? "secondary"
-                                                  : "outline"
-                                            }
-                                          >
-                                            {protocolo.status}
-                                          </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 flex items-center gap-1"
-                                          >
-                                            <FileText className="h-4 w-4" />
-                                            Ver detalhes
-                                          </Button>
-                                        </TableCell>
-                                      </TableRow>
-                                    ))}
-                                  </TableBody>
-                                </Table>
-                              </CardContent>
-                            </Card>
+                              </div>
+                              <div className="p-6 space-y-4">
+                                {clienteProtocolos.map((protocolo) => (
+                                  <div 
+                                    key={protocolo.id}
+                                    className="group relative bg-white border border-gray-200 rounded-xl p-5 hover:border-[#26B99D]/30 hover:shadow-sm transition-all duration-200"
+                                  >
+                                    <div className="flex items-start justify-between gap-4">
+                                      <div className="flex-1 min-w-0">
+                                        <div className="mb-3">
+                                          <span className="font-medium text-gray-900 text-lg">{protocolo.id}</span>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
+                                              <Calendar className="h-4 w-4 text-gray-500" />
+                                            </div>
+                                            <div>
+                                              <p className="text-xs text-gray-500">Aberto em</p>
+                                              <p className="text-sm font-medium text-gray-900">{protocolo.data}</p>
+                                            </div>
+                                          </div>
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
+                                              <FileText className="h-4 w-4 text-gray-500" />
+                                            </div>
+                                            <div>
+                                              <p className="text-xs text-gray-500">Motivo</p>
+                                              <p className="text-sm font-medium text-gray-900">{protocolo.tipo}</p>
+                                            </div>
+                                          </div>
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
+                                              <Package className="h-4 w-4 text-gray-500" />
+                                            </div>
+                                            <div>
+                                              <p className="text-xs text-gray-500">Produto</p>
+                                              <p className="text-sm font-medium text-gray-900">{protocolo.produto}</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-[#26B99D]/10 hover:text-[#26B99D] hover:border-[#26B99D]/20"
+                                      >
+                                        <FileText className="h-4 w-4 mr-2" />
+                                        Ver detalhes
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           )}
                         </>
                       )}
@@ -1019,12 +1033,12 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
 
                             <div className="space-y-2">
                               <Label htmlFor="documento">
-                                CPF <span className="text-red-500">*</span>
+                                CPF {["queixa", "farmacovigilancia"].includes(motivoSelecionado) && <span className="text-red-500">*</span>}
                               </Label>
                               <Input
                                 id="documento"
                                 placeholder="000.000.000-00"
-                                required
+                                required={["queixa", "farmacovigilancia"].includes(motivoSelecionado)}
                                 className="h-11"
                               />
                             </div>
