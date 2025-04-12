@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar, Mail, Clock, Pencil } from "lucide-react"
+import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar, Mail, Clock, Pencil, UserX } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -1045,36 +1045,53 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                 </div>
 
                 <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-                  <RadioGroup
-                    defaultValue="cadastrado"
-                    value={tipoCliente}
-                    className="flex flex-wrap gap-4 mb-4"
-                    onValueChange={(value) => {
-                      setTipoCliente(value as "cadastrado" | "novo" | "sem-registro")
-                      setShowClienteForm(value === "novo")
-                      setSelectedCliente(null)
-                      setShowResults(false)
-                    }}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="cadastrado" id="cliente-cadastrado" />
-                      <Label htmlFor="cliente-cadastrado" className="font-medium">
-                        Cliente Cadastrado
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="novo" id="novo-cliente" />
-                      <Label htmlFor="novo-cliente" className="font-medium">
-                        Novo Cliente
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="sem-registro" id="sem-registro" />
-                      <Label htmlFor="sem-registro" className="font-medium">
-                        Sem Registro
-                      </Label>
-                    </div>
-                  </RadioGroup>
+                  <div className="flex flex-wrap gap-4 mb-4">
+                    <Button
+                      variant={tipoCliente === "cadastrado" ? "default" : "outline"}
+                      className={`flex items-center gap-2 h-11 ${
+                        tipoCliente === "cadastrado" ? "bg-teal-600 hover:bg-teal-700" : ""
+                      }`}
+                      onClick={() => {
+                        setTipoCliente("cadastrado");
+                        setShowClienteForm(false);
+                        setSelectedCliente(null);
+                        setShowResults(false);
+                      }}
+                    >
+                      <User className="h-4 w-4" />
+                      Cliente Cadastrado
+                    </Button>
+                    <Button
+                      variant={tipoCliente === "novo" ? "default" : "outline"}
+                      className={`flex items-center gap-2 h-11 ${
+                        tipoCliente === "novo" ? "bg-teal-600 hover:bg-teal-700" : ""
+                      }`}
+                      onClick={() => {
+                        setTipoCliente("novo");
+                        setShowClienteForm(true);
+                        setSelectedCliente(null);
+                        setShowResults(false);
+                      }}
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      Novo Cliente
+                    </Button>
+                    <Button
+                      variant={tipoCliente === "sem-registro" ? "default" : "outline"}
+                      className={`flex items-center gap-2 h-11 ${
+                        tipoCliente === "sem-registro" ? "bg-teal-600 hover:bg-teal-700" : ""
+                      }`}
+                      onClick={() => {
+                        setTipoCliente("sem-registro");
+                        setShowClienteForm(false);
+                        setSelectedCliente(null);
+                        setShowResults(false);
+                      }}
+                    >
+                      <UserX className="h-4 w-4" />
+                      Sem Registro
+                    </Button>
+                  </div>
 
                   {tipoCliente === "cadastrado" ? (
                     <div className="space-y-4">
