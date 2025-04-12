@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar, Mail, Clock, Pencil, UserX } from "lucide-react"
+import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar, Mail, Clock, Pencil, UserX, MessageSquare, PhoneIncoming } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -1551,17 +1551,29 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                         <Label className="font-medium">Tipo de Contato</Label>
                         <RadioGroup
                           defaultValue="ativo"
-                          className="flex gap-4"
+                          className="flex gap-2"
                           onValueChange={(value) => setTipoContato(value as "ativo" | "receptivo")}
                         >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="ativo" id="ativo" />
-                            <Label htmlFor="ativo">Ativo</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="receptivo" id="receptivo" />
-                            <Label htmlFor="receptivo">Receptivo</Label>
-                          </div>
+                          <Button
+                            variant={tipoContato === "ativo" ? "default" : "outline"}
+                            className={`h-9 px-3 ${
+                              tipoContato === "ativo" ? "bg-teal-600 hover:bg-teal-700" : ""
+                            }`}
+                            onClick={() => setTipoContato("ativo")}
+                          >
+                            <Phone className="h-3.5 w-3.5 mr-1" />
+                            Ativo
+                          </Button>
+                          <Button
+                            variant={tipoContato === "receptivo" ? "default" : "outline"}
+                            className={`h-9 px-3 ${
+                              tipoContato === "receptivo" ? "bg-teal-600 hover:bg-teal-700" : ""
+                            }`}
+                            onClick={() => setTipoContato("receptivo")}
+                          >
+                            <PhoneIncoming className="h-3.5 w-3.5 mr-1" />
+                            Receptivo
+                          </Button>
                         </RadioGroup>
                       </div>
 
@@ -1569,18 +1581,63 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                         <Label htmlFor="contato-via" className="font-medium">
                           Contato via
                         </Label>
-                        <Select>
-                          <SelectTrigger id="contato-via" className="h-11">
-                            <SelectValue placeholder="Selecione" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="telefone">Telefone</SelectItem>
-                            <SelectItem value="email">Email</SelectItem>
-                            <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                            <SelectItem value="presencial">Presencial</SelectItem>
-                            <SelectItem value="outro">Outro</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        {tipoCliente === "sem-registro" ? (
+                          <div className="flex flex-wrap gap-2">
+                            <Button
+                              variant={formData.tipoContato === "telefone" ? "default" : "outline"}
+                              className={`h-9 px-3 ${
+                                formData.tipoContato === "telefone" ? "bg-teal-600 hover:bg-teal-700" : ""
+                              }`}
+                              onClick={() => setFormData(prev => ({ ...prev, tipoContato: "telefone" }))}
+                            >
+                              <Phone className="h-3.5 w-3.5 mr-1" />
+                              Telefone
+                            </Button>
+                            <Button
+                              variant={formData.tipoContato === "email" ? "default" : "outline"}
+                              className={`h-9 px-3 ${
+                                formData.tipoContato === "email" ? "bg-teal-600 hover:bg-teal-700" : ""
+                              }`}
+                              onClick={() => setFormData(prev => ({ ...prev, tipoContato: "email" }))}
+                            >
+                              <Mail className="h-3.5 w-3.5 mr-1" />
+                              Email
+                            </Button>
+                            <Button
+                              variant={formData.tipoContato === "whatsapp" ? "default" : "outline"}
+                              className={`h-9 px-3 ${
+                                formData.tipoContato === "whatsapp" ? "bg-teal-600 hover:bg-teal-700" : ""
+                              }`}
+                              onClick={() => setFormData(prev => ({ ...prev, tipoContato: "whatsapp" }))}
+                            >
+                              <MessageSquare className="h-3.5 w-3.5 mr-1" />
+                              WhatsApp
+                            </Button>
+                            <Button
+                              variant={formData.tipoContato === "presencial" ? "default" : "outline"}
+                              className={`h-9 px-3 ${
+                                formData.tipoContato === "presencial" ? "bg-teal-600 hover:bg-teal-700" : ""
+                              }`}
+                              onClick={() => setFormData(prev => ({ ...prev, tipoContato: "presencial" }))}
+                            >
+                              <MapPin className="h-3.5 w-3.5 mr-1" />
+                              Presencial
+                            </Button>
+                          </div>
+                        ) : (
+                          <Select>
+                            <SelectTrigger id="contato-via" className="h-11">
+                              <SelectValue placeholder="Selecione" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="telefone">Telefone</SelectItem>
+                              <SelectItem value="email">Email</SelectItem>
+                              <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                              <SelectItem value="presencial">Presencial</SelectItem>
+                              <SelectItem value="outro">Outro</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
                       </div>
                     </div>
                   </div>
