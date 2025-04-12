@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar, Mail, Clock } from "lucide-react"
+import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar, Mail, Clock, Pencil } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -528,47 +528,289 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                 </div>
 
                 <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-                  <Select onValueChange={(value) => {
-                    setMotivoSelecionado(value)
-                    setSubCategoriaSelecionada("")
-                    setDetalheSelecionado("")
-                  }} value={motivoSelecionado}>
-                    <SelectTrigger className="h-11">
-                      <SelectValue placeholder="Selecione o motivo principal" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="queixa">Queixa Técnica</SelectItem>
-                      <SelectItem value="evento">Evento Adverso</SelectItem>
-                      <SelectItem value="informacao">Informação Médica</SelectItem>
-                      <SelectItem value="farmacovigilancia">Farmacovigilância</SelectItem>
-                      <SelectItem value="outro">Outro</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {motivoSelecionado && (
-                    <Select value={subCategoriaSelecionada} onValueChange={setSubCategoriaSelecionada}>
-                      <SelectTrigger className="h-11">
-                        <SelectValue placeholder="Selecione a subcategoria" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="subcategoria1">Subcategoria 1</SelectItem>
-                        <SelectItem value="subcategoria2">Subcategoria 2</SelectItem>
-                        <SelectItem value="subcategoria3">Subcategoria 3</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  {!motivoSelecionado && (
+                    <div className="space-y-2">
+                      <Label className="font-medium">Motivo Principal</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between h-11"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Clipboard className="h-4 w-4 text-teal-600" />
+                              <span>Selecione o motivo principal</span>
+                            </div>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                          <Command>
+                            <CommandInput placeholder="Buscar motivo..." />
+                            <CommandEmpty>Nenhum motivo encontrado.</CommandEmpty>
+                            <CommandGroup>
+                              <CommandItem
+                                value="queixa"
+                                onSelect={() => {
+                                  setMotivoSelecionado("queixa");
+                                  setSubCategoriaSelecionada("");
+                                  setDetalheSelecionado("");
+                                }}
+                              >
+                                <Clipboard className="mr-2 h-4 w-4" />
+                                Queixa Técnica
+                              </CommandItem>
+                              <CommandItem
+                                value="evento"
+                                onSelect={() => {
+                                  setMotivoSelecionado("evento");
+                                  setSubCategoriaSelecionada("");
+                                  setDetalheSelecionado("");
+                                }}
+                              >
+                                <Clipboard className="mr-2 h-4 w-4" />
+                                Evento Adverso
+                              </CommandItem>
+                              <CommandItem
+                                value="informacao"
+                                onSelect={() => {
+                                  setMotivoSelecionado("informacao");
+                                  setSubCategoriaSelecionada("");
+                                  setDetalheSelecionado("");
+                                }}
+                              >
+                                <Clipboard className="mr-2 h-4 w-4" />
+                                Informação Médica
+                              </CommandItem>
+                              <CommandItem
+                                value="farmacovigilancia"
+                                onSelect={() => {
+                                  setMotivoSelecionado("farmacovigilancia");
+                                  setSubCategoriaSelecionada("");
+                                  setDetalheSelecionado("");
+                                }}
+                              >
+                                <Clipboard className="mr-2 h-4 w-4" />
+                                Farmacovigilância
+                              </CommandItem>
+                              <CommandItem
+                                value="outro"
+                                onSelect={() => {
+                                  setMotivoSelecionado("outro");
+                                  setSubCategoriaSelecionada("");
+                                  setDetalheSelecionado("");
+                                }}
+                              >
+                                <Clipboard className="mr-2 h-4 w-4" />
+                                Outro
+                              </CommandItem>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                   )}
 
-                  {subCategoriaSelecionada && (
-                    <Select value={detalheSelecionado} onValueChange={setDetalheSelecionado}>
-                      <SelectTrigger className="h-11">
-                        <SelectValue placeholder="Selecione o detalhe" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="detalhe1">Detalhe 1</SelectItem>
-                        <SelectItem value="detalhe2">Detalhe 2</SelectItem>
-                        <SelectItem value="detalhe3">Detalhe 3</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  {motivoSelecionado && !subCategoriaSelecionada && (
+                    <div className="space-y-2">
+                      <Label className="font-medium">Subcategoria</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between h-11"
+                          >
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-4 w-4 text-teal-600" />
+                              <span>Selecione a subcategoria</span>
+                            </div>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                          <Command>
+                            <CommandInput placeholder="Buscar subcategoria..." />
+                            <CommandEmpty>Nenhuma subcategoria encontrada.</CommandEmpty>
+                            <CommandGroup>
+                              <CommandItem
+                                value="subcategoria1"
+                                onSelect={() => {
+                                  setSubCategoriaSelecionada("subcategoria1");
+                                  setDetalheSelecionado("");
+                                }}
+                              >
+                                <FileText className="mr-2 h-4 w-4" />
+                                Subcategoria 1
+                              </CommandItem>
+                              <CommandItem
+                                value="subcategoria2"
+                                onSelect={() => {
+                                  setSubCategoriaSelecionada("subcategoria2");
+                                  setDetalheSelecionado("");
+                                }}
+                              >
+                                <FileText className="mr-2 h-4 w-4" />
+                                Subcategoria 2
+                              </CommandItem>
+                              <CommandItem
+                                value="subcategoria3"
+                                onSelect={() => {
+                                  setSubCategoriaSelecionada("subcategoria3");
+                                  setDetalheSelecionado("");
+                                }}
+                              >
+                                <FileText className="mr-2 h-4 w-4" />
+                                Subcategoria 3
+                              </CommandItem>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  )}
+
+                  {subCategoriaSelecionada && !detalheSelecionado && (
+                    <div className="space-y-2">
+                      <Label className="font-medium">Detalhe</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between h-11"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Info className="h-4 w-4 text-teal-600" />
+                              <span>Selecione o detalhe</span>
+                            </div>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                          <Command>
+                            <CommandInput placeholder="Buscar detalhe..." />
+                            <CommandEmpty>Nenhum detalhe encontrado.</CommandEmpty>
+                            <CommandGroup>
+                              <CommandItem
+                                value="detalhe1"
+                                onSelect={() => setDetalheSelecionado("detalhe1")}
+                              >
+                                <Info className="mr-2 h-4 w-4" />
+                                Detalhe 1
+                              </CommandItem>
+                              <CommandItem
+                                value="detalhe2"
+                                onSelect={() => setDetalheSelecionado("detalhe2")}
+                              >
+                                <Info className="mr-2 h-4 w-4" />
+                                Detalhe 2
+                              </CommandItem>
+                              <CommandItem
+                                value="detalhe3"
+                                onSelect={() => setDetalheSelecionado("detalhe3")}
+                              >
+                                <Info className="mr-2 h-4 w-4" />
+                                Detalhe 3
+                              </CommandItem>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  )}
+
+                  {(motivoSelecionado || subCategoriaSelecionada || detalheSelecionado) && (
+                    <Card className="border-teal-100 bg-teal-50/50">
+                      <CardContent className="p-4">
+                        <div className="space-y-4">
+                          {motivoSelecionado && (
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
+                                  <Clipboard className="h-5 w-5 text-teal-600" />
+                                </div>
+                                <div>
+                                  <h4 className="font-medium text-teal-900">
+                                    {motivoSelecionado === "queixa" && "Queixa Técnica"}
+                                    {motivoSelecionado === "evento" && "Evento Adverso"}
+                                    {motivoSelecionado === "informacao" && "Informação Médica"}
+                                    {motivoSelecionado === "farmacovigilancia" && "Farmacovigilância"}
+                                    {motivoSelecionado === "outro" && "Outro"}
+                                  </h4>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                onClick={() => {
+                                  setMotivoSelecionado("");
+                                  setSubCategoriaSelecionada("");
+                                  setDetalheSelecionado("");
+                                }}
+                              >
+                                <Pencil className="h-4 w-4 mr-2" />
+                                Editar
+                              </Button>
+                            </div>
+                          )}
+
+                          {subCategoriaSelecionada && (
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
+                                  <FileText className="h-5 w-5 text-teal-600" />
+                                </div>
+                                <div>
+                                  <h4 className="font-medium text-teal-900">
+                                    {subCategoriaSelecionada === "subcategoria1" && "Subcategoria 1"}
+                                    {subCategoriaSelecionada === "subcategoria2" && "Subcategoria 2"}
+                                    {subCategoriaSelecionada === "subcategoria3" && "Subcategoria 3"}
+                                  </h4>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                onClick={() => {
+                                  setSubCategoriaSelecionada("");
+                                  setDetalheSelecionado("");
+                                }}
+                              >
+                                <Pencil className="h-4 w-4 mr-2" />
+                                Editar
+                              </Button>
+                            </div>
+                          )}
+
+                          {detalheSelecionado && (
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
+                                  <Info className="h-5 w-5 text-teal-600" />
+                                </div>
+                                <div>
+                                  <h4 className="font-medium text-teal-900">
+                                    {detalheSelecionado === "detalhe1" && "Detalhe 1"}
+                                    {detalheSelecionado === "detalhe2" && "Detalhe 2"}
+                                    {detalheSelecionado === "detalhe3" && "Detalhe 3"}
+                                  </h4>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                onClick={() => setDetalheSelecionado("")}
+                              >
+                                <Pencil className="h-4 w-4 mr-2" />
+                                Editar
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
                   )}
                 </div>
               </div>
