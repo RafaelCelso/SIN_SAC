@@ -805,6 +805,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                 <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
                   <RadioGroup
                     defaultValue="cadastrado"
+                    value={tipoCliente}
                     className="flex flex-wrap gap-4 mb-4"
                     onValueChange={(value) => {
                       setTipoCliente(value as "cadastrado" | "novo" | "sem-registro")
@@ -856,19 +857,19 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                       {showResults && (
                         <Card className="border-teal-100 shadow-sm">
                           <CardContent className="p-0">
-                            <Table>
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead>Nome</TableHead>
-                                  <TableHead>CPF</TableHead>
-                                  <TableHead>Telefone</TableHead>
-                                  <TableHead>Email</TableHead>
-                                  <TableHead className="text-right">Ação</TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {searchResults.length > 0 ? (
-                                  searchResults.map((cliente) => (
+                            {searchResults.length > 0 ? (
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Nome</TableHead>
+                                    <TableHead>CPF</TableHead>
+                                    <TableHead>Telefone</TableHead>
+                                    <TableHead>Email</TableHead>
+                                    <TableHead className="text-right">Ação</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {searchResults.map((cliente) => (
                                     <TableRow key={cliente.id} className="hover:bg-gray-50 transition-colors">
                                       <TableCell className="font-medium">{cliente.nome}</TableCell>
                                       <TableCell>{cliente.documento}</TableCell>
@@ -884,17 +885,32 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                                         </Button>
                                       </TableCell>
                                     </TableRow>
-                                  ))
-                                ) : (
-                                  <TableRow>
-                                    <TableCell colSpan={5} className="text-center py-4">
-                                      Nenhum cliente encontrado. Verifique os critérios de busca ou cadastre um novo
-                                      cliente.
-                                    </TableCell>
-                                  </TableRow>
-                                )}
-                              </TableBody>
-                            </Table>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            ) : (
+                              <div className="p-6 text-center space-y-4">
+                                <p className="text-gray-600">
+                                  Nenhum cliente encontrado. Verifique os critérios de busca ou cadastre um novo cliente.
+                                </p>
+                                <Button
+                                  onClick={() => {
+                                    setTipoCliente("novo");
+                                    setShowClienteForm(true);
+                                    setShowResults(false);
+                                    // Força a atualização do RadioGroup
+                                    const radioInput = document.querySelector('input[value="novo"]') as HTMLInputElement;
+                                    if (radioInput) {
+                                      radioInput.checked = true;
+                                    }
+                                  }}
+                                  className="bg-teal-600 hover:bg-teal-700"
+                                >
+                                  <UserPlus className="mr-2 h-4 w-4" />
+                                  Cadastrar Cliente
+                                </Button>
+                              </div>
+                            )}
                           </CardContent>
                         </Card>
                       )}
