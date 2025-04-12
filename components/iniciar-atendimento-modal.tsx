@@ -528,6 +528,37 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                 </div>
 
                 <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
+                  {/* Barra de Progresso */}
+                  <div className="space-y-2">
+                    <div className="flex justify-end">
+                      <span className="font-medium text-teal-600">
+                        {[motivoSelecionado, subCategoriaSelecionada, detalheSelecionado].filter(Boolean).length}/3
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-teal-600 transition-all duration-300"
+                          style={{ 
+                            width: `${([motivoSelecionado, subCategoriaSelecionada, detalheSelecionado].filter(Boolean).length / 3) * 100}%` 
+                          }}
+                        />
+                      </div>
+                      <div className="absolute top-0 left-0 w-full h-full flex justify-between items-center pointer-events-none">
+                        {[1, 2, 3].map((step) => (
+                          <div
+                            key={step}
+                            className={`w-3 h-3 rounded-full border-2 transition-colors duration-300 ${
+                              step <= [motivoSelecionado, subCategoriaSelecionada, detalheSelecionado].filter(Boolean).length
+                                ? 'bg-teal-600 border-teal-600'
+                                : 'bg-white border-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
                   {!motivoSelecionado && (
                     <div className="space-y-2">
                       <Label className="font-medium">Motivo Principal</Label>
@@ -719,17 +750,18 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                   )}
 
                   {(motivoSelecionado || subCategoriaSelecionada || detalheSelecionado) && (
-                    <Card className="border-teal-100 bg-teal-50/50">
-                      <CardContent className="p-4">
-                        <div className="space-y-4">
-                          {motivoSelecionado && (
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
-                                  <Clipboard className="h-5 w-5 text-teal-600" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {motivoSelecionado && (
+                        <Card className="border-teal-100 bg-teal-50/50">
+                          <CardContent className="p-3">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
+                                  <Clipboard className="h-4 w-4 text-teal-600" />
                                 </div>
-                                <div>
-                                  <h4 className="font-medium text-teal-900">
+                                <div className="min-w-0">
+                                  <p className="text-xs text-gray-500 truncate">Motivo Principal</p>
+                                  <h4 className="font-medium text-teal-900 truncate">
                                     {motivoSelecionado === "queixa" && "Queixa Técnica"}
                                     {motivoSelecionado === "evento" && "Evento Adverso"}
                                     {motivoSelecionado === "informacao" && "Informação Médica"}
@@ -740,28 +772,32 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                               </div>
                               <Button
                                 variant="ghost"
-                                size="sm"
-                                className="text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                size="icon"
+                                className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
                                 onClick={() => {
                                   setMotivoSelecionado("");
                                   setSubCategoriaSelecionada("");
                                   setDetalheSelecionado("");
                                 }}
                               >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                Editar
+                                <Pencil className="h-4 w-4" />
                               </Button>
                             </div>
-                          )}
+                          </CardContent>
+                        </Card>
+                      )}
 
-                          {subCategoriaSelecionada && (
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
-                                  <FileText className="h-5 w-5 text-teal-600" />
+                      {subCategoriaSelecionada && (
+                        <Card className="border-teal-100 bg-teal-50/50">
+                          <CardContent className="p-3">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
+                                  <FileText className="h-4 w-4 text-teal-600" />
                                 </div>
-                                <div>
-                                  <h4 className="font-medium text-teal-900">
+                                <div className="min-w-0">
+                                  <p className="text-xs text-gray-500 truncate">Subcategoria</p>
+                                  <h4 className="font-medium text-teal-900 truncate">
                                     {subCategoriaSelecionada === "subcategoria1" && "Subcategoria 1"}
                                     {subCategoriaSelecionada === "subcategoria2" && "Subcategoria 2"}
                                     {subCategoriaSelecionada === "subcategoria3" && "Subcategoria 3"}
@@ -770,27 +806,31 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                               </div>
                               <Button
                                 variant="ghost"
-                                size="sm"
-                                className="text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                size="icon"
+                                className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
                                 onClick={() => {
                                   setSubCategoriaSelecionada("");
                                   setDetalheSelecionado("");
                                 }}
                               >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                Editar
+                                <Pencil className="h-4 w-4" />
                               </Button>
                             </div>
-                          )}
+                          </CardContent>
+                        </Card>
+                      )}
 
-                          {detalheSelecionado && (
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
-                                  <Info className="h-5 w-5 text-teal-600" />
+                      {detalheSelecionado && (
+                        <Card className="border-teal-100 bg-teal-50/50">
+                          <CardContent className="p-3">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
+                                  <Info className="h-4 w-4 text-teal-600" />
                                 </div>
-                                <div>
-                                  <h4 className="font-medium text-teal-900">
+                                <div className="min-w-0">
+                                  <p className="text-xs text-gray-500 truncate">Detalhe</p>
+                                  <h4 className="font-medium text-teal-900 truncate">
                                     {detalheSelecionado === "detalhe1" && "Detalhe 1"}
                                     {detalheSelecionado === "detalhe2" && "Detalhe 2"}
                                     {detalheSelecionado === "detalhe3" && "Detalhe 3"}
@@ -799,18 +839,17 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                               </div>
                               <Button
                                 variant="ghost"
-                                size="sm"
-                                className="text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                size="icon"
+                                className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
                                 onClick={() => setDetalheSelecionado("")}
                               >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                Editar
+                                <Pencil className="h-4 w-4" />
                               </Button>
                             </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
