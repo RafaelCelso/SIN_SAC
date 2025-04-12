@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar } from "lucide-react"
+import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar, Mail, Clock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -858,36 +858,45 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                         <Card className="border-teal-100 shadow-sm">
                           <CardContent className="p-0">
                             {searchResults.length > 0 ? (
-                              <Table>
-                                <TableHeader>
-                                  <TableRow>
-                                    <TableHead>Nome</TableHead>
-                                    <TableHead>CPF</TableHead>
-                                    <TableHead>Telefone</TableHead>
-                                    <TableHead>Email</TableHead>
-                                    <TableHead className="text-right">Ação</TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {searchResults.map((cliente) => (
-                                    <TableRow key={cliente.id} className="hover:bg-gray-50 transition-colors">
-                                      <TableCell className="font-medium">{cliente.nome}</TableCell>
-                                      <TableCell>{cliente.documento}</TableCell>
-                                      <TableCell>{cliente.telefone}</TableCell>
-                                      <TableCell>{cliente.email}</TableCell>
-                                      <TableCell className="text-right">
-                                        <Button
-                                          size="sm"
-                                          onClick={() => handleClienteSelect(cliente)}
-                                          className="bg-teal-600 hover:bg-teal-700"
-                                        >
-                                          Selecionar
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
-                                </TableBody>
-                              </Table>
+                              <div className="grid grid-cols-1 gap-4 p-4">
+                                {searchResults.map((cliente) => (
+                                  <Card key={cliente.id} className="border-gray-200 hover:border-teal-200 transition-colors">
+                                    <CardContent className="p-4">
+                                      <div className="flex items-start gap-4">
+                                        <div className="h-12 w-12 rounded-full bg-teal-100 flex items-center justify-center">
+                                          <User className="h-6 w-6 text-teal-600" />
+                                        </div>
+                                        <div className="flex-1">
+                                          <div className="flex items-center justify-between">
+                                            <h3 className="text-lg font-medium">{cliente.nome}</h3>
+                                            <Button
+                                              size="sm"
+                                              onClick={() => handleClienteSelect(cliente)}
+                                              className="bg-teal-600 hover:bg-teal-700"
+                                            >
+                                              Selecionar
+                                            </Button>
+                                          </div>
+                                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm">
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                              <span className="font-medium">CPF:</span>
+                                              <span>{cliente.documento}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                              <span className="font-medium">Telefone:</span>
+                                              <span>{cliente.telefone}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                              <span className="font-medium">Email:</span>
+                                              <span>{cliente.email}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                ))}
+                              </div>
                             ) : (
                               <div className="p-6 text-center space-y-4">
                                 <p className="text-gray-600">
@@ -898,7 +907,6 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                                     setTipoCliente("novo");
                                     setShowClienteForm(true);
                                     setShowResults(false);
-                                    // Força a atualização do RadioGroup
                                     const radioInput = document.querySelector('input[value="novo"]') as HTMLInputElement;
                                     if (radioInput) {
                                       radioInput.checked = true;
@@ -1290,24 +1298,26 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                   </div>
 
                   <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm space-y-4">
-                    {/* Produtos do Atendimento */}
-                    <div className="space-y-2">
-                      <Label htmlFor="produtos" className="font-medium">
-                        Produtos do Atendimento
-                      </Label>
-                      <Select>
-                        <SelectTrigger id="produtos" className="h-11 bg-gray-50">
-                          <SelectValue placeholder="Selecione" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="produto1">Medicamento A</SelectItem>
-                          <SelectItem value="produto2">Medicamento B</SelectItem>
-                          <SelectItem value="produto3">Medicamento C</SelectItem>
-                          <SelectItem value="produto4">Dispositivo Médico X</SelectItem>
-                          <SelectItem value="produto5">Dispositivo Médico Y</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    {/* Produtos do Atendimento - Mostrar apenas para clientes cadastrados ou novos */}
+                    {tipoCliente !== "sem-registro" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="produtos" className="font-medium">
+                          Produtos do Atendimento
+                        </Label>
+                        <Select>
+                          <SelectTrigger id="produtos" className="h-11 bg-gray-50">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="produto1">Medicamento A</SelectItem>
+                            <SelectItem value="produto2">Medicamento B</SelectItem>
+                            <SelectItem value="produto3">Medicamento C</SelectItem>
+                            <SelectItem value="produto4">Dispositivo Médico X</SelectItem>
+                            <SelectItem value="produto5">Dispositivo Médico Y</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
 
                     <Separator />
 
@@ -1330,110 +1340,175 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
           ) : (
             <div className="space-y-6">
               {/* Informações do Cliente */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-[#26B99D]">Informações do Cliente</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Cliente</Label>
-                    <div className="p-3 border rounded-lg bg-gray-50 shadow-sm">
-                      {selectedCliente?.nome || nomeSemRegistro || ""}
+              <Card className="border-gray-200">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2">
+                    <User className="h-5 w-5 text-teal-600" />
+                    <h3 className="text-lg font-medium">Informações do Cliente</h3>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-start gap-4">
+                    <div className="h-12 w-12 rounded-full bg-teal-100 flex items-center justify-center">
+                      <User className="h-6 w-6 text-teal-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-medium">{selectedCliente?.nome || nomeSemRegistro || ""}</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm">
+                        {selectedCliente?.documento && (
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="font-medium">CPF:</span>
+                            <span>{selectedCliente.documento}</span>
+                          </div>
+                        )}
+                        {selectedCliente?.telefone && (
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="font-medium">Telefone:</span>
+                            <span>{selectedCliente.telefone}</span>
+                          </div>
+                        )}
+                        {selectedCliente?.email && (
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="font-medium">Email:</span>
+                            <span>{selectedCliente.email}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
 
               {/* Informações do Contato */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-[#26B99D]">Informações do Contato</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="border-gray-200">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-5 w-5 text-teal-600" />
+                    <h3 className="text-lg font-medium">Informações do Contato</h3>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Tipo de Contato */}
                   <div className="space-y-2">
-                    <Label htmlFor="tipoContato">
-                      Tipo de Contato <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                      value={formData.tipoContato}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, tipoContato: value }))}
-                    >
-                      <SelectTrigger id="tipoContato" className="h-11">
-                        <SelectValue placeholder="Selecione o tipo de contato" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="telefone">Telefone</SelectItem>
-                        <SelectItem value="email">E-mail</SelectItem>
-                        <SelectItem value="presencial">Presencial</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label className="font-medium">Tipo de Contato <span className="text-red-500">*</span></Label>
+                    <div className="flex flex-wrap gap-4">
+                      <Button
+                        variant={formData.tipoContato === "telefone" ? "default" : "outline"}
+                        className={`flex items-center gap-2 ${formData.tipoContato === "telefone" ? "bg-teal-600 hover:bg-teal-700" : ""}`}
+                        onClick={() => setFormData(prev => ({ ...prev, tipoContato: "telefone" }))}
+                      >
+                        <Phone className="h-4 w-4" />
+                        Telefone
+                      </Button>
+                      <Button
+                        variant={formData.tipoContato === "email" ? "default" : "outline"}
+                        className={`flex items-center gap-2 ${formData.tipoContato === "email" ? "bg-teal-600 hover:bg-teal-700" : ""}`}
+                        onClick={() => setFormData(prev => ({ ...prev, tipoContato: "email" }))}
+                      >
+                        <Mail className="h-4 w-4" />
+                        E-mail
+                      </Button>
+                      <Button
+                        variant={formData.tipoContato === "presencial" ? "default" : "outline"}
+                        className={`flex items-center gap-2 ${formData.tipoContato === "presencial" ? "bg-teal-600 hover:bg-teal-700" : ""}`}
+                        onClick={() => setFormData(prev => ({ ...prev, tipoContato: "presencial" }))}
+                      >
+                        <MapPin className="h-4 w-4" />
+                        Presencial
+                      </Button>
+                    </div>
                   </div>
 
+                  {/* Autoriza Retorno */}
                   <div className="space-y-2">
-                    <Label htmlFor="autorizaRetorno">
-                      Autoriza retorno de contato <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
+                    <Label className="font-medium">Autoriza retorno de contato <span className="text-red-500">*</span></Label>
+                    <RadioGroup
                       value={formData.autorizaRetorno}
                       onValueChange={(value) => setFormData(prev => ({ ...prev, autorizaRetorno: value }))}
+                      className="flex gap-4"
                     >
-                      <SelectTrigger id="autorizaRetorno" className="h-11">
-                        <SelectValue placeholder="Selecione uma opção" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sim">Sim</SelectItem>
-                        <SelectItem value="nao">Não</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="sim" id="retorno-sim" />
+                        <Label htmlFor="retorno-sim">Sim</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="nao" id="retorno-nao" />
+                        <Label htmlFor="retorno-nao">Não</Label>
+                      </div>
+                    </RadioGroup>
                   </div>
 
+                  {/* Data e Hora do Retorno */}
                   {formData.autorizaRetorno === "sim" && (
-                    <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 p-4 bg-teal-50 rounded-lg border border-teal-100">
-                      <div className="space-y-2">
-                        <Label htmlFor="dataRetorno">
-                          Data do Retorno <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                          id="dataRetorno"
-                          type="date"
-                          value={formData.dataRetorno}
-                          onChange={(e) => setFormData(prev => ({ ...prev, dataRetorno: e.target.value }))}
-                          className="h-11"
-                          min={new Date().toISOString().split('T')[0]}
-                        />
-                      </div>
+                    <div className="relative overflow-hidden rounded-xl border border-teal-100 bg-gradient-to-br from-teal-50 to-white p-6">
+                      <div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-teal-100/50 blur-2xl" />
+                      <div className="relative space-y-4">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-5 w-5 text-teal-600" />
+                          <h4 className="text-lg font-medium text-gray-900">Agendamento do Retorno</h4>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="dataRetorno" className="text-gray-600">
+                              Data do Retorno <span className="text-red-500">*</span>
+                            </Label>
+                            <div className="relative">
+                              <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                              <Input
+                                id="dataRetorno"
+                                type="date"
+                                value={formData.dataRetorno}
+                                onChange={(e) => setFormData(prev => ({ ...prev, dataRetorno: e.target.value }))}
+                                className="h-11 pl-10 bg-white/50 backdrop-blur-sm"
+                                min={new Date().toISOString().split('T')[0]}
+                              />
+                            </div>
+                          </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="horaRetorno">
-                          Horário do Retorno <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                          id="horaRetorno"
-                          type="time"
-                          value={formData.horaRetorno}
-                          onChange={(e) => setFormData(prev => ({ ...prev, horaRetorno: e.target.value }))}
-                          className="h-11"
-                        />
+                          <div className="space-y-2">
+                            <Label htmlFor="horaRetorno" className="text-gray-600">
+                              Horário do Retorno <span className="text-red-500">*</span>
+                            </Label>
+                            <div className="relative">
+                              <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                              <Input
+                                id="horaRetorno"
+                                type="time"
+                                value={formData.horaRetorno}
+                                onChange={(e) => setFormData(prev => ({ ...prev, horaRetorno: e.target.value }))}
+                                className="h-11 pl-10 bg-white/50 backdrop-blur-sm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          O retorno do contato irá criar um novo evento na sua agenda para o dia e horário selecionados acima
+                        </p>
                       </div>
                     </div>
                   )}
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="descricao">
-                    Descrição do Contato <span className="text-red-500">*</span>
-                  </Label>
-                  <Textarea
-                    id="descricao"
-                    value={formData.descricao}
-                    onChange={(e) => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
-                    placeholder="Descreva o conteúdo do contato"
-                    required
-                    className="font-mono min-h-[200px] whitespace-pre-wrap resize-none"
-                    style={{
-                      lineHeight: "1.5",
-                      padding: "1rem",
-                      backgroundColor: formData.tipoContato === "email" ? "#f8fafc" : "white"
-                    }}
-                  />
-                </div>
-              </div>
+                  {/* Descrição do Contato */}
+                  <div className="space-y-2">
+                    <Label htmlFor="descricao" className="font-medium">
+                      Descrição do Contato <span className="text-red-500">*</span>
+                    </Label>
+                    <Textarea
+                      id="descricao"
+                      value={formData.descricao}
+                      onChange={(e) => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
+                      placeholder="Descreva o conteúdo do contato"
+                      required
+                      className="font-mono min-h-[200px] whitespace-pre-wrap resize-none"
+                      style={{
+                        lineHeight: "1.5",
+                        padding: "1rem",
+                        backgroundColor: formData.tipoContato === "email" ? "#f8fafc" : "white"
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
         </div>
