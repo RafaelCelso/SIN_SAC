@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X } from "lucide-react"
+import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -99,7 +99,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
   const [detalheSelecionado, setDetalheSelecionado] = useState<string>("")
   const [currentStep, setCurrentStep] = useState<"info" | "contato">("info")
   const [produtoSearchTerm, setProdutoSearchTerm] = useState("")
-  const [selectedProdutos, setSelectedProdutos] = useState<typeof PRODUTOS_MOCK[0]>([])
+  const [selectedProdutos, setSelectedProdutos] = useState<Array<typeof PRODUTOS_MOCK[0]>>([])
   const [showProdutosList, setShowProdutosList] = useState(false)
   const [loteSearchTerm, setLoteSearchTerm] = useState("")
   const [selectedLotes, setSelectedLotes] = useState<string[]>([])
@@ -602,24 +602,64 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                         {showProdutosList && (
                           <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
                             {filteredProdutos.length > 0 ? (
-                              filteredProdutos.map((produto, index) => (
-                                <button
-                                  key={produto.id}
-                                  className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
-                                    index !== filteredProdutos.length - 1 ? "border-b" : ""
-                                  }`}
-                                  onClick={() => handleProdutoSelect(produto)}
-                                >
-                                  <div className="font-medium text-gray-900">{produto.nome}</div>
-                                  <div className="text-sm text-gray-500">
-                                    EAN: {produto.ean}
-                                  </div>
-                                </button>
-                              ))
+                              <>
+                                {filteredProdutos.map((produto, index) => (
+                                  <button
+                                    key={produto.id}
+                                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
+                                      index !== filteredProdutos.length - 1 ? "border-b" : ""
+                                    }`}
+                                    onClick={() => handleProdutoSelect(produto)}
+                                  >
+                                    <div className="font-medium text-gray-900">{produto.nome}</div>
+                                    <div className="text-sm text-gray-500">
+                                      EAN: {produto.ean}
+                                    </div>
+                                  </button>
+                                ))}
+                                <div className="border-t">
+                                  <button
+                                    className="w-full text-left px-4 py-3 hover:bg-teal-50 focus:bg-teal-50 focus:outline-none text-teal-600 font-medium flex items-center"
+                                    onClick={() => {
+                                      const novoProduto = {
+                                        id: `NOVO-${Date.now()}`,
+                                        nome: produtoSearchTerm,
+                                        ean: "",
+                                        lote: "",
+                                        categoria: "Não Cadastrado"
+                                      };
+                                      handleProdutoSelect(novoProduto);
+                                    }}
+                                  >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Adicionar "{produtoSearchTerm}" como novo produto
+                                  </button>
+                                </div>
+                              </>
                             ) : (
-                              <div className="px-4 py-3 text-sm text-gray-500">
-                                Nenhum produto encontrado
-                              </div>
+                              <>
+                                <div className="px-4 py-3 text-sm text-gray-500">
+                                  Nenhum produto encontrado
+                                </div>
+                                <div className="border-t">
+                                  <button
+                                    className="w-full text-left px-4 py-3 hover:bg-teal-50 focus:bg-teal-50 focus:outline-none text-teal-600 font-medium flex items-center"
+                                    onClick={() => {
+                                      const novoProduto = {
+                                        id: `NOVO-${Date.now()}`,
+                                        nome: produtoSearchTerm,
+                                        ean: "",
+                                        lote: "",
+                                        categoria: "Não Cadastrado"
+                                      };
+                                      handleProdutoSelect(novoProduto);
+                                    }}
+                                  >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Adicionar "{produtoSearchTerm}" como novo produto
+                                  </button>
+                                </div>
+                              </>
                             )}
                           </div>
                         )}
@@ -670,22 +710,60 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                         {showLotesList && (
                           <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
                             {filteredProdutosByLote.length > 0 ? (
-                              filteredProdutosByLote.map((produto, index) => (
-                                <button
-                                  key={produto.id}
-                                  className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
-                                    index !== filteredProdutosByLote.length - 1 ? "border-b" : ""
-                                  }`}
-                                  onClick={() => handleLoteSelect(produto)}
-                                >
-                                  <div className="font-medium text-gray-900">Lote: {produto.lote}</div>
-                                  <div className="text-sm text-gray-500">{produto.nome}</div>
-                                </button>
-                              ))
+                              <>
+                                {filteredProdutosByLote.map((produto, index) => (
+                                  <button
+                                    key={produto.id}
+                                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
+                                      index !== filteredProdutosByLote.length - 1 ? "border-b" : ""
+                                    }`}
+                                    onClick={() => handleLoteSelect(produto)}
+                                  >
+                                    <div className="font-medium text-gray-900">Lote: {produto.lote}</div>
+                                    <div className="text-sm text-gray-500">{produto.nome}</div>
+                                  </button>
+                                ))}
+                                <div className="border-t">
+                                  <button
+                                    className="w-full text-left px-4 py-3 hover:bg-teal-50 focus:bg-teal-50 focus:outline-none text-teal-600 font-medium flex items-center"
+                                    onClick={() => {
+                                      const novoLote = loteSearchTerm;
+                                      setSelectedLotes(prev => [...prev, novoLote]);
+                                      setFormData(prev => ({
+                                        ...prev,
+                                        lote: [...prev.lote.split(", ").filter(l => l), novoLote].join(", ")
+                                      }));
+                                      setLoteSearchTerm("");
+                                    }}
+                                  >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Adicionar "{loteSearchTerm}" como novo lote
+                                  </button>
+                                </div>
+                              </>
                             ) : (
-                              <div className="px-4 py-3 text-sm text-gray-500">
-                                Nenhum lote encontrado
-                              </div>
+                              <>
+                                <div className="px-4 py-3 text-sm text-gray-500">
+                                  Nenhum lote encontrado
+                                </div>
+                                <div className="border-t">
+                                  <button
+                                    className="w-full text-left px-4 py-3 hover:bg-teal-50 focus:bg-teal-50 focus:outline-none text-teal-600 font-medium flex items-center"
+                                    onClick={() => {
+                                      const novoLote = loteSearchTerm;
+                                      setSelectedLotes(prev => [...prev, novoLote]);
+                                      setFormData(prev => ({
+                                        ...prev,
+                                        lote: [...prev.lote.split(", ").filter(l => l), novoLote].join(", ")
+                                      }));
+                                      setLoteSearchTerm("");
+                                    }}
+                                  >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Adicionar "{loteSearchTerm}" como novo lote
+                                  </button>
+                                </div>
+                              </>
                             )}
                           </div>
                         )}
