@@ -31,6 +31,10 @@ import {
   ChevronDown,
   Pencil,
   Trash2,
+  Download,
+  History,
+  ScrollText,
+  MessageSquare,
 } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
@@ -560,32 +564,293 @@ export default function ClientePage() {
                                       </Button>
                                     </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
-                                      <div className="border-b bg-gray-50 p-4 rounded-t-lg">
-                                        <div className="flex items-center justify-between">
+                                      <Collapsible>
+                                        <CollapsibleTrigger className="w-full">
+                                          <div className="border-b bg-gray-50 p-4 rounded-t-lg hover:bg-gray-100">
+                                            <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-3">
                                             <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
                                               <AlertTriangle className="h-4 w-4 text-amber-600" />
                                             </div>
                                             <div>
-                                              <p className="font-semibold text-gray-900">Queixa Técnica #QT-2023-0001</p>
-                                              <p className="text-sm text-gray-600">15/06/2023 10:45</p>
+                                                  <p className="font-semibold text-gray-900">Queixa Técnica #QT-2023-0001</p>
+                                                  <div className="flex items-center gap-2 mt-1">
+                                                    <p className="text-sm text-gray-600">15/06/2023 10:45</p>
+                                                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                                                      Em análise
+                                                    </Badge>
                                             </div>
                                           </div>
-                                          <div className="flex gap-2">
-                                            <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
-                                              <Pencil className="h-4 w-4 mr-2" />
-                                              Editar
-                                            </Button>
-                                            <Button variant="outline" size="sm" className="hover:bg-red-50 hover:text-red-600 hover:border-red-600">
-                                              <Trash2 className="h-4 w-4 mr-2" />
-                                              Excluir
-                                            </Button>
+                                        </div>
+                                              <div className="flex gap-2">
+                                                <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
+                                                  <FileText className="h-4 w-4 mr-2" />
+                                                  Ver detalhes
+                                                </Button>
+                                                <Button variant="outline" size="sm" className="hover:bg-red-50 hover:text-red-600 hover:border-red-600">
+                                                  <Trash2 className="h-4 w-4 mr-2" />
+                                                  Excluir
+                                                </Button>
+                                      </div>
+                                            </div>
+                                          </div>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                          <div className="p-6 space-y-6 bg-white border-t border-gray-100">
+                                        <div className="grid grid-cols-2 gap-4">
+                                              <div className="bg-white p-2 rounded-md border">
+                                                <p className="text-sm font-medium text-gray-600">Produto</p>
+                                            <p className="text-gray-900">Medicamento A</p>
+                                          </div>
+                                              <div className="bg-white p-2 rounded-md border">
+                                                <p className="text-sm font-medium text-gray-600">Lote</p>
+                                            <p className="text-gray-900">ABC123</p>
                                           </div>
                                         </div>
+
+                                            <div>
+                                              <div className="flex items-center justify-between mb-2">
+                                                <Label htmlFor="relato-queixa" className="text-sm font-medium text-gray-600">Descrição</Label>
+                                                <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
+                                                  <Pencil className="h-4 w-4 mr-2" />
+                                                  Editar
+                                                </Button>
                                       </div>
-                                      <div className="p-4">
-                                        <p className="text-gray-700">Relato de problema com embalagem do produto.</p>
-                                      </div>
+                                              <p className="text-gray-700">Relato de problema com embalagem do produto.</p>
+                                            </div>
+
+                                            <div className="bg-white rounded-lg border border-gray-200">
+                                              <Tabs defaultValue="timeline" className="w-full">
+                                                <TabsList className="w-full justify-start border-b bg-gray-50 p-2 rounded-t-lg gap-2">
+                                                  <TabsTrigger value="timeline" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
+                                                    <History className="h-4 w-4 mr-2" />
+                                                    Linha do Tempo
+                                                  </TabsTrigger>
+                                                  <TabsTrigger value="documents" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
+                                                    <ScrollText className="h-4 w-4 mr-2" />
+                                                    Documentos
+                                                  </TabsTrigger>
+                                                  <TabsTrigger value="messages" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
+                                                    <MessageSquare className="h-4 w-4 mr-2" />
+                                                    Mensagens
+                                                  </TabsTrigger>
+                                                </TabsList>
+
+                                                <TabsContent value="timeline" className="p-6">
+                                                  <div className="space-y-6">
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                                        <CheckCircle className="h-5 w-5 text-green-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Registro da queixa</h4>
+                                                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                                            15/06/2023 10:45
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Queixa técnica registrada no sistema por Rafael Celso</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                                        <CheckCircle className="h-5 w-5 text-green-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Análise inicial</h4>
+                                                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                                            15/06/2023 14:30
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Queixa encaminhada para o setor de Qualidade</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
+                                                        <Clock className="h-5 w-5 text-amber-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Avaliação técnica</h4>
+                                                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                                                            15/06/2023 16:20
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Em análise pelo departamento técnico</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                                                        <Clock className="h-5 w-5 text-gray-400" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-400">Conclusão</h4>
+                                                          <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200">
+                                                            Pendente
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-400">Aguardando parecer final</p>
+                                                      </div>
+                                    </div>
+                                  </div>
+                                </TabsContent>
+
+                                                <TabsContent value="messages" className="p-6">
+                                                  <div className="space-y-6">
+                                                    <div className="space-y-6">
+                                                      <div className="flex gap-4">
+                                                        <div className="flex flex-col items-center">
+                                                          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                                            <User className="h-5 w-5 text-blue-600" />
+                                                          </div>
+                                                          <div className="w-px h-full bg-gray-200 my-2"></div>
+                                                        </div>
+                                                        <div className="flex-1">
+                                                          <div className="bg-white rounded-2xl rounded-tl-none border border-gray-200 p-4 shadow-sm">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                              <div className="flex items-center gap-2">
+                                                                <p className="font-medium text-gray-900">Rafael Celso</p>
+                                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                                  Atendente
+                                                                </Badge>
+                                                              </div>
+                                                              <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                                <Clock className="h-4 w-4" />
+                                                                15/06/2023 11:30
+                                                              </div>
+                                                            </div>
+                                                            <p className="text-gray-700">Queixa técnica registrada e encaminhada para análise inicial.</p>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+
+                                                      <div className="flex gap-4">
+                                                        <div className="flex flex-col items-center">
+                                                          <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                                                            <User className="h-5 w-5 text-purple-600" />
+                                                          </div>
+                                                          <div className="w-px h-full bg-gray-200 my-2"></div>
+                                                        </div>
+                                                        <div className="flex-1">
+                                                          <div className="bg-white rounded-2xl rounded-tl-none border border-gray-200 p-4 shadow-sm">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                              <div className="flex items-center gap-2">
+                                                                <p className="font-medium text-gray-900">Eng. Carlos</p>
+                                                                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                                                  Qualidade
+                                                                </Badge>
+                                                              </div>
+                                                              <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                                <Clock className="h-4 w-4" />
+                                                                15/06/2023 15:45
+                                                              </div>
+                                                            </div>
+                                                            <p className="text-gray-700">Análise inicial realizada. Encaminhado para avaliação técnica.</p>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-4 pt-4 border-t">
+                                                      <div className="h-10 w-10 rounded-full bg-[#E6F7F5] flex items-center justify-center flex-shrink-0">
+                                                        <User className="h-5 w-5 text-[#26B99D]" />
+                                                      </div>
+                                                      <div className="flex-1 relative">
+                                                        <Input 
+                                                          placeholder="Digite sua mensagem..." 
+                                                          className="bg-white pr-24 focus-visible:ring-[#26B99D]" 
+                                                        />
+                                                        <Button 
+                                                          size="sm"
+                                                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#26B99D] hover:bg-[#1E9A82]"
+                                                        >
+                                                          Enviar
+                                                        </Button>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </TabsContent>
+
+                                                <TabsContent value="documents" className="p-6">
+                                                  <div className="space-y-6">
+                                                    <div className="grid gap-4">
+                                                      <div className="bg-white p-4 rounded-lg border border-gray-200 hover:border-[#26B99D] transition-colors group">
+                                                        <div className="flex items-center justify-between">
+                                                          <div className="flex items-center gap-3">
+                                                            <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-[#E6F7F5]">
+                                                              <FileText className="h-5 w-5 text-gray-500 group-hover:text-[#26B99D]" />
+                                                            </div>
+                                                            <div>
+                                                              <p className="font-medium text-gray-900">Relatório Inicial.pdf</p>
+                                                              <p className="text-sm text-gray-500">1.2 MB • 15/06/2023</p>
+                                                            </div>
+                                                          </div>
+                                                          <Button variant="ghost" size="sm" className="group-hover:text-[#26B99D]">
+                                                            <Download className="h-4 w-4" />
+                                                          </Button>
+                                                        </div>
+                                                      </div>
+
+                                                      <div className="bg-white p-4 rounded-lg border border-gray-200 hover:border-[#26B99D] transition-colors group">
+                                                        <div className="flex items-center justify-between">
+                                                          <div className="flex items-center gap-3">
+                                                            <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-[#E6F7F5]">
+                                                              <FileText className="h-5 w-5 text-gray-500 group-hover:text-[#26B99D]" />
+                                                            </div>
+                                                            <div>
+                                                              <p className="font-medium text-gray-900">Laudo Parcial.pdf</p>
+                                                              <p className="text-sm text-gray-500">2.8 MB • 22/06/2023</p>
+                                                            </div>
+                                                          </div>
+                                                          <Button variant="ghost" size="sm" className="group-hover:text-[#26B99D]">
+                                                            <Download className="h-4 w-4" />
+                                                          </Button>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="space-y-4 pt-4 border-t">
+                                                      <p className="text-sm text-gray-600">Adicionar novo documento</p>
+                                                      
+                                                      <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 hover:border-[#26B99D] transition-colors">
+                                                        <div className="flex flex-col items-center justify-center gap-4">
+                                                          <div className="h-12 w-12 rounded-lg bg-[#E6F7F5] flex items-center justify-center">
+                                                            <FileText className="h-6 w-6 text-[#26B99D]" />
+                                                          </div>
+                                                          <div className="text-center">
+                                                            <p className="text-sm font-medium text-gray-900">
+                                                              Arraste e solte seus arquivos aqui
+                                                            </p>
+                                                            <p className="text-sm text-gray-500 mt-1">
+                                                              ou
+                                                            </p>
+                                                            <div className="flex items-center gap-2 mt-2">
+                                                              <Button variant="outline" className="text-gray-600">
+                                                                Selecionar arquivo
+                                                              </Button>
+                                                              <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
+                                                                Enviar
+                                                              </Button>
+                                                            </div>
+                                                          </div>
+                                                          <p className="text-xs text-gray-500">
+                                                            Arquivos suportados: PDF, DOC, DOCX, JPG, PNG, WAV (máx. 10MB)
+                                                          </p>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </TabsContent>
+                                              </Tabs>
+                                            </div>
+                                          </div>
+                                        </CollapsibleContent>
+                                      </Collapsible>
                                     </div>
                                   </div>
                                 </TabsContent>
@@ -599,32 +864,302 @@ export default function ClientePage() {
                                       </Button>
                                     </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
-                                      <div className="border-b bg-gray-50 p-4 rounded-t-lg">
-                                        <div className="flex items-center justify-between">
+                                      <Collapsible>
+                                        <CollapsibleTrigger className="w-full">
+                                          <div className="border-b bg-gray-50 p-4 rounded-t-lg hover:bg-gray-100">
+                                            <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center">
-                                              <Shield className="h-4 w-4 text-red-600" />
+                                                <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center">
+                                                  <Shield className="h-4 w-4 text-red-600" />
                                             </div>
                                             <div>
-                                              <p className="font-semibold text-gray-900">Evento Adverso #EA-2023-0001</p>
+                                                  <p className="font-semibold text-gray-900">Evento Adverso #EA-2023-0001</p>
+                                                  <div className="flex items-center gap-2 mt-1">
                                               <p className="text-sm text-gray-600">15/06/2023 10:45</p>
+                                                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                                                      Em análise
+                                                    </Badge>
                                             </div>
                                           </div>
-                                          <div className="flex gap-2">
-                                            <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
-                                              <Pencil className="h-4 w-4 mr-2" />
-                                              Editar
-                                            </Button>
-                                            <Button variant="outline" size="sm" className="hover:bg-red-50 hover:text-red-600 hover:border-red-600">
-                                              <Trash2 className="h-4 w-4 mr-2" />
-                                              Excluir
-                                            </Button>
+                                        </div>
+                                              <div className="flex gap-2">
+                                                <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
+                                                  <FileText className="h-4 w-4 mr-2" />
+                                                  Ver detalhes
+                                                </Button>
+                                                <Button variant="outline" size="sm" className="hover:bg-red-50 hover:text-red-600 hover:border-red-600">
+                                                  <Trash2 className="h-4 w-4 mr-2" />
+                                                  Excluir
+                                                </Button>
+                                      </div>
+                                      </div>
+                                    </div>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                          <div className="p-4 border-t space-y-4">
+                                            <div className="grid grid-cols-2 gap-4">
+                                              <div className="bg-white p-2 rounded-md border">
+                                                <p className="text-sm font-medium text-gray-600">Produto</p>
+                                                <p className="text-gray-900">Medicamento A</p>
+                                            </div>
+                                              <div className="bg-white p-2 rounded-md border">
+                                                <p className="text-sm font-medium text-gray-600">Lote</p>
+                                                <p className="text-gray-900">ABC123</p>
+                                              </div>
+                                            </div>
+
+                                            <div>
+                                              <div className="flex items-center justify-between mb-2">
+                                                <Label htmlFor="relato-farmacovigilancia" className="text-sm font-medium text-gray-600">Descrição</Label>
+                                                <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
+                                                  <Pencil className="h-4 w-4 mr-2" />
+                                                  Editar
+                                                </Button>
+                                            </div>
+                                              <p className="text-gray-700">Relato de reação adversa ao medicamento.</p>
                                           </div>
+
+                                            <div className="bg-white rounded-lg border border-gray-200">
+                                              <Tabs defaultValue="timeline" className="w-full">
+                                                <TabsList className="w-full justify-start border-b bg-gray-50 p-2 rounded-t-lg gap-2">
+                                                  <TabsTrigger
+                                                    value="timeline"
+                                                    className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100"
+                                                  >
+                                                    <History className="h-4 w-4 mr-2" />
+                                                    Linha do Tempo
+                                                  </TabsTrigger>
+                                                  <TabsTrigger
+                                                    value="documents"
+                                                    className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100"
+                                                  >
+                                                    <ScrollText className="h-4 w-4 mr-2" />
+                                                    Documentos
+                                                  </TabsTrigger>
+                                                  <TabsTrigger
+                                                    value="messages"
+                                                    className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100"
+                                                  >
+                                                    <MessageSquare className="h-4 w-4 mr-2" />
+                                                    Mensagens
+                                                  </TabsTrigger>
+                                                </TabsList>
+
+                                                <TabsContent value="timeline" className="p-6">
+                                                  <div className="space-y-6">
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                                        <CheckCircle className="h-5 w-5 text-green-600" />
+                                        </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Registro do evento</h4>
+                                                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                                            15/06/2023 11:00
+                                                          </Badge>
+                                      </div>
+                                                        <p className="text-gray-600">Evento adverso registrado no sistema por Rafael Celso</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                                        <CheckCircle className="h-5 w-5 text-green-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Análise inicial</h4>
+                                                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                                            15/06/2023 14:30
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Evento encaminhado para o setor de Farmacovigilância</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
+                                                        <Clock className="h-5 w-5 text-amber-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Avaliação médica</h4>
+                                                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                                                            15/06/2023 16:20
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Em análise pelo departamento médico</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                                                        <Clock className="h-5 w-5 text-gray-400" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-400">Conclusão</h4>
+                                                          <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200">
+                                                            Pendente
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-400">Aguardando parecer final</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </TabsContent>
+
+                                                <TabsContent value="messages" className="p-6">
+                                                  <div className="space-y-6">
+                                                    <div className="space-y-6">
+                                                      <div className="flex gap-4">
+                                                        <div className="flex flex-col items-center">
+                                                          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                                            <User className="h-5 w-5 text-blue-600" />
+                                                          </div>
+                                                          <div className="w-px h-full bg-gray-200 my-2"></div>
+                                                        </div>
+                                                        <div className="flex-1">
+                                                          <div className="bg-white rounded-2xl rounded-tl-none border border-gray-200 p-4 shadow-sm">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                              <div className="flex items-center gap-2">
+                                                                <p className="font-medium text-gray-900">Rafael Celso</p>
+                                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                                  Atendente
+                                                                </Badge>
+                                                              </div>
+                                                              <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                                <Clock className="h-4 w-4" />
+                                                                15/06/2023 11:30
+                                                              </div>
+                                                            </div>
+                                                            <p className="text-gray-700">Evento adverso registrado e encaminhado para análise inicial.</p>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+
+                                                      <div className="flex gap-4">
+                                                        <div className="flex flex-col items-center">
+                                                          <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                                                            <User className="h-5 w-5 text-purple-600" />
+                                                          </div>
+                                                          <div className="w-px h-full bg-gray-200 my-2"></div>
+                                                        </div>
+                                                        <div className="flex-1">
+                                                          <div className="bg-white rounded-2xl rounded-tl-none border border-gray-200 p-4 shadow-sm">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                              <div className="flex items-center gap-2">
+                                                                <p className="font-medium text-gray-900">Dr. Ana Paula</p>
+                                                                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                                                  Farmacovigilância
+                                                                </Badge>
+                                                              </div>
+                                                              <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                                <Clock className="h-4 w-4" />
+                                                                15/06/2023 15:45
+                                                              </div>
+                                                            </div>
+                                                            <p className="text-gray-700">Análise inicial realizada. Encaminhado para avaliação médica.</p>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-4 pt-4 border-t">
+                                                      <div className="h-10 w-10 rounded-full bg-[#E6F7F5] flex items-center justify-center flex-shrink-0">
+                                                        <User className="h-5 w-5 text-[#26B99D]" />
+                                                      </div>
+                                                      <div className="flex-1 relative">
+                                                        <Input 
+                                                          placeholder="Digite sua mensagem..." 
+                                                          className="bg-white pr-24 focus-visible:ring-[#26B99D]" 
+                                                        />
+                                                        <Button 
+                                                          size="sm"
+                                                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#26B99D] hover:bg-[#1E9A82]"
+                                                        >
+                                                          Enviar
+                                      </Button>
+                                    </div>
+                                                    </div>
+                                                  </div>
+                                                </TabsContent>
+
+                                                <TabsContent value="documents" className="p-6">
+                                                  <div className="space-y-6">
+                                                    <div className="grid gap-4">
+                                                      <div className="bg-white p-4 rounded-lg border border-gray-200 hover:border-[#26B99D] transition-colors group">
+                                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-3">
+                                                            <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-[#E6F7F5]">
+                                                              <FileText className="h-5 w-5 text-gray-500 group-hover:text-[#26B99D]" />
+                                            </div>
+                                            <div>
+                                                              <p className="font-medium text-gray-900">Relatório Inicial.pdf</p>
+                                                              <p className="text-sm text-gray-500">1.2 MB • 15/06/2023</p>
+                                            </div>
+                                          </div>
+                                                          <Button variant="ghost" size="sm" className="group-hover:text-[#26B99D]">
+                                                            <Download className="h-4 w-4" />
+                                                          </Button>
                                         </div>
                                       </div>
-                                      <div className="p-4">
-                                        <p className="text-gray-700">Relato de reação adversa ao medicamento.</p>
+
+                                                      <div className="bg-white p-4 rounded-lg border border-gray-200 hover:border-[#26B99D] transition-colors group">
+                                                        <div className="flex items-center justify-between">
+                                                          <div className="flex items-center gap-3">
+                                                            <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-[#E6F7F5]">
+                                                              <FileText className="h-5 w-5 text-gray-500 group-hover:text-[#26B99D]" />
+                                          </div>
+                                                            <div>
+                                                              <p className="font-medium text-gray-900">Laudo Parcial.pdf</p>
+                                                              <p className="text-sm text-gray-500">2.8 MB • 22/06/2023</p>
+                                          </div>
+                                                          </div>
+                                                          <Button variant="ghost" size="sm" className="group-hover:text-[#26B99D]">
+                                                            <Download className="h-4 w-4" />
+                                                          </Button>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="space-y-4 pt-4 border-t">
+                                                      <p className="text-sm text-gray-600">Adicionar novo documento</p>
+                                                      
+                                                      <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 hover:border-[#26B99D] transition-colors">
+                                                        <div className="flex flex-col items-center justify-center gap-4">
+                                                          <div className="h-12 w-12 rounded-lg bg-[#E6F7F5] flex items-center justify-center">
+                                                            <FileText className="h-6 w-6 text-[#26B99D]" />
+                                                          </div>
+                                                          <div className="text-center">
+                                                            <p className="text-sm font-medium text-gray-900">
+                                                              Arraste e solte seus arquivos aqui
+                                                            </p>
+                                                            <p className="text-sm text-gray-500 mt-1">
+                                                              ou
+                                                            </p>
+                                                            <div className="flex items-center gap-2 mt-2">
+                                                              <Button variant="outline" className="text-gray-600">
+                                                                Selecionar arquivo
+                                                              </Button>
+                                                              <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
+                                                                Enviar
+                                                              </Button>
+                                                            </div>
+                                                          </div>
+                                                          <p className="text-xs text-gray-500">
+                                                            Arquivos suportados: PDF, DOC, DOCX, JPG, PNG, WAV (máx. 10MB)
+                                                          </p>
+                                        </div>
                                       </div>
+                                                    </div>
+                                                  </div>
+                                                </TabsContent>
+                                              </Tabs>
+                                            </div>
+                                          </div>
+                                        </CollapsibleContent>
+                                      </Collapsible>
                                     </div>
                                   </div>
                                 </TabsContent>
