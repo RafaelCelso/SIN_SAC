@@ -217,12 +217,6 @@ export function Sidebar() {
               href="/atendimentos/farmacovigilancia"
               active={pathname.includes("/atendimentos/farmacovigilancia")}
             />
-            <SidebarItem
-              icon={<HelpCircle size={16} />}
-              label="Informações Médicas"
-              href="/atendimentos/info"
-              active={pathname.includes("/atendimentos/info")}
-            />
           </div>
         </div>
 

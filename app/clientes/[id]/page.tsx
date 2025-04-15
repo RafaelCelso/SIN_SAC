@@ -29,6 +29,8 @@ import {
   Plus,
   Clock,
   ChevronDown,
+  Pencil,
+  Trash2,
 } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
@@ -283,7 +285,6 @@ export default function ClientePage() {
           </CardHeader>
 
           <CardContent className="p-0">
-            {/* Modificar a lista de abas para incluir as novas abas solicitadas */}
             <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
                 <TabsTrigger
@@ -305,21 +306,12 @@ export default function ClientePage() {
                   Queixas Técnicas
                 </TabsTrigger>
                 <TabsTrigger
-                  value="informacoes"
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#26B99D] data-[state=active]:bg-transparent"
-                >
-                  Informações Médicas
-                </TabsTrigger>
-                <TabsTrigger
                   value="farmacovigilancia"
                   className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#26B99D] data-[state=active]:bg-transparent"
                 >
                   Farmacovigilância
                 </TabsTrigger>
               </TabsList>
-
-              {/* Conteúdo existente das abas */}
-              {/* ... */}
 
               <TabsContent value="dados" className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -498,7 +490,7 @@ export default function ClientePage() {
 
                               {/* Abas de Navegação */}
                               <Tabs defaultValue="contatos" className="w-full">
-                                <TabsList className="w-full grid grid-cols-4 gap-2 bg-gray-100 p-1 rounded-lg">
+                                <TabsList className="w-full grid grid-cols-3 gap-2 bg-gray-100 p-1 rounded-lg">
                                   <TabsTrigger value="contatos" className="data-[state=active]:bg-[#26B99D] data-[state=active]:text-white">
                                     <Phone className="h-4 w-4 mr-2" />
                                     Contatos
@@ -506,10 +498,6 @@ export default function ClientePage() {
                                   <TabsTrigger value="queixas" className="data-[state=active]:bg-[#26B99D] data-[state=active]:text-white">
                                     <AlertTriangle className="h-4 w-4 mr-2" />
                                     Queixas Técnicas
-                                  </TabsTrigger>
-                                  <TabsTrigger value="informacoes" className="data-[state=active]:bg-[#26B99D] data-[state=active]:text-white">
-                                    <FileText className="h-4 w-4 mr-2" />
-                                    Informações Médicas
                                   </TabsTrigger>
                                   <TabsTrigger value="farmacovigilancia" className="data-[state=active]:bg-[#26B99D] data-[state=active]:text-white">
                                     <Shield className="h-4 w-4 mr-2" />
@@ -533,38 +521,31 @@ export default function ClientePage() {
                                     </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <div className="border-b bg-gray-50 p-4 rounded-t-lg">
-                                        <div className="flex items-center">
+                                        <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                              <Phone className="h-4 w-4 text-blue-600" />
+                                            <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                                              <User className="h-4 w-4 text-indigo-600" />
                                             </div>
                                             <div>
-                                              <p className="font-semibold text-gray-900">Contato Inicial</p>
-                                              <p className="text-sm text-gray-600">15/06/2023 10:30</p>
+                                              <p className="font-semibold text-gray-900">João Silva</p>
+                                              <p className="text-sm text-gray-600">Gerente de Qualidade</p>
                                             </div>
+                                          </div>
+                                          <div className="flex gap-2">
+                                            <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
+                                              <Pencil className="h-4 w-4 mr-2" />
+                                              Editar
+                                            </Button>
+                                            <Button variant="outline" size="sm" className="hover:bg-red-50 hover:text-red-600 hover:border-red-600">
+                                              <Trash2 className="h-4 w-4 mr-2" />
+                                              Excluir
+                                            </Button>
                                           </div>
                                         </div>
                                       </div>
                                       <div className="p-4">
-                                        <p className="text-gray-700">Cliente entrou em contato relatando problema com o produto.</p>
-                                      </div>
-                                    </div>
-                                    <div className="bg-white border rounded-lg shadow-sm">
-                                      <div className="border-b bg-gray-50 p-4 rounded-t-lg">
-                                        <div className="flex items-center">
-                                          <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
-                                              <Mail className="h-4 w-4 text-purple-600" />
-                                            </div>
-                                            <div>
-                                              <p className="font-semibold text-gray-900">Retorno ao Cliente</p>
-                                              <p className="text-sm text-gray-600">16/06/2023 14:15</p>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="p-4">
-                                        <p className="text-gray-700">Enviado email com instruções e formulário para preenchimento.</p>
+                                        <p className="text-gray-700">joao.silva@empresa.com.br</p>
+                                        <p className="text-gray-700">(11) 99999-9999</p>
                                       </div>
                                     </div>
                                   </div>
@@ -580,76 +561,30 @@ export default function ClientePage() {
                                     </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <div className="border-b bg-gray-50 p-4 rounded-t-lg">
-                                        <div className="flex items-center">
+                                        <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-3">
                                             <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
                                               <AlertTriangle className="h-4 w-4 text-amber-600" />
                                             </div>
                                             <div>
-                                              <p className="font-semibold text-gray-900">Registro da Queixa</p>
-                                              <p className="text-sm text-gray-600">15/06/2023 11:00</p>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="p-4">
-                                        <div className="grid grid-cols-2 gap-6">
-                                          <div className="bg-gray-50 p-3 rounded-md">
-                                            <p className="text-sm font-medium text-gray-600 mb-1">Produto</p>
-                                            <p className="text-gray-900">Medicamento A</p>
-                                          </div>
-                                          <div className="bg-gray-50 p-3 rounded-md">
-                                            <p className="text-sm font-medium text-gray-600 mb-1">Lote</p>
-                                            <p className="text-gray-900">ABC123</p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </TabsContent>
-
-                                <TabsContent value="informacoes" className="mt-4">
-                                  <div className="space-y-4">
-                                    <div className="flex items-center justify-between mb-4">
-                                      <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        Nova Informação Médica
-                                      </Button>
-                                    </div>
-                                    <div className="bg-white border rounded-lg shadow-sm">
-                                      <div className="border-b bg-gray-50 p-4 rounded-t-lg">
-                                        <div className="flex items-center">
-                                          <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                                              <FileText className="h-4 w-4 text-indigo-600" />
-                                            </div>
-                                            <div>
-                                              <p className="font-semibold text-gray-900">Solicitação de Informação</p>
+                                              <p className="font-semibold text-gray-900">Queixa Técnica #QT-2023-0001</p>
                                               <p className="text-sm text-gray-600">15/06/2023 10:45</p>
                                             </div>
                                           </div>
-                                        </div>
-                                      </div>
-                                      <div className="p-4">
-                                        <p className="text-gray-700">Solicitação de informações sobre dosagem e forma de administração.</p>
-                                      </div>
-                                    </div>
-                                    <div className="bg-white border rounded-lg shadow-sm">
-                                      <div className="border-b bg-gray-50 p-4 rounded-t-lg">
-                                        <div className="flex items-center">
-                                          <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                                              <CheckCircle className="h-4 w-4 text-green-600" />
-                                            </div>
-                                            <div>
-                                              <p className="font-semibold text-gray-900">Resposta Técnica</p>
-                                              <p className="text-sm text-gray-600">16/06/2023 09:30</p>
-                                            </div>
+                                          <div className="flex gap-2">
+                                            <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
+                                              <Pencil className="h-4 w-4 mr-2" />
+                                              Editar
+                                            </Button>
+                                            <Button variant="outline" size="sm" className="hover:bg-red-50 hover:text-red-600 hover:border-red-600">
+                                              <Trash2 className="h-4 w-4 mr-2" />
+                                              Excluir
+                                            </Button>
                                           </div>
                                         </div>
                                       </div>
                                       <div className="p-4">
-                                        <p className="text-gray-700">Enviada orientação técnica sobre posologia conforme bula.</p>
+                                        <p className="text-gray-700">Relato de problema com embalagem do produto.</p>
                                       </div>
                                     </div>
                                   </div>
@@ -660,34 +595,35 @@ export default function ClientePage() {
                                     <div className="flex items-center justify-between mb-4">
                                       <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
                                         <Plus className="h-4 w-4 mr-2" />
-                                        Nova Farmacovigilância
+                                        Novo Evento
                                       </Button>
                                     </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <div className="border-b bg-gray-50 p-4 rounded-t-lg">
-                                        <div className="flex items-center">
+                                        <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-rose-100 flex items-center justify-center">
-                                              <Shield className="h-4 w-4 text-rose-600" />
+                                            <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center">
+                                              <Shield className="h-4 w-4 text-red-600" />
                                             </div>
                                             <div>
-                                              <p className="font-semibold text-gray-900">Notificação de Evento Adverso</p>
-                                              <p className="text-sm text-gray-600">15/06/2023 11:15</p>
+                                              <p className="font-semibold text-gray-900">Evento Adverso #EA-2023-0001</p>
+                                              <p className="text-sm text-gray-600">15/06/2023 10:45</p>
                                             </div>
+                                          </div>
+                                          <div className="flex gap-2">
+                                            <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
+                                              <Pencil className="h-4 w-4 mr-2" />
+                                              Editar
+                                            </Button>
+                                            <Button variant="outline" size="sm" className="hover:bg-red-50 hover:text-red-600 hover:border-red-600">
+                                              <Trash2 className="h-4 w-4 mr-2" />
+                                              Excluir
+                                            </Button>
                                           </div>
                                         </div>
                                       </div>
                                       <div className="p-4">
-                                        <div className="grid grid-cols-2 gap-6">
-                                          <div className="bg-gray-50 p-3 rounded-md">
-                                            <p className="text-sm font-medium text-gray-600 mb-1">Reação Adversa</p>
-                                            <p className="text-gray-900">Náusea</p>
-                                          </div>
-                                          <div className="bg-gray-50 p-3 rounded-md">
-                                            <p className="text-sm font-medium text-gray-600 mb-1">Status</p>
-                                            <p className="text-gray-900">Concluído</p>
-                                          </div>
-                                        </div>
+                                        <p className="text-gray-700">Relato de reação adversa ao medicamento.</p>
                                       </div>
                                     </div>
                                   </div>
@@ -708,7 +644,6 @@ export default function ClientePage() {
                 )}
               </TabsContent>
 
-              {/* Nova aba de Queixas Técnicas */}
               <TabsContent value="queixas" className="p-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -805,99 +740,6 @@ export default function ClientePage() {
                 </div>
               </TabsContent>
 
-              {/* Nova aba de Informações Médicas */}
-              <TabsContent value="informacoes" className="p-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium">Informações Médicas do Cliente</h3>
-                    <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Nova Solicitação
-                    </Button>
-                  </div>
-
-                  <div className="rounded-md border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Protocolo</TableHead>
-                          <TableHead>Criado em</TableHead>
-                          <TableHead>Criado por</TableHead>
-                          <TableHead>Produto</TableHead>
-                          <TableHead>Assunto</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="text-right">Ações</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {cliente.id === "1" ? (
-                          <TableRow>
-                            <TableCell className="font-medium">IM-2023-0001</TableCell>
-                            <TableCell>15/06/2023</TableCell>
-                            <TableCell>Rafael Celso</TableCell>
-                            <TableCell>Medicamento A</TableCell>
-                            <TableCell>Posologia</TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <CheckCircle className="h-4 w-4 text-[#26B99D]" />
-                                <span>Respondido</span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
-                                asChild
-                              >
-                                <Link href={`/protocolos/IM-2023-0001?tab=informacoes`}>
-                                  <FileText className="h-4 w-4 mr-2" />
-                                  Ver detalhes
-                                </Link>
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ) : cliente.id === "2" ? (
-                          <TableRow>
-                            <TableCell className="font-medium">IM-2023-0002</TableCell>
-                            <TableCell>16/06/2023</TableCell>
-                            <TableCell>Rafael Celso</TableCell>
-                            <TableCell>Medicamento B</TableCell>
-                            <TableCell>Interações medicamentosas</TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-amber-500" />
-                                <span>Em análise</span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
-                                asChild
-                              >
-                                <Link href={`/protocolos/IM-2023-0002?tab=informacoes`}>
-                                  <FileText className="h-4 w-4 mr-2" />
-                                  Ver detalhes
-                                </Link>
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={7} className="text-center py-6">
-                              Este cliente não possui solicitações de informações médicas registradas.
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
-              </TabsContent>
-
-              {/* Nova aba de Farmacovigilância */}
               <TabsContent value="farmacovigilancia" className="p-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
