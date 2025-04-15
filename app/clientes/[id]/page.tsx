@@ -35,6 +35,8 @@ import {
   History,
   ScrollText,
   MessageSquare,
+  Package,
+  Barcode,
 } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
@@ -157,6 +159,10 @@ export default function ClientePage() {
   const [showNovoRegistroModal, setShowNovoRegistroModal] = useState(false)
   const [tipoRegistro, setTipoRegistro] = useState<"queixa" | "informacao" | "farmacovigilancia" | "contato">("contato")
   const [registroSelecionado, setRegistroSelecionado] = useState<any>(null)
+  const [isEditingDescription, setIsEditingDescription] = useState(false)
+  const [descricao, setDescricao] = useState("Relato de problema com embalagem do produto.")
+  const [isEditingFarmacoDescription, setIsEditingFarmacoDescription] = useState(false)
+  const [farmacoDescricao, setFarmacoDescricao] = useState("Relato de reação adversa ao medicamento.")
 
   // Carregar dados do cliente
   useEffect(() => {
@@ -598,25 +604,60 @@ export default function ClientePage() {
                                         <CollapsibleContent>
                                           <div className="p-6 space-y-6 bg-white border-t border-gray-100">
                                         <div className="grid grid-cols-2 gap-4">
-                                              <div className="bg-white p-2 rounded-md border">
-                                                <p className="text-sm font-medium text-gray-600">Produto</p>
-                                            <p className="text-gray-900">Medicamento A</p>
-                                          </div>
-                                              <div className="bg-white p-2 rounded-md border">
-                                                <p className="text-sm font-medium text-gray-600">Lote</p>
-                                            <p className="text-gray-900">ABC123</p>
-                                          </div>
+                                              <div className="bg-white p-3 rounded-md border shadow-sm hover:shadow-md transition-shadow">
+                                                <p className="text-sm font-medium text-gray-600 mb-1">Produto</p>
+                                                <div className="flex items-center space-x-2">
+                                                  <Package className="h-4 w-4 text-[#26B99D]" />
+                                                  <p className="text-gray-900 font-medium">Medicamento A</p>
+                                                </div>
+                                              </div>
+                                              <div className="bg-white p-3 rounded-md border shadow-sm hover:shadow-md transition-shadow">
+                                                <p className="text-sm font-medium text-gray-600 mb-1">Lote</p>
+                                                <div className="flex items-center space-x-2">
+                                                  <Barcode className="h-4 w-4 text-[#26B99D]" />
+                                                  <p className="text-gray-900 font-medium">ABC123</p>
+                                                </div>
+                                              </div>
                                         </div>
 
                                             <div>
-                                              <div className="flex items-center justify-between mb-2">
-                                                <Label htmlFor="relato-queixa" className="text-sm font-medium text-gray-600">Descrição</Label>
-                                                <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
-                                                  <Pencil className="h-4 w-4 mr-2" />
-                                                  Editar
+                                              <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-2">
+                                                  <FileText className="h-5 w-5 text-[#26B99D]" />
+                                                  <Label htmlFor="relato-queixa" className="text-base font-medium text-gray-800">Descrição</Label>
+                                                </div>
+                                                <Button 
+                                                  variant="outline" 
+                                                  size="sm" 
+                                                  className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
+                                                  onClick={() => setIsEditingDescription(!isEditingDescription)}
+                                                >
+                                                  {isEditingDescription ? (
+                                                    <>
+                                                      <Save className="h-4 w-4 mr-2" />
+                                                      Salvar
+                                                    </>
+                                                  ) : (
+                                                    <>
+                                                      <Pencil className="h-4 w-4 mr-2" />
+                                                      Editar
+                                                    </>
+                                                  )}
                                                 </Button>
-                                      </div>
-                                              <p className="text-gray-700">Relato de problema com embalagem do produto.</p>
+                                              </div>
+                                              {isEditingDescription ? (
+                                                <Textarea
+                                                  id="relato-queixa"
+                                                  className="min-h-[100px] bg-white focus-visible:ring-[#26B99D]"
+                                                  value={descricao}
+                                                  onChange={(e) => setDescricao(e.target.value)}
+                                                  placeholder="Digite a descrição da queixa técnica..."
+                                                />
+                                              ) : (
+                                                <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
+                                                  <p className="text-gray-700 leading-relaxed">Relato de problema com embalagem do produto.</p>
+                                                </div>
+                                              )}
                                             </div>
 
                                             <div className="bg-white rounded-lg border border-gray-200">
@@ -898,26 +939,61 @@ export default function ClientePage() {
                                         <CollapsibleContent>
                                           <div className="p-4 border-t space-y-4">
                                             <div className="grid grid-cols-2 gap-4">
-                                              <div className="bg-white p-2 rounded-md border">
-                                                <p className="text-sm font-medium text-gray-600">Produto</p>
-                                                <p className="text-gray-900">Medicamento A</p>
-                                            </div>
-                                              <div className="bg-white p-2 rounded-md border">
-                                                <p className="text-sm font-medium text-gray-600">Lote</p>
-                                                <p className="text-gray-900">ABC123</p>
+                                              <div className="bg-white p-3 rounded-md border shadow-sm hover:shadow-md transition-shadow">
+                                                <p className="text-sm font-medium text-gray-600 mb-1">Produto</p>
+                                                <div className="flex items-center space-x-2">
+                                                  <Package className="h-4 w-4 text-[#26B99D]" />
+                                                  <p className="text-gray-900 font-medium">Medicamento A</p>
+                                                </div>
+                                              </div>
+                                              <div className="bg-white p-3 rounded-md border shadow-sm hover:shadow-md transition-shadow">
+                                                <p className="text-sm font-medium text-gray-600 mb-1">Lote</p>
+                                                <div className="flex items-center space-x-2">
+                                                  <Barcode className="h-4 w-4 text-[#26B99D]" />
+                                                  <p className="text-gray-900 font-medium">ABC123</p>
+                                                </div>
                                               </div>
                                             </div>
 
                                             <div>
-                                              <div className="flex items-center justify-between mb-2">
-                                                <Label htmlFor="relato-farmacovigilancia" className="text-sm font-medium text-gray-600">Descrição</Label>
-                                                <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
-                                                  <Pencil className="h-4 w-4 mr-2" />
-                                                  Editar
+                                              <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-2">
+                                                  <FileText className="h-5 w-5 text-[#26B99D]" />
+                                                  <Label htmlFor="relato-farmacovigilancia" className="text-base font-medium text-gray-800">Descrição</Label>
+                                                </div>
+                                                <Button 
+                                                  variant="outline" 
+                                                  size="sm" 
+                                                  className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
+                                                  onClick={() => setIsEditingFarmacoDescription(!isEditingFarmacoDescription)}
+                                                >
+                                                  {isEditingFarmacoDescription ? (
+                                                    <>
+                                                      <Save className="h-4 w-4 mr-2" />
+                                                      Salvar
+                                                    </>
+                                                  ) : (
+                                                    <>
+                                                      <Pencil className="h-4 w-4 mr-2" />
+                                                      Editar
+                                                    </>
+                                                  )}
                                                 </Button>
+                                              </div>
+                                              {isEditingFarmacoDescription ? (
+                                                <Textarea
+                                                  id="relato-farmacovigilancia"
+                                                  className="min-h-[100px] bg-white focus-visible:ring-[#26B99D]"
+                                                  value={farmacoDescricao}
+                                                  onChange={(e) => setFarmacoDescricao(e.target.value)}
+                                                  placeholder="Digite a descrição do evento adverso..."
+                                                />
+                                              ) : (
+                                                <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
+                                                  <p className="text-gray-700 leading-relaxed">Relato de reação adversa ao medicamento.</p>
+                                                </div>
+                                              )}
                                             </div>
-                                              <p className="text-gray-700">Relato de reação adversa ao medicamento.</p>
-                                          </div>
 
                                             <div className="bg-white rounded-lg border border-gray-200">
                                               <Tabs defaultValue="timeline" className="w-full">

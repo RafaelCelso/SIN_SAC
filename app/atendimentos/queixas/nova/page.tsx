@@ -17,7 +17,7 @@ import { DatePicker } from "@/components/date-picker"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload } from "lucide-react"
+import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 
 // Dados simulados de clientes
@@ -249,8 +249,9 @@ export default function NovaQueixaTecnicaPage() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="produto">
-                      Nome do Produto <span className="text-red-500">*</span>
+                    <Label htmlFor="produto" className="flex items-center space-x-2">
+                      <Package className="h-4 w-4 text-[#26B99D]" />
+                      <span>Produto <span className="text-red-500">*</span></span>
                     </Label>
                     <Select
                       name="produto"
@@ -258,7 +259,7 @@ export default function NovaQueixaTecnicaPage() {
                       onValueChange={(value) => handleSelectChange("produto", value)}
                       required
                     >
-                      <SelectTrigger id="produto">
+                      <SelectTrigger id="produto" className="h-11">
                         <SelectValue placeholder="Selecione o produto" />
                       </SelectTrigger>
                       <SelectContent>
@@ -272,8 +273,9 @@ export default function NovaQueixaTecnicaPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="lote">
-                      Número do Lote <span className="text-red-500">*</span>
+                    <Label htmlFor="lote" className="flex items-center space-x-2">
+                      <Barcode className="h-4 w-4 text-[#26B99D]" />
+                      <span>Número do Lote <span className="text-red-500">*</span></span>
                     </Label>
                     <Input
                       id="lote"
@@ -282,6 +284,7 @@ export default function NovaQueixaTecnicaPage() {
                       value={formData.lote}
                       onChange={handleInputChange}
                       required
+                      className="h-11"
                     />
                   </div>
 

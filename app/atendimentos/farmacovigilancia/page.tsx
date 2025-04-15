@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Filter, FileText, CheckCircle, Clock, AlertTriangle, Plus, CalendarIcon } from "lucide-react"
+import { Search, Filter, FileText, CheckCircle, Clock, AlertTriangle, Plus, CalendarIcon, Package, Barcode } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
@@ -533,8 +533,9 @@ export default function FarmacovigilanciaPage() {
               <h3 className="text-lg font-medium text-[#26B99D]">Informações do Medicamento</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="produto">
-                    Medicamento <span className="text-red-500">*</span>
+                  <Label htmlFor="produto" className="flex items-center space-x-2">
+                    <Package className="h-4 w-4 text-[#26B99D]" />
+                    <span>Medicamento <span className="text-red-500">*</span></span>
                   </Label>
                   <Select
                     name="produto"
@@ -542,7 +543,7 @@ export default function FarmacovigilanciaPage() {
                     onValueChange={(value) => handleSelectChange("produto", value)}
                     required
                   >
-                    <SelectTrigger id="produto">
+                    <SelectTrigger id="produto" className="h-11">
                       <SelectValue placeholder="Selecione o medicamento" />
                     </SelectTrigger>
                     <SelectContent>
@@ -556,8 +557,15 @@ export default function FarmacovigilanciaPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="lote">Número do Lote</Label>
-                  <Input id="lote" placeholder="Ex: ABC123456" />
+                  <Label htmlFor="lote" className="flex items-center space-x-2">
+                    <Barcode className="h-4 w-4 text-[#26B99D]" />
+                    <span>Número do Lote</span>
+                  </Label>
+                  <Input 
+                    id="lote" 
+                    placeholder="Ex: ABC123456" 
+                    className="h-11"
+                  />
                 </div>
 
                 <div className="space-y-2">
