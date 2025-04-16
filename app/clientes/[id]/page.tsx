@@ -538,7 +538,7 @@ export default function ClientePage() {
                                             </div>
                                             <div>
                                               <p className="font-semibold text-gray-900">João Silva</p>
-                                              <p className="text-sm text-gray-600">Gerente de Qualidade</p>
+                                              <p className="text-sm text-gray-600">Assistente</p>
                                             </div>
                                           </div>
                                           <div className="flex gap-2">
@@ -554,8 +554,8 @@ export default function ClientePage() {
                                         </div>
                                       </div>
                                       <div className="p-4">
-                                        <p className="text-gray-700">joao.silva@empresa.com.br</p>
-                                        <p className="text-gray-700">(11) 99999-9999</p>
+                                        <p className="text-gray-700">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae accusamus temporibus eaque quo, similique enim consectetur, iusto aperiam, ab totam et ipsum sequi doloribus eos molestias nam sapiente rem repellat.</p>
+                                        <p className="text-gray-700">Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, eaque quibusdam nulla facilis similique nobis accusantium iusto rerum molestias tempore ipsum, expedita odio maxime. Praesentium quisquam autem odio corporis consectetur?</p>
                                       </div>
                                     </div>
                                   </div>

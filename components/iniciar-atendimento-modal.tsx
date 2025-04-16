@@ -514,17 +514,17 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     >
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0 rounded-lg shadow-xl">
         <DialogHeader className="p-6 pb-4 border-b bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-t-lg">
-          <DialogTitle className="text-xl font-bold">Novo Atendimento</DialogTitle>
+          <DialogTitle className="text-xl font-bold">Novo Contato</DialogTitle>
         </DialogHeader>
 
         <div className="p-6">
           {currentStep === "info" ? (
             <div className="space-y-8">
-              {/* Seção 1: Motivo do Atendimento */}
+              {/* Seção 1: Motivo do Contato */}
               <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
                 <div className="flex items-center gap-2 mb-3">
                   <Clipboard className="h-5 w-5 text-teal-600" />
-                  <h3 className="font-medium text-lg text-gray-800">Motivo do Atendimento <span className="text-red-500">*</span></h3>
+                  <h3 className="font-medium text-lg text-gray-800">Motivo do Contato <span className="text-red-500">*</span></h3>
                 </div>
 
                 <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm">

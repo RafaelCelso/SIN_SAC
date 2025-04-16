@@ -330,7 +330,7 @@ export function Sidebar() {
           onClick={() => setShowAtendimentoModal(true)}
         >
           <PhoneCall size={collapsed ? 24 : 20} className={collapsed ? "" : "mr-2"} />
-          {!collapsed && <span className="text-base">Novo Atendimento</span>}
+          {!collapsed && <span className="text-base">Novo Contato</span>}
         </Button>
       </div>
 
