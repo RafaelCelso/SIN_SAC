@@ -37,6 +37,7 @@ import {
   MessageSquare,
   Package,
   Barcode,
+  X,
 } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
@@ -45,6 +46,7 @@ import { DetalhesRegistroModal } from "@/components/detalhes-registro-modal"
 import { NovoRegistroModal } from "@/components/novo-registro-modal"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 // Dados simulados de clientes
 const CLIENTES_MOCK = [
@@ -207,6 +209,7 @@ export default function ClientePage() {
   const [farmacoDescricao, setFarmacoDescricao] = useState("Relato de reação adversa ao medicamento.")
   const [produto, setProduto] = useState<string[]>([])
   const [lote, setLote] = useState<string[]>([])
+  const [showLogsContatosModal, setShowLogsContatosModal] = useState(false)
 
   // Carregar dados do cliente
   useEffect(() => {
@@ -572,6 +575,14 @@ export default function ClientePage() {
                                         <Plus className="h-4 w-4 mr-2" />
                                         Novo Contato
                                       </Button>
+                                      <Button
+                                        variant="outline"
+                                        className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
+                                        onClick={() => setShowLogsContatosModal(true)}
+                                      >
+                                        <History className="h-4 w-4 mr-2" />
+                                        Logs
+                                      </Button>
                                     </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <div className="border-b bg-gray-50 p-4 rounded-t-lg">
@@ -704,9 +715,21 @@ export default function ClientePage() {
                                                                     return prod && (
                                                                       <Badge 
                                                                         key={prod.id}
-                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-[#E6F7F5]"
+                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-red-100 hover:text-red-600 hover:border-red-600 cursor-pointer group"
+                                                                        onClick={(e) => {
+                                                                          e.stopPropagation();
+                                                                          const newValue = produto.filter(item => item !== prod.id);
+                                                                          setProduto(newValue);
+                                                                          setLote(lote.filter(l => {
+                                                                            const loteProduto = Object.entries(LOTES_MOCK).find(([_, lotes]) =>
+                                                                              lotes.some(loteItem => loteItem.id === l)
+                                                                            )?.[0];
+                                                                            return newValue.includes(loteProduto || "");
+                                                                          }));
+                                                                        }}
                                                                       >
                                                                         {prod.nome}
+                                                                        <X className="h-3 w-3 ml-1 hidden group-hover:inline-block" />
                                                                       </Badge>
                                                                     );
                                                                   })}
@@ -769,12 +792,18 @@ export default function ClientePage() {
                                                                     const loteInfo = LOTES_MOCK[loteProduto as keyof typeof LOTES_MOCK]?.find(
                                                                       loteItem => loteItem.id === l
                                                                     );
+                                                                    const produtoInfo = PRODUTOS_MOCK.find(p => p.id === loteProduto);
                                                                     return loteInfo && (
                                                                       <Badge 
                                                                         key={loteInfo.id}
-                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-[#E6F7F5]"
+                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-red-100 hover:text-red-600 hover:border-red-600 cursor-pointer group"
+                                                                        onClick={(e) => {
+                                                                          e.stopPropagation();
+                                                                          setLote(lote.filter(item => item !== loteInfo.id));
+                                                                        }}
                                                                       >
-                                                                        Lote: {loteInfo.numero}
+                                                                        {produtoInfo?.nome} - Lote: {loteInfo.numero}
+                                                                        <X className="h-3 w-3 ml-1 hidden group-hover:inline-block" />
                                                                       </Badge>
                                                                     );
                                                                   })}
@@ -792,22 +821,25 @@ export default function ClientePage() {
                                                                 className="mb-2"
                                                               />
                                                             </div>
-                                                            {produto.map(prodId => 
-                                                              LOTES_MOCK[prodId as keyof typeof LOTES_MOCK]?.map((loteItem) => (
+                                                            {produto.map(prodId => {
+                                                              const produtoInfo = PRODUTOS_MOCK.find(p => p.id === prodId);
+                                                              return LOTES_MOCK[prodId as keyof typeof LOTES_MOCK]?.map((loteItem) => (
                                                                 <SelectItem 
                                                                   key={loteItem.id} 
                                                                   value={loteItem.id} 
                                                                   className="text-left"
                                                                 >
                                                                   <div className="flex items-center gap-2">
-                                                                    <span>Lote: {loteItem.numero}</span>
+                                                                    <div className="flex flex-col">
+                                                                      <span>{produtoInfo?.nome} - Lote: {loteItem.numero}</span>
+                                                                    </div>
                                                                     {lote.includes(loteItem.id) && (
                                                                       <CheckCircle className="h-4 w-4 text-[#26B99D] ml-auto" />
                                                                     )}
                                                                   </div>
                                                                 </SelectItem>
-                                                              ))
-                                                            )}
+                                                              ));
+                                                            })}
                                                           </SelectContent>
                                                         </Select>
                                                       </div>
@@ -858,6 +890,10 @@ export default function ClientePage() {
                                                   <TabsTrigger value="messages" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
                                                     <MessageSquare className="h-4 w-4 mr-2" />
                                                     Mensagens
+                                                  </TabsTrigger>
+                                                  <TabsTrigger value="logs" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
+                                                    <History className="h-4 w-4 mr-2" />
+                                                    Logs
                                                   </TabsTrigger>
                                                 </TabsList>
 
@@ -1009,28 +1045,28 @@ export default function ClientePage() {
                                                           <div className="flex items-center gap-3">
                                                             <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-[#E6F7F5]">
                                                               <FileText className="h-5 w-5 text-gray-500 group-hover:text-[#26B99D]" />
-                                                            </div>
-                                                            <div>
+                                            </div>
+                                            <div>
                                                               <p className="font-medium text-gray-900">Relatório Inicial.pdf</p>
                                                               <p className="text-sm text-gray-500">1.2 MB • 15/06/2023</p>
-                                                            </div>
-                                                          </div>
+                                            </div>
+                                          </div>
                                                           <Button variant="ghost" size="sm" className="group-hover:text-[#26B99D]">
                                                             <Download className="h-4 w-4" />
                                                           </Button>
-                                                        </div>
-                                                      </div>
+                                        </div>
+                                      </div>
 
                                                       <div className="bg-white p-4 rounded-lg border border-gray-200 hover:border-[#26B99D] transition-colors group">
                                                         <div className="flex items-center justify-between">
                                                           <div className="flex items-center gap-3">
                                                             <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-[#E6F7F5]">
                                                               <FileText className="h-5 w-5 text-gray-500 group-hover:text-[#26B99D]" />
-                                                            </div>
+                                          </div>
                                                             <div>
                                                               <p className="font-medium text-gray-900">Laudo Parcial.pdf</p>
                                                               <p className="text-sm text-gray-500">2.8 MB • 22/06/2023</p>
-                                                            </div>
+                                          </div>
                                                           </div>
                                                           <Button variant="ghost" size="sm" className="group-hover:text-[#26B99D]">
                                                             <Download className="h-4 w-4" />
@@ -1066,7 +1102,71 @@ export default function ClientePage() {
                                                           <p className="text-xs text-gray-500">
                                                             Arquivos suportados: PDF, DOC, DOCX, JPG, PNG, WAV (máx. 10MB)
                                                           </p>
+                                        </div>
+                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </TabsContent>
+
+                                                <TabsContent value="logs" className="p-6">
+                                                  <div className="space-y-6">
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                        <History className="h-5 w-5 text-blue-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Atualização de Produto</h4>
+                                                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                            15/06/2023 10:45
+                                                          </Badge>
                                                         </div>
+                                                        <p className="text-gray-600">Produto "Medicamento A" adicionado ao protocolo por Rafael Celso</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                        <History className="h-5 w-5 text-blue-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Atualização de Lote</h4>
+                                                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                            15/06/2023 10:46
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Lote "ABC123" adicionado ao protocolo por Rafael Celso</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                        <History className="h-5 w-5 text-blue-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Atualização de Status</h4>
+                                                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                            15/06/2023 14:30
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Status alterado para "Em análise" por Carlos Mendes</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                        <History className="h-5 w-5 text-blue-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Atualização de Descrição</h4>
+                                                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                            15/06/2023 16:20
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Descrição atualizada por Rafael Celso</p>
                                                       </div>
                                                     </div>
                                                   </div>
@@ -1179,9 +1279,21 @@ export default function ClientePage() {
                                                                     return prod && (
                                                                       <Badge 
                                                                         key={prod.id}
-                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-[#E6F7F5]"
+                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-red-100 hover:text-red-600 hover:border-red-600 cursor-pointer group"
+                                                                        onClick={(e) => {
+                                                                          e.stopPropagation();
+                                                                          const newValue = produto.filter(item => item !== prod.id);
+                                                                          setProduto(newValue);
+                                                                          setLote(lote.filter(l => {
+                                                                            const loteProduto = Object.entries(LOTES_MOCK).find(([_, lotes]) =>
+                                                                              lotes.some(loteItem => loteItem.id === l)
+                                                                            )?.[0];
+                                                                            return newValue.includes(loteProduto || "");
+                                                                          }));
+                                                                        }}
                                                                       >
                                                                         {prod.nome}
+                                                                        <X className="h-3 w-3 ml-1 hidden group-hover:inline-block" />
                                                                       </Badge>
                                                                     );
                                                                   })}
@@ -1244,12 +1356,18 @@ export default function ClientePage() {
                                                                     const loteInfo = LOTES_MOCK[loteProduto as keyof typeof LOTES_MOCK]?.find(
                                                                       loteItem => loteItem.id === l
                                                                     );
+                                                                    const produtoInfo = PRODUTOS_MOCK.find(p => p.id === loteProduto);
                                                                     return loteInfo && (
                                                                       <Badge 
                                                                         key={loteInfo.id}
-                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-[#E6F7F5]"
+                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-red-100 hover:text-red-600 hover:border-red-600 cursor-pointer group"
+                                                                        onClick={(e) => {
+                                                                          e.stopPropagation();
+                                                                          setLote(lote.filter(item => item !== loteInfo.id));
+                                                                        }}
                                                                       >
-                                                                        Lote: {loteInfo.numero}
+                                                                        {produtoInfo?.nome} - Lote: {loteInfo.numero}
+                                                                        <X className="h-3 w-3 ml-1 hidden group-hover:inline-block" />
                                                                       </Badge>
                                                                     );
                                                                   })}
@@ -1267,22 +1385,25 @@ export default function ClientePage() {
                                                                 className="mb-2"
                                                               />
                                                             </div>
-                                                            {produto.map(prodId => 
-                                                              LOTES_MOCK[prodId as keyof typeof LOTES_MOCK]?.map((loteItem) => (
+                                                            {produto.map(prodId => {
+                                                              const produtoInfo = PRODUTOS_MOCK.find(p => p.id === prodId);
+                                                              return LOTES_MOCK[prodId as keyof typeof LOTES_MOCK]?.map((loteItem) => (
                                                                 <SelectItem 
                                                                   key={loteItem.id} 
                                                                   value={loteItem.id} 
                                                                   className="text-left"
                                                                 >
                                                                   <div className="flex items-center gap-2">
-                                                                    <span>Lote: {loteItem.numero}</span>
+                                                                    <div className="flex flex-col">
+                                                                      <span>{produtoInfo?.nome} - Lote: {loteItem.numero}</span>
+                                                                    </div>
                                                                     {lote.includes(loteItem.id) && (
                                                                       <CheckCircle className="h-4 w-4 text-[#26B99D] ml-auto" />
                                                                     )}
                                                                   </div>
                                                                 </SelectItem>
-                                                              ))
-                                                            )}
+                                                              ));
+                                                            })}
                                                           </SelectContent>
                                                         </Select>
                                                       </div>
@@ -1322,26 +1443,21 @@ export default function ClientePage() {
                                             <div className="bg-white rounded-lg border border-gray-200">
                                               <Tabs defaultValue="timeline" className="w-full">
                                                 <TabsList className="w-full justify-start border-b bg-gray-50 p-2 rounded-t-lg gap-2">
-                                                  <TabsTrigger
-                                                    value="timeline"
-                                                    className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100"
-                                                  >
+                                                  <TabsTrigger value="timeline" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
                                                     <History className="h-4 w-4 mr-2" />
                                                     Linha do Tempo
                                                   </TabsTrigger>
-                                                  <TabsTrigger
-                                                    value="documents"
-                                                    className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100"
-                                                  >
+                                                  <TabsTrigger value="documents" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
                                                     <ScrollText className="h-4 w-4 mr-2" />
                                                     Documentos
                                                   </TabsTrigger>
-                                                  <TabsTrigger
-                                                    value="messages"
-                                                    className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100"
-                                                  >
+                                                  <TabsTrigger value="messages" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
                                                     <MessageSquare className="h-4 w-4 mr-2" />
                                                     Mensagens
+                                                  </TabsTrigger>
+                                                  <TabsTrigger value="logs" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
+                                                    <History className="h-4 w-4 mr-2" />
+                                                    Logs
                                                   </TabsTrigger>
                                                 </TabsList>
 
@@ -1350,7 +1466,7 @@ export default function ClientePage() {
                                                     <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
                                                       <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
                                                         <CheckCircle className="h-5 w-5 text-green-600" />
-                                        </div>
+                                                      </div>
                                                       <div>
                                                         <div className="flex items-center gap-2 mb-1">
                                                           <h4 className="font-medium text-gray-900">Registro do evento</h4>
@@ -1552,6 +1668,70 @@ export default function ClientePage() {
                                                           </p>
                                         </div>
                                       </div>
+                                                    </div>
+                                                  </div>
+                                                </TabsContent>
+
+                                                <TabsContent value="logs" className="p-6">
+                                                  <div className="space-y-6">
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                        <History className="h-5 w-5 text-blue-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Atualização de Produto</h4>
+                                                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                            15/06/2023 10:45
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Produto "Medicamento A" adicionado ao protocolo por Rafael Celso</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                        <History className="h-5 w-5 text-blue-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Atualização de Lote</h4>
+                                                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                            15/06/2023 10:46
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Lote "ABC123" adicionado ao protocolo por Rafael Celso</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                        <History className="h-5 w-5 text-blue-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Atualização de Status</h4>
+                                                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                            15/06/2023 14:30
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Status alterado para "Em análise" por Carlos Mendes</p>
+                                                      </div>
+                                                    </div>
+
+                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                        <History className="h-5 w-5 text-blue-600" />
+                                                      </div>
+                                                      <div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                          <h4 className="font-medium text-gray-900">Atualização de Descrição</h4>
+                                                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                            15/06/2023 16:20
+                                                          </Badge>
+                                                        </div>
+                                                        <p className="text-gray-600">Descrição atualizada por Rafael Celso</p>
+                                                      </div>
                                                     </div>
                                                   </div>
                                                 </TabsContent>
@@ -1799,6 +1979,78 @@ export default function ClientePage() {
           tipo={tipoRegistro}
           cliente={cliente}
         />
+
+        <Dialog open={showLogsContatosModal} onOpenChange={setShowLogsContatosModal}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold">Logs de Contatos</DialogTitle>
+              <DialogDescription>
+                Histórico de alterações realizadas nos contatos do protocolo
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6">
+              <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <History className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-medium text-gray-900">Novo Contato</h4>
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                      15/06/2023 10:45
+                    </Badge>
+                  </div>
+                  <p className="text-gray-600">Contato criado por Rafael Celso</p>
+                </div>
+              </div>
+
+              <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <History className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-medium text-gray-900">Atualização de Descrição</h4>
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                      15/06/2023 11:30
+                    </Badge>
+                  </div>
+                  <p className="text-gray-600">Descrição atualizada por Rafael Celso</p>
+                </div>
+              </div>
+
+              <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <History className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-medium text-gray-900">Atualização de Status</h4>
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                      15/06/2023 14:30
+                    </Badge>
+                  </div>
+                  <p className="text-gray-600">Status alterado para "Em análise" por Carlos Mendes</p>
+                </div>
+              </div>
+
+              <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
+                <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <History className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-medium text-gray-900">Atualização de Tipo</h4>
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                      15/06/2023 16:20
+                    </Badge>
+                  </div>
+                  <p className="text-gray-600">Tipo de contato alterado para "Telefone" por Rafael Celso</p>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   )
