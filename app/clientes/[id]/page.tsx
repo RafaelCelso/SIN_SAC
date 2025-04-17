@@ -134,6 +134,48 @@ const PROTOCOLOS_MOCK = [
   },
 ]
 
+// Dados simulados de produtos e lotes
+const PRODUTOS_MOCK = [
+  { id: "medicamento-a", nome: "Medicamento A", ean: "7891234567890" },
+  { id: "medicamento-b", nome: "Medicamento B", ean: "7891234567891" },
+  { id: "medicamento-c", nome: "Medicamento C", ean: "7891234567892" },
+  { id: "dispositivo-x", nome: "Dispositivo Médico X", ean: "7891234567893" },
+  { id: "dispositivo-y", nome: "Dispositivo Médico Y", ean: "7891234567894" }
+]
+
+const LOTES_MOCK = {
+  "medicamento-a": [
+    { id: "ABC123", numero: "ABC123", validade: "12/2024" },
+    { id: "ABC124", numero: "ABC124", validade: "01/2025" },
+    { id: "ABC125", numero: "ABC125", validade: "03/2025" }
+  ],
+  "medicamento-b": [
+    { id: "DEF123", numero: "DEF123", validade: "06/2024" },
+    { id: "DEF124", numero: "DEF124", validade: "08/2024" }
+  ],
+  "medicamento-c": [
+    { id: "GHI123", numero: "GHI123", validade: "12/2024" }
+  ],
+  "dispositivo-x": [
+    { id: "XYZ123", numero: "XYZ123", validade: "12/2025" },
+    { id: "XYZ124", numero: "XYZ124", validade: "12/2025" }
+  ],
+  "dispositivo-y": [
+    { id: "WXY123", numero: "WXY123", validade: "06/2025" }
+  ]
+}
+
+// Tipos para os selects
+type ProdutoSelectProps = {
+  value: string[]
+  onValueChange: (value: string[]) => void
+}
+
+type LoteSelectProps = {
+  value: string[]
+  onValueChange: (value: string[]) => void
+}
+
 export default function ClientePage() {
   const params = useParams()
   const searchParams = useSearchParams()
@@ -163,6 +205,8 @@ export default function ClientePage() {
   const [descricao, setDescricao] = useState("Relato de problema com embalagem do produto.")
   const [isEditingFarmacoDescription, setIsEditingFarmacoDescription] = useState(false)
   const [farmacoDescricao, setFarmacoDescricao] = useState("Relato de reação adversa ao medicamento.")
+  const [produto, setProduto] = useState<string[]>([])
+  const [lote, setLote] = useState<string[]>([])
 
   // Carregar dados do cliente
   useEffect(() => {
@@ -603,28 +647,11 @@ export default function ClientePage() {
                                         </CollapsibleTrigger>
                                         <CollapsibleContent>
                                           <div className="p-6 space-y-6 bg-white border-t border-gray-100">
-                                        <div className="grid grid-cols-2 gap-4">
-                                              <div className="bg-white p-3 rounded-md border shadow-sm hover:shadow-md transition-shadow">
-                                                <p className="text-sm font-medium text-gray-600 mb-1">Produto</p>
-                                                <div className="flex items-center space-x-2">
-                                                  <Package className="h-4 w-4 text-[#26B99D]" />
-                                                  <p className="text-gray-900 font-medium">Medicamento A</p>
-                                                </div>
-                                              </div>
-                                              <div className="bg-white p-3 rounded-md border shadow-sm hover:shadow-md transition-shadow">
-                                                <p className="text-sm font-medium text-gray-600 mb-1">Lote</p>
-                                                <div className="flex items-center space-x-2">
-                                                  <Barcode className="h-4 w-4 text-[#26B99D]" />
-                                                  <p className="text-gray-900 font-medium">ABC123</p>
-                                                </div>
-                                              </div>
-                                        </div>
-
                                             <div>
                                               <div className="flex items-center justify-between mb-3">
                                                 <div className="flex items-center gap-2">
                                                   <FileText className="h-5 w-5 text-[#26B99D]" />
-                                                  <Label htmlFor="relato-queixa" className="text-base font-medium text-gray-800">Descrição</Label>
+                                                  <Label htmlFor="relato-queixa" className="text-base font-medium text-gray-800">Detalhes da Queixa</Label>
                                                 </div>
                                                 <Button 
                                                   variant="outline" 
@@ -646,16 +673,173 @@ export default function ClientePage() {
                                                 </Button>
                                               </div>
                                               {isEditingDescription ? (
-                                                <Textarea
-                                                  id="relato-queixa"
-                                                  className="min-h-[100px] bg-white focus-visible:ring-[#26B99D]"
-                                                  value={descricao}
-                                                  onChange={(e) => setDescricao(e.target.value)}
-                                                  placeholder="Digite a descrição da queixa técnica..."
-                                                />
+                                                <div className="space-y-4">
+                                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div className="space-y-2">
+                                                      <Label htmlFor="produto">Produto</Label>
+                                                      <div className="relative">
+                                                        <Select
+                                                          defaultValue={produto[0] || ""}
+                                                          onValueChange={(value) => {
+                                                            const newValue = produto.includes(value) 
+                                                              ? produto.filter(p => p !== value)
+                                                              : [...produto, value];
+                                                            setProduto(newValue);
+                                                            if (produto.length > newValue.length) {
+                                                              setLote(lote.filter(l => {
+                                                                const loteProduto = Object.entries(LOTES_MOCK).find(([_, lotes]) =>
+                                                                  lotes.some(loteItem => loteItem.id === l)
+                                                                )?.[0];
+                                                                return newValue.includes(loteProduto || "");
+                                                              }));
+                                                            }
+                                                          }}
+                                                        >
+                                                          <SelectTrigger id="produto" className="h-auto min-h-[2.75rem] text-left">
+                                                            <SelectValue>
+                                                              {produto.length > 0 ? (
+                                                                <div className="flex flex-wrap gap-2">
+                                                                  {produto.map(p => {
+                                                                    const prod = PRODUTOS_MOCK.find(pm => pm.id === p);
+                                                                    return prod && (
+                                                                      <Badge 
+                                                                        key={prod.id}
+                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-[#E6F7F5]"
+                                                                      >
+                                                                        {prod.nome}
+                                                                      </Badge>
+                                                                    );
+                                                                  })}
+                                                                </div>
+                                                              ) : (
+                                                                "Selecione o produto"
+                                                              )}
+                                                            </SelectValue>
+                                                          </SelectTrigger>
+                                                          <SelectContent>
+                                                            <div className="p-2">
+                                                              <Input 
+                                                                type="search" 
+                                                                placeholder="Buscar produto..."
+                                                                className="mb-2"
+                                                              />
+                                                            </div>
+                                                            {PRODUTOS_MOCK.map((produtoItem) => (
+                                                              <SelectItem 
+                                                                key={produtoItem.id} 
+                                                                value={produtoItem.id} 
+                                                                className="text-left"
+                                                              >
+                                                                <div className="flex items-center gap-2">
+                                                                  <div className="flex flex-col">
+                                                                    <span>{produtoItem.nome}</span>
+                                                                    <span className="text-sm text-gray-500">EAN: {produtoItem.ean}</span>
+                                                                  </div>
+                                                                  {produto.includes(produtoItem.id) && (
+                                                                    <CheckCircle className="h-4 w-4 text-[#26B99D] ml-auto" />
+                                                                  )}
+                                                                </div>
+                                                              </SelectItem>
+                                                            ))}
+                                                          </SelectContent>
+                                                        </Select>
+                                                      </div>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                      <Label htmlFor="lote">Lote</Label>
+                                                      <div className="relative">
+                                                        <Select
+                                                          defaultValue={lote[0] || ""}
+                                                          onValueChange={(value) => {
+                                                            const newValue = lote.includes(value)
+                                                              ? lote.filter(l => l !== value)
+                                                              : [...lote, value];
+                                                            setLote(newValue);
+                                                          }}
+                                                          disabled={produto.length === 0}
+                                                        >
+                                                          <SelectTrigger id="lote" className="h-auto min-h-[2.75rem] text-left">
+                                                            <SelectValue>
+                                                              {lote.length > 0 ? (
+                                                                <div className="flex flex-wrap gap-2">
+                                                                  {lote.map(l => {
+                                                                    const loteProduto = Object.entries(LOTES_MOCK).find(([_, lotes]) =>
+                                                                      lotes.some(loteItem => loteItem.id === l)
+                                                                    )?.[0];
+                                                                    const loteInfo = LOTES_MOCK[loteProduto as keyof typeof LOTES_MOCK]?.find(
+                                                                      loteItem => loteItem.id === l
+                                                                    );
+                                                                    return loteInfo && (
+                                                                      <Badge 
+                                                                        key={loteInfo.id}
+                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-[#E6F7F5]"
+                                                                      >
+                                                                        Lote: {loteInfo.numero}
+                                                                      </Badge>
+                                                                    );
+                                                                  })}
+                                                                </div>
+                                                              ) : (
+                                                                "Selecione o lote"
+                                                              )}
+                                                            </SelectValue>
+                                                          </SelectTrigger>
+                                                          <SelectContent>
+                                                            <div className="p-2">
+                                                              <Input 
+                                                                type="search" 
+                                                                placeholder="Buscar lote..."
+                                                                className="mb-2"
+                                                              />
+                                                            </div>
+                                                            {produto.map(prodId => 
+                                                              LOTES_MOCK[prodId as keyof typeof LOTES_MOCK]?.map((loteItem) => (
+                                                                <SelectItem 
+                                                                  key={loteItem.id} 
+                                                                  value={loteItem.id} 
+                                                                  className="text-left"
+                                                                >
+                                                                  <div className="flex items-center gap-2">
+                                                                    <span>Lote: {loteItem.numero}</span>
+                                                                    {lote.includes(loteItem.id) && (
+                                                                      <CheckCircle className="h-4 w-4 text-[#26B99D] ml-auto" />
+                                                                    )}
+                                                                  </div>
+                                                                </SelectItem>
+                                                              ))
+                                                            )}
+                                                          </SelectContent>
+                                                        </Select>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <div className="space-y-2">
+                                                    <Label htmlFor="relato-queixa">Descrição</Label>
+                                                    <Textarea
+                                                      id="relato-queixa"
+                                                      className="min-h-[100px] bg-white focus-visible:ring-[#26B99D]"
+                                                      value={descricao}
+                                                      onChange={(e) => setDescricao(e.target.value)}
+                                                      placeholder="Digite a descrição da queixa técnica..."
+                                                    />
+                                                  </div>
+                                                </div>
                                               ) : (
-                                                <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
-                                                  <p className="text-gray-700 leading-relaxed">Relato de problema com embalagem do produto.</p>
+                                                <div className="space-y-4">
+                                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
+                                                      <Label className="text-sm text-gray-500">Produto</Label>
+                                                      <p className="text-gray-700 mt-1">{produto.length > 0 ? produto.join(", ") : "Medicamento A"}</p>
+                                                    </div>
+                                                    <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
+                                                      <Label className="text-sm text-gray-500">Lote</Label>
+                                                      <p className="text-gray-700 mt-1">{lote.length > 0 ? lote.join(", ") : "ABC123"}</p>
+                                                    </div>
+                                                  </div>
+                                                  <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
+                                                    <Label className="text-sm text-gray-500">Descrição</Label>
+                                                    <p className="text-gray-700 mt-1">{descricao || "Relato de problema com embalagem do produto."}</p>
+                                                  </div>
                                                 </div>
                                               )}
                                             </div>
@@ -938,28 +1122,11 @@ export default function ClientePage() {
                                         </CollapsibleTrigger>
                                         <CollapsibleContent>
                                           <div className="p-4 border-t space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                              <div className="bg-white p-3 rounded-md border shadow-sm hover:shadow-md transition-shadow">
-                                                <p className="text-sm font-medium text-gray-600 mb-1">Produto</p>
-                                                <div className="flex items-center space-x-2">
-                                                  <Package className="h-4 w-4 text-[#26B99D]" />
-                                                  <p className="text-gray-900 font-medium">Medicamento A</p>
-                                                </div>
-                                              </div>
-                                              <div className="bg-white p-3 rounded-md border shadow-sm hover:shadow-md transition-shadow">
-                                                <p className="text-sm font-medium text-gray-600 mb-1">Lote</p>
-                                                <div className="flex items-center space-x-2">
-                                                  <Barcode className="h-4 w-4 text-[#26B99D]" />
-                                                  <p className="text-gray-900 font-medium">ABC123</p>
-                                                </div>
-                                              </div>
-                                            </div>
-
                                             <div>
                                               <div className="flex items-center justify-between mb-3">
                                                 <div className="flex items-center gap-2">
                                                   <FileText className="h-5 w-5 text-[#26B99D]" />
-                                                  <Label htmlFor="relato-farmacovigilancia" className="text-base font-medium text-gray-800">Descrição</Label>
+                                                  <Label htmlFor="relato-farmacovigilancia" className="text-base font-medium text-gray-800">Detalhes</Label>
                                                 </div>
                                                 <Button 
                                                   variant="outline" 
@@ -981,16 +1148,173 @@ export default function ClientePage() {
                                                 </Button>
                                               </div>
                                               {isEditingFarmacoDescription ? (
-                                                <Textarea
-                                                  id="relato-farmacovigilancia"
-                                                  className="min-h-[100px] bg-white focus-visible:ring-[#26B99D]"
-                                                  value={farmacoDescricao}
-                                                  onChange={(e) => setFarmacoDescricao(e.target.value)}
-                                                  placeholder="Digite a descrição do evento adverso..."
-                                                />
+                                                <div className="space-y-4">
+                                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div className="space-y-2">
+                                                      <Label htmlFor="produto">Produto</Label>
+                                                      <div className="relative">
+                                                        <Select
+                                                          defaultValue={produto[0] || ""}
+                                                          onValueChange={(value) => {
+                                                            const newValue = produto.includes(value) 
+                                                              ? produto.filter(p => p !== value)
+                                                              : [...produto, value];
+                                                            setProduto(newValue);
+                                                            if (produto.length > newValue.length) {
+                                                              setLote(lote.filter(l => {
+                                                                const loteProduto = Object.entries(LOTES_MOCK).find(([_, lotes]) =>
+                                                                  lotes.some(loteItem => loteItem.id === l)
+                                                                )?.[0];
+                                                                return newValue.includes(loteProduto || "");
+                                                              }));
+                                                            }
+                                                          }}
+                                                        >
+                                                          <SelectTrigger id="produto" className="h-auto min-h-[2.75rem] text-left">
+                                                            <SelectValue>
+                                                              {produto.length > 0 ? (
+                                                                <div className="flex flex-wrap gap-2">
+                                                                  {produto.map(p => {
+                                                                    const prod = PRODUTOS_MOCK.find(pm => pm.id === p);
+                                                                    return prod && (
+                                                                      <Badge 
+                                                                        key={prod.id}
+                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-[#E6F7F5]"
+                                                                      >
+                                                                        {prod.nome}
+                                                                      </Badge>
+                                                                    );
+                                                                  })}
+                                                                </div>
+                                                              ) : (
+                                                                "Selecione o produto"
+                                                              )}
+                                                            </SelectValue>
+                                                          </SelectTrigger>
+                                                          <SelectContent>
+                                                            <div className="p-2">
+                                                              <Input 
+                                                                type="search" 
+                                                                placeholder="Buscar produto..."
+                                                                className="mb-2"
+                                                              />
+                                                            </div>
+                                                            {PRODUTOS_MOCK.map((produtoItem) => (
+                                                              <SelectItem 
+                                                                key={produtoItem.id} 
+                                                                value={produtoItem.id} 
+                                                                className="text-left"
+                                                              >
+                                                                <div className="flex items-center gap-2">
+                                                                  <div className="flex flex-col">
+                                                                    <span>{produtoItem.nome}</span>
+                                                                    <span className="text-sm text-gray-500">EAN: {produtoItem.ean}</span>
+                                                                  </div>
+                                                                  {produto.includes(produtoItem.id) && (
+                                                                    <CheckCircle className="h-4 w-4 text-[#26B99D] ml-auto" />
+                                                                  )}
+                                                                </div>
+                                                              </SelectItem>
+                                                            ))}
+                                                          </SelectContent>
+                                                        </Select>
+                                                      </div>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                      <Label htmlFor="lote">Lote</Label>
+                                                      <div className="relative">
+                                                        <Select
+                                                          defaultValue={lote[0] || ""}
+                                                          onValueChange={(value) => {
+                                                            const newValue = lote.includes(value)
+                                                              ? lote.filter(l => l !== value)
+                                                              : [...lote, value];
+                                                            setLote(newValue);
+                                                          }}
+                                                          disabled={produto.length === 0}
+                                                        >
+                                                          <SelectTrigger id="lote" className="h-auto min-h-[2.75rem] text-left">
+                                                            <SelectValue>
+                                                              {lote.length > 0 ? (
+                                                                <div className="flex flex-wrap gap-2">
+                                                                  {lote.map(l => {
+                                                                    const loteProduto = Object.entries(LOTES_MOCK).find(([_, lotes]) =>
+                                                                      lotes.some(loteItem => loteItem.id === l)
+                                                                    )?.[0];
+                                                                    const loteInfo = LOTES_MOCK[loteProduto as keyof typeof LOTES_MOCK]?.find(
+                                                                      loteItem => loteItem.id === l
+                                                                    );
+                                                                    return loteInfo && (
+                                                                      <Badge 
+                                                                        key={loteInfo.id}
+                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-[#E6F7F5]"
+                                                                      >
+                                                                        Lote: {loteInfo.numero}
+                                                                      </Badge>
+                                                                    );
+                                                                  })}
+                                                                </div>
+                                                              ) : (
+                                                                "Selecione o lote"
+                                                              )}
+                                                            </SelectValue>
+                                                          </SelectTrigger>
+                                                          <SelectContent>
+                                                            <div className="p-2">
+                                                              <Input 
+                                                                type="search" 
+                                                                placeholder="Buscar lote..."
+                                                                className="mb-2"
+                                                              />
+                                                            </div>
+                                                            {produto.map(prodId => 
+                                                              LOTES_MOCK[prodId as keyof typeof LOTES_MOCK]?.map((loteItem) => (
+                                                                <SelectItem 
+                                                                  key={loteItem.id} 
+                                                                  value={loteItem.id} 
+                                                                  className="text-left"
+                                                                >
+                                                                  <div className="flex items-center gap-2">
+                                                                    <span>Lote: {loteItem.numero}</span>
+                                                                    {lote.includes(loteItem.id) && (
+                                                                      <CheckCircle className="h-4 w-4 text-[#26B99D] ml-auto" />
+                                                                    )}
+                                                                  </div>
+                                                                </SelectItem>
+                                                              ))
+                                                            )}
+                                                          </SelectContent>
+                                                        </Select>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <div className="space-y-2">
+                                                    <Label htmlFor="relato-farmacovigilancia">Descrição</Label>
+                                                    <Textarea
+                                                      id="relato-farmacovigilancia"
+                                                      className="min-h-[100px] bg-white focus-visible:ring-[#26B99D]"
+                                                      value={farmacoDescricao}
+                                                      onChange={(e) => setFarmacoDescricao(e.target.value)}
+                                                      placeholder="Digite a descrição do evento adverso..."
+                                                    />
+                                                  </div>
+                                                </div>
                                               ) : (
-                                                <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
-                                                  <p className="text-gray-700 leading-relaxed">Relato de reação adversa ao medicamento.</p>
+                                                <div className="space-y-4">
+                                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
+                                                      <Label className="text-sm text-gray-500">Produto</Label>
+                                                      <p className="text-gray-700 mt-1">{produto.length > 0 ? produto.join(", ") : "Medicamento A"}</p>
+                                                    </div>
+                                                    <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
+                                                      <Label className="text-sm text-gray-500">Lote</Label>
+                                                      <p className="text-gray-700 mt-1">{lote.length > 0 ? lote.join(", ") : "ABC123"}</p>
+                                                    </div>
+                                                  </div>
+                                                  <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
+                                                    <Label className="text-sm text-gray-500">Descrição</Label>
+                                                    <p className="text-gray-700 mt-1">{farmacoDescricao || "Relato de reação adversa ao medicamento."}</p>
+                                                  </div>
                                                 </div>
                                               )}
                                             </div>
