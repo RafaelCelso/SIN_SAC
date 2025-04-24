@@ -185,8 +185,7 @@ export default function QueixasTecnicasPage() {
       queixa.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       queixa.cliente.toLowerCase().includes(searchQuery.toLowerCase()) ||
       queixa.produto.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      queixa.lote.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      queixa.tipo.toLowerCase().includes(searchQuery.toLowerCase())
+      queixa.tipo.toLowerCase().includes(searchQuery.toLowerCase()) 
 
     // Filtro de data início
     const matchesDataInicio = !dataInicio || new Date(queixa.data.split("/").reverse().join("-")) >= dataInicio
@@ -414,7 +413,6 @@ export default function QueixasTecnicasPage() {
                     <TableHead>Data</TableHead>
                     <TableHead>Cliente</TableHead>
                     <TableHead>Produto</TableHead>
-                    <TableHead>Lote</TableHead>
                     <TableHead>Tipo</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
@@ -431,8 +429,7 @@ export default function QueixasTecnicasPage() {
                             {queixa.cliente}
                           </Link>
                         </TableCell>
-                        <TableCell>{queixa.produto}</TableCell>
-                        <TableCell>{queixa.lote}</TableCell>
+                        <TableCell>{queixa.produto}</TableCell>                       
                         <TableCell>{queixa.tipo}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
