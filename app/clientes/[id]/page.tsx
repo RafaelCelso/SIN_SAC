@@ -1777,7 +1777,6 @@ export default function ClientePage() {
                           <TableHead>Criado em</TableHead>
                           <TableHead>Criado por</TableHead>
                           <TableHead>Produto</TableHead>
-                          <TableHead>Lote</TableHead>
                           <TableHead>Tipo</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead className="text-right">Ações</TableHead>
@@ -1791,7 +1790,6 @@ export default function ClientePage() {
                               <TableCell>15/06/2023</TableCell>
                               <TableCell>Rafael Celso</TableCell>
                               <TableCell>Medicamento A</TableCell>
-                              <TableCell>ABC123</TableCell>
                               <TableCell>Problema na embalagem</TableCell>
                               <TableCell>
                                 <div className="flex items-center gap-2">
@@ -1820,7 +1818,6 @@ export default function ClientePage() {
                             <TableCell>16/06/2023</TableCell>
                             <TableCell>Rafael Celso</TableCell>
                             <TableCell>Medicamento B</TableCell>
-                            <TableCell>DEF456</TableCell>
                             <TableCell>Problema no conteúdo</TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
@@ -1844,7 +1841,7 @@ export default function ClientePage() {
                           </TableRow>
                         ) : (
                           <TableRow>
-                            <TableCell colSpan={8} className="text-center py-6">
+                            <TableCell colSpan={7} className="text-center py-6">
                               Este cliente não possui queixas técnicas registradas.
                             </TableCell>
                           </TableRow>
@@ -1873,7 +1870,6 @@ export default function ClientePage() {
                           <TableHead>Criado em</TableHead>
                           <TableHead>Criado por</TableHead>
                           <TableHead>Produto</TableHead>
-                          <TableHead>Reação Adversa</TableHead>
                           <TableHead>Gravidade</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead className="text-right">Ações</TableHead>
@@ -1886,7 +1882,6 @@ export default function ClientePage() {
                             <TableCell>15/06/2023</TableCell>
                             <TableCell>Rafael Celso</TableCell>
                             <TableCell>Medicamento A</TableCell>
-                            <TableCell>Náusea</TableCell>
                             <TableCell>
                               <Badge className="bg-[#26B99D]">Leve</Badge>
                             </TableCell>
@@ -1916,7 +1911,6 @@ export default function ClientePage() {
                             <TableCell>16/06/2023</TableCell>
                             <TableCell>Rafael Celso</TableCell>
                             <TableCell>Medicamento B</TableCell>
-                            <TableCell>Erupção cutânea</TableCell>
                             <TableCell>
                               <Badge variant="secondary">Moderada</Badge>
                             </TableCell>
@@ -1942,7 +1936,7 @@ export default function ClientePage() {
                           </TableRow>
                         ) : (
                           <TableRow>
-                            <TableCell colSpan={8} className="text-center py-6">
+                            <TableCell colSpan={7} className="text-center py-6">
                               Este cliente não possui registros de farmacovigilância.
                             </TableCell>
                           </TableRow>

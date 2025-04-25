@@ -24,6 +24,7 @@ const PROTOCOLOS_MOCK = [
     status: "Em análise",
     clienteId: "1",
     cliente: "Maria Silva",
+    telefone: "(11) 98765-4321",
     descricao: "Cliente relatou problema com a embalagem do medicamento.",
     statusVariant: "pending" as const,
   },
@@ -35,6 +36,7 @@ const PROTOCOLOS_MOCK = [
     status: "Pendente",
     clienteId: "1",
     cliente: "Maria Silva",
+    telefone: "(11) 98765-4321",
     descricao: "Reação alérgica após uso do medicamento.",
     statusVariant: "pending" as const,
   },
@@ -46,6 +48,7 @@ const PROTOCOLOS_MOCK = [
     status: "Em análise",
     clienteId: "1",
     cliente: "Maria Silva",
+    telefone: "(11) 98765-4321",
     descricao: "Cliente relatou problema com a embalagem do medicamento.",
     statusVariant: "pending" as const,
   },
@@ -57,6 +60,7 @@ const PROTOCOLOS_MOCK = [
     status: "Concluído",
     clienteId: "2",
     cliente: "João Santos",
+    telefone: "(11) 91234-5678",
     descricao: "Cliente relatou problema no conteúdo do medicamento.",
     statusVariant: "completed" as const,
   },
@@ -68,6 +72,7 @@ const PROTOCOLOS_MOCK = [
     status: "Respondido",
     clienteId: "1",
     cliente: "Maria Silva",
+    telefone: "(11) 98765-4321",
     descricao: "Cliente solicitou informações sobre a posologia do medicamento.",
     statusVariant: "completed" as const,
   },
@@ -79,6 +84,7 @@ const PROTOCOLOS_MOCK = [
     status: "Em análise",
     clienteId: "2",
     cliente: "João Santos",
+    telefone: "(11) 91234-5678",
     descricao: "Cliente solicitou informações sobre possíveis interações medicamentosas.",
     statusVariant: "pending" as const,
   },
@@ -90,6 +96,7 @@ const PROTOCOLOS_MOCK = [
     status: "Concluído",
     clienteId: "1",
     cliente: "Maria Silva",
+    telefone: "(11) 98765-4321",
     descricao: "Cliente relatou náusea após o uso do medicamento A.",
     statusVariant: "completed" as const,
   },
@@ -101,6 +108,7 @@ const PROTOCOLOS_MOCK = [
     status: "Em análise",
     clienteId: "2",
     cliente: "João Santos",
+    telefone: "(11) 91234-5678",
     descricao: "Cliente relatou erupção cutânea após o uso do medicamento B.",
     statusVariant: "pending" as const,
   },
@@ -314,6 +322,7 @@ export default function ProtocolosPage() {
                     <TableHead>Protocolo</TableHead>
                     <TableHead>Data</TableHead>
                     <TableHead>Cliente</TableHead>
+                    <TableHead>Telefone</TableHead>
                     <TableHead>Tipo</TableHead>
                     <TableHead>Produto</TableHead>
                     <TableHead className="text-right">Ação</TableHead>
@@ -330,6 +339,7 @@ export default function ProtocolosPage() {
                             {protocolo.cliente}
                           </Link>
                         </TableCell>
+                        <TableCell>{protocolo.telefone}</TableCell>
                         <TableCell>{protocolo.tipo}</TableCell>
                         <TableCell>{protocolo.produto}</TableCell>
                         <TableCell className="text-right">

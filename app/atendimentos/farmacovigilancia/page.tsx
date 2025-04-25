@@ -387,11 +387,10 @@ export default function FarmacovigilanciaPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[100px]">Código</TableHead>
+                    <TableHead>Protocolo</TableHead>
                     <TableHead>Data</TableHead>
                     <TableHead>Cliente</TableHead>
                     <TableHead>Produto</TableHead>
-                    <TableHead>Reação Adversa</TableHead>
                     <TableHead>Gravidade</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
@@ -409,17 +408,15 @@ export default function FarmacovigilanciaPage() {
                           </Link>
                         </TableCell>
                         <TableCell>{notificacao.produto}</TableCell>
-                        <TableCell>{notificacao.reacao}</TableCell>
                         <TableCell>
                           <Badge
                             variant={
                               notificacao.gravidade === "Leve"
-                                ? "default"
+                                ? "secondary"
                                 : notificacao.gravidade === "Moderada"
-                                  ? "secondary"
+                                  ? "outline"
                                   : "destructive"
                             }
-                            className={notificacao.gravidade === "Leve" ? "bg-[#26B99D]" : ""}
                           >
                             {notificacao.gravidade}
                           </Badge>
@@ -427,21 +424,11 @@ export default function FarmacovigilanciaPage() {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {notificacao.statusVariant === "completed" ? (
-                              <>
-                                <CheckCircle className="h-4 w-4 text-[#26B99D]" />
-                                <span>{notificacao.status}</span>
-                              </>
-                            ) : notificacao.status === "Em análise" ? (
-                              <>
-                                <Clock className="h-4 w-4 text-amber-500" />
-                                <span>{notificacao.status}</span>
-                              </>
+                              <CheckCircle className="h-4 w-4 text-[#26B99D]" />
                             ) : (
-                              <>
-                                <AlertTriangle className="h-4 w-4 text-amber-500" />
-                                <span>{notificacao.status}</span>
-                              </>
+                              <Clock className="h-4 w-4 text-amber-500" />
                             )}
+                            <span>{notificacao.status}</span>
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
@@ -461,7 +448,7 @@ export default function FarmacovigilanciaPage() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-6">
+                      <TableCell colSpan={7} className="text-center py-6">
                         Nenhuma notificação encontrada com os critérios de busca.
                       </TableCell>
                     </TableRow>
