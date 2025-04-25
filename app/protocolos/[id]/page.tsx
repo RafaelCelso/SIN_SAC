@@ -590,7 +590,7 @@ export default function ProtocoloPage({ params }: { params: { id: string } }) {
                               variant={
                                 queixa.status === "Concluído"
                                   ? "secondary"
-                                  : queixa.status === "Em análise"
+                                  : queixa.status === "Em análise" || queixa.status === "Aberto" || queixa.status === "Revisão" || queixa.status === "Qualidade" || queixa.status === "Retorno para Atendimento"
                                     ? "outline"
                                     : "secondary"
                               }

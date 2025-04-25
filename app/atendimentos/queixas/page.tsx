@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Filter, FileText, CheckCircle, Clock, AlertTriangle, Plus, CalendarIcon } from "lucide-react"
+import { Search, Filter, FileText, CheckCircle, Clock, AlertTriangle, Plus, CalendarIcon, Loader, Eye, ArrowLeftCircle, XCircle, ClipboardPenLine } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
@@ -61,7 +61,7 @@ const QUEIXAS_MOCK = [
     produto: "Dispositivo Médico X",
     lote: "GHI789",
     tipo: "Problema no funcionamento",
-    status: "Pendente",
+    status: "Aberto",
     statusVariant: "pending" as const,
     protocoloId: "PR-2023-0003",
   },
@@ -73,8 +73,8 @@ const QUEIXAS_MOCK = [
     produto: "Medicamento C",
     lote: "JKL012",
     tipo: "Problema na rotulagem",
-    status: "Concluído",
-    statusVariant: "completed" as const,
+    status: "Revisão",
+    statusVariant: "pending" as const,
     protocoloId: "PR-2023-0004",
   },
   {
@@ -85,7 +85,7 @@ const QUEIXAS_MOCK = [
     produto: "Medicamento D",
     lote: "MNO345",
     tipo: "Suspeita de contaminação",
-    status: "Em análise",
+    status: "Qualidade",
     statusVariant: "pending" as const,
     protocoloId: "PR-2023-0005",
   },
@@ -101,7 +101,7 @@ const TIPOS_QUEIXA = [
   "Outro",
 ]
 
-const STATUS = ["Concluído", "Em análise", "Pendente"]
+const STATUS = ["Aberto", "Revisão", "Qualidade", "Retorno para Atendimento", "Em análise", "Concluído", "Inválido"]
 
 // Dados simulados de clientes
 const CLIENTES_MOCK = [
@@ -305,7 +305,7 @@ export default function QueixasTecnicasPage() {
             </Button>
 
             <Button
-              variant="primary"
+              variant="default"
               className="bg-[#26B99D] hover:bg-[#1E9A82] w-full sm:w-auto"
               onClick={() => setIsNovaQueixaDialogOpen(true)}
             >
@@ -433,7 +433,7 @@ export default function QueixasTecnicasPage() {
                         <TableCell>{queixa.tipo}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            {queixa.statusVariant === "completed" ? (
+                            {queixa.status === "Concluído" ? (
                               <>
                                 <CheckCircle className="h-4 w-4 text-[#26B99D]" />
                                 <span>{queixa.status}</span>
@@ -441,6 +441,31 @@ export default function QueixasTecnicasPage() {
                             ) : queixa.status === "Em análise" ? (
                               <>
                                 <Clock className="h-4 w-4 text-amber-500" />
+                                <span>{queixa.status}</span>
+                              </>
+                            ) : queixa.status === "Aberto" ? (
+                              <>
+                                <Loader className="h-4 w-4 text-blue-500 animate-spin" />
+                                <span>{queixa.status}</span>
+                              </>
+                            ) : queixa.status === "Revisão" ? (
+                              <>
+                                <Eye className="h-4 w-4 text-purple-500" />
+                                <span>{queixa.status}</span>
+                              </>
+                            ) : queixa.status === "Qualidade" ? (
+                              <>
+                                <ClipboardPenLine className="h-4 w-4 text-indigo-500" />
+                                <span>{queixa.status}</span>
+                              </>
+                            ) : queixa.status === "Retorno para Atendimento" ? (
+                              <>
+                                <ArrowLeftCircle className="h-4 w-4 text-orange-500" />
+                                <span>{queixa.status}</span>
+                              </>
+                            ) : queixa.status === "Inválido" ? (
+                              <>
+                                <XCircle className="h-4 w-4 text-red-500" />
                                 <span>{queixa.status}</span>
                               </>
                             ) : (
