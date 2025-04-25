@@ -588,11 +588,24 @@ export default function ProtocoloPage({ params }: { params: { id: string } }) {
                           <TableCell>
                             <Badge
                               variant={
-                                queixa.status === "Concluído"
+                                queixa.status === "Concluído" || queixa.status === "Inválido"
                                   ? "secondary"
-                                  : queixa.status === "Em análise" || queixa.status === "Aberto" || queixa.status === "Revisão" || queixa.status === "Qualidade" || queixa.status === "Retorno para Atendimento"
-                                    ? "outline"
-                                    : "secondary"
+                                  : "outline"
+                              }
+                              className={
+                                queixa.status === "Aberto"
+                                  ? "bg-blue-50 text-blue-700 border-blue-200"
+                                  : queixa.status === "Revisão"
+                                    ? "bg-purple-50 text-purple-700 border-purple-200"
+                                    : queixa.status === "Qualidade"
+                                      ? "bg-indigo-50 text-indigo-700 border-indigo-200"
+                                      : queixa.status === "Retorno para Atendimento"
+                                        ? "bg-orange-50 text-orange-700 border-orange-200"
+                                        : queixa.status === "Em análise"
+                                          ? "bg-amber-50 text-amber-700 border-amber-200"
+                                          : queixa.status === "Concluído"
+                                            ? "bg-green-50 text-green-700 border-green-200"
+                                            : "bg-red-50 text-red-700 border-red-200"
                               }
                             >
                               {queixa.status}

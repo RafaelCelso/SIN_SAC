@@ -178,6 +178,23 @@ type LoteSelectProps = {
   onValueChange: (value: string[]) => void
 }
 
+const NOTIFICACOES_MOCK = [
+  {
+    id: "FV-2023-0001",
+    data: "15/06/2023",
+    cliente: "Rafael Celso",
+    produto: "Medicamento A",
+    gravidade: "Leve"
+  },
+  {
+    id: "FV-2023-0002", 
+    data: "20/06/2023",
+    cliente: "Maria Silva",
+    produto: "Medicamento B",
+    gravidade: "Moderada"
+  }
+];
+
 export default function ClientePage() {
   const params = useParams()
   const searchParams = useSearchParams()
@@ -1790,7 +1807,14 @@ export default function ClientePage() {
                               <TableCell>15/06/2023</TableCell>
                               <TableCell>Rafael Celso</TableCell>
                               <TableCell>Medicamento A</TableCell>
-                              <TableCell>Problema na embalagem</TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant="outline"
+                                  className="bg-green-50 text-green-700 border-green-200"
+                                >
+                                  Leve
+                                </Badge>
+                              </TableCell>
                               <TableCell>
                                 <div className="flex items-center gap-2">
                                   <Clock className="h-4 w-4 text-amber-500" />
@@ -1818,11 +1842,13 @@ export default function ClientePage() {
                             <TableCell>16/06/2023</TableCell>
                             <TableCell>Rafael Celso</TableCell>
                             <TableCell>Medicamento B</TableCell>
-                            <TableCell>Problema no conteúdo</TableCell>
+                            <TableCell>
+                              <Badge variant="secondary">Moderada</Badge>
+                            </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
-                                <CheckCircle className="h-4 w-4 text-[#26B99D]" />
-                                <span>Concluído</span>
+                                <Clock className="h-4 w-4 text-amber-500" />
+                                <span>Em análise</span>
                               </div>
                             </TableCell>
                             <TableCell className="text-right">
@@ -1883,7 +1909,12 @@ export default function ClientePage() {
                             <TableCell>Rafael Celso</TableCell>
                             <TableCell>Medicamento A</TableCell>
                             <TableCell>
-                              <Badge className="bg-[#26B99D]">Leve</Badge>
+                              <Badge
+                                variant="outline"
+                                className="bg-green-50 text-green-700 border-green-200"
+                              >
+                                Leve
+                              </Badge>
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
