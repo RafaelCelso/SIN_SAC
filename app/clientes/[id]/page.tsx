@@ -97,7 +97,23 @@ const CLIENTES_MOCK = [
 ]
 
 // Dados simulados de protocolos
-const PROTOCOLOS_MOCK = [
+interface Protocolo {
+  id: string
+  data: string
+  tipo: string
+  produto: string
+  status: string
+  clienteId: string
+  descricao: string
+  farmacovigilancia?: Array<{
+    id: string
+    data: string
+    gravidade: string
+    status: string
+  }>
+}
+
+const PROTOCOLOS_MOCK: Protocolo[] = [
   {
     id: "P-2023-001",
     data: "15/03/2023",
@@ -106,6 +122,14 @@ const PROTOCOLOS_MOCK = [
     status: "Em análise",
     clienteId: "1",
     descricao: "Cliente relatou problema com a embalagem do medicamento.",
+    farmacovigilancia: [
+      {
+        id: "FV-2023-0001",
+        data: "15/03/2023",
+        gravidade: "Leve",
+        status: "Em análise"
+      }
+    ]
   },
   {
     id: "P-2023-045",
@@ -115,6 +139,14 @@ const PROTOCOLOS_MOCK = [
     status: "Pendente",
     clienteId: "1",
     descricao: "Reação alérgica após uso do medicamento.",
+    farmacovigilancia: [
+      {
+        id: "FV-2023-0002",
+        data: "22/04/2023",
+        gravidade: "Moderada",
+        status: "Pendente"
+      }
+    ]
   },
   {
     id: "P-2023-078",
@@ -657,9 +689,21 @@ export default function ClientePage() {
                                                     <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
                                                       Em análise
                                                     </Badge>
-                                            </div>
+                                                    <Badge
+                                                      variant="outline"
+                                                      className={
+                                                        "Leve" === "Leve"
+                                                          ? "bg-green-50 text-green-700 border-green-200"
+                                                          : "Leve" === "Moderada"
+                                                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                                                            : "bg-red-50 text-red-700 border-red-200"
+                                                      }
+                                                    >
+                                                      Leve
+                                                    </Badge>
                                           </div>
                                         </div>
+                                      </div>
                                               <div className="flex gap-2">
                                                 <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
                                                   <FileText className="h-4 w-4 mr-2" />
@@ -1059,7 +1103,7 @@ export default function ClientePage() {
                                                     <div className="grid gap-4">
                                                       <div className="bg-white p-4 rounded-lg border border-gray-200 hover:border-[#26B99D] transition-colors group">
                                                         <div className="flex items-center justify-between">
-                                                          <div className="flex items-center gap-3">
+                                          <div className="flex items-center gap-3">
                                                             <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-[#E6F7F5]">
                                                               <FileText className="h-5 w-5 text-gray-500 group-hover:text-[#26B99D]" />
                                             </div>
@@ -1221,9 +1265,21 @@ export default function ClientePage() {
                                                     <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
                                                       Em análise
                                                     </Badge>
-                                            </div>
+                                                    <Badge
+                                                      variant="outline"
+                                                      className={
+                                                        protocolo.farmacovigilancia[0]?.gravidade === "Leve"
+                                                          ? "bg-green-50 text-green-700 border-green-200"
+                                                          : protocolo.farmacovigilancia[0]?.gravidade === "Moderada"
+                                                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                                                            : "bg-red-50 text-red-700 border-red-200"
+                                                      }
+                                                    >
+                                                      {protocolo.farmacovigilancia[0]?.gravidade || "Não informada"}
+                                                    </Badge>
                                           </div>
                                         </div>
+                                      </div>
                                               <div className="flex gap-2">
                                                 <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
                                                   <FileText className="h-4 w-4 mr-2" />
