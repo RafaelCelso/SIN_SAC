@@ -1185,7 +1185,7 @@ export default function ClientePage() {
                                     <div className="flex items-center justify-between mb-4">
                                       <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
                                         <Plus className="h-4 w-4 mr-2" />
-                                        Novo Evento
+                                        Nova Farmacovigilância
                                       </Button>
                                     </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
@@ -1198,7 +1198,7 @@ export default function ClientePage() {
                                                   <Shield className="h-4 w-4 text-red-600" />
                                             </div>
                                             <div>
-                                                  <p className="font-semibold text-gray-900">Evento Adverso #EA-2023-0001</p>
+                                                  <p className="font-semibold text-gray-900">Farmacovigilância #FM-2023-0001</p>
                                                   <div className="flex items-center gap-2 mt-1">
                                               <p className="text-sm text-gray-600">15/06/2023 10:45</p>
                                                     <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
