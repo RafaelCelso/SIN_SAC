@@ -293,10 +293,7 @@ export default function FarmacovigilanciaPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle>Notificações de Farmacovigilância</CardTitle>
-            <CardDescription>
-              Lista de todas as notificações de eventos adversos relacionados a medicamentos
-            </CardDescription>
+            <CardTitle>Lista de Farmacovigilância</CardTitle>
           </CardHeader>
           <CardContent>
             <div className={`space-y-4 ${showFilters ? "block" : "hidden"}`}>

@@ -318,7 +318,6 @@ export default function QueixasTecnicasPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle>Lista de Queixas Técnicas</CardTitle>
-            <CardDescription>Visualize e gerencie todas as queixas técnicas registradas</CardDescription>
           </CardHeader>
           <CardContent>
             <div className={`space-y-4 ${showFilters ? "block" : "hidden"}`}>
