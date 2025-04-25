@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
+import { Smile, Meh, Frown } from "lucide-react";
 
 interface NovoMotivo {
   nome: string;
@@ -28,6 +29,7 @@ export default function NovoMotivoPage() {
 
   const [categoriasPrincipais, setCategoriasPrincipais] = useState<string[]>([]);
   const [subcategorias, setSubcategorias] = useState<string[]>([]);
+  const [niveisGravidade, setNiveisGravidade] = useState<string>("");
 
   // Simular carregamento das categorias principais
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function NovoMotivoPage() {
     const carregarCategoriasPrincipais = async () => {
       try {
         // Simulando dados da API
-        const categorias = ["Reclamação", "Solicitação", "Dúvida", "Sugestão"];
+        const categorias = ["Reclamação", "Solicitação", "Dúvida", "Sugestão", "Farmacovigilância"];
         setCategoriasPrincipais(categorias);
       } catch (error) {
         console.error("Erro ao carregar categorias principais:", error);
@@ -212,6 +214,28 @@ export default function NovoMotivoPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+              )}
+
+              {motivo.categoriaPrincipal === "Farmacovigilância" && (
+                <div className="space-y-2">
+                  <Label>Nível de Gravidade</Label>
+                  <div className="flex items-center gap-6">
+                    {["Leve", "Moderado", "Grave"].map((nivel) => (
+                      <div key={nivel} className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id={`gravidade-${nivel}`}
+                          name="nivelGravidade"
+                          value={nivel}
+                          checked={niveisGravidade === nivel}
+                          onChange={(e) => setNiveisGravidade(e.target.value)}
+                          className="h-4 w-4 rounded-full border-gray-300 text-[#26B99D] focus:ring-[#26B99D] checked:bg-[#26B99D] checked:border-[#26B99D]"
+                        />
+                        <Label htmlFor={`gravidade-${nivel}`}>{nivel}</Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
