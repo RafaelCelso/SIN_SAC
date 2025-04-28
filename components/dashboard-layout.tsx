@@ -49,15 +49,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           sidebarOpen ? "md:ml-0" : "ml-0",
         )}
         style={{
-          width: chatExpanded ? "calc(100% - 320px)" : "calc(100% - 64px)",
+          marginRight: chatExpanded ? 320 : 64,
         }}
       >
-        <Header
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-          showChat={chatExpanded}
-          setShowChat={toggleChat}
-        />
+        <Header />
         <main className="flex-1 overflow-y-auto">
           <div className="space-y-6 p-4">{children}</div>
         </main>
