@@ -16,6 +16,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [chatExpanded, setChatExpanded] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [showMobileChat, setShowMobileChat] = useState(false)
   const isMobile = useMobile()
 
   useEffect(() => {
@@ -30,12 +31,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     setChatExpanded(!chatExpanded)
   }
 
+  // Função para abrir o chat no mobile
+  const openMobileChat = () => setShowMobileChat(true)
+  const closeMobileChat = () => setShowMobileChat(false)
+
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
-      {/* Sidebar principal */}
+      {/* Sidebar principal - apenas desktop/tablet */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
+          "hidden md:block fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
@@ -49,7 +54,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           sidebarOpen ? "md:ml-0" : "ml-0",
         )}
         style={{
-          marginRight: chatExpanded ? 320 : 64,
+          marginRight: !isMobile ? (chatExpanded ? 320 : 64) : 0,
         }}
       >
         <Header />
@@ -58,15 +63,24 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </main>
       </div>
 
-      {/* Chat Sidebar */}
+      {/* Chat Sidebar - apenas desktop/tablet */}
       <div
         className={cn(
-          "fixed inset-y-0 right-0 z-40 transform transition-all duration-300 ease-in-out bg-[#F1F5F9] border-l border-gray-200",
+          "fixed inset-y-0 right-0 z-40 transform transition-all duration-300 ease-in-out bg-[#F1F5F9] border-l border-gray-200 hidden md:block",
           chatExpanded ? "w-80 translate-x-0" : "w-16 translate-x-0"
         )}
       >
         <ChatSidebar expanded={chatExpanded} onToggle={toggleChat} />
       </div>
+
+      {/* Chat Sidebar Mobile - modal/drawer */}
+      {isMobile && showMobileChat && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-end">
+          <div className="w-80 h-full bg-[#F1F5F9] border-l border-gray-200">
+            <ChatSidebar expanded={true} onToggle={closeMobileChat} />
+          </div>
+        </div>
+      )}
 
       {/* Overlay para fechar o sidebar em dispositivos móveis */}
       {sidebarOpen && isMobile && (

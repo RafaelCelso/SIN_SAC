@@ -82,7 +82,7 @@ export function Sidebar() {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768)
       if (window.innerWidth < 768) {
-        setCollapsed(true)
+        setCollapsed(false)
       }
     }
 

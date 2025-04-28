@@ -1,6 +1,6 @@
 "use client"
 
-import { Menu, Bell, Sun, Moon, Search, Globe, ChevronDown, User, LogOut } from "lucide-react"
+import { Menu, Bell, Sun, Moon, Search, Globe, ChevronDown, User, LogOut, MessageSquare, Plus, List } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Sidebar } from "@/components/sidebar"
@@ -74,10 +74,23 @@ export function Header() {
   const [language, setLanguage] = useState<"pt" | "en" | "es">("pt")
   const t = translations[language]
 
+  // Controle manual do Drawer/Sheet do menu lateral
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // Funções para as ações do menu
+  const handleNovaConversa = () => {
+    // TODO: abrir modal de nova conversa
+    alert('Abrir modal de nova conversa')
+  }
+  const handleVerTodas = () => {
+    // TODO: redirecionar para tela de conversas
+    alert('Ver todas as conversas')
+  }
+
   return (
     <header className="border-b bg-white dark:bg-gray-950 sticky top-0 z-10">
       <div className="flex h-16 items-center px-4 gap-4">
-        <Sheet>
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetTrigger asChild className="lg:hidden">
             <Button variant="outline" size="icon">
               <Menu className="h-5 w-5" />
@@ -101,7 +114,7 @@ export function Header() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4 md:gap-2">
             <Button
               variant="ghost"
               size="icon"
@@ -133,6 +146,7 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Ícone de notificação (sino) com badge */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
@@ -166,6 +180,28 @@ export function Header() {
                   <Button variant="ghost" size="sm" className="w-full">
                     {t.viewAll}
                   </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Dropdown de chat apenas no mobile, à direita do globo e do sino */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="block md:hidden text-muted-foreground"
+                >
+                  <MessageSquare className="h-5 w-5" />
+                  <span className="sr-only">Abrir chat</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={handleNovaConversa}>
+                  <Plus className="h-4 w-4 mr-2" /> Nova conversa
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleVerTodas}>
+                  <List className="h-4 w-4 mr-2" /> Ver todas as conversas
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
