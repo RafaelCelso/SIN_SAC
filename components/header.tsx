@@ -69,6 +69,20 @@ const translations = {
   },
 }
 
+// Mock de mensagens não lidas para o chat
+const MENSAGENS_NAO_LIDAS = [
+  {
+    id: 1,
+    nome: "Maria Silva",
+    mensagem: "Obrigada pelo atendimento!",
+  },
+  {
+    id: 2,
+    nome: "João Santos",
+    mensagem: "Quando poderei receber um retorno?",
+  },
+]
+
 export function Header() {
   const { setTheme, theme } = useTheme()
   const [language, setLanguage] = useState<"pt" | "en" | "es">("pt")
@@ -190,13 +204,31 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="block md:hidden text-muted-foreground"
+                  className="block md:hidden text-muted-foreground relative"
                 >
                   <MessageSquare className="h-5 w-5" />
+                  {MENSAGENS_NAO_LIDAS.length > 0 && (
+                    <span className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center rounded-full bg-teal-600 text-white text-xs font-bold z-10" style={{minWidth: 20, minHeight: 20}}>
+                      {MENSAGENS_NAO_LIDAS.length}
+                    </span>
+                  )}
                   <span className="sr-only">Abrir chat</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-72 max-w-xs">
+                {/* Lista de mensagens não lidas */}
+                {MENSAGENS_NAO_LIDAS.length > 0 && (
+                  <div className="px-2 pt-2 pb-1">
+                    <div className="text-xs text-muted-foreground mb-1 font-semibold">Mensagens não lidas</div>
+                    {MENSAGENS_NAO_LIDAS.map((msg) => (
+                      <div key={msg.id} className="mb-2 p-2 rounded bg-muted/50 flex flex-col">
+                        <span className="font-medium text-sm text-gray-900 truncate">{msg.nome}</span>
+                        <span className="text-xs text-gray-600 truncate">{msg.mensagem}</span>
+                      </div>
+                    ))}
+                    <div className="border-b border-gray-200 my-2" />
+                  </div>
+                )}
                 <DropdownMenuItem onClick={handleNovaConversa}>
                   <Plus className="h-4 w-4 mr-2" /> Nova conversa
                 </DropdownMenuItem>
