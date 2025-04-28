@@ -72,15 +72,11 @@ export default function NovoClientePage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" asChild>
-              <a href="/clientes">
-                <ArrowLeft className="h-4 w-4" />
-              </a>
-            </Button>
-            <h1 className="text-2xl font-bold">Novo Cliente</h1>
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="p-4 rounded-lg flex-1">
+            <h1 className="text-2xl font-bold text-gray-900">Novo Cliente</h1>
+            <p className="text-sm text-gray-600 mt-1">Cadastro de novo cliente no sistema</p>
           </div>
         </div>
 

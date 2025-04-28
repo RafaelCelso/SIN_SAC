@@ -93,14 +93,11 @@ export default function ConstrutorFormulariosPage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="bg-gradient-to-r from-[#E6F7F5] to-[#F0FAF8] p-4 rounded-lg border border-[#26B99D] flex-1">
-            <h1 className="text-2xl font-bold text-[#26B99D]">Construtor de Formulários</h1>
-            <p className="text-sm text-[#26B99D] mt-1">
-              Crie e gerencie formulários personalizados para diferentes tipos de atendimento
-            </p>
+          <div className="p-4 rounded-lg flex-1">
+            <h1 className="text-2xl font-bold text-gray-900">Construtor de Formulários</h1>
+            <p className="text-sm text-gray-600 mt-1">Crie e gerencie formulários personalizados para diferentes tipos de atendimento</p>
           </div>
-
-          <Button asChild className="bg-[#26B99D] hover:bg-[#1E9A82]">
+          <Button asChild className="bg-[#26B99D] hover:bg-[#1E9A82] mt-4 md:mt-0">
             <Link href="/preferencias/construtor-formularios/novo">
               <Plus className="mr-2 h-4 w-4" />
               Novo Formulário

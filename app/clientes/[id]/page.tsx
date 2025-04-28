@@ -1244,7 +1244,7 @@ export default function ClientePage() {
                                 <TabsContent value="farmacovigilancia" className="mt-4">
                                   <div className="space-y-4">
                                     <div className="flex items-center justify-between mb-4">
-                                      <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
+                                      <Button className="bg-[#26B99D] hover:bg-[#1E9A82] text-white">
                                         <Plus className="h-4 w-4 mr-2" />
                                         Nova Farmacovigilância
                                       </Button>
@@ -1940,7 +1940,7 @@ export default function ClientePage() {
                     <h3 className="text-lg font-medium">Registros de Farmacovigilância do Cliente</h3>
                     <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
                       <Plus className="h-4 w-4 mr-2" />
-                      Novo Registro
+                      Nova Farmacovigilância
                     </Button>
                   </div>
 

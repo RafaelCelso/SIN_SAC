@@ -346,7 +346,10 @@ export default function ClientesPage() {
     <DashboardLayout>
       <div className="space-y-6 p-4">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <h1 className="text-2xl font-bold text-teal-800">Clientes</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Buscar Clientes</h1>
+            <p className="text-sm text-gray-600 mt-1">Gerenciamento de clientes e contatos</p>
+          </div>
           <Button asChild>
             <Link href="/clientes/novo">
               <UserPlus className="mr-2 h-4 w-4" />
@@ -355,85 +358,87 @@ export default function ClientesPage() {
           </Button>
         </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-lg font-medium">Buscar Clientes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex flex-col md:flex-row gap-2">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Buscar por nome, CPF, telefone ou email"
-                    className="pl-8"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
+        <div className="space-y-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-lg font-medium">Buscar Clientes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex flex-col md:flex-row gap-2">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="search"
+                      placeholder="Buscar por nome, CPF, telefone ou email"
+                      className="pl-8"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <Button onClick={() => setSearchQuery("")} variant="outline" className="md:w-auto">
+                    Limpar
+                  </Button>
                 </div>
-                <Button onClick={() => setSearchQuery("")} variant="outline" className="md:w-auto">
-                  Limpar
-                </Button>
-              </div>
 
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nome</TableHead>
-                      <TableHead>CPF</TableHead>
-                      <TableHead>Telefone</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {currentItems.length > 0 ? (
-                      currentItems.map((cliente) => (
-                        <TableRow key={cliente.id}>
-                          <TableCell className="font-medium">{cliente.nome}</TableCell>
-                          <TableCell>{cliente.documento}</TableCell>
-                          <TableCell>{cliente.telefone}</TableCell>
-                          <TableCell>{cliente.email}</TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200"
-                              asChild
-                            >
-                              <Link href={`/clientes/${cliente.id}`}>
-                                <FileText className="h-4 w-4 mr-2" />
-                                Ver cadastro
-                              </Link>
-                            </Button>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nome</TableHead>
+                        <TableHead>CPF</TableHead>
+                        <TableHead>Telefone</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {currentItems.length > 0 ? (
+                        currentItems.map((cliente) => (
+                          <TableRow key={cliente.id}>
+                            <TableCell className="font-medium">{cliente.nome}</TableCell>
+                            <TableCell>{cliente.documento}</TableCell>
+                            <TableCell>{cliente.telefone}</TableCell>
+                            <TableCell>{cliente.email}</TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200"
+                                asChild
+                              >
+                                <Link href={`/clientes/${cliente.id}`}>
+                                  <FileText className="h-4 w-4 mr-2" />
+                                  Ver cadastro
+                                </Link>
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center py-6">
+                            Nenhum cliente encontrado com os critérios de busca.
                           </TableCell>
                         </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center py-6">
-                          Nenhum cliente encontrado com os critérios de busca.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {filteredClientes.length > 0 && (
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
-                    Mostrando {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredClientes.length)} de{" "}
-                    {filteredClientes.length} clientes
-                  </div>
-                  <div className="flex items-center gap-1">{generatePaginationButtons()}</div>
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+
+                {filteredClientes.length > 0 && (
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      Mostrando {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredClientes.length)} de{" "}
+                      {filteredClientes.length} clientes
+                    </div>
+                    <div className="flex items-center gap-1">{generatePaginationButtons()}</div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </DashboardLayout>
   )

@@ -289,482 +289,493 @@ export default function AgendaPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-          <div className="flex gap-2">
-            <Button variant="secondary" className="bg-gray-200 hover:bg-gray-300 text-gray-700" onClick={goToToday}>
-              Hoje
-            </Button>
-            <div className="flex border rounded-md overflow-hidden">
-              <Button variant="ghost" size="icon" className="rounded-none border-r h-10" onClick={prevMonth}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-none h-10" onClick={nextMonth}>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          <h1 className="text-2xl font-bold uppercase">{format(currentDate, "MMMM 'DE' yyyy", { locale: ptBR })}</h1>
-
-          <div className="flex border rounded-md overflow-hidden">
-            <Button
-              variant={viewMode === "mes" ? "secondary" : "ghost"}
-              className="rounded-none border-r px-4 h-10"
-              onClick={() => setViewMode("mes")}
-            >
-              Mês
-            </Button>
-            <Button
-              variant={viewMode === "semana" ? "secondary" : "ghost"}
-              className="rounded-none border-r px-4 h-10"
-              onClick={() => setViewMode("semana")}
-            >
-              Semana
-            </Button>
-            <Button
-              variant={viewMode === "lista" ? "secondary" : "ghost"}
-              className="rounded-none px-4 h-10"
-              onClick={() => setViewMode("lista")}
-            >
-              Lista
-            </Button>
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="p-4 rounded-lg flex-1">
+            <h1 className="text-2xl font-bold text-gray-900">Agenda</h1>
+            <p className="text-sm text-gray-600 mt-1">Gerenciamento de compromissos e agendamentos</p>
           </div>
         </div>
 
-        <div className="border rounded-lg overflow-hidden">
-          {/* Cabeçalho com dias da semana */}
-          <div className="grid grid-cols-7 border-b">
-            {DIAS_SEMANA.map((dia, index) => (
-              <div key={index} className="text-center py-2 text-blue-500 font-medium border-r last:border-r-0">
-                {dia}
+        <Card>
+          <div className="space-y-4">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+              <div className="flex gap-2">
+                <Button variant="secondary" className="bg-gray-200 hover:bg-gray-300 text-gray-700" onClick={goToToday}>
+                  Hoje
+                </Button>
+                <div className="flex border rounded-md overflow-hidden">
+                  <Button variant="ghost" size="icon" className="rounded-none border-r h-10" onClick={prevMonth}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="rounded-none h-10" onClick={nextMonth}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-            ))}
-          </div>
 
-          {/* Grid do calendário */}
-          <div className="grid grid-cols-7 auto-rows-[120px]">
-            {monthDays.map((day, index) => {
-              const dayEvents = getDayEvents(day)
-              const isCurrentMonth = isSameMonth(day, currentDate)
-              const isSelected = selectedDate ? isSameDay(day, selectedDate) : false
-              const isCurrentDay = isToday(day)
+              <h1 className="text-2xl font-bold uppercase">{format(currentDate, "MMMM 'DE' yyyy", { locale: ptBR })}</h1>
 
-              return (
-                <div
-                  key={index}
-                  className={`border-r border-b last:border-r-0 p-1 relative ${
-                    !isCurrentMonth ? "bg-gray-50 text-gray-400" : ""
-                  } ${isSelected ? "bg-blue-50" : ""} ${isCurrentDay ? "bg-teal-50" : ""}`}
-                  onClick={() => {
-                    setSelectedDate(day)
-                    setNovoEvento({
-                      ...novoEvento,
-                      data: day,
-                    })
-                    setIsDialogOpen(true)
-                  }}
+              <div className="flex border rounded-md overflow-hidden">
+                <Button
+                  variant={viewMode === "mes" ? "secondary" : "ghost"}
+                  className="rounded-none border-r px-4 h-10"
+                  onClick={() => setViewMode("mes")}
                 >
-                  <div className={`text-right p-1 ${isCurrentDay ? "font-bold text-teal-600" : ""}`}>
-                    {day.getDate()}
-                  </div>
+                  Mês
+                </Button>
+                <Button
+                  variant={viewMode === "semana" ? "secondary" : "ghost"}
+                  className="rounded-none border-r px-4 h-10"
+                  onClick={() => setViewMode("semana")}
+                >
+                  Semana
+                </Button>
+                <Button
+                  variant={viewMode === "lista" ? "secondary" : "ghost"}
+                  className="rounded-none px-4 h-10"
+                  onClick={() => setViewMode("lista")}
+                >
+                  Lista
+                </Button>
+              </div>
+            </div>
 
-                  <div className="overflow-y-auto max-h-[80px]">
-                    {dayEvents.slice(0, 3).map((evento, idx) => (
-                      <div
-                        key={idx}
-                        className={`text-xs p-1 mb-1 rounded truncate ${
-                          evento.tipo === "reuniao"
-                            ? "bg-blue-100 text-blue-800"
-                            : evento.tipo === "tarefa"
-                              ? "bg-amber-100 text-amber-800"
-                              : evento.tipo === "lembrete"
-                                ? "bg-purple-100 text-purple-800"
-                                : evento.tipo === "retorno"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-gray-100 text-gray-800"
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setEditingEvento(evento)
-                        }}
-                      >
-                        {evento.horaInicio} - {evento.titulo}
+            <div className="border rounded-lg overflow-hidden">
+              {/* Cabeçalho com dias da semana */}
+              <div className="grid grid-cols-7 border-b">
+                {DIAS_SEMANA.map((dia, index) => (
+                  <div key={index} className="text-center py-2 text-blue-500 font-medium border-r last:border-r-0">
+                    {dia}
+                  </div>
+                ))}
+              </div>
+
+              {/* Grid do calendário */}
+              <div className="grid grid-cols-7 auto-rows-[120px]">
+                {monthDays.map((day, index) => {
+                  const dayEvents = getDayEvents(day)
+                  const isCurrentMonth = isSameMonth(day, currentDate)
+                  const isSelected = selectedDate ? isSameDay(day, selectedDate) : false
+                  const isCurrentDay = isToday(day)
+
+                  return (
+                    <div
+                      key={index}
+                      className={`border-r border-b last:border-r-0 p-1 relative ${
+                        !isCurrentMonth ? "bg-gray-50 text-gray-400" : ""
+                      } ${isSelected ? "bg-blue-50" : ""} ${isCurrentDay ? "bg-teal-50" : ""}`}
+                      onClick={() => {
+                        setSelectedDate(day)
+                        setNovoEvento({
+                          ...novoEvento,
+                          data: day,
+                        })
+                        setIsDialogOpen(true)
+                      }}
+                    >
+                      <div className={`text-right p-1 ${isCurrentDay ? "font-bold text-teal-600" : ""}`}>
+                        {day.getDate()}
                       </div>
-                    ))}
-                    {dayEvents.length > 3 && (
-                      <div className="text-xs text-center text-gray-500">+{dayEvents.length - 3} mais</div>
-                    )}
+
+                      <div className="overflow-y-auto max-h-[80px]">
+                        {dayEvents.slice(0, 3).map((evento, idx) => (
+                          <div
+                            key={idx}
+                            className={`text-xs p-1 mb-1 rounded truncate ${
+                              evento.tipo === "reuniao"
+                                ? "bg-blue-100 text-blue-800"
+                                : evento.tipo === "tarefa"
+                                  ? "bg-amber-100 text-amber-800"
+                                  : evento.tipo === "lembrete"
+                                    ? "bg-purple-100 text-purple-800"
+                                    : evento.tipo === "retorno"
+                                      ? "bg-green-100 text-green-800"
+                                      : "bg-gray-100 text-gray-800"
+                            }`}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setEditingEvento(evento)
+                            }}
+                          >
+                            {evento.horaInicio} - {evento.titulo}
+                          </div>
+                        ))}
+                        {dayEvents.length > 3 && (
+                          <div className="text-xs text-center text-gray-500">+{dayEvents.length - 3} mais</div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Dialog para adicionar evento */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Adicionar Novo Evento</DialogTitle>
+                  <DialogDescription>Preencha os detalhes do evento abaixo.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="titulo">Título</Label>
+                    <Input
+                      id="titulo"
+                      placeholder="Título do evento"
+                      value={novoEvento.titulo}
+                      onChange={(e) => setNovoEvento({ ...novoEvento, titulo: e.target.value })}
+                    />
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
 
-        {/* Dialog para adicionar evento */}
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Adicionar Novo Evento</DialogTitle>
-              <DialogDescription>Preencha os detalhes do evento abaixo.</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="titulo">Título</Label>
-                <Input
-                  id="titulo"
-                  placeholder="Título do evento"
-                  value={novoEvento.titulo}
-                  onChange={(e) => setNovoEvento({ ...novoEvento, titulo: e.target.value })}
-                />
-              </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Tipo de Evento</Label>
+                      <Select
+                        value={novoEvento.tipo}
+                        onValueChange={(value: "reuniao" | "tarefa" | "lembrete" | "retorno" | "outro") =>
+                          setNovoEvento({ ...novoEvento, tipo: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="reuniao">Reunião</SelectItem>
+                          <SelectItem value="tarefa">Tarefa</SelectItem>
+                          <SelectItem value="lembrete">Lembrete</SelectItem>
+                          <SelectItem value="retorno">Retorno</SelectItem>
+                          <SelectItem value="outro">Outro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Tipo de Evento</Label>
-                  <Select
-                    value={novoEvento.tipo}
-                    onValueChange={(value: "reuniao" | "tarefa" | "lembrete" | "retorno" | "outro") =>
-                      setNovoEvento({ ...novoEvento, tipo: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="reuniao">Reunião</SelectItem>
-                      <SelectItem value="tarefa">Tarefa</SelectItem>
-                      <SelectItem value="lembrete">Lembrete</SelectItem>
-                      <SelectItem value="retorno">Retorno</SelectItem>
-                      <SelectItem value="outro">Outro</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Data</Label>
-                  <Input
-                    type="date"
-                    value={format(novoEvento.data, "yyyy-MM-dd")}
-                    onChange={(e) => {
-                      const date = e.target.value ? new Date(e.target.value) : new Date()
-                      setNovoEvento({ ...novoEvento, data: date })
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="horaInicio">Hora de Início</Label>
-                  <Input
-                    id="horaInicio"
-                    type="time"
-                    value={novoEvento.horaInicio}
-                    onChange={(e) => setNovoEvento({ ...novoEvento, horaInicio: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="horaFim">Hora de Término</Label>
-                  <Input
-                    id="horaFim"
-                    type="time"
-                    value={novoEvento.horaFim}
-                    onChange={(e) => setNovoEvento({ ...novoEvento, horaFim: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Participantes</Label>
-                <div className="flex flex-col gap-2">
-                  <div className="flex gap-2">
-                    <div className="flex-1 relative">
-                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <div className="space-y-2">
+                      <Label>Data</Label>
                       <Input
-                        type="search"
-                        placeholder="Buscar por nome, CPF, telefone ou email"
-                        className="pl-8 h-11"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                        type="date"
+                        value={format(novoEvento.data, "yyyy-MM-dd")}
+                        onChange={(e) => {
+                          const date = e.target.value ? new Date(e.target.value) : new Date()
+                          setNovoEvento({ ...novoEvento, data: date })
+                        }}
                       />
                     </div>
-                    <Button onClick={handleSearch} className="bg-teal-600 hover:bg-teal-700 h-11">
-                      <Search className="mr-2 h-4 w-4" />
-                      Buscar
-                    </Button>
                   </div>
 
-                  {showResults && (
-                    <div className="max-h-[200px] overflow-y-auto border rounded-md">
-                      <table className="w-full">
-                        <thead className="bg-gray-50 sticky top-0">
-                          <tr>
-                            <th className="text-left p-2 text-sm font-medium text-gray-500">Nome</th>
-                            <th className="text-left p-2 text-sm font-medium text-gray-500">CPF</th>
-                            <th className="text-right p-2 text-sm font-medium text-gray-500">Ação</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y">
-                          {searchResults.length > 0 ? (
-                            searchResults.map((cliente) => (
-                              <tr key={cliente.id} className="hover:bg-gray-50">
-                                <td className="p-2">
-                                  <div className="font-medium">{cliente.nome}</div>
-                                  <div className="text-sm text-gray-500">{cliente.email}</div>
-                                </td>
-                                <td className="p-2">
-                                  <div>{cliente.documento}</div>
-                                  <div className="text-sm text-gray-500">{cliente.telefone}</div>
-                                </td>
-                                <td className="p-2 text-right">
-                                  <Button
-                                    size="sm"
-                                    onClick={() => handleAddParticipante(cliente)}
-                                    className="bg-teal-600 hover:bg-teal-700"
-                                  >
-                                    Adicionar
-                                  </Button>
-                                </td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan={3} className="text-center py-4 text-gray-500">
-                                Nenhum cliente encontrado. Verifique os critérios de busca.
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="horaInicio">Hora de Início</Label>
+                      <Input
+                        id="horaInicio"
+                        type="time"
+                        value={novoEvento.horaInicio}
+                        onChange={(e) => setNovoEvento({ ...novoEvento, horaInicio: e.target.value })}
+                      />
                     </div>
-                  )}
-
-                  {(editingEvento?.participantes.length || novoEvento.participantes.length) > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {(editingEvento?.participantes || novoEvento.participantes).map((p, index) => (
-                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                          {p}
-                          <button
-                            onClick={() => handleRemoveParticipante(index)}
-                            className="ml-1 rounded-full hover:bg-gray-200 p-0.5"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
+                    <div className="space-y-2">
+                      <Label htmlFor="horaFim">Hora de Término</Label>
+                      <Input
+                        id="horaFim"
+                        type="time"
+                        value={novoEvento.horaFim}
+                        onChange={(e) => setNovoEvento({ ...novoEvento, horaFim: e.target.value })}
+                      />
                     </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="comentarios">Comentários</Label>
-                <Textarea
-                  id="comentarios"
-                  placeholder="Adicione comentários ou notas sobre o evento"
-                  rows={3}
-                  value={novoEvento.comentarios}
-                  onChange={(e) => setNovoEvento({ ...novoEvento, comentarios: e.target.value })}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={handleAddEvento}>
-                <Save className="h-4 w-4 mr-2" />
-                Salvar Evento
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Dialog para edição de evento */}
-        {editingEvento && (
-          <Dialog open={!!editingEvento} onOpenChange={(open) => !open && setEditingEvento(null)}>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Editar Evento</DialogTitle>
-                <DialogDescription>Edite os detalhes do evento abaixo.</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-titulo">Título</Label>
-                  <Input
-                    id="edit-titulo"
-                    placeholder="Título do evento"
-                    value={editingEvento.titulo}
-                    onChange={(e) => setEditingEvento({ ...editingEvento, titulo: e.target.value })}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Tipo de Evento</Label>
-                    <Select
-                      value={editingEvento.tipo}
-                      onValueChange={(value: "reuniao" | "tarefa" | "lembrete" | "retorno" | "outro") =>
-                        setEditingEvento({ ...editingEvento, tipo: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="reuniao">Reunião</SelectItem>
-                        <SelectItem value="tarefa">Tarefa</SelectItem>
-                        <SelectItem value="lembrete">Lembrete</SelectItem>
-                        <SelectItem value="retorno">Retorno</SelectItem>
-                        <SelectItem value="outro">Outro</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Data</Label>
-                    <Input
-                      type="date"
-                      value={format(editingEvento.data, "yyyy-MM-dd")}
-                      onChange={(e) => {
-                        const date = e.target.value ? new Date(e.target.value) : new Date()
-                        setEditingEvento({ ...editingEvento, data: date })
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-horaInicio">Hora de Início</Label>
-                    <Input
-                      id="edit-horaInicio"
-                      type="time"
-                      value={editingEvento.horaInicio}
-                      onChange={(e) => setEditingEvento({ ...editingEvento, horaInicio: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-horaFim">Hora de Término</Label>
-                    <Input
-                      id="edit-horaFim"
-                      type="time"
-                      value={editingEvento.horaFim}
-                      onChange={(e) => setEditingEvento({ ...editingEvento, horaFim: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Participantes</Label>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex gap-2">
-                      <div className="flex-1 relative">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          type="search"
-                          placeholder="Buscar por nome, CPF, telefone ou email"
-                          className="pl-8 h-11"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                        />
+                    <Label>Participantes</Label>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex gap-2">
+                        <div className="flex-1 relative">
+                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="search"
+                            placeholder="Buscar por nome, CPF, telefone ou email"
+                            className="pl-8 h-11"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                          />
+                        </div>
+                        <Button onClick={handleSearch} className="bg-teal-600 hover:bg-teal-700 h-11">
+                          <Search className="mr-2 h-4 w-4" />
+                          Buscar
+                        </Button>
                       </div>
-                      <Button onClick={handleSearch} className="bg-teal-600 hover:bg-teal-700 h-11">
-                        <Search className="mr-2 h-4 w-4" />
-                        Buscar
-                      </Button>
-                    </div>
 
-                    {showResults && (
-                      <div className="max-h-[200px] overflow-y-auto border rounded-md">
-                        <table className="w-full">
-                          <thead className="bg-gray-50 sticky top-0">
-                            <tr>
-                              <th className="text-left p-2 text-sm font-medium text-gray-500">Nome</th>
-                              <th className="text-left p-2 text-sm font-medium text-gray-500">CPF</th>
-                              <th className="text-right p-2 text-sm font-medium text-gray-500">Ação</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y">
-                            {searchResults.length > 0 ? (
-                              searchResults.map((cliente) => (
-                                <tr key={cliente.id} className="hover:bg-gray-50">
-                                  <td className="p-2">
-                                    <div className="font-medium">{cliente.nome}</div>
-                                    <div className="text-sm text-gray-500">{cliente.email}</div>
-                                  </td>
-                                  <td className="p-2">
-                                    <div>{cliente.documento}</div>
-                                    <div className="text-sm text-gray-500">{cliente.telefone}</div>
-                                  </td>
-                                  <td className="p-2 text-right">
-                                    <Button
-                                      size="sm"
-                                      onClick={() => handleAddParticipante(cliente)}
-                                      className="bg-teal-600 hover:bg-teal-700"
-                                    >
-                                      Adicionar
-                                    </Button>
+                      {showResults && (
+                        <div className="max-h-[200px] overflow-y-auto border rounded-md">
+                          <table className="w-full">
+                            <thead className="bg-gray-50 sticky top-0">
+                              <tr>
+                                <th className="text-left p-2 text-sm font-medium text-gray-500">Nome</th>
+                                <th className="text-left p-2 text-sm font-medium text-gray-500">CPF</th>
+                                <th className="text-right p-2 text-sm font-medium text-gray-500">Ação</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y">
+                              {searchResults.length > 0 ? (
+                                searchResults.map((cliente) => (
+                                  <tr key={cliente.id} className="hover:bg-gray-50">
+                                    <td className="p-2">
+                                      <div className="font-medium">{cliente.nome}</div>
+                                      <div className="text-sm text-gray-500">{cliente.email}</div>
+                                    </td>
+                                    <td className="p-2">
+                                      <div>{cliente.documento}</div>
+                                      <div className="text-sm text-gray-500">{cliente.telefone}</div>
+                                    </td>
+                                    <td className="p-2 text-right">
+                                      <Button
+                                        size="sm"
+                                        onClick={() => handleAddParticipante(cliente)}
+                                        className="bg-teal-600 hover:bg-teal-700"
+                                      >
+                                        Adicionar
+                                      </Button>
+                                    </td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td colSpan={3} className="text-center py-4 text-gray-500">
+                                    Nenhum cliente encontrado. Verifique os critérios de busca.
                                   </td>
                                 </tr>
-                              ))
-                            ) : (
-                              <tr>
-                                <td colSpan={3} className="text-center py-4 text-gray-500">
-                                  Nenhum cliente encontrado. Verifique os critérios de busca.
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
 
-                    {(editingEvento?.participantes.length || novoEvento.participantes.length) > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {(editingEvento?.participantes || novoEvento.participantes).map((p, index) => (
-                          <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                            {p}
-                            <button
-                              onClick={() => handleRemoveParticipante(index)}
-                              className="ml-1 rounded-full hover:bg-gray-200 p-0.5"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
+                      {(editingEvento?.participantes.length || novoEvento.participantes.length) > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {(editingEvento?.participantes || novoEvento.participantes).map((p, index) => (
+                            <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                              {p}
+                              <button
+                                onClick={() => handleRemoveParticipante(index)}
+                                className="ml-1 rounded-full hover:bg-gray-200 p-0.5"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="comentarios">Comentários</Label>
+                    <Textarea
+                      id="comentarios"
+                      placeholder="Adicione comentários ou notas sobre o evento"
+                      rows={3}
+                      value={novoEvento.comentarios}
+                      onChange={(e) => setNovoEvento({ ...novoEvento, comentarios: e.target.value })}
+                    />
                   </div>
                 </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button onClick={handleAddEvento}>
+                    <Save className="h-4 w-4 mr-2" />
+                    Salvar Evento
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
-                <div className="space-y-2">
-                  <Label htmlFor="edit-comentarios">Comentários</Label>
-                  <Textarea
-                    id="edit-comentarios"
-                    placeholder="Adicione comentários ou notas sobre o evento"
-                    rows={3}
-                    value={editingEvento.comentarios}
-                    onChange={(e) => setEditingEvento({ ...editingEvento, comentarios: e.target.value })}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setEditingEvento(null)}>
-                  Cancelar
-                </Button>
-                <Button onClick={handleEditEvento}>
-                  <Save className="h-4 w-4 mr-2" />
-                  Salvar Alterações
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
+            {/* Dialog para edição de evento */}
+            {editingEvento && (
+              <Dialog open={!!editingEvento} onOpenChange={(open) => !open && setEditingEvento(null)}>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Editar Evento</DialogTitle>
+                    <DialogDescription>Edite os detalhes do evento abaixo.</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-titulo">Título</Label>
+                      <Input
+                        id="edit-titulo"
+                        placeholder="Título do evento"
+                        value={editingEvento.titulo}
+                        onChange={(e) => setEditingEvento({ ...editingEvento, titulo: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Tipo de Evento</Label>
+                        <Select
+                          value={editingEvento.tipo}
+                          onValueChange={(value: "reuniao" | "tarefa" | "lembrete" | "retorno" | "outro") =>
+                            setEditingEvento({ ...editingEvento, tipo: value })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tipo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="reuniao">Reunião</SelectItem>
+                            <SelectItem value="tarefa">Tarefa</SelectItem>
+                            <SelectItem value="lembrete">Lembrete</SelectItem>
+                            <SelectItem value="retorno">Retorno</SelectItem>
+                            <SelectItem value="outro">Outro</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Data</Label>
+                        <Input
+                          type="date"
+                          value={format(editingEvento.data, "yyyy-MM-dd")}
+                          onChange={(e) => {
+                            const date = e.target.value ? new Date(e.target.value) : new Date()
+                            setEditingEvento({ ...editingEvento, data: date })
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-horaInicio">Hora de Início</Label>
+                        <Input
+                          id="edit-horaInicio"
+                          type="time"
+                          value={editingEvento.horaInicio}
+                          onChange={(e) => setEditingEvento({ ...editingEvento, horaInicio: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-horaFim">Hora de Término</Label>
+                        <Input
+                          id="edit-horaFim"
+                          type="time"
+                          value={editingEvento.horaFim}
+                          onChange={(e) => setEditingEvento({ ...editingEvento, horaFim: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Participantes</Label>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex gap-2">
+                          <div className="flex-1 relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              type="search"
+                              placeholder="Buscar por nome, CPF, telefone ou email"
+                              className="pl-8 h-11"
+                              value={searchTerm}
+                              onChange={(e) => setSearchTerm(e.target.value)}
+                              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                            />
+                          </div>
+                          <Button onClick={handleSearch} className="bg-teal-600 hover:bg-teal-700 h-11">
+                            <Search className="mr-2 h-4 w-4" />
+                            Buscar
+                          </Button>
+                        </div>
+
+                        {showResults && (
+                          <div className="max-h-[200px] overflow-y-auto border rounded-md">
+                            <table className="w-full">
+                              <thead className="bg-gray-50 sticky top-0">
+                                <tr>
+                                  <th className="text-left p-2 text-sm font-medium text-gray-500">Nome</th>
+                                  <th className="text-left p-2 text-sm font-medium text-gray-500">CPF</th>
+                                  <th className="text-right p-2 text-sm font-medium text-gray-500">Ação</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y">
+                                {searchResults.length > 0 ? (
+                                  searchResults.map((cliente) => (
+                                    <tr key={cliente.id} className="hover:bg-gray-50">
+                                      <td className="p-2">
+                                        <div className="font-medium">{cliente.nome}</div>
+                                        <div className="text-sm text-gray-500">{cliente.email}</div>
+                                      </td>
+                                      <td className="p-2">
+                                        <div>{cliente.documento}</div>
+                                        <div className="text-sm text-gray-500">{cliente.telefone}</div>
+                                      </td>
+                                      <td className="p-2 text-right">
+                                        <Button
+                                          size="sm"
+                                          onClick={() => handleAddParticipante(cliente)}
+                                          className="bg-teal-600 hover:bg-teal-700"
+                                        >
+                                          Adicionar
+                                        </Button>
+                                      </td>
+                                    </tr>
+                                  ))
+                                ) : (
+                                  <tr>
+                                    <td colSpan={3} className="text-center py-4 text-gray-500">
+                                      Nenhum cliente encontrado. Verifique os critérios de busca.
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+
+                        {(editingEvento?.participantes.length || novoEvento.participantes.length) > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {(editingEvento?.participantes || novoEvento.participantes).map((p, index) => (
+                              <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                                {p}
+                                <button
+                                  onClick={() => handleRemoveParticipante(index)}
+                                  className="ml-1 rounded-full hover:bg-gray-200 p-0.5"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-comentarios">Comentários</Label>
+                      <Textarea
+                        id="edit-comentarios"
+                        placeholder="Adicione comentários ou notas sobre o evento"
+                        rows={3}
+                        value={editingEvento.comentarios}
+                        onChange={(e) => setEditingEvento({ ...editingEvento, comentarios: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setEditingEvento(null)}>
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleEditEvento}>
+                      <Save className="h-4 w-4 mr-2" />
+                      Salvar Alterações
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+        </Card>
       </div>
     </DashboardLayout>
   )

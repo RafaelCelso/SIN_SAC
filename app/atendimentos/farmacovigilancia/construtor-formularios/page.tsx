@@ -18,17 +18,12 @@ export default function FormBuilderPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/atendimentos/farmacovigilancia">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <h1 className="text-2xl font-bold">Construtor de Formulários</h1>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="p-4 rounded-lg flex-1">
+            <h1 className="text-2xl font-bold text-gray-900">Construtor de Formulários</h1>
+            <p className="text-sm text-gray-600 mt-1">Criação e gerenciamento de formulários personalizados</p>
           </div>
-
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-4 md:mt-0">
             <Button variant="outline">
               <Eye className="mr-2 h-4 w-4" />
               Pré-visualizar

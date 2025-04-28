@@ -216,9 +216,9 @@ export default function FAQPage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="bg-gradient-to-r from-[#E6F7F5] to-[#F0FAF8] p-4 rounded-lg border border-[#26B99D] flex-1">
-            <h1 className="text-2xl font-bold text-[#26B99D]">Perguntas Frequentes (FAQ)</h1>
-            <p className="text-sm text-[#26B99D] mt-1">Consulte informações e respostas para as dúvidas mais comuns</p>
+          <div className="p-4 rounded-lg flex-1">
+            <h1 className="text-2xl font-bold text-gray-900">FAQ</h1>
+            <p className="text-sm text-gray-600 mt-1">Perguntas frequentes e respostas</p>
           </div>
         </div>
 

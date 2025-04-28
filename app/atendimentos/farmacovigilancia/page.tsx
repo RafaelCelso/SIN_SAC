@@ -249,11 +249,9 @@ export default function FarmacovigilanciaPage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="bg-gradient-to-r from-[#E6F7F5] to-[#F0FAF8] p-4 rounded-lg border border-[#26B99D] flex-1">
-            <h1 className="text-2xl font-bold text-[#26B99D]">Farmacovigilância</h1>
-            <p className="text-sm text-[#26B99D] mt-1">
-              Monitoramento e registro de eventos adversos relacionados a medicamentos
-            </p>
+          <div className="p-4 rounded-lg flex-1">
+            <h1 className="text-2xl font-bold text-gray-900">Farmacovigilância</h1>
+            <p className="text-sm text-gray-600 mt-1">Gerenciamento de eventos adversos e farmacovigilância</p>
           </div>
         </div>
 
@@ -262,7 +260,7 @@ export default function FarmacovigilanciaPage() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Buscar notificações..."
+              placeholder="Buscar Farmacovigilância..."
               className="pl-8 w-full"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -281,12 +279,11 @@ export default function FarmacovigilanciaPage() {
             </Button>
 
             <Button
-              variant="primary"
-              className="bg-[#26B99D] hover:bg-[#1E9A82] w-full sm:w-auto"
+              className="bg-[#26B99D] hover:bg-[#1E9A82] w-full sm:w-auto text-white"
               onClick={() => setIsNovoRegistroDialogOpen(true)}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Novo Registro
+              Nova Farmacovigilância
             </Button>
           </div>
         </div>

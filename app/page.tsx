@@ -266,15 +266,11 @@ export default function Home() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <h1 className="text-2xl font-bold text-teal-800">Dashboard</h1>
-          <Button 
-            className="bg-[#26B99D] hover:bg-[#1E9A82]"
-            onClick={() => setShowAtendimentoModal(true)}
-          >
-            <PhoneCall className="mr-2 h-4 w-4" />
-            Novo Atendimento
-          </Button>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="p-4 rounded-lg flex-1">
+            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+            <p className="text-sm text-gray-600 mt-1">Visão geral do sistema</p>
+          </div>
         </div>
 
         {/* Cards de estatísticas */}

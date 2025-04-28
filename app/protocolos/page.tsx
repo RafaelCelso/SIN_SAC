@@ -177,9 +177,12 @@ export default function ProtocolosPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 p-6">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <h1 className="text-2xl font-bold text-teal-800">Protocolos</h1>
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="p-4 rounded-lg flex-1">
+            <h1 className="text-2xl font-bold text-gray-900">Protocolos</h1>
+            <p className="text-sm text-gray-600 mt-1">Gerenciamento de protocolos de atendimento</p>
+          </div>
           <Button className="bg-teal-600 hover:bg-teal-700">
             <Plus className="mr-2 h-4 w-4" />
             Novo Protocolo
