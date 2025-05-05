@@ -379,8 +379,13 @@ export default function ClientePage() {
                 <User className="h-8 w-8 text-teal-600" />
               </div>
               <div>
-                <CardTitle>{cliente.nome}</CardTitle>
-                <CardDescription>
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-[#3BC0A8] text-white hover:bg-[#3BC0A8]">
+                    ID: {cliente.id}
+                  </Badge>
+                  <CardTitle>{cliente.nome}</CardTitle>
+                </div>
+                <CardDescription className="mt-3">
                   <Badge variant="outline" className="mr-2">
                     {cliente.tipo}
                   </Badge>
