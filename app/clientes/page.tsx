@@ -385,10 +385,12 @@ export default function ClientesPage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead>ID</TableHead>
                         <TableHead>Nome</TableHead>
                         <TableHead>CPF</TableHead>
                         <TableHead>Telefone</TableHead>
                         <TableHead>Email</TableHead>
+                        <TableHead>Data de Cadastro</TableHead>
                         <TableHead className="text-right">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -396,10 +398,12 @@ export default function ClientesPage() {
                       {currentItems.length > 0 ? (
                         currentItems.map((cliente) => (
                           <TableRow key={cliente.id}>
-                            <TableCell className="font-medium">{cliente.nome}</TableCell>
+                            <TableCell className="font-medium">{cliente.id}</TableCell>
+                            <TableCell>{cliente.nome}</TableCell>
                             <TableCell>{cliente.documento}</TableCell>
                             <TableCell>{cliente.telefone}</TableCell>
                             <TableCell>{cliente.email}</TableCell>
+                            <TableCell>{cliente.dataCadastro}</TableCell>
                             <TableCell className="text-right">
                               <Button
                                 variant="outline"
