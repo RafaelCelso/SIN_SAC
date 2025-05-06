@@ -199,10 +199,10 @@ export default function NovaQueixaTecnicaPage() {
           <CardHeader className="bg-gray-50 border-b">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15937E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#15937E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
                   <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-3.33 0-10 1.67-10 5v1a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-1c0-3.33-6.67-5-10-5Z" />
                 </svg>
-                <CardTitle className="text-lg">Informações do Cliente</CardTitle>
+                <span className="text-xl font-bold">Informações do Cliente</span>
               </div>
               {cliente && (
                 <Button variant="outline" size="sm" asChild>
@@ -422,16 +422,14 @@ export default function NovaQueixaTecnicaPage() {
         <form onSubmit={handleSubmit}>
           <Card>
             <CardHeader>
-              <CardTitle>Detalhes da Queixa Técnica</CardTitle>
-              <CardDescription>Preencha as informações sobre o produto e a queixa técnica</CardDescription>
+              <div className="flex items-center gap-2 mb-6">
+                <Package className="h-5 w-5 text-primary" />
+                <CardTitle>Informações do Produto</CardTitle>
+              </div>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Informações do Produto */}
               <div>
-                <h3 className="text-lg font-medium flex items-center mb-4">
-                  <Package className="mr-2 h-5 w-5 text-primary" />
-                  Informações do Produto
-                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="produto" className="flex items-center space-x-2">
