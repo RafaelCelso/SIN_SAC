@@ -172,28 +172,38 @@ export default function NovaQueixaTecnicaPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" asChild>
-              <a href="/atendimentos/queixas">
-                <ArrowLeft className="h-4 w-4" />
-              </a>
-            </Button>
-            <h1 className="text-2xl font-bold">Nova Queixa Técnica</h1>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="icon" asChild>
+                <a href="/atendimentos/queixas">
+                  <ArrowLeft className="h-4 w-4" />
+                </a>
+              </Button>
+              <h1 className="text-2xl font-bold">Nova Queixa Técnica</h1>
+            </div>
+            {protocolo && (
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-sm px-3 py-1">
+                Protocolo: {protocolo}
+              </Badge>
+            )}
           </div>
-
-          {protocolo && (
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-sm px-3 py-1">
-              Protocolo: {protocolo}
-            </Badge>
-          )}
+          {/* Número da queixa técnica */}
+          <div className="mt-6">
+            <Badge className="bg-[#26B99D] text-white text-base px-4 py-1 rounded font-bold shadow">QT-2024-0001</Badge>
+          </div>
         </div>
 
         {/* Informações do Cliente */}
         <Card>
           <CardHeader className="bg-gray-50 border-b">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Informações do Cliente</CardTitle>
+              <div className="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15937E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-3.33 0-10 1.67-10 5v1a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-1c0-3.33-6.67-5-10-5Z" />
+                </svg>
+                <CardTitle className="text-lg">Informações do Cliente</CardTitle>
+              </div>
               {cliente && (
                 <Button variant="outline" size="sm" asChild>
                   <a href={`/clientes/${cliente.id}`}>
@@ -209,11 +219,6 @@ export default function NovaQueixaTecnicaPage() {
               <div className="space-y-6">
                 <div className="flex items-center gap-4 justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 rounded-full bg-teal-100 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#15937E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
-                        <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-3.33 0-10 1.67-10 5v1a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-1c0-3.33-6.67-5-10-5Z" />
-                      </svg>
-                    </div>
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">
                         <span className="rounded-md bg-[#26B99D] text-white text-xs px-2 py-0.5 font-semibold">ID:{cliente.id}</span>
