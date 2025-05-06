@@ -314,15 +314,10 @@ export default function ProtocoloPage({ params }: { params: { id: string } }) {
   const activeTab = searchParams.get("tab")
   const [currentTab, setCurrentTab] = useState(activeTab || "detalhes")
   const [expandedContacts, setExpandedContacts] = useState<Set<string>>(new Set())
+  const [showAllTabs, setShowAllTabs] = useState(false)
 
   const protocolo = PROTOCOLOS_MOCK.find((p) => p.id === params.id) as Protocolo | undefined
   const cliente = CLIENTES_MOCK.find((c) => c.id === protocolo?.clienteId)
-
-  const [showNovoRegistroModal, setShowNovoRegistroModal] = useState(false)
-  const [tipoRegistro, setTipoRegistro] = useState<string>("")
-
-  // Determinar quais abas mostrar com base no parâmetro de consulta
-  const showAllTabs = !activeTab || activeTab === "all"
 
   if (!protocolo || !cliente) {
     return <div className="p-6">Protocolo não encontrado</div>
@@ -443,8 +438,7 @@ export default function ProtocoloPage({ params }: { params: { id: string } }) {
                 <h2 className="text-lg font-semibold">Contatos</h2>
                 <Button
                   onClick={() => {
-                    setTipoRegistro("contato")
-                    setShowNovoRegistroModal(true)
+                    setCurrentTab("contato")
                   }}
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -558,13 +552,12 @@ export default function ProtocoloPage({ params }: { params: { id: string } }) {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-semibold">Queixas Técnicas</h2>
                   <Button
-                    onClick={() => {
-                      setTipoRegistro("queixa")
-                      setShowNovoRegistroModal(true)
-                    }}
+                    asChild
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nova Queixa Técnica
+                    <Link href={`/atendimentos/queixas/nova?protocoloId=${params.id}`}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Nova Queixa Técnica
+                    </Link>
                   </Button>
                 </div>
 
@@ -636,8 +629,7 @@ export default function ProtocoloPage({ params }: { params: { id: string } }) {
                   <h2 className="text-lg font-semibold">Informações Médicas</h2>
                   <Button
                     onClick={() => {
-                      setTipoRegistro("info")
-                      setShowNovoRegistroModal(true)
+                      setCurrentTab("info")
                     }}
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -700,8 +692,7 @@ export default function ProtocoloPage({ params }: { params: { id: string } }) {
                   <h2 className="text-lg font-semibold">Farmacovigilância</h2>
                   <Button
                     onClick={() => {
-                      setTipoRegistro("farmacovigilancia")
-                      setShowNovoRegistroModal(true)
+                      setCurrentTab("farmacovigilancia")
                     }}
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -760,21 +751,6 @@ export default function ProtocoloPage({ params }: { params: { id: string } }) {
             )}
           </Tabs>
         </div>
-
-        <NovoRegistroModal
-          open={showNovoRegistroModal}
-          onOpenChange={setShowNovoRegistroModal}
-          tipo={
-            tipoRegistro === "queixa"
-              ? "queixa"
-              : tipoRegistro === "info"
-                ? "informacao"
-                : tipoRegistro === "farmacovigilancia"
-                  ? "farmacovigilancia"
-                  : "contato"
-          }
-          clienteId={cliente.id}
-        />
       </div>
     </DashboardLayout>
   )

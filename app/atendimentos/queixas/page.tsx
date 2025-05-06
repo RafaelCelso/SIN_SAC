@@ -166,9 +166,6 @@ export default function QueixasTecnicasPage() {
   const [tipoFiltro, setTipoFiltro] = useState<string>("")
   const [statusFiltro, setStatusFiltro] = useState<string>("")
   const [showFilters, setShowFilters] = useState(false)
-  const [isNovaQueixaDialogOpen, setIsNovaQueixaDialogOpen] = useState(false)
-  const [clienteSearchQuery, setClienteSearchQuery] = useState("")
-  const [selectedCliente, setSelectedCliente] = useState<(typeof CLIENTES_MOCK)[0] | null>(null)
   const [showResults, setShowResults] = useState(false)
   const [produtoSearch, setProdutoSearch] = useState("");
   const [showProdutosList, setShowProdutosList] = useState(false);
@@ -217,10 +214,10 @@ export default function QueixasTecnicasPage() {
   // Filtrar clientes com base na busca
   const filteredClientes = CLIENTES_MOCK.filter(
     (cliente) =>
-      cliente.nome.toLowerCase().includes(clienteSearchQuery.toLowerCase()) ||
-      cliente.documento.includes(clienteSearchQuery) ||
-      cliente.email.toLowerCase().includes(clienteSearchQuery.toLowerCase()) ||
-      cliente.telefone.includes(clienteSearchQuery),
+      cliente.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cliente.documento.includes(searchQuery) ||
+      cliente.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cliente.telefone.includes(searchQuery),
   )
 
   const resetFilters = () => {
@@ -265,8 +262,6 @@ export default function QueixasTecnicasPage() {
       description: "A queixa técnica foi registrada com sucesso",
       duration: 3000,
     })
-
-    setIsNovaQueixaDialogOpen(false)
 
     // Resetar formulário
     setFormData({
@@ -352,10 +347,12 @@ export default function QueixasTecnicasPage() {
             <Button
               variant="default"
               className="bg-[#26B99D] hover:bg-[#1E9A82] w-full sm:w-auto"
-              onClick={() => setIsNovaQueixaDialogOpen(true)}
+              asChild
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Nova Queixa Técnica
+              <Link href="/atendimentos/queixas/nova">
+                <Plus className="h-4 w-4 mr-2" />
+                Nova Queixa Técnica
+              </Link>
             </Button>
           </div>
         </div>
@@ -561,276 +558,6 @@ export default function QueixasTecnicasPage() {
           </CardFooter>
         </Card>
       </div>
-
-      {/* Dialog para nova queixa técnica */}
-      <Dialog open={isNovaQueixaDialogOpen} onOpenChange={(open) => {
-        setIsNovaQueixaDialogOpen(open)
-        if (!open) {
-          setFormData({
-            produto: "",
-            lote: "",
-            dataFabricacao: "",
-            dataValidade: "",
-            descricaoQueixa: "",
-            tipoQueixa: "embalagem",
-            possuiAmostra: "nao",
-            enviarAmostra: false,
-            prioridade: "normal",
-            observacoes: "",
-          })
-          setSelectedCliente(null)
-          setClienteSearchQuery("")
-        }
-      }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Nova Queixa Técnica</DialogTitle>
-            <DialogDescription>Preencha o formulário abaixo para registrar uma nova queixa técnica</DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmitQueixa} className="space-y-6">
-            {/* Informações do Cliente */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#15937E" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-3.33 0-10 1.67-10 5v1a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-1c0-3.33-6.67-5-10-5Z"/></svg>
-                <h3 className="text-lg font-bold text-black">Informações do Cliente</h3>
-              </div>
-              <div className="grid grid-cols-1 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="cliente">Cliente <span className="text-red-500">*</span></Label>
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Buscar por nome, CPF, telefone ou email"
-                      className="pl-8 h-11"
-                      value={clienteSearchQuery}
-                      onChange={(e) => {
-                        setClienteSearchQuery(e.target.value)
-                        setShowResults(true)
-                      }}
-                    />
-                  </div>
-                  {showResults && filteredClientes.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
-                      {filteredClientes.map((cliente) => (
-                        <button
-                          key={cliente.id}
-                          className="w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b last:border-b-0"
-                          onClick={() => {
-                            setSelectedCliente(cliente)
-                            setClienteSearchQuery("")
-                            setShowResults(false)
-                          }}
-                        >
-                          <div className="font-medium text-gray-900">{cliente.nome}</div>
-                          <div className="text-sm text-gray-500">
-                            {cliente.documento} • {cliente.telefone}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                {selectedCliente && (
-                  <div className="flex items-center justify-between p-4 rounded-lg border-2 border-[#26B99D] bg-[#F7FDFC] shadow-md mt-2 transition-all">
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-full bg-teal-100 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#15937E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
-                          <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-3.33 0-10 1.67-10 5v1a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-1c0-3.33-6.67-5-10-5Z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <div className="font-semibold text-lg text-gray-900">{selectedCliente.nome}</div>
-                        <div className="flex flex-wrap gap-6 text-sm text-gray-700 mt-1">
-                          <span><span className="font-medium">CPF:</span> {selectedCliente.documento}</span>
-                          <span><span className="font-medium">Telefone:</span> {selectedCliente.telefone}</span>
-                          <span><span className="font-medium">Email:</span> <span className="text-gray-600">{selectedCliente.email}</span></span>
-                        </div>
-                      </div>
-                    </div>
-                    <Button
-                      type="button"
-                      className="bg-[#26B99D] hover:bg-[#1E9A82] text-white font-semibold px-6"
-                      onClick={() => setSelectedCliente(null)}
-                    >
-                      Remover
-                    </Button>
-                  </div>
-                )}
-                <div className="space-y-2">
-                  <Label htmlFor="contato">Contato</Label>
-                  <Input id="contato" placeholder="Nome do contato" />
-                </div>
-              </div>
-            </div>
-            <Separator className="my-6" />
-            {/* Informações do Produto */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#15937E" strokeWidth="1.5"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 3v4M8 3v4"/></svg>
-                <h3 className="text-lg font-bold text-black">Informações do Produto</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="produto">
-                    Produto <span className="text-red-500">*</span>
-                  </Label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <Input
-                      type="text"
-                      placeholder="Buscar produto por nome ou EAN"
-                      className="h-11 pl-10"
-                      value={produtoSearch}
-                      onChange={e => setProdutoSearch(e.target.value)}
-                      onFocus={() => setShowProdutosList(true)}
-                      ref={searchInputRef}
-                      required
-                    />
-                    {showProdutosList && (
-                      <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
-                        {produtosFiltrados.length > 0 ? (
-                          produtosFiltrados.map((produto, index) => (
-                            <button
-                              key={produto.ean}
-                              className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${index !== produtosFiltrados.length - 1 ? "border-b" : ""}`}
-                              onClick={() => handleSelectProduto(produto)}
-                              type="button"
-                            >
-                              <div className="font-medium text-gray-900">{produto.nome}</div>
-                              <div className="text-sm text-gray-500">EAN: {produto.ean}</div>
-                            </button>
-                          ))
-                        ) : (
-                          <div className="px-4 py-3 text-sm text-gray-500">Nenhum produto encontrado</div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lote">
-                    Número do Lote <span className="text-red-500">*</span>
-                  </Label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <Input
-                      type="text"
-                      placeholder="Buscar por lote"
-                      className="h-11 pl-10"
-                      value={formData.lote}
-                      onChange={handleInputChange}
-                      name="lote"
-                      required
-                    />
-                  </div>
-                </div>
-                {formData.produto && (
-                  <div className="mt-2 p-3 bg-gray-50 rounded-lg border">
-                    <div className="font-medium text-gray-900">{formData.produto}</div>
-                    <div className="text-sm text-gray-500">
-                      EAN: {PRODUTOS_MOCK.find(p => p.nome === formData.produto)?.ean}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            <Separator className="my-6" />
-            {/* Detalhes da Queixa */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#EAB308" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <h3 className="text-lg font-bold text-black">Detalhes da Queixa</h3>
-              </div>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="tipoQueixa">
-                    Tipo de Queixa <span className="text-red-500">*</span>
-                  </Label>
-                  <Select
-                    name="tipoQueixa"
-                    value={formData.tipoQueixa}
-                    onValueChange={(value) => handleSelectChange("tipoQueixa", value)}
-                  >
-                    <SelectTrigger id="tipoQueixa">
-                      <SelectValue placeholder="Selecione o tipo de queixa" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="embalagem">Problema na embalagem</SelectItem>
-                      <SelectItem value="rotulagem">Problema na rotulagem</SelectItem>
-                      <SelectItem value="conteudo">Problema no conteúdo</SelectItem>
-                      <SelectItem value="funcionamento">Problema no funcionamento</SelectItem>
-                      <SelectItem value="contaminacao">Suspeita de contaminação</SelectItem>
-                      <SelectItem value="outro">Outro</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="descricaoQueixa">
-                    Descrição da Queixa <span className="text-red-500">*</span>
-                  </Label>
-                  <Textarea
-                    id="descricaoQueixa"
-                    name="descricaoQueixa"
-                    placeholder="Descreva detalhadamente o problema encontrado"
-                    rows={4}
-                    value={formData.descricaoQueixa}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="prioridade">Prioridade</Label>
-                  <Select
-                    name="prioridade"
-                    value={formData.prioridade}
-                    onValueChange={(value) => handleSelectChange("prioridade", value)}
-                  >
-                    <SelectTrigger id="prioridade">
-                      <SelectValue placeholder="Selecione a prioridade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="baixa">Baixa</SelectItem>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="alta">Alta</SelectItem>
-                      <SelectItem value="urgente">Urgente</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-            <Separator className="my-6" />
-            {/* Observações */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#15937E" strokeWidth="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
-                <h3 className="text-lg font-bold text-black">Observações</h3>
-              </div>
-              <Textarea
-                id="observacoes"
-                name="observacoes"
-                placeholder="Informações adicionais relevantes"
-                rows={3}
-                value={formData.observacoes}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <DialogFooter>
-              <Button variant="outline" type="button" onClick={() => setIsNovaQueixaDialogOpen(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit" className="bg-[#26B99D] hover:bg-[#1E9A82]">
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Registrar Queixa Técnica
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </DashboardLayout>
   )
 }

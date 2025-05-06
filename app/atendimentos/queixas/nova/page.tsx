@@ -17,7 +17,7 @@ import { DatePicker } from "@/components/date-picker"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode } from "lucide-react"
+import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 
 // Dados simulados de clientes
@@ -30,6 +30,7 @@ const CLIENTES_MOCK = [
     email: "maria.silva@email.com",
     endereco: "Av. Paulista, 1000 - São Paulo/SP",
     tipo: "Pessoa Física",
+    dataCadastro: "10/01/2023",
   },
   {
     id: "2",
@@ -39,6 +40,7 @@ const CLIENTES_MOCK = [
     email: "joao.santos@email.com",
     endereco: "Rua Augusta, 500 - São Paulo/SP",
     tipo: "Pessoa Física",
+    dataCadastro: "15/02/2023",
   },
   {
     id: "3",
@@ -48,8 +50,26 @@ const CLIENTES_MOCK = [
     email: "contato@farmaciasaude.com.br",
     endereco: "Av. Rebouças, 1500 - São Paulo/SP",
     tipo: "Pessoa Jurídica",
+    dataCadastro: "20/03/2023",
   },
 ]
+
+// Mock de protocolos por cliente
+type Protocolo = { id: string; data: string; produto: string; motivo: string }
+const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
+  "1": [
+    { id: "P-1001", data: "05/01/2023", produto: "Medicamento A", motivo: "Dúvida sobre uso" },
+    { id: "P-1002", data: "20/02/2023", produto: "Dispositivo X", motivo: "Reclamação de funcionamento" },
+  ],
+  "2": [
+    { id: "P-2001", data: "10/03/2023", produto: "Medicamento B", motivo: "Solicitação de troca" },
+  ],
+  "3": [
+    { id: "P-3001", data: "15/04/2023", produto: "Medicamento C", motivo: "Dúvida sobre validade" },
+    { id: "P-3002", data: "22/05/2023", produto: "Dispositivo Y", motivo: "Reclamação de embalagem" },
+    { id: "P-3003", data: "01/06/2023", produto: "Medicamento A", motivo: "Solicitação de devolução" },
+  ],
+};
 
 export default function NovaQueixaTecnicaPage() {
   const router = useRouter()
@@ -64,6 +84,8 @@ export default function NovaQueixaTecnicaPage() {
 
   const [cliente, setCliente] = useState<(typeof CLIENTES_MOCK)[0] | null>(null)
   const [loading, setLoading] = useState(true)
+  const [clienteSearchQuery, setClienteSearchQuery] = useState("")
+  const [showResults, setShowResults] = useState(false)
   const [formData, setFormData] = useState({
     produto: "",
     lote: "",
@@ -76,6 +98,17 @@ export default function NovaQueixaTecnicaPage() {
     prioridade: "normal",
     observacoes: "",
   })
+  const [protocoloSelecionado, setProtocoloSelecionado] = useState<Protocolo | null>(null)
+  const [protocoloVinculado, setProtocoloVinculado] = useState<Protocolo | null>(null)
+
+  // Filtrar clientes com base na busca
+  const filteredClientes = CLIENTES_MOCK.filter(
+    (cliente) =>
+      cliente.nome.toLowerCase().includes(clienteSearchQuery.toLowerCase()) ||
+      cliente.documento.includes(clienteSearchQuery) ||
+      cliente.email.toLowerCase().includes(clienteSearchQuery.toLowerCase()) ||
+      cliente.telefone.includes(clienteSearchQuery),
+  )
 
   // Carregar dados do cliente se disponível
   useEffect(() => {
@@ -173,62 +206,209 @@ export default function NovaQueixaTecnicaPage() {
           </CardHeader>
           <CardContent className="p-4">
             {cliente ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Nome</p>
-                  <p className="font-medium">{cliente.nome}</p>
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-16 w-16 rounded-full bg-teal-100 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#15937E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
+                        <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-3.33 0-10 1.67-10 5v1a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-1c0-3.33-6.67-5-10-5Z" />
+                      </svg>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-md bg-[#26B99D] text-white text-xs px-2 py-0.5 font-semibold">ID:{cliente.id}</span>
+                        <span className="font-bold text-lg text-gray-900">{cliente.nome}</span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="rounded-md border border-black text-black text-xs px-2 py-0.5 font-semibold bg-transparent">{cliente.tipo}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="bg-[#26B99D] hover:bg-[#1E9A82] text-white font-semibold px-6"
+                    onClick={() => setCliente(null)}
+                  >
+                    Remover
+                  </Button>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Documento</p>
-                  <p>{cliente.documento}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Telefone</p>
-                  <p>{cliente.telefone}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Email</p>
-                  <p>{cliente.email}</p>
-                </div>
-              </div>
-            ) : nomeSemRegistro ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500">Nome</p>
-                  <p className="font-medium">{nomeSemRegistro}</p>
-                </div>
-                {telefoneSemRegistro && (
-                  <div className="space-y-1">
-                    <p className="text-sm text-gray-500">Telefone</p>
-                    <p>{telefoneSemRegistro}</p>
+                {/* Protocolos do cliente */}
+                {PROTOCOLOS_MOCK[cliente.id] && PROTOCOLOS_MOCK[cliente.id].length > 0 && (
+                  <div className="bg-gray-50 border rounded-lg p-4">
+                    <div className="font-semibold mb-2 text-gray-800">Protocolos do cliente</div>
+                    {protocoloVinculado ? (
+                      <div className="flex flex-wrap gap-3">
+                        <div className="relative px-4 py-2 rounded-md border border-[#26B99D] bg-[#e6faf7] flex flex-col items-start min-w-[200px] shadow-sm">
+                          <button
+                            type="button"
+                            className="absolute top-2 right-2 p-1 rounded hover:bg-red-100 text-red-700"
+                            onClick={() => {
+                              setProtocoloVinculado(null)
+                              setProtocoloSelecionado(null)
+                            }}
+                            aria-label="Desvincular protocolo"
+                          >
+                            <X size={16} />
+                          </button>
+                          <span className="font-bold text-base text-[#26B99D] tracking-wide mb-1">{protocoloVinculado.id}</span>
+                          <span className="text-xs text-gray-500 mb-1">{protocoloVinculado.data}</span>
+                          <span className="text-sm text-gray-900 mb-0.5">Produto: {protocoloVinculado.produto}</span>
+                          <span className="text-sm text-gray-800">Motivo: {protocoloVinculado.motivo}</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex flex-wrap gap-3">
+                          {PROTOCOLOS_MOCK[cliente.id].map((protocolo: Protocolo) => (
+                            <button
+                              key={protocolo.id}
+                              type="button"
+                              className={`px-4 py-2 rounded-md border flex flex-col items-start min-w-[200px] transition-colors shadow-sm
+                                ${protocoloSelecionado && protocoloSelecionado.id === protocolo.id ? 'border-[#26B99D] bg-[#e6faf7]' : 'border-gray-200 bg-white hover:border-[#26B99D]'}
+                              `}
+                              onClick={() => setProtocoloSelecionado(protocolo)}
+                            >
+                              <span className="font-bold text-base text-[#26B99D] tracking-wide mb-1">{protocolo.id}</span>
+                              <span className="text-xs text-gray-500 mb-1">{protocolo.data}</span>
+                              <span className="text-sm text-gray-900 mb-0.5">Produto: {protocolo.produto}</span>
+                              <span className="text-sm text-gray-800">Motivo: {protocolo.motivo}</span>
+                            </button>
+                          ))}
+                        </div>
+                        {protocoloSelecionado && (
+                          <button
+                            type="button"
+                            className="mt-4 px-4 py-2 rounded bg-[#26B99D] text-white text-sm font-semibold hover:bg-[#15937E] transition"
+                            onClick={() => setProtocoloVinculado(protocoloSelecionado)}
+                          >
+                            Vincular
+                          </button>
+                        )}
+                      </>
+                    )}
                   </div>
                 )}
-                {emailSemRegistro && (
-                  <div className="space-y-1">
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p>{emailSemRegistro}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D]">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                      </svg>
+                      <span className="font-medium">Telefone:</span>
+                      <span>{cliente.telefone}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D]">
+                        <rect width="20" height="16" x="2" y="4" rx="2"/>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                      </svg>
+                      <span className="font-medium">Email:</span>
+                      <span>{cliente.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D]">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                      </svg>
+                      <span className="font-medium">Endereço:</span>
+                      <span>{cliente.endereco}</span>
+                    </div>
                   </div>
-                )}
-                <div className="col-span-2">
-                  <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                    Cliente sem registro
-                  </Badge>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D]">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                      </svg>
+                      <span className="font-medium">Documento:</span>
+                      <span>{cliente.documento}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ) : clienteId === "novo" ? (
-              <Alert className="bg-blue-50 border-blue-200">
-                <AlertTriangle className="h-4 w-4 text-blue-600" />
-                <AlertTitle>Novo cliente</AlertTitle>
-                <AlertDescription>Um novo cliente será cadastrado ao salvar esta queixa técnica.</AlertDescription>
-              </Alert>
             ) : (
-              <Alert className="bg-amber-50 border-amber-200">
-                <AlertTriangle className="h-4 w-4 text-amber-600" />
-                <AlertTitle>Cliente não identificado</AlertTitle>
-                <AlertDescription>
-                  Nenhuma informação de cliente foi fornecida para esta queixa técnica.
-                </AlertDescription>
-              </Alert>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="cliente">Cliente <span className="text-red-500">*</span></Label>
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="search"
+                      placeholder="Buscar por nome, CPF, telefone ou email"
+                      className="pl-8 h-11"
+                      value={clienteSearchQuery}
+                      onChange={(e) => {
+                        setClienteSearchQuery(e.target.value)
+                        setShowResults(true)
+                      }}
+                    />
+                  </div>
+                  {showResults && filteredClientes.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
+                      {filteredClientes.map((cliente) => (
+                        <button
+                          key={cliente.id}
+                          className="w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b last:border-b-0"
+                          onClick={() => {
+                            setCliente(cliente)
+                            setClienteSearchQuery("")
+                            setShowResults(false)
+                          }}
+                        >
+                          <div className="font-medium text-gray-900">{cliente.nome}</div>
+                          <div className="text-sm text-gray-500">
+                            {cliente.documento} • {cliente.telefone}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {nomeSemRegistro && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm text-gray-500">Nome</p>
+                      <p className="font-medium">{nomeSemRegistro}</p>
+                    </div>
+                    {telefoneSemRegistro && (
+                      <div className="space-y-1">
+                        <p className="text-sm text-gray-500">Telefone</p>
+                        <p>{telefoneSemRegistro}</p>
+                      </div>
+                    )}
+                    {emailSemRegistro && (
+                      <div className="space-y-1">
+                        <p className="text-sm text-gray-500">Email</p>
+                        <p>{emailSemRegistro}</p>
+                      </div>
+                    )}
+                    <div className="col-span-2">
+                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                        Cliente sem registro
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+                {clienteId === "novo" && (
+                  <Alert className="bg-blue-50 border-blue-200">
+                    <AlertTriangle className="h-4 w-4 text-blue-600" />
+                    <AlertTitle>Novo cliente</AlertTitle>
+                    <AlertDescription>Um novo cliente será cadastrado ao salvar esta queixa técnica.</AlertDescription>
+                  </Alert>
+                )}
+                {!clienteId && !nomeSemRegistro && (
+                  <Alert className="bg-amber-50 border-amber-200">
+                    <AlertTriangle className="h-4 w-4 text-amber-600" />
+                    <AlertTitle>Cliente não identificado</AlertTitle>
+                    <AlertDescription>
+                      Nenhuma informação de cliente foi fornecida para esta queixa técnica.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
             )}
           </CardContent>
         </Card>
