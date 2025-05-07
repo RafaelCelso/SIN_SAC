@@ -17,7 +17,7 @@ import { DatePicker } from "@/components/date-picker"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X } from "lucide-react"
+import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 
 // Dados simulados de clientes
@@ -55,19 +55,89 @@ const CLIENTES_MOCK = [
 ]
 
 // Mock de protocolos por cliente
-type Protocolo = { id: string; data: string; produto: string; motivo: string }
+type Protocolo = {
+  id: string;
+  data: string;
+  produto: string;
+  sku: string;
+  lote: string;
+  ean: string;
+  dataFabricacao: string;
+  dataValidade: string;
+  motivo: string;
+}
 const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
   "1": [
-    { id: "P-1001", data: "05/01/2023", produto: "Medicamento A", motivo: "Dúvida sobre uso" },
-    { id: "P-1002", data: "20/02/2023", produto: "Dispositivo X", motivo: "Reclamação de funcionamento" },
+    {
+      id: "P-1001",
+      data: "05/01/2023",
+      produto: "Medicamento A",
+      sku: "SKU-001",
+      lote: "L12345",
+      ean: "7891234567890",
+      dataFabricacao: "2023-01-01",
+      dataValidade: "2025-01-01",
+      motivo: "Dúvida sobre uso"
+    },
+    {
+      id: "P-1002",
+      data: "20/02/2023",
+      produto: "Dispositivo X",
+      sku: "SKU-002",
+      lote: "L54321",
+      ean: "7890987654321",
+      dataFabricacao: "2023-02-01",
+      dataValidade: "2026-02-01",
+      motivo: "Reclamação de funcionamento"
+    },
   ],
   "2": [
-    { id: "P-2001", data: "10/03/2023", produto: "Medicamento B", motivo: "Solicitação de troca" },
+    {
+      id: "P-2001",
+      data: "10/03/2023",
+      produto: "Medicamento B",
+      sku: "SKU-003",
+      lote: "L22222",
+      ean: "7892222222222",
+      dataFabricacao: "2023-03-01",
+      dataValidade: "2025-03-01",
+      motivo: "Solicitação de troca"
+    },
   ],
   "3": [
-    { id: "P-3001", data: "15/04/2023", produto: "Medicamento C", motivo: "Dúvida sobre validade" },
-    { id: "P-3002", data: "22/05/2023", produto: "Dispositivo Y", motivo: "Reclamação de embalagem" },
-    { id: "P-3003", data: "01/06/2023", produto: "Medicamento A", motivo: "Solicitação de devolução" },
+    {
+      id: "P-3001",
+      data: "15/04/2023",
+      produto: "Medicamento C",
+      sku: "SKU-004",
+      lote: "L33333",
+      ean: "7893333333333",
+      dataFabricacao: "2023-04-01",
+      dataValidade: "2025-04-01",
+      motivo: "Dúvida sobre validade"
+    },
+    {
+      id: "P-3002",
+      data: "22/05/2023",
+      produto: "Dispositivo Y",
+      sku: "SKU-005",
+      lote: "L44444",
+      ean: "7894444444444",
+      dataFabricacao: "2023-05-01",
+      dataValidade: "2026-05-01",
+      motivo: "Reclamação de embalagem"
+    },
+    {
+      id: "P-3003",
+      data: "01/06/2023",
+      produto: "Medicamento A",
+      sku: "SKU-001",
+      lote: "L55555",
+      ean: "7891234567890",
+      dataFabricacao: "2023-06-01",
+      dataValidade: "2025-06-01",
+      motivo: "Solicitação de devolução"
+    },
   ],
 };
 
@@ -88,7 +158,9 @@ export default function NovaQueixaTecnicaPage() {
   const [showResults, setShowResults] = useState(false)
   const [formData, setFormData] = useState({
     produto: "",
+    sku: "",
     lote: "",
+    ean: "",
     dataFabricacao: "",
     dataValidade: "",
     descricaoQueixa: "",
@@ -120,6 +192,30 @@ export default function NovaQueixaTecnicaPage() {
     }
     setLoading(false)
   }, [clienteId])
+
+  useEffect(() => {
+    if (protocoloVinculado) {
+      setFormData((prev) => ({
+        ...prev,
+        produto: protocoloVinculado.produto,
+        sku: protocoloVinculado.sku,
+        lote: protocoloVinculado.lote,
+        ean: protocoloVinculado.ean,
+        dataFabricacao: protocoloVinculado.dataFabricacao,
+        dataValidade: protocoloVinculado.dataValidade,
+      }))
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        produto: "",
+        sku: "",
+        lote: "",
+        ean: "",
+        dataFabricacao: "",
+        dataValidade: "",
+      }))
+    }
+  }, [protocoloVinculado])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -173,20 +269,20 @@ export default function NovaQueixaTecnicaPage() {
     <DashboardLayout>
       <div className="space-y-6 p-4">
         <div className="flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="icon" asChild>
-                <a href="/atendimentos/queixas">
-                  <ArrowLeft className="h-4 w-4" />
-                </a>
-              </Button>
-              <h1 className="text-2xl font-bold">Nova Queixa Técnica</h1>
-            </div>
-            {protocolo && (
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-sm px-3 py-1">
-                Protocolo: {protocolo}
-              </Badge>
-            )}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="icon" asChild>
+              <a href="/atendimentos/queixas">
+                <ArrowLeft className="h-4 w-4" />
+              </a>
+            </Button>
+            <h1 className="text-2xl font-bold">Nova Queixa Técnica</h1>
+          </div>
+          {protocolo && (
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-sm px-3 py-1">
+              Protocolo: {protocolo}
+            </Badge>
+          )}
           </div>
           {/* Número da queixa técnica */}
           <div className="mt-6">
@@ -330,8 +426,8 @@ export default function NovaQueixaTecnicaPage() {
                       </svg>
                       <span className="font-medium">Documento:</span>
                       <span>{cliente.documento}</span>
-                    </div>
-                  </div>
+                </div>
+                </div>
                 </div>
               </div>
             ) : (
@@ -373,45 +469,45 @@ export default function NovaQueixaTecnicaPage() {
                   )}
                 </div>
                 {nomeSemRegistro && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <p className="text-sm text-gray-500">Nome</p>
-                      <p className="font-medium">{nomeSemRegistro}</p>
-                    </div>
-                    {telefoneSemRegistro && (
-                      <div className="space-y-1">
-                        <p className="text-sm text-gray-500">Telefone</p>
-                        <p>{telefoneSemRegistro}</p>
-                      </div>
-                    )}
-                    {emailSemRegistro && (
-                      <div className="space-y-1">
-                        <p className="text-sm text-gray-500">Email</p>
-                        <p>{emailSemRegistro}</p>
-                      </div>
-                    )}
-                    <div className="col-span-2">
-                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                        Cliente sem registro
-                      </Badge>
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm text-gray-500">Nome</p>
+                  <p className="font-medium">{nomeSemRegistro}</p>
+                </div>
+                {telefoneSemRegistro && (
+                  <div className="space-y-1">
+                    <p className="text-sm text-gray-500">Telefone</p>
+                    <p>{telefoneSemRegistro}</p>
                   </div>
                 )}
+                {emailSemRegistro && (
+                  <div className="space-y-1">
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p>{emailSemRegistro}</p>
+                  </div>
+                )}
+                <div className="col-span-2">
+                  <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                    Cliente sem registro
+                  </Badge>
+                </div>
+              </div>
+                )}
                 {clienteId === "novo" && (
-                  <Alert className="bg-blue-50 border-blue-200">
-                    <AlertTriangle className="h-4 w-4 text-blue-600" />
-                    <AlertTitle>Novo cliente</AlertTitle>
-                    <AlertDescription>Um novo cliente será cadastrado ao salvar esta queixa técnica.</AlertDescription>
-                  </Alert>
+              <Alert className="bg-blue-50 border-blue-200">
+                <AlertTriangle className="h-4 w-4 text-blue-600" />
+                <AlertTitle>Novo cliente</AlertTitle>
+                <AlertDescription>Um novo cliente será cadastrado ao salvar esta queixa técnica.</AlertDescription>
+              </Alert>
                 )}
                 {!clienteId && !nomeSemRegistro && (
-                  <Alert className="bg-amber-50 border-amber-200">
-                    <AlertTriangle className="h-4 w-4 text-amber-600" />
-                    <AlertTitle>Cliente não identificado</AlertTitle>
-                    <AlertDescription>
-                      Nenhuma informação de cliente foi fornecida para esta queixa técnica.
-                    </AlertDescription>
-                  </Alert>
+              <Alert className="bg-amber-50 border-amber-200">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertTitle>Cliente não identificado</AlertTitle>
+                <AlertDescription>
+                  Nenhuma informação de cliente foi fornecida para esta queixa técnica.
+                </AlertDescription>
+              </Alert>
                 )}
               </div>
             )}
@@ -432,53 +528,137 @@ export default function NovaQueixaTecnicaPage() {
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="produto" className="flex items-center space-x-2">
+                    <Label htmlFor="produto" className="flex items-center gap-2">
                       <Package className="h-4 w-4 text-[#26B99D]" />
-                      <span>Produto <span className="text-red-500">*</span></span>
+                      Produto <span className="text-red-500">*</span>
                     </Label>
-                    <Select
-                      name="produto"
-                      value={formData.produto}
-                      onValueChange={(value) => handleSelectChange("produto", value)}
-                      required
-                    >
-                      <SelectTrigger id="produto" className="h-11">
-                        <SelectValue placeholder="Selecione o produto" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="medicamento-a">Medicamento A</SelectItem>
-                        <SelectItem value="medicamento-b">Medicamento B</SelectItem>
-                        <SelectItem value="medicamento-c">Medicamento C</SelectItem>
-                        <SelectItem value="dispositivo-x">Dispositivo Médico X</SelectItem>
-                        <SelectItem value="dispositivo-y">Dispositivo Médico Y</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="relative">
+                      <Input
+                        id="produto"
+                        name="produto"
+                        placeholder="Produto"
+                        value={formData.produto}
+                        onChange={handleInputChange}
+                        required
+                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
+                        readOnly={!!protocoloVinculado}
+                      />
+                      {protocoloVinculado && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                          <Lock className="h-4 w-4" />
+                        </div>
+                      )}
+                    </div>
                   </div>
-
                   <div className="space-y-2">
-                    <Label htmlFor="lote" className="flex items-center space-x-2">
+                    <Label htmlFor="sku" className="flex items-center gap-2">
+                      <Tag className="h-4 w-4 text-[#26B99D]" />
+                      SKU
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="sku"
+                        name="sku"
+                        placeholder="SKU"
+                        value={formData.sku}
+                        onChange={handleInputChange}
+                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
+                        readOnly={!!protocoloVinculado}
+                      />
+                      {protocoloVinculado && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                          <Lock className="h-4 w-4" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lote" className="flex items-center gap-2">
+                      <Hash className="h-4 w-4 text-[#26B99D]" />
+                      Lote
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="lote"
+                        name="lote"
+                        placeholder="Lote"
+                        value={formData.lote}
+                        onChange={handleInputChange}
+                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
+                        readOnly={!!protocoloVinculado}
+                      />
+                      {protocoloVinculado && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                          <Lock className="h-4 w-4" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ean" className="flex items-center gap-2">
                       <Barcode className="h-4 w-4 text-[#26B99D]" />
-                      <span>Número do Lote <span className="text-red-500">*</span></span>
+                      EAN
                     </Label>
-                    <Input
-                      id="lote"
-                      name="lote"
-                      placeholder="Ex: ABC123456"
-                      value={formData.lote}
-                      onChange={handleInputChange}
-                      required
-                      className="h-11"
-                    />
+                    <div className="relative">
+                      <Input
+                        id="ean"
+                        name="ean"
+                        placeholder="EAN"
+                        value={formData.ean}
+                        onChange={handleInputChange}
+                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
+                        readOnly={!!protocoloVinculado}
+                      />
+                      {protocoloVinculado && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                          <Lock className="h-4 w-4" />
+                        </div>
+                      )}
+                    </div>
                   </div>
-
                   <div className="space-y-2">
-                    <Label htmlFor="dataFabricacao">Data de Fabricação</Label>
-                    <DatePicker />
+                    <Label htmlFor="dataFabricacao" className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-[#26B99D]" />
+                      Data de Fabricação
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="dataFabricacao"
+                        name="dataFabricacao"
+                        type="date"
+                        value={formData.dataFabricacao}
+                        onChange={handleInputChange}
+                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
+                        readOnly={!!protocoloVinculado}
+                      />
+                      {protocoloVinculado && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                          <Lock className="h-4 w-4" />
+                        </div>
+                      )}
+                    </div>
                   </div>
-
                   <div className="space-y-2">
-                    <Label htmlFor="dataValidade">Data de Validade</Label>
-                    <DatePicker />
+                    <Label htmlFor="dataValidade" className="flex items-center gap-2">
+                      <CalendarCheck className="h-4 w-4 text-[#26B99D]" />
+                      Data de Validade
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="dataValidade"
+                        name="dataValidade"
+                        type="date"
+                        value={formData.dataValidade}
+                        onChange={handleInputChange}
+                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
+                        readOnly={!!protocoloVinculado}
+                      />
+                      {protocoloVinculado && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                          <Lock className="h-4 w-4" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
