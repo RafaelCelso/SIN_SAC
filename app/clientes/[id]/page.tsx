@@ -38,6 +38,8 @@ import {
   Package,
   Barcode,
   X,
+  Pill,
+  ChevronRight,
 } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
@@ -105,6 +107,9 @@ interface Protocolo {
   status: string
   clienteId: string
   descricao: string
+  motivo?: string
+  subcategoria?: string
+  detalhe?: string
   farmacovigilancia?: Array<{
     id: string
     data: string
@@ -122,6 +127,9 @@ const PROTOCOLOS_MOCK: Protocolo[] = [
     status: "Em análise",
     clienteId: "1",
     descricao: "Cliente relatou problema com a embalagem do medicamento.",
+    motivo: "Queixa Técnica",
+    subcategoria: "Embalagem",
+    detalhe: "Problema na vedação",
     farmacovigilancia: [
       {
         id: "FV-2023-0001",
@@ -139,6 +147,9 @@ const PROTOCOLOS_MOCK: Protocolo[] = [
     status: "Pendente",
     clienteId: "1",
     descricao: "Reação alérgica após uso do medicamento.",
+    motivo: "Evento Adverso",
+    subcategoria: "Reação Alérgica",
+    detalhe: "Urticária",
     farmacovigilancia: [
       {
         id: "FV-2023-0002",
@@ -156,6 +167,9 @@ const PROTOCOLOS_MOCK: Protocolo[] = [
     status: "Em andamento",
     clienteId: "2",
     descricao: "Solicitação de informações sobre posologia.",
+    motivo: "Informação Médica",
+    subcategoria: "Posologia",
+    detalhe: "Dúvida sobre horários"
   },
   {
     id: "P-2023-112",
@@ -165,6 +179,9 @@ const PROTOCOLOS_MOCK: Protocolo[] = [
     status: "Pendente",
     clienteId: "3",
     descricao: "Notificação de evento adverso relacionado ao uso do dispositivo.",
+    motivo: "Farmacovigilância",
+    subcategoria: "Evento Adverso",
+    detalhe: "Falha no funcionamento"
   },
 ]
 
@@ -573,10 +590,33 @@ export default function ClientePage() {
                       {protocolos.map((protocolo) => (
                         <Collapsible key={protocolo.id} className="border rounded-md data-[state=open]:bg-[#F7FDFC]">
                           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-gray-50">
-                            <div className="flex items-center gap-4">
-                              <div className="flex flex-col">
-                                <span className="font-medium">{protocolo.id}</span>
-                                <span className="text-sm text-gray-500">{protocolo.data}</span>
+                            <div className="flex items-center gap-6">
+                              <div className="flex items-center gap-4">
+                                <div className="flex flex-col">
+                                  <span className="font-medium">{protocolo.id}</span>
+                                  <span className="text-sm text-gray-500">{protocolo.data}</span>
+                                </div>
+                                <div className="h-8 w-px bg-gray-200"></div>
+                                <div className="flex items-center gap-2">
+                                  <Pill className="h-4 w-4 text-green-500" />
+                                  <span className="text-sm text-gray-700">{protocolo.produto || "Não informado"}</span>
+                                </div>
+                              </div>
+                              <div className="h-8 w-px bg-gray-200"></div>
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-center">
+                                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                    {protocolo.motivo || "Não informado"}
+                                  </Badge>
+                                  <ChevronRight className="h-4 w-4 text-gray-400 mx-1" />
+                                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                    {protocolo.subcategoria || "Não informada"}
+                                  </Badge>
+                                  <ChevronRight className="h-4 w-4 text-gray-400 mx-1" />
+                                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                    {protocolo.detalhe || "Não informado"}
+                                  </Badge>
+                                </div>
                               </div>
                             </div>
                             <ChevronDown className="h-4 w-4 text-gray-500 transition-transform duration-200 data-[state=open]:rotate-180" />
@@ -1273,14 +1313,14 @@ export default function ClientePage() {
                                                     <Badge
                                                       variant="outline"
                                                       className={
-                                                        protocolo.farmacovigilancia[0]?.gravidade === "Leve"
+                                                        protocolo.farmacovigilancia?.[0]?.gravidade === "Leve"
                                                           ? "bg-green-50 text-green-700 border-green-200"
-                                                          : protocolo.farmacovigilancia[0]?.gravidade === "Moderada"
+                                                          : protocolo.farmacovigilancia?.[0]?.gravidade === "Moderada"
                                                             ? "bg-amber-50 text-amber-700 border-amber-200"
                                                             : "bg-red-50 text-red-700 border-red-200"
                                                       }
                                                     >
-                                                      {protocolo.farmacovigilancia[0]?.gravidade || "Não informada"}
+                                                      {protocolo.farmacovigilancia?.[0]?.gravidade || "Não informada"}
                                                     </Badge>
                                           </div>
                                         </div>
@@ -1673,8 +1713,8 @@ export default function ClientePage() {
                                                           className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#26B99D] hover:bg-[#1E9A82]"
                                                         >
                                                           Enviar
-                                      </Button>
-                                    </div>
+                                                        </Button>
+                                                      </div>
                                                     </div>
                                                   </div>
                                                 </TabsContent>
