@@ -249,10 +249,14 @@ export default function ClientePage() {
   const searchParams = useSearchParams()
   const clienteId = params.id as string
   const novoProtocolo = searchParams.get("protocolo")
+  const tabParam = searchParams.get("tab")
+  const protocoloParam = searchParams.get("protocolo")
+  const isNovoProtocolo = novoProtocolo && !protocoloParam
 
   const [cliente, setCliente] = useState<(typeof CLIENTES_MOCK)[0] | null>(null)
   const [protocolos, setProtocolos] = useState<typeof PROTOCOLOS_MOCK>([])
-  const [activeTab, setActiveTab] = useState("dados")
+  const [activeTab, setActiveTab] = useState(tabParam || "dados")
+  const [openProtocolo, setOpenProtocolo] = useState<string | null>(protocoloParam)
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
     nome: "",
@@ -379,7 +383,7 @@ export default function ClientePage() {
           )}
         </div>
 
-        {novoProtocolo && (
+        {isNovoProtocolo && (
           <Alert className="bg-green-50 border-green-200 text-green-800">
             <CheckCircle className="h-4 w-4 text-green-600" />
             <AlertTitle>Protocolo criado com sucesso</AlertTitle>
@@ -588,7 +592,12 @@ export default function ClientePage() {
 
                     <div className="space-y-2">
                       {protocolos.map((protocolo) => (
-                        <Collapsible key={protocolo.id} className="border rounded-md data-[state=open]:bg-[#F7FDFC]">
+                        <Collapsible 
+                          key={protocolo.id} 
+                          className="border rounded-md data-[state=open]:bg-[#F7FDFC]"
+                          open={openProtocolo === protocolo.id}
+                          onOpenChange={(isOpen) => setOpenProtocolo(isOpen ? protocolo.id : null)}
+                        >
                           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-gray-50">
                             <div className="flex items-center gap-6">
                               <div className="flex items-center gap-4">

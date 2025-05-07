@@ -326,7 +326,7 @@ export default function ProtocolosPage() {
                     <TableHead>Data</TableHead>
                     <TableHead>Cliente</TableHead>
                     <TableHead>Telefone</TableHead>
-                    <TableHead>Tipo</TableHead>
+                    <TableHead>Motivo</TableHead>
                     <TableHead>Produto</TableHead>
                     <TableHead className="text-right">Ação</TableHead>
                   </TableRow>
@@ -352,7 +352,7 @@ export default function ProtocolosPage() {
                             className="hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200"
                             asChild
                           >
-                            <Link href={`/protocolos/${protocolo.id}`}>
+                            <Link href={`/clientes/${protocolo.clienteId}?tab=protocolos&protocolo=${protocolo.id}`}>
                               <FileText className="h-4 w-4 mr-2" />
                               Ver detalhes
                             </Link>
