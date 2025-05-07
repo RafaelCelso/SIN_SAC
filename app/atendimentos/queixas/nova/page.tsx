@@ -540,14 +540,12 @@ export default function NovaQueixaTecnicaPage() {
                         value={formData.produto}
                         onChange={handleInputChange}
                         required
-                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
-                        readOnly={!!protocoloVinculado}
+                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                        readOnly
                       />
-                      {protocoloVinculado && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
-                          <Lock className="h-4 w-4" />
-                        </div>
-                      )}
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                        <Lock className="h-4 w-4" />
+                      </div>
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -562,14 +560,12 @@ export default function NovaQueixaTecnicaPage() {
                         placeholder="SKU"
                         value={formData.sku}
                         onChange={handleInputChange}
-                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
-                        readOnly={!!protocoloVinculado}
+                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                        readOnly
                       />
-                      {protocoloVinculado && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
-                          <Lock className="h-4 w-4" />
-                        </div>
-                      )}
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                        <Lock className="h-4 w-4" />
+                      </div>
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -584,14 +580,12 @@ export default function NovaQueixaTecnicaPage() {
                         placeholder="Lote"
                         value={formData.lote}
                         onChange={handleInputChange}
-                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
-                        readOnly={!!protocoloVinculado}
+                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                        readOnly
                       />
-                      {protocoloVinculado && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
-                          <Lock className="h-4 w-4" />
-                        </div>
-                      )}
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                        <Lock className="h-4 w-4" />
+                      </div>
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -606,14 +600,12 @@ export default function NovaQueixaTecnicaPage() {
                         placeholder="EAN"
                         value={formData.ean}
                         onChange={handleInputChange}
-                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
-                        readOnly={!!protocoloVinculado}
+                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                        readOnly
                       />
-                      {protocoloVinculado && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
-                          <Lock className="h-4 w-4" />
-                        </div>
-                      )}
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                        <Lock className="h-4 w-4" />
+                      </div>
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -628,14 +620,12 @@ export default function NovaQueixaTecnicaPage() {
                         type="date"
                         value={formData.dataFabricacao}
                         onChange={handleInputChange}
-                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
-                        readOnly={!!protocoloVinculado}
+                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                        readOnly
                       />
-                      {protocoloVinculado && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
-                          <Lock className="h-4 w-4" />
-                        </div>
-                      )}
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                        <Lock className="h-4 w-4" />
+                      </div>
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -650,14 +640,12 @@ export default function NovaQueixaTecnicaPage() {
                         type="date"
                         value={formData.dataValidade}
                         onChange={handleInputChange}
-                        className={`h-11 ${protocoloVinculado ? 'bg-gray-50 border-gray-200 pr-10' : ''}`}
-                        readOnly={!!protocoloVinculado}
+                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                        readOnly
                       />
-                      {protocoloVinculado && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
-                          <Lock className="h-4 w-4" />
-                        </div>
-                      )}
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                        <Lock className="h-4 w-4" />
+                      </div>
                     </div>
                   </div>
                 </div>
