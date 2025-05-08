@@ -351,6 +351,47 @@ export default function NovaQueixaTecnicaPage() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
   }
 
+  // Função para autopreencher os dados de endereço com os dados do cliente selecionado
+  const handlePreencherEnderecoCliente = () => {
+    if (!cliente) return;
+    // Supondo que o endereço do cliente está no formato: 'Rua, Número - Bairro - Cidade/UF'
+    // Exemplo: 'Av. Paulista, 1000 - Bela Vista - São Paulo/SP'
+    let logradouro = '';
+    let numero = '';
+    let bairro = '';
+    let cidade = '';
+    let estado = '';
+    let cep = '';
+    if (cliente.endereco) {
+      // Tenta separar os dados do endereço
+      const [ruaENum, resto] = cliente.endereco.split('-').map(s => s.trim());
+      if (ruaENum) {
+        const [rua, num] = ruaENum.split(',').map(s => s.trim());
+        logradouro = rua || '';
+        numero = num || '';
+      }
+      if (resto) {
+        const [bairroStr, cidadeUf] = resto.split('-').map(s => s.trim());
+        bairro = bairroStr || '';
+        if (cidadeUf) {
+          const [cidadeStr, uf] = cidadeUf.split('/').map(s => s.trim());
+          cidade = cidadeStr || '';
+          estado = uf || '';
+        }
+      }
+    }
+    setFormData(prev => ({
+      ...prev,
+      reembolsoEndereco: logradouro,
+      reembolsoNumero: numero,
+      reembolsoBairro: bairro,
+      reembolsoCidade: cidade,
+      reembolsoEstado: estado,
+      reembolsoCep: cliente.cep || '',
+      reembolsoComplemento: '',
+    }));
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -1291,127 +1332,82 @@ export default function NovaQueixaTecnicaPage() {
                     </RadioGroup>
                   </div>
                   {formData.envioAmostra === "sim" && (
-                    <div className="mt-6 space-y-4 border-t pt-6">
+                    <div className="mt-6 space-y-8 border-t pt-6">
                       <h4 className="text-lg font-semibold mb-4">Informações para Ressarcimento</h4>
-                      <div className="space-y-4">
-                        <Label className="text-base font-medium">Tipo de ressarcimento</Label>
-                        <RadioGroup
-                          value={formData.tipoRessarcimento || ''}
-                          onValueChange={value => setFormData(prev => ({ ...prev, tipoRessarcimento: value }))}
-                          className="flex gap-6 mt-2"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="financeiro" id="tipoRessarcimento-financeiro" />
-                            <Label htmlFor="tipoRessarcimento-financeiro">Financeiro</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="produto" id="tipoRessarcimento-produto" />
-                            <Label htmlFor="tipoRessarcimento-produto">Produto</Label>
-                          </div>
-                        </RadioGroup>
-                        {formData.tipoRessarcimento === 'financeiro' && (
-                          <div className="bg-[#e6faf7] border border-[#26B99D] rounded-lg p-6 mt-4 shadow-sm">
-                            <p className="text-sm text-gray-600 mb-4">
-                              Os dados abaixo devem ser do <b>titular da conta bancária</b> para o ressarcimento financeiro.
-                            </p>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <Input name="financeiroNome" placeholder="Nome do titular" value={formData.financeiroNome || ''} onChange={handleInputChange} />
-                              <Input name="financeiroCpf" placeholder="CPF do titular" value={formData.financeiroCpf || ''} onChange={handleInputChange} />
-                              <Input name="financeiroBanco" placeholder="Banco" value={formData.financeiroBanco || ''} onChange={handleInputChange} />
-                              <Input name="financeiroAgencia" placeholder="Agência" value={formData.financeiroAgencia || ''} onChange={handleInputChange} />
-                              <div className="flex flex-col gap-2">
-                                <RadioGroup
-                                  value={formData.financeiroTipoConta || ''}
-                                  onValueChange={value => setFormData(prev => ({ ...prev, financeiroTipoConta: value }))}
-                                  className="flex gap-4 mb-1"
-                                >
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="corrente" id="financeiroTipoConta-corrente" />
-                                    <Label htmlFor="financeiroTipoConta-corrente " className="text-gray-600">Corrente</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="poupanca" id="financeiroTipoConta-poupanca" />
-                                    <Label htmlFor="financeiroTipoConta-poupanca" className="text-gray-600">Poupança</Label>
-                                  </div>
-                                </RadioGroup>
-                                <Input name="financeiroConta" placeholder="Conta" value={formData.financeiroConta || ''} onChange={handleInputChange} />
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {formData.tipoRessarcimento !== 'financeiro' && (
-                          <>
-                            <Input name="reembolsoNome" placeholder="Nome" value={formData.reembolsoNome || ''} onChange={handleInputChange} />
-                            <Input name="reembolsoCpf" placeholder="CPF" value={formData.reembolsoCpf || ''} onChange={handleInputChange} />
-                          </>
-                        )}
+                        <Input name="reembolsoNome" placeholder="Nome" value={formData.reembolsoNome || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoCpf" placeholder="CPF" value={formData.reembolsoCpf || ''} onChange={handleInputChange} />
                         <Input name="reembolsoTelefone" placeholder="Telefone" value={formData.reembolsoTelefone || ''} onChange={handleInputChange} />
                         <Input name="reembolsoCaixa" placeholder="Quantidade de caixas" value={formData.reembolsoCaixa || ''} onChange={handleInputChange} />
                         <Input name="reembolsoCodigoPostal" placeholder="Código Postal" value={formData.reembolsoCodigoPostal || ''} onChange={handleInputChange} />
                         <Input name="reembolsoValorPostal" placeholder="Valor Postal" value={formData.reembolsoValorPostal || ''} onChange={handleInputChange} />
                       </div>
+                      {/* Dados de Endereço dentro de Ressarcimento */}
+                      <Card className="shadow-none border-0">
+                        <CardHeader className="px-0 pb-0">
+                          <div className="flex items-center justify-between mb-4">
+                            <CardTitle className="text-lg font-semibold">Dados de Endereço</CardTitle>
+                            {cliente && (
+                              <Button
+                                type="button"
+                                size="sm"
+                                className="bg-[#e6faf7] border border-[#26B99D] text-[#26B99D] hover:bg-[#d9f7f2] hover:border-[#26B99D] font-semibold shadow-sm"
+                                onClick={handlePreencherEnderecoCliente}
+                              >
+                                Usar dados do cliente selecionado
+                              </Button>
+                            )}
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6 px-0 pt-0">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Input name="reembolsoEndereco" placeholder="Endereço" value={formData.reembolsoEndereco || ''} onChange={handleInputChange} />
+                            <Input name="reembolsoNumero" placeholder="Nº" value={formData.reembolsoNumero || ''} onChange={handleInputChange} />
+                            <Input name="reembolsoComplemento" placeholder="Complemento" value={formData.reembolsoComplemento || ''} onChange={handleInputChange} />
+                            <Input name="reembolsoBairro" placeholder="Bairro" value={formData.reembolsoBairro || ''} onChange={handleInputChange} />
+                            <Input name="reembolsoCidade" placeholder="Cidade" value={formData.reembolsoCidade || ''} onChange={handleInputChange} />
+                            <Select value={formData.reembolsoEstado || ''} onValueChange={value => handleSelectChange('reembolsoEstado', value)}>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Estado" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="AC">AC</SelectItem>
+                                <SelectItem value="AL">AL</SelectItem>
+                                <SelectItem value="AP">AP</SelectItem>
+                                <SelectItem value="AM">AM</SelectItem>
+                                <SelectItem value="BA">BA</SelectItem>
+                                <SelectItem value="CE">CE</SelectItem>
+                                <SelectItem value="DF">DF</SelectItem>
+                                <SelectItem value="ES">ES</SelectItem>
+                                <SelectItem value="GO">GO</SelectItem>
+                                <SelectItem value="MA">MA</SelectItem>
+                                <SelectItem value="MT">MT</SelectItem>
+                                <SelectItem value="MS">MS</SelectItem>
+                                <SelectItem value="MG">MG</SelectItem>
+                                <SelectItem value="PA">PA</SelectItem>
+                                <SelectItem value="PB">PB</SelectItem>
+                                <SelectItem value="PR">PR</SelectItem>
+                                <SelectItem value="PE">PE</SelectItem>
+                                <SelectItem value="PI">PI</SelectItem>
+                                <SelectItem value="RJ">RJ</SelectItem>
+                                <SelectItem value="RN">RN</SelectItem>
+                                <SelectItem value="RS">RS</SelectItem>
+                                <SelectItem value="RO">RO</SelectItem>
+                                <SelectItem value="RR">RR</SelectItem>
+                                <SelectItem value="SC">SC</SelectItem>
+                                <SelectItem value="SP">SP</SelectItem>
+                                <SelectItem value="SE">SE</SelectItem>
+                                <SelectItem value="TO">TO</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Input name="reembolsoCep" placeholder="CEP" value={formData.reembolsoCep || ''} onChange={handleInputChange} />
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
                   )}
                 </CardContent>
               </Card>
-
-              {/* Nova seção Dados de Endereço */}
-              {formData.envioAmostra === 'sim' && (
-                <Card>
-                  <CardHeader className="px-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Tag className="h-5 w-5 text-primary" />
-                      <CardTitle>Dados de Endereço</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-6 p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Input name="reembolsoEndereco" placeholder="Endereço" value={formData.reembolsoEndereco || ''} onChange={handleInputChange} />
-                      <Input name="reembolsoNumero" placeholder="Nº" value={formData.reembolsoNumero || ''} onChange={handleInputChange} />
-                      <Input name="reembolsoComplemento" placeholder="Complemento" value={formData.reembolsoComplemento || ''} onChange={handleInputChange} />
-                      <Input name="reembolsoBairro" placeholder="Bairro" value={formData.reembolsoBairro || ''} onChange={handleInputChange} />
-                      <Input name="reembolsoCidade" placeholder="Cidade" value={formData.reembolsoCidade || ''} onChange={handleInputChange} />
-                      <Select value={formData.reembolsoEstado || ''} onValueChange={value => handleSelectChange('reembolsoEstado', value)}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Estado" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="AC">AC</SelectItem>
-                          <SelectItem value="AL">AL</SelectItem>
-                          <SelectItem value="AP">AP</SelectItem>
-                          <SelectItem value="AM">AM</SelectItem>
-                          <SelectItem value="BA">BA</SelectItem>
-                          <SelectItem value="CE">CE</SelectItem>
-                          <SelectItem value="DF">DF</SelectItem>
-                          <SelectItem value="ES">ES</SelectItem>
-                          <SelectItem value="GO">GO</SelectItem>
-                          <SelectItem value="MA">MA</SelectItem>
-                          <SelectItem value="MT">MT</SelectItem>
-                          <SelectItem value="MS">MS</SelectItem>
-                          <SelectItem value="MG">MG</SelectItem>
-                          <SelectItem value="PA">PA</SelectItem>
-                          <SelectItem value="PB">PB</SelectItem>
-                          <SelectItem value="PR">PR</SelectItem>
-                          <SelectItem value="PE">PE</SelectItem>
-                          <SelectItem value="PI">PI</SelectItem>
-                          <SelectItem value="RJ">RJ</SelectItem>
-                          <SelectItem value="RN">RN</SelectItem>
-                          <SelectItem value="RS">RS</SelectItem>
-                          <SelectItem value="RO">RO</SelectItem>
-                          <SelectItem value="RR">RR</SelectItem>
-                          <SelectItem value="SC">SC</SelectItem>
-                          <SelectItem value="SP">SP</SelectItem>
-                          <SelectItem value="SE">SE</SelectItem>
-                          <SelectItem value="TO">TO</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Input name="reembolsoCep" placeholder="CEP" value={formData.reembolsoCep || ''} onChange={handleInputChange} />
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
 
               <Separator />
             </CardContent>
