@@ -17,8 +17,12 @@ import { DatePicker } from "@/components/date-picker"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock } from "lucide-react"
+import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import dynamic from "next/dynamic"
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
+import 'react-quill/dist/quill.snow.css'
 
 // Dados simulados de clientes
 const CLIENTES_MOCK = [
@@ -65,6 +69,8 @@ type Protocolo = {
   dataFabricacao: string;
   dataValidade: string;
   motivo: string;
+  subcategoria?: string;
+  detalhe?: string;
 }
 const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
   "1": [
@@ -77,7 +83,9 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       ean: "7891234567890",
       dataFabricacao: "2023-01-01",
       dataValidade: "2025-01-01",
-      motivo: "Dúvida sobre uso"
+      motivo: "Dúvida sobre uso",
+      subcategoria: "Medicamento",
+      detalhe: "Antagonista",
     },
     {
       id: "P-1002",
@@ -88,7 +96,9 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       ean: "7890987654321",
       dataFabricacao: "2023-02-01",
       dataValidade: "2026-02-01",
-      motivo: "Reclamação de funcionamento"
+      motivo: "Reclamação de funcionamento",
+      subcategoria: "Dispositivo",
+      detalhe: "Implante",
     },
   ],
   "2": [
@@ -101,7 +111,9 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       ean: "7892222222222",
       dataFabricacao: "2023-03-01",
       dataValidade: "2025-03-01",
-      motivo: "Solicitação de troca"
+      motivo: "Solicitação de troca",
+      subcategoria: "Medicamento",
+      detalhe: "Antagonista",
     },
   ],
   "3": [
@@ -114,7 +126,9 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       ean: "7893333333333",
       dataFabricacao: "2023-04-01",
       dataValidade: "2025-04-01",
-      motivo: "Dúvida sobre validade"
+      motivo: "Dúvida sobre validade",
+      subcategoria: "Medicamento",
+      detalhe: "Antagonista",
     },
     {
       id: "P-3002",
@@ -125,7 +139,9 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       ean: "7894444444444",
       dataFabricacao: "2023-05-01",
       dataValidade: "2026-05-01",
-      motivo: "Reclamação de embalagem"
+      motivo: "Reclamação de embalagem",
+      subcategoria: "Dispositivo",
+      detalhe: "Implante",
     },
     {
       id: "P-3003",
@@ -136,10 +152,20 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       ean: "7891234567890",
       dataFabricacao: "2023-06-01",
       dataValidade: "2025-06-01",
-      motivo: "Solicitação de devolução"
+      motivo: "Solicitação de devolução",
+      subcategoria: "Medicamento",
+      detalhe: "Antagonista",
     },
   ],
 };
+
+type ArquivoAnexo = {
+  id: string;
+  nome: string;
+  tamanho: number;
+  tipo: string;
+  arquivo: File;
+}
 
 export default function NovaQueixaTecnicaPage() {
   const router = useRouter()
@@ -169,9 +195,44 @@ export default function NovaQueixaTecnicaPage() {
     enviarAmostra: false,
     prioridade: "normal",
     observacoes: "",
+    quantidadeComprada: "",
+    quantidadeDesvio: "",
+    localCompra: "",
+    dataCompra: "",
+    dataCompraFormato: "MM/AA",
+    dataAbertura: "",
+    dataAberturaFormato: "MM/AA",
+    localArmazenamento: "",
+    modoArmazenamento: "",
+    caixaLacrada: "nao",
+    utilizouProduto: "nao",
+    quantidadeUtilizada: "",
+    apresentouSintoma: "nao",
+    numeroFarmacovigilancia: "",
+    narrativa: "",
+    solicitaLaudo: "",
+    farmacovigilancia: "",
+    envioAmostra: "nao",
+    reembolsoNome: "",
+    reembolsoCpf: "",
+    reembolsoTelefone: "",
+    reembolsoCelular: "",
+    reembolsoEmail: "",
+    reembolsoCep: "",
+    reembolsoLogradouro: "",
+    reembolsoNumero: "",
+    reembolsoComplemento: "",
+    reembolsoBairro: "",
+    reembolsoCidade: "",
+    reembolsoEstado: "",
+    reembolsoCaixa: "",
+    reembolsoValor: "",
+    reembolsoCodigoPostal: "",
+    reembolsoValorPostal: "",
   })
   const [protocoloSelecionado, setProtocoloSelecionado] = useState<Protocolo | null>(null)
   const [protocoloVinculado, setProtocoloVinculado] = useState<Protocolo | null>(null)
+  const [arquivos, setArquivos] = useState<ArquivoAnexo[]>([])
 
   // Filtrar clientes com base na busca
   const filteredClientes = CLIENTES_MOCK.filter(
@@ -255,6 +316,31 @@ export default function NovaQueixaTecnicaPage() {
     }, 1500)
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const novosArquivos = Array.from(e.target.files).map(file => ({
+        id: Math.random().toString(36).substr(2, 9),
+        nome: file.name,
+        tamanho: file.size,
+        tipo: file.type,
+        arquivo: file
+      }))
+      setArquivos(prev => [...prev, ...novosArquivos])
+    }
+  }
+
+  const handleRemoveFile = (id: string) => {
+    setArquivos(prev => prev.filter(arquivo => arquivo.id !== id))
+  }
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
+  }
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -334,9 +420,57 @@ export default function NovaQueixaTecnicaPage() {
                     Remover
                   </Button>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-6">
+                    <div className="flex items-start gap-3 text-gray-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D] mt-1">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                      </svg>
+                      <div>
+                        <span className="font-medium text-gray-500 text-sm">Telefone</span>
+                        <p className="text-gray-900">{cliente.telefone}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 text-gray-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D] mt-1">
+                        <rect width="20" height="16" x="2" y="4" rx="2"/>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                      </svg>
+                      <div>
+                        <span className="font-medium text-gray-500 text-sm">Email</span>
+                        <p className="text-gray-900">{cliente.email}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-6">
+                    <div className="flex items-start gap-3 text-gray-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D] mt-1">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                      </svg>
+                      <div>
+                        <span className="font-medium text-gray-500 text-sm">Documento</span>
+                        <p className="text-gray-900">{cliente.documento}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 text-gray-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D] mt-1">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                      </svg>
+                      <div>
+                        <span className="font-medium text-gray-500 text-sm">Endereço</span>
+                        <p className="text-gray-900">{cliente.endereco}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Protocolos do cliente */}
                 {PROTOCOLOS_MOCK[cliente.id] && PROTOCOLOS_MOCK[cliente.id].length > 0 && (
-                  <div className="bg-gray-50 border rounded-lg p-4">
+                  <div className="bg-gray-50 border rounded-lg p-4 mt-6">
                     <div className="font-semibold mb-2 text-gray-800">Protocolos do cliente</div>
                     {protocoloVinculado ? (
                       <div className="flex flex-wrap gap-3">
@@ -354,8 +488,24 @@ export default function NovaQueixaTecnicaPage() {
                           </button>
                           <span className="font-bold text-base text-[#26B99D] tracking-wide mb-1">{protocoloVinculado.id}</span>
                           <span className="text-xs text-gray-500 mb-1">{protocoloVinculado.data}</span>
-                          <span className="text-sm text-gray-900 mb-0.5">Produto: {protocoloVinculado.produto}</span>
-                          <span className="text-sm text-gray-800">Motivo: {protocoloVinculado.motivo}</span>
+                          <span className="text-sm text-gray-900 mb-0.5 flex items-center gap-1"><Pill className="h-4 w-4 text-[#26B99D]" />{protocoloVinculado.produto}</span>
+                          <div className="flex flex-wrap gap-2 mt-2 items-center">
+                            {protocoloVinculado.motivo && (
+                              <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">{protocoloVinculado.motivo}</span>
+                            )}
+                            {protocoloVinculado.motivo && protocoloVinculado.subcategoria && (
+                              <span className="font-bold text-[#D3D7DD]">&gt;</span>
+                            )}
+                            {protocoloVinculado.subcategoria && (
+                              <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">{protocoloVinculado.subcategoria}</span>
+                            )}
+                            {protocoloVinculado.subcategoria && protocoloVinculado.detalhe && (
+                              <span className="font-bold text-[#D3D7DD]">&gt;</span>
+                            )}
+                            {protocoloVinculado.detalhe && (
+                              <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">{protocoloVinculado.detalhe}</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ) : (
@@ -372,8 +522,24 @@ export default function NovaQueixaTecnicaPage() {
                             >
                               <span className="font-bold text-base text-[#26B99D] tracking-wide mb-1">{protocolo.id}</span>
                               <span className="text-xs text-gray-500 mb-1">{protocolo.data}</span>
-                              <span className="text-sm text-gray-900 mb-0.5">Produto: {protocolo.produto}</span>
-                              <span className="text-sm text-gray-800">Motivo: {protocolo.motivo}</span>
+                              <span className="text-sm text-gray-900 mb-0.5 flex items-center gap-1"><Pill className="h-4 w-4 text-[#26B99D]" />{protocolo.produto}</span>
+                              <div className="flex flex-wrap gap-2 mt-2 items-center">
+                                {protocolo.motivo && (
+                                  <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">{protocolo.motivo}</span>
+                                )}
+                                {protocolo.motivo && protocolo.subcategoria && (
+                                  <span className="font-bold text-[#D3D7DD]">&gt;</span>
+                                )}
+                                {protocolo.subcategoria && (
+                                  <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">{protocolo.subcategoria}</span>
+                                )}
+                                {protocolo.subcategoria && protocolo.detalhe && (
+                                  <span className="font-bold text-[#D3D7DD]">&gt;</span>
+                                )}
+                                {protocolo.detalhe && (
+                                  <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">{protocolo.detalhe}</span>
+                                )}
+                              </div>
                             </button>
                           ))}
                         </div>
@@ -390,45 +556,6 @@ export default function NovaQueixaTecnicaPage() {
                     )}
                   </div>
                 )}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D]">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                      </svg>
-                      <span className="font-medium">Telefone:</span>
-                      <span>{cliente.telefone}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D]">
-                        <rect width="20" height="16" x="2" y="4" rx="2"/>
-                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                      </svg>
-                      <span className="font-medium">Email:</span>
-                      <span>{cliente.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D]">
-                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-                        <circle cx="12" cy="10" r="3"/>
-                      </svg>
-                      <span className="font-medium">Endereço:</span>
-                      <span>{cliente.endereco}</span>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D]">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                      </svg>
-                      <span className="font-medium">Documento:</span>
-                      <span>{cliente.documento}</span>
-                </div>
-                </div>
-                </div>
               </div>
             ) : (
               <div className="space-y-4">
@@ -519,130 +646,130 @@ export default function NovaQueixaTecnicaPage() {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2 mb-6">
-                <Package className="h-5 w-5 text-primary" />
+                <Pill className="h-5 w-5 text-primary" />
                 <CardTitle>Informações do Produto</CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-8 p-6">
               {/* Informações do Produto */}
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="produto" className="flex items-center gap-2">
-                      <Package className="h-4 w-4 text-[#26B99D]" />
+                    <Label htmlFor="produto" className="flex items-center gap-2 text-base font-medium">
+                      <Pill className="h-4 w-4 text-[#26B99D]" />
                       Produto <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
-                      <Input
-                        id="produto"
-                        name="produto"
-                        placeholder="Produto"
-                        value={formData.produto}
-                        onChange={handleInputChange}
-                        required
-                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                    <Input
+                      id="produto"
+                      name="produto"
+                      placeholder="Produto"
+                      value={formData.produto}
+                      onChange={handleInputChange}
+                      required
+                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
                         readOnly
-                      />
+                    />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="sku" className="flex items-center gap-2">
+                    <Label htmlFor="sku" className="flex items-center gap-2 text-base font-medium">
                       <Tag className="h-4 w-4 text-[#26B99D]" />
                       SKU
                     </Label>
                     <div className="relative">
-                      <Input
-                        id="sku"
-                        name="sku"
-                        placeholder="SKU"
-                        value={formData.sku}
-                        onChange={handleInputChange}
-                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                    <Input
+                      id="sku"
+                      name="sku"
+                      placeholder="SKU"
+                      value={formData.sku}
+                      onChange={handleInputChange}
+                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
                         readOnly
-                      />
+                    />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lote" className="flex items-center gap-2">
+                    <Label htmlFor="lote" className="flex items-center gap-2 text-base font-medium">
                       <Hash className="h-4 w-4 text-[#26B99D]" />
                       Lote
                     </Label>
                     <div className="relative">
-                      <Input
-                        id="lote"
-                        name="lote"
-                        placeholder="Lote"
-                        value={formData.lote}
-                        onChange={handleInputChange}
-                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                    <Input
+                      id="lote"
+                      name="lote"
+                      placeholder="Lote"
+                      value={formData.lote}
+                      onChange={handleInputChange}
+                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
                         readOnly
-                      />
+                    />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="ean" className="flex items-center gap-2">
+                    <Label htmlFor="ean" className="flex items-center gap-2 text-base font-medium">
                       <Barcode className="h-4 w-4 text-[#26B99D]" />
                       EAN
                     </Label>
                     <div className="relative">
-                      <Input
-                        id="ean"
-                        name="ean"
-                        placeholder="EAN"
-                        value={formData.ean}
-                        onChange={handleInputChange}
-                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                    <Input
+                      id="ean"
+                      name="ean"
+                      placeholder="EAN"
+                      value={formData.ean}
+                      onChange={handleInputChange}
+                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
                         readOnly
-                      />
+                    />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="dataFabricacao" className="flex items-center gap-2">
+                    <Label htmlFor="dataFabricacao" className="flex items-center gap-2 text-base font-medium">
                       <Calendar className="h-4 w-4 text-[#26B99D]" />
                       Data de Fabricação
                     </Label>
                     <div className="relative">
-                      <Input
-                        id="dataFabricacao"
-                        name="dataFabricacao"
-                        type="date"
-                        value={formData.dataFabricacao}
-                        onChange={handleInputChange}
-                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                    <Input
+                      id="dataFabricacao"
+                      name="dataFabricacao"
+                      type="date"
+                      value={formData.dataFabricacao}
+                      onChange={handleInputChange}
+                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
                         readOnly
-                      />
+                    />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="dataValidade" className="flex items-center gap-2">
+                    <Label htmlFor="dataValidade" className="flex items-center gap-2 text-base font-medium">
                       <CalendarCheck className="h-4 w-4 text-[#26B99D]" />
                       Data de Validade
                     </Label>
                     <div className="relative">
-                      <Input
-                        id="dataValidade"
-                        name="dataValidade"
-                        type="date"
-                        value={formData.dataValidade}
-                        onChange={handleInputChange}
-                        className="h-11 bg-gray-50 border-gray-200 pr-10"
+                    <Input
+                      id="dataValidade"
+                      name="dataValidade"
+                      type="date"
+                      value={formData.dataValidade}
+                      onChange={handleInputChange}
+                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
                         readOnly
-                      />
+                    />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
@@ -654,149 +781,532 @@ export default function NovaQueixaTecnicaPage() {
               <Separator />
 
               {/* Detalhes da Queixa */}
-              <div>
-                <h3 className="text-lg font-medium flex items-center mb-4">
-                  <AlertTriangle className="mr-2 h-5 w-5 text-primary" />
-                  Detalhes da Queixa
-                </h3>
-
+              <Card>
+                <CardHeader className="px-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <ClipboardList className="h-5 w-5 text-primary" />
+                    <CardTitle>Detalhes da Queixa</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-8 p-6">
                 <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="tipoQueixa">
-                      Tipo de Queixa <span className="text-red-500">*</span>
-                    </Label>
-                    <RadioGroup
-                      defaultValue={formData.tipoQueixa}
-                      onValueChange={(value) => handleSelectChange("tipoQueixa", value)}
-                      className="grid grid-cols-1 md:grid-cols-2 gap-2"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="embalagem" id="embalagem" />
-                        <Label htmlFor="embalagem">Problema na embalagem</Label>
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="quantidadeComprada" className="text-base font-medium">Quantidade Comprada</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-4 w-4 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-gray-600">Quantidade de caixas</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <Input
+                          id="quantidadeComprada"
+                          name="quantidadeComprada"
+                          type="number"
+                          placeholder="Quantidade de caixas"
+                          value={formData.quantidadeComprada}
+                          onChange={handleInputChange}
+                          className="h-12 text-base"
+                        />
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="rotulagem" id="rotulagem" />
-                        <Label htmlFor="rotulagem">Problema na rotulagem</Label>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="quantidadeDesvio" className="text-base font-medium">Quantidade com desvio de Qualidade</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-4 w-4 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-gray-600">Quantas unidades apresentaram desvio de qualidade</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <Input
+                          id="quantidadeDesvio"
+                          name="quantidadeDesvio"
+                          type="number"
+                          placeholder="Quantidade de unidades"
+                          value={formData.quantidadeDesvio}
+                          onChange={handleInputChange}
+                          className="h-12 text-base"
+                        />
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="conteudo" id="conteudo" />
-                        <Label htmlFor="conteudo">Problema no conteúdo</Label>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="localCompra" className="text-base font-medium">Local de Compra</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-4 w-4 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-gray-600">Local onde o cliente comprou o produto, exemplo: Farmácia, farmácia de manipulação, hospital etc</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <Input
+                          id="localCompra"
+                          name="localCompra"
+                          placeholder="Local de compra"
+                          value={formData.localCompra}
+                          onChange={handleInputChange}
+                          className="h-12 text-base"
+                        />
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="funcionamento" id="funcionamento" />
-                        <Label htmlFor="funcionamento">Problema no funcionamento</Label>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="dataCompra" className="text-base font-medium">Data da Compra</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-4 w-4 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-gray-600">Data em que o produto foi comprado</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <div className="flex gap-2 mt-1">
+                          <Select
+                            value={formData.dataCompraFormato}
+                            onValueChange={(value) => handleSelectChange("dataCompraFormato", value)}
+                          >
+                            <SelectTrigger className="w-[120px]">
+                              <SelectValue placeholder="Formato" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="MM/AA">MM/AA</SelectItem>
+                              <SelectItem value="DD/MM/AAAA">DD/MM/AAAA</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Input
+                            id="dataCompra"
+                            name="dataCompra"
+                            type={formData.dataCompraFormato === "MM/AA" ? "month" : "date"}
+                            value={formData.dataCompra}
+                            onChange={handleInputChange}
+                            className="flex-1 h-12 text-base"
+                          />
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="contaminacao" id="contaminacao" />
-                        <Label htmlFor="contaminacao">Suspeita de contaminação</Label>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="outro" id="outro" />
-                        <Label htmlFor="outro">Outro</Label>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="dataAbertura" className="text-base font-medium">Data de abertura da caixa</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-4 w-4 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-gray-600">Data que o cliente abriu a caixa do produto</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                       </div>
-                    </RadioGroup>
+                        <div className="flex gap-2 mt-1">
+                          <Select
+                            value={formData.dataAberturaFormato}
+                            onValueChange={(value) => handleSelectChange("dataAberturaFormato", value)}
+                          >
+                            <SelectTrigger className="w-[120px]">
+                              <SelectValue placeholder="Formato" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="MM/AA">MM/AA</SelectItem>
+                              <SelectItem value="DD/MM/AAAA">DD/MM/AAAA</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Input
+                            id="dataAbertura"
+                            name="dataAbertura"
+                            type={formData.dataAberturaFormato === "MM/AA" ? "month" : "date"}
+                            value={formData.dataAbertura}
+                            onChange={handleInputChange}
+                            className="flex-1 h-12 text-base"
+                          />
+                      </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="localArmazenamento" className="text-base font-medium">Local de armazenamento</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-4 w-4 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-gray-600">Local onde o cliente guarda o produto, exemplo: Armário da sala, Banheiro, cozinha ,etc</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                      </div>
+                        <Input
+                          id="localArmazenamento"
+                          name="localArmazenamento"
+                          placeholder="Local de armazenamento"
+                          value={formData.localArmazenamento}
+                          onChange={handleInputChange}
+                          className="h-12 text-base"
+                        />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="descricaoQueixa">
-                      Descrição da Queixa <span className="text-red-500">*</span>
-                    </Label>
-                    <Textarea
-                      id="descricaoQueixa"
-                      name="descricaoQueixa"
-                      placeholder="Descreva detalhadamente o problema encontrado"
-                      rows={4}
-                      value={formData.descricaoQueixa}
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="modoArmazenamento" className="text-base font-medium">Como armazena o produto</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-4 w-4 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-gray-600">Modo em quem o cliente armazena o produto, exemplo: Dentro de uma caixa de remédios, dentro da própria embalagem do produto, dentro de um pote de vidro, etc.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <Input
+                          id="modoArmazenamento"
+                          name="modoArmazenamento"
+                          placeholder="Modo de armazenamento"
+                          value={formData.modoArmazenamento}
                       onChange={handleInputChange}
-                      required
+                          className="h-12 text-base"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="possuiAmostra">Possui amostra do produto?</Label>
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="caixaLacrada" className="text-base font-medium">A caixa estava lacrada no momento da compra?</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-4 w-4 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-gray-600">Indique se a caixa estava lacrada quando foi comprada</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
                     <RadioGroup
-                      defaultValue={formData.possuiAmostra}
-                      onValueChange={(value) => handleSelectChange("possuiAmostra", value)}
-                      className="flex gap-4"
+                          value={formData.caixaLacrada}
+                          onValueChange={(value) => handleSelectChange("caixaLacrada", value)}
+                          className="flex gap-4 mt-4"
                     >
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="sim" id="possui-sim" />
-                        <Label htmlFor="possui-sim">Sim</Label>
+                            <RadioGroupItem value="sim" id="caixaLacrada-sim" />
+                            <Label htmlFor="caixaLacrada-sim">Sim</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="nao" id="possui-nao" />
-                        <Label htmlFor="possui-nao">Não</Label>
+                            <RadioGroupItem value="nao" id="caixaLacrada-nao" />
+                            <Label htmlFor="caixaLacrada-nao">Não</Label>
                       </div>
                     </RadioGroup>
                   </div>
 
-                  {formData.possuiAmostra === "sim" && (
-                    <div className="flex items-center space-x-2 ml-6 p-2 bg-gray-50 rounded-md">
-                      <Checkbox
-                        id="enviarAmostra"
-                        checked={formData.enviarAmostra}
-                        onCheckedChange={(checked) => handleCheckboxChange("enviarAmostra", checked as boolean)}
-                      />
-                      <Label htmlFor="enviarAmostra">Deseja enviar a amostra para análise?</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="utilizouProduto" className="text-base font-medium">Utilizou o produto com desvio de qualidade?</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-4 w-4 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-gray-600">Indique se o produto com desvio foi utilizado</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <div className="space-y-2">
+                          <RadioGroup
+                            value={formData.utilizouProduto}
+                            onValueChange={(value) => handleSelectChange("utilizouProduto", value)}
+                            className="flex gap-4 mt-4"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="sim" id="utilizouProduto-sim" />
+                              <Label htmlFor="utilizouProduto-sim">Sim</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="nao" id="utilizouProduto-nao" />
+                              <Label htmlFor="utilizouProduto-nao">Não</Label>
+                            </div>
+                          </RadioGroup>
+                          {formData.utilizouProduto === "sim" && (
+                            <>
+                              <Input
+                                id="quantidadeUtilizada"
+                                name="quantidadeUtilizada"
+                                type="number"
+                                placeholder="Quantos?"
+                                value={formData.quantidadeUtilizada}
+                                onChange={handleInputChange}
+                                className="mt-2 h-12 text-base"
+                              />
+                              <div className="space-y-2 mt-4">
+                                <div className="flex items-center gap-2">
+                                  <Label htmlFor="apresentouSintoma" className="text-base font-medium">Apresentou algum sintoma?</Label>
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger>
+                                        <HelpCircle className="h-4 w-4 text-gray-400" />
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p className="text-gray-600">Indique se houve algum sintoma após o uso do produto</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
                     </div>
-                  )}
-
                   <div className="space-y-2">
-                    <Label htmlFor="prioridade">Prioridade</Label>
-                    <Select
-                      name="prioridade"
-                      value={formData.prioridade}
-                      onValueChange={(value) => handleSelectChange("prioridade", value)}
-                    >
-                      <SelectTrigger id="prioridade">
-                        <SelectValue placeholder="Selecione a prioridade" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="baixa">Baixa</SelectItem>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="alta">Alta</SelectItem>
-                        <SelectItem value="urgente">Urgente</SelectItem>
-                      </SelectContent>
-                    </Select>
+                                  <RadioGroup
+                                    value={formData.apresentouSintoma}
+                                    onValueChange={(value) => handleSelectChange("apresentouSintoma", value)}
+                                    className="flex gap-4 mt-4"
+                                  >
+                                    <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="sim" id="apresentouSintoma-sim" />
+                                      <Label htmlFor="apresentouSintoma-sim">Sim</Label>
                   </div>
+                                    <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="nao" id="apresentouSintoma-nao" />
+                                      <Label htmlFor="apresentouSintoma-nao">Não</Label>
                 </div>
+                                  </RadioGroup>
               </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
               <Separator />
 
               {/* Evidências */}
-              <div>
-                <h3 className="text-lg font-medium flex items-center mb-4">
-                  <Upload className="mr-2 h-5 w-5 text-primary" />
-                  Evidências
-                </h3>
-
-                <div className="space-y-4">
-                  <div className="border-2 border-dashed rounded-md p-6 text-center">
-                    <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">Arraste e solte arquivos aqui ou clique para selecionar</p>
-                    <p className="text-xs text-gray-400 mt-1">Suporta imagens, documentos e vídeos (máx. 10MB)</p>
-                    <Button variant="outline" size="sm" className="mt-4">
-                      Selecionar Arquivos
-                    </Button>
+              <Card>
+                <CardHeader className="px-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FileText className="h-5 w-5 text-primary" />
+                    <CardTitle>Narrativa</CardTitle>
                   </div>
+                </CardHeader>
+                <CardContent className="space-y-6 p-6 min-h-[340px]">
+              <div className="w-full">
+                    <ReactQuill
+                      id="narrativa"
+                      theme="snow"
+                      value={formData.narrativa || ''}
+                      onChange={value => setFormData(prev => ({ ...prev, narrativa: value }))}
+                      placeholder="Descreva detalhadamente a situação, fatos e contexto da queixa técnica..."
+                      className="mt-0"
+                      style={{ minHeight: 250, height: 250, width: '100%' }}
+                    />
                 </div>
+                </CardContent>
+              </Card>
+
+              {/* Anexos */}
+              <Card>
+                <CardHeader className="px-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Upload className="h-5 w-5 text-primary" />
+                    <CardTitle>Anexos</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6 p-6">
+                  <div className="space-y-4">
+                    <div className="flex flex-col gap-2">
+                      <Label className="text-base font-medium">Arquivos</Label>
+                      <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-center w-full">
+                          <label
+                            htmlFor="dropzone-file"
+                            className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                          >
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              <Upload className="w-8 h-8 mb-3 text-gray-400" />
+                              <p className="mb-2 text-sm text-gray-500">
+                                <span className="font-semibold">Clique para fazer upload</span> ou arraste e solte
+                              </p>
+                              <p className="text-xs text-gray-500">PNG, JPG, PDF ou DOC (MAX. 10MB)</p>
+                            </div>
+                            <input
+                              id="dropzone-file"
+                              type="file"
+                              className="hidden"
+                              multiple
+                              accept=".png,.jpg,.jpeg,.pdf,.doc,.docx"
+                              onChange={handleFileChange}
+                            />
+                          </label>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-sm text-gray-500">
+                            Arquivos anexados:
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {arquivos.map(arquivo => (
+                              <div key={arquivo.id} className="flex items-center justify-between p-3 bg-[#e6faf7] rounded-lg border border-[#26B99D] hover:bg-[#d9f7f2] transition-colors shadow-sm">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <FileText className="h-5 w-5 text-[#26B99D] flex-shrink-0" />
+                                  <div className="min-w-0">
+                                    <p className="text-sm font-medium text-gray-600 truncate">{arquivo.nome}</p>
+                                    <p className="text-xs text-gray-500">{formatFileSize(arquivo.tamanho)}</p>
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="p-1 hover:bg-red-100 rounded-full text-red-600 flex-shrink-0 ml-2"
+                                  onClick={() => handleRemoveFile(arquivo.id)}
+                                  aria-label="Remover arquivo"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </div>
+                            ))}
+                            {arquivos.length === 0 && (
+                              <div className="col-span-full">
+                                <p className="text-sm text-gray-500 text-center py-4">
+                                  Nenhum arquivo anexado
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Qualidade */}
+              <Card>
+                <CardHeader className="px-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle className="h-5 w-5 text-primary" />
+                    <CardTitle>Qualidade</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6 p-6">
+              <div className="space-y-2">
+                    <Label className="text-base font-medium">Solicita laudo de análise?</Label>
+                    <RadioGroup
+                      value={formData.solicitaLaudo || ''}
+                      onValueChange={value => setFormData(prev => ({ ...prev, solicitaLaudo: value }))}
+                      className="flex gap-4 mt-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="sim" id="solicitaLaudo-sim" />
+                        <Label htmlFor="solicitaLaudo-sim">Sim</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="nao" id="solicitaLaudo-nao" />
+                        <Label htmlFor="solicitaLaudo-nao">Não</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <div className="space-y-2 mt-6">
+                    <Label className="text-base font-medium">Farmacovigilância</Label>
+                    <RadioGroup
+                      value={formData.farmacovigilancia || ''}
+                      onValueChange={value => setFormData(prev => ({ ...prev, farmacovigilancia: value }))}
+                      className="flex gap-4 mt-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="sim" id="farmacovigilancia-sim" />
+                        <Label htmlFor="farmacovigilancia-sim">Sim</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="nao" id="farmacovigilancia-nao" />
+                        <Label htmlFor="farmacovigilancia-nao">Não</Label>
+                      </div>
+                    </RadioGroup>
+                    {formData.farmacovigilancia === "sim" && (
+                      <Input
+                        id="numeroFarmacovigilancia"
+                        name="numeroFarmacovigilancia"
+                        placeholder="Número da farmacovigilância"
+                        value={formData.numeroFarmacovigilancia}
+                  onChange={handleInputChange}
+                        className="mt-2"
+                />
+                    )}
               </div>
+                </CardContent>
+              </Card>
+
+              {/* Reembolso */}
+              <Card>
+                <CardHeader className="px-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Tag className="h-5 w-5 text-primary" />
+                    <CardTitle>Reembolso</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6 p-6">
+                  <div className="space-y-2">
+                    <Label className="text-base font-medium">Paciente aceita envio da amostra?</Label>
+                    <RadioGroup
+                      value={formData.envioAmostra || ''}
+                      onValueChange={value => setFormData(prev => ({ ...prev, envioAmostra: value }))}
+                      className="flex gap-4 mt-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="sim" id="envioAmostra-sim" />
+                        <Label htmlFor="envioAmostra-sim">Sim</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="nao" id="envioAmostra-nao" />
+                        <Label htmlFor="envioAmostra-nao">Não</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  {formData.envioAmostra === "sim" && (
+                    <div className="mt-6 space-y-4 border-t pt-6">
+                      <h4 className="text-lg font-semibold mb-4">Informações para Reembolso</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Input name="reembolsoNome" placeholder="Nome" value={formData.reembolsoNome || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoCpf" placeholder="CPF" value={formData.reembolsoCpf || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoTelefone" placeholder="Telefone" value={formData.reembolsoTelefone || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoCelular" placeholder="Celular" value={formData.reembolsoCelular || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoEmail" placeholder="Email" value={formData.reembolsoEmail || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoCep" placeholder="CEP" value={formData.reembolsoCep || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoLogradouro" placeholder="Logradouro" value={formData.reembolsoLogradouro || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoNumero" placeholder="Nº" value={formData.reembolsoNumero || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoComplemento" placeholder="Complemento" value={formData.reembolsoComplemento || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoBairro" placeholder="Bairro" value={formData.reembolsoBairro || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoCidade" placeholder="Cidade" value={formData.reembolsoCidade || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoEstado" placeholder="Estado" value={formData.reembolsoEstado || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoCaixa" placeholder="Nº de caixa a ser devolvida" value={formData.reembolsoCaixa || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoValor" placeholder="Valor reembolso" value={formData.reembolsoValor || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoCodigoPostal" placeholder="Código postal" value={formData.reembolsoCodigoPostal || ''} onChange={handleInputChange} />
+                        <Input name="reembolsoValorPostal" placeholder="Valor postal" value={formData.reembolsoValorPostal || ''} onChange={handleInputChange} />
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
 
               <Separator />
-
-              {/* Observações */}
-              <div className="space-y-2">
-                <Label htmlFor="observacoes">Observações Adicionais</Label>
-                <Textarea
-                  id="observacoes"
-                  name="observacoes"
-                  placeholder="Informações adicionais relevantes"
-                  rows={3}
-                  value={formData.observacoes}
-                  onChange={handleInputChange}
-                />
-              </div>
             </CardContent>
             <CardFooter className="flex justify-between">
               <Button variant="outline" type="button" onClick={() => router.push("/atendimentos/queixas")}>
