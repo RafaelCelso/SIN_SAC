@@ -17,7 +17,7 @@ import { DatePicker } from "@/components/date-picker"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill } from "lucide-react"
+import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill, Save } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import dynamic from "next/dynamic"
@@ -578,27 +578,27 @@ export default function NovaQueixaTecnicaPage() {
                         setShowResults(true)
                       }}
                     />
+                    {showResults && filteredClientes.length > 0 && (
+                      <div className="absolute z-50 w-full left-0 mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
+                        {filteredClientes.map((cliente) => (
+                          <button
+                            key={cliente.id}
+                            className="w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b last:border-b-0"
+                            onClick={() => {
+                              setCliente(cliente)
+                              setClienteSearchQuery("")
+                              setShowResults(false)
+                            }}
+                          >
+                            <div className="font-medium text-gray-900">{cliente.nome}</div>
+                            <div className="text-sm text-gray-500">
+                              {cliente.documento} • {cliente.telefone}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  {showResults && filteredClientes.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
-                      {filteredClientes.map((cliente) => (
-                        <button
-                          key={cliente.id}
-                          className="w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b last:border-b-0"
-                          onClick={() => {
-                            setCliente(cliente)
-                            setClienteSearchQuery("")
-                            setShowResults(false)
-                          }}
-                        >
-                          <div className="font-medium text-gray-900">{cliente.nome}</div>
-                          <div className="text-sm text-gray-500">
-                            {cliente.documento} • {cliente.telefone}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </div>
                 {nomeSemRegistro && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1314,13 +1314,22 @@ export default function NovaQueixaTecnicaPage() {
               <Separator />
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button variant="outline" type="button" onClick={() => router.push("/atendimentos/queixas")}>
+              <Button variant="destructive" type="button" onClick={() => router.push("/atendimentos/queixas")}>
                 Cancelar
               </Button>
-              <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Registrar Queixa Técnica
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  className="flex items-center bg-[#e6faf7] border border-[#26B99D] text-[#26B99D] hover:bg-[#d9f7f2] hover:border-[#26B99D] font-semibold shadow-sm"
+                >
+                  <Save className="mr-2 h-4 w-4 text-[#26B99D]" />
+                  Salvar
+                </Button>
+                <Button type="submit" className="bg-teal-600 hover:bg-teal-700 flex items-center">
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Enviar Queixa Técnica
+                </Button>
+              </div>
             </CardFooter>
           </Card>
         </form>
