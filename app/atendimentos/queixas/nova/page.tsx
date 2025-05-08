@@ -278,6 +278,11 @@ export default function NovaQueixaTecnicaPage() {
     }
   }, [protocoloVinculado])
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -1133,7 +1138,7 @@ export default function NovaQueixaTecnicaPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6 p-6">
-                  <div className="space-y-4">
+                <div className="space-y-4">
                     <div className="flex flex-col gap-2">
                       <Label className="text-base font-medium">Arquivos</Label>
                       <div className="flex flex-col gap-4">
@@ -1148,7 +1153,7 @@ export default function NovaQueixaTecnicaPage() {
                                 <span className="font-semibold">Clique para fazer upload</span> ou arraste e solte
                               </p>
                               <p className="text-xs text-gray-500">PNG, JPG, PDF ou DOC (MAX. 10MB)</p>
-                            </div>
+                  </div>
                             <input
                               id="dropzone-file"
                               type="file"
@@ -1158,11 +1163,11 @@ export default function NovaQueixaTecnicaPage() {
                               onChange={handleFileChange}
                             />
                           </label>
-                        </div>
+                </div>
                         <div className="space-y-2">
                           <div className="text-sm text-gray-500">
                             Arquivos anexados:
-                          </div>
+              </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             {arquivos.map(arquivo => (
                               <div key={arquivo.id} className="flex items-center justify-between p-3 bg-[#e6faf7] rounded-lg border border-[#26B99D] hover:bg-[#d9f7f2] transition-colors shadow-sm">
