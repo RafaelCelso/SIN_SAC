@@ -1427,24 +1427,56 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                         <div className="mt-6">
                           <h3 className="text-lg font-medium flex items-center mb-4">
                             <MapPin className="mr-2 h-5 w-5 text-primary" />
-                            Endereço
+                            Logradouro
                           </h3>
                           <div className="grid grid-cols-1 gap-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="endereco">Endereço</Label>
-                              <Input
-                                id="endereco"
-                                placeholder="Rua, número, complemento"
-                                className="h-11"
-                              />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="logradouro">Logradouro</Label>
+                                <Input
+                                  id="logradouro"
+                                  placeholder="Logradouro"
+                                  className="h-11"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="numero">N°</Label>
+                                <Input
+                                  id="numero"
+                                  placeholder="Número"
+                                  className="h-11"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="complemento">Complemento</Label>
+                                <Input
+                                  id="complemento"
+                                  placeholder="Complemento"
+                                  className="h-11"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="bairro">Bairro</Label>
+                                <Input
+                                  id="bairro"
+                                  placeholder="Bairro"
+                                  className="h-11"
+                                />
+                              </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="space-y-2">
                                 <Label htmlFor="cidade">Cidade</Label>
-                                <Input id="cidade" placeholder="Cidade" className="h-11" />
+                                <Input
+                                  id="cidade"
+                                  placeholder="Cidade"
+                                  className="h-11"
+                                />
                               </div>
-
                               <div className="space-y-2">
                                 <Label htmlFor="estado">Estado</Label>
                                 <Select>
@@ -1482,7 +1514,6 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                                   </SelectContent>
                                 </Select>
                               </div>
-
                               <div className="space-y-2">
                                 <Label htmlFor="cep">CEP</Label>
                                 <Input

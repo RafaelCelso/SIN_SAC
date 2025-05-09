@@ -21,7 +21,10 @@ export default function NovoClientePage() {
     documento: "",
     telefone: "",
     email: "",
-    endereco: "",
+    logradouro: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
     cidade: "",
     estado: "",
     cep: "",
@@ -184,23 +187,55 @@ export default function NovoClientePage() {
                   Endereço
                 </h3>
                 <div className="grid grid-cols-1 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="endereco">Endereço</Label>
-                    <Input
-                      id="endereco"
-                      name="endereco"
-                      value={formData.endereco}
-                      onChange={handleInputChange}
-                      placeholder="Rua, número, complemento"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="logradouro">Logradouro</Label>
+                      <Input
+                        id="logradouro"
+                        name="logradouro"
+                        value={formData.logradouro}
+                        onChange={handleInputChange}
+                        placeholder="Logradouro"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="numero">N°</Label>
+                      <Input
+                        id="numero"
+                        name="numero"
+                        value={formData.numero}
+                        onChange={handleInputChange}
+                        placeholder="Número"
+                      />
+                    </div>
                   </div>
-
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="complemento">Complemento</Label>
+                      <Input
+                        id="complemento"
+                        name="complemento"
+                        value={formData.complemento}
+                        onChange={handleInputChange}
+                        placeholder="Complemento"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="bairro">Bairro</Label>
+                      <Input
+                        id="bairro"
+                        name="bairro"
+                        value={formData.bairro}
+                        onChange={handleInputChange}
+                        placeholder="Bairro"
+                      />
+                    </div>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="cidade">Cidade</Label>
                       <Input id="cidade" name="cidade" value={formData.cidade} onChange={handleInputChange} />
                     </div>
-
                     <div className="space-y-2">
                       <Label htmlFor="estado">Estado</Label>
                       <Select value={formData.estado} onValueChange={(value) => handleSelectChange("estado", value)}>
@@ -238,7 +273,6 @@ export default function NovoClientePage() {
                         </SelectContent>
                       </Select>
                     </div>
-
                     <div className="space-y-2">
                       <Label htmlFor="cep">CEP</Label>
                       <Input

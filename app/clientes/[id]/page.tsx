@@ -62,6 +62,12 @@ const CLIENTES_MOCK = [
     tipo: "Pessoa Física",
     dataCadastro: "10/01/2023",
     observacoes: "Cliente preferencial. Possui histórico de alergias a medicamentos com sulfato.",
+    numero: "1000",
+    complemento: "Apto 101",
+    bairro: "Bairro Alto",
+    cidade: "São Paulo",
+    estado: "SP",
+    cep: "01310-100",
   },
   {
     id: "2",
@@ -73,6 +79,12 @@ const CLIENTES_MOCK = [
     tipo: "Pessoa Física",
     dataCadastro: "15/02/2023",
     observacoes: "Cliente solicita contato apenas por e-mail.",
+    numero: "500",
+    complemento: "Sala 201",
+    bairro: "Bairro Baixa",
+    cidade: "São Paulo",
+    estado: "SP",
+    cep: "01310-100",
   },
   {
     id: "3",
@@ -84,6 +96,12 @@ const CLIENTES_MOCK = [
     tipo: "Pessoa Jurídica",
     dataCadastro: "05/03/2023",
     observacoes: "Farmácia parceira. Contato principal: Dr. Roberto (Farmacêutico responsável).",
+    numero: "1500",
+    complemento: "Sala 301",
+    bairro: "Bairro Centro",
+    cidade: "São Paulo",
+    estado: "SP",
+    cep: "01310-100",
   },
   {
     id: "novo",
@@ -266,6 +284,12 @@ export default function ClientePage() {
     endereco: "",
     tipo: "Pessoa Física",
     observacoes: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
+    cep: "",
   })
 
   const [showNovoProtocoloModal, setShowNovoProtocoloModal] = useState(false)
@@ -291,9 +315,15 @@ export default function ClientePage() {
         documento: clienteEncontrado.documento,
         telefone: clienteEncontrado.telefone,
         email: clienteEncontrado.email,
-        endereco: clienteEncontrado.endereco,
+        endereco: clienteEncontrado.endereco || "",
         tipo: clienteEncontrado.tipo,
-        observacoes: clienteEncontrado.observacoes,
+        observacoes: clienteEncontrado.observacoes || "",
+        numero: clienteEncontrado.numero || "",
+        complemento: clienteEncontrado.complemento || "",
+        bairro: clienteEncontrado.bairro || "",
+        cidade: clienteEncontrado.cidade || "",
+        estado: clienteEncontrado.estado || "",
+        cep: clienteEncontrado.cep || "",
       })
     }
 
@@ -446,20 +476,19 @@ export default function ClientePage() {
               </TabsList>
 
               <TabsContent value="dados" className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="nome">Nome Completo</Label>
-                      {isEditing ? (
-                        <Input id="nome" name="nome" value={formData.nome} onChange={handleInputChange} />
-                      ) : (
-                        <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
-                          <User className="h-4 w-4 text-gray-500" />
-                          <span>{cliente.nome}</span>
-                        </div>
-                      )}
-                    </div>
-
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="nome">Nome Completo</Label>
+                    {isEditing ? (
+                      <Input id="nome" name="nome" value={formData.nome} onChange={handleInputChange} />
+                    ) : (
+                      <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
+                        <User className="h-4 w-4 text-gray-500" />
+                        <span>{cliente.nome}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="documento">CPF</Label>
                       {isEditing ? (
@@ -476,7 +505,6 @@ export default function ClientePage() {
                         </div>
                       )}
                     </div>
-
                     <div className="space-y-2">
                       <Label htmlFor="telefone">Telefone</Label>
                       {isEditing ? (
@@ -489,65 +517,98 @@ export default function ClientePage() {
                       )}
                     </div>
                   </div>
-
-                  <div className="space-y-4">
+                  {/* Endereço abaixo do telefone */}
+                  <div className="space-y-2 mt-4">
+                    <Label htmlFor="endereco">Logradouro</Label>
+                    {isEditing ? (
+                      <Input id="endereco" name="endereco" value={formData.endereco || ''} onChange={handleInputChange} />
+                    ) : (
+                      <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
+                        <MapPin className="h-4 w-4 text-gray-500" />
+                        <span>{cliente.endereco || ''}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="numero">Nº</Label>
                       {isEditing ? (
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                        />
+                        <Input id="numero" name="numero" value={formData.numero || ''} onChange={handleInputChange} />
                       ) : (
-                        <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
-                          <Mail className="h-4 w-4 text-gray-500" />
-                          <span>{cliente.email}</span>
-                        </div>
+                        <span className="block p-2 border rounded-md bg-gray-50">{cliente.numero || ''}</span>
                       )}
                     </div>
-
                     <div className="space-y-2">
-                      <Label htmlFor="endereco">Endereço</Label>
+                      <Label htmlFor="complemento">Complemento</Label>
                       {isEditing ? (
-                        <Input id="endereco" name="endereco" value={formData.endereco} onChange={handleInputChange} />
+                        <Input id="complemento" name="complemento" value={formData.complemento || ''} onChange={handleInputChange} />
                       ) : (
-                        <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
-                          <MapPin className="h-4 w-4 text-gray-500" />
-                          <span>{cliente.endereco}</span>
-                        </div>
+                        <span className="block p-2 border rounded-md bg-gray-50">{cliente.complemento || ''}</span>
                       )}
                     </div>
-
                     <div className="space-y-2">
-                      <Label htmlFor="tipo">Tipo do Cliente</Label>
+                      <Label htmlFor="bairro">Bairro</Label>
                       {isEditing ? (
-                        <Select value={formData.tipo} onValueChange={(value) => setFormData((prev) => ({ ...prev, tipo: value }))}>
-                          <SelectTrigger id="tipo">
-                            <SelectValue placeholder="Selecione o tipo" />
+                        <Input id="bairro" name="bairro" value={formData.bairro || ''} onChange={handleInputChange} />
+                      ) : (
+                        <span className="block p-2 border rounded-md bg-gray-50">{cliente.bairro || ''}</span>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="cidade">Cidade</Label>
+                      {isEditing ? (
+                        <Input id="cidade" name="cidade" value={formData.cidade || ''} onChange={handleInputChange} />
+                      ) : (
+                        <span className="block p-2 border rounded-md bg-gray-50">{cliente.cidade || ''}</span>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="estado">Estado</Label>
+                      {isEditing ? (
+                        <Select value={formData.estado || ''} onValueChange={value => setFormData(prev => ({ ...prev, estado: value }))}>
+                          <SelectTrigger id="estado">
+                            <SelectValue placeholder="Selecione o estado" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="aut-reg-orgao-publico">Aut. Reg./Órgão Público</SelectItem>
-                            <SelectItem value="colaborador">Colaborador/Força de Vendas</SelectItem>
-                            <SelectItem value="convenio">Convênio/Outros PJ</SelectItem>
-                            <SelectItem value="distribuidor">Distribuidor</SelectItem>
-                            <SelectItem value="farmacia">Farmácia/Drogaria</SelectItem>
-                            <SelectItem value="hospital">Hospital/Clínica</SelectItem>
-                            <SelectItem value="medico">Médico</SelectItem>
-                            <SelectItem value="nao-informado">Não informado</SelectItem>
-                            <SelectItem value="outros">Outros</SelectItem>
-                            <SelectItem value="paciente">Paciente</SelectItem>
-                            <SelectItem value="prestador">Prestador de Serviço</SelectItem>
-                            <SelectItem value="profissional-saude">Profissional de Saúde</SelectItem>
+                            <SelectItem value="AC">AC</SelectItem>
+                            <SelectItem value="AL">AL</SelectItem>
+                            <SelectItem value="AP">AP</SelectItem>
+                            <SelectItem value="AM">AM</SelectItem>
+                            <SelectItem value="BA">BA</SelectItem>
+                            <SelectItem value="CE">CE</SelectItem>
+                            <SelectItem value="DF">DF</SelectItem>
+                            <SelectItem value="ES">ES</SelectItem>
+                            <SelectItem value="GO">GO</SelectItem>
+                            <SelectItem value="MA">MA</SelectItem>
+                            <SelectItem value="MT">MT</SelectItem>
+                            <SelectItem value="MS">MS</SelectItem>
+                            <SelectItem value="MG">MG</SelectItem>
+                            <SelectItem value="PA">PA</SelectItem>
+                            <SelectItem value="PB">PB</SelectItem>
+                            <SelectItem value="PR">PR</SelectItem>
+                            <SelectItem value="PE">PE</SelectItem>
+                            <SelectItem value="PI">PI</SelectItem>
+                            <SelectItem value="RJ">RJ</SelectItem>
+                            <SelectItem value="RN">RN</SelectItem>
+                            <SelectItem value="RS">RS</SelectItem>
+                            <SelectItem value="RO">RO</SelectItem>
+                            <SelectItem value="RR">RR</SelectItem>
+                            <SelectItem value="SC">SC</SelectItem>
+                            <SelectItem value="SP">SP</SelectItem>
+                            <SelectItem value="SE">SE</SelectItem>
+                            <SelectItem value="TO">TO</SelectItem>
                           </SelectContent>
                         </Select>
                       ) : (
-                        <div className="flex items-center gap-2 p-2 border rounded-md bg-gray-50">
-                          <User className="h-4 w-4 text-gray-500" />
-                          <span>{cliente.tipo}</span>
-                        </div>
+                        <span className="block p-2 border rounded-md bg-gray-50">{cliente.estado || ''}</span>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="cep">CEP</Label>
+                      {isEditing ? (
+                        <Input id="cep" name="cep" value={formData.cep || ''} onChange={handleInputChange} />
+                      ) : (
+                        <span className="block p-2 border rounded-md bg-gray-50">{cliente.cep || ''}</span>
                       )}
                     </div>
                   </div>
