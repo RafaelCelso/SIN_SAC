@@ -17,12 +17,14 @@ import { DatePicker } from "@/components/date-picker"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill, Save } from "lucide-react"
+import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill, Save, Pencil, Info } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import dynamic from "next/dynamic"
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
 import 'react-quill/dist/quill.snow.css'
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
 
 // Dados simulados de clientes
 const CLIENTES_MOCK = [
@@ -71,7 +73,12 @@ type Protocolo = {
   motivo: string;
   subcategoria?: string;
   detalhe?: string;
-  farmacovigilancia?: { id: string; gravidade: string; status: string }[];
+  farmacovigilancia?: { 
+    id: string; 
+    motivoPrincipal: string;
+    subcategoria: string;
+    detalhe: string;
+  }[];
 }
 const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
   "1": [
@@ -88,8 +95,8 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       subcategoria: "Medicamento",
       detalhe: "Antagonista",
       farmacovigilancia: [
-        { id: "FV-2023-0001", gravidade: "Leve", status: "Em análise" },
-        { id: "FV-2023-0002", gravidade: "Moderada", status: "Pendente" }
+        { id: "FV-2023-0001", motivoPrincipal: "Qualidade", subcategoria: "Aparência", detalhe: "Risco" },
+        { id: "FV-2023-0002", motivoPrincipal: "Embalagem", subcategoria: "Odor", detalhe: "Quebra" }
       ]
     },
     {
@@ -179,7 +186,7 @@ type ArquivoAnexo = {
 
 // Função utilitária para renderizar o card de farmacovigilância igual ao card de protocolo, incluindo o produto
 function CardFarmacovigilancia({ fv, produto, isSelected, isLinked, onSelect, onUnlink }: {
-  fv: { id: string; gravidade: string; status: string };
+  fv: { id: string; motivoPrincipal: string; subcategoria: string; detalhe: string };
   produto: string;
   isSelected: boolean;
   isLinked: boolean;
@@ -215,8 +222,11 @@ function CardFarmacovigilancia({ fv, produto, isSelected, isLinked, onSelect, on
           {produto}
         </span>
         <div className="flex flex-wrap gap-2 items-center mt-auto">
-          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">Gravidade: {fv.gravidade}</span>
-          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">Status: {fv.status}</span>
+          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">Motivo Principal: {fv.motivoPrincipal}</span>
+          <span className="font-bold text-[#D3D7DD]">&gt;</span>
+          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">Subcategoria: {fv.subcategoria}</span>
+          <span className="font-bold text-[#D3D7DD]">&gt;</span>
+          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">Detalhe: {fv.detalhe}</span>
         </div>
       </button>
     </div>
@@ -290,6 +300,9 @@ export default function NovaQueixaTecnicaPage() {
     reembolsoCidade: "",
     reembolsoEstado: "",
     reembolsoCep: "",
+    motivoPrincipal: "",
+    subcategoria: "",
+    detalhe: "",
   })
   const [protocoloSelecionado, setProtocoloSelecionado] = useState<Protocolo | null>(null)
   const [protocoloVinculado, setProtocoloVinculado] = useState<Protocolo | null>(null)
@@ -910,9 +923,259 @@ export default function NovaQueixaTecnicaPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-8 p-6">
-                <div className="space-y-4">
+                  {/* Fluxo Motivo Principal, Subcategoria e Detalhe igual ao modal Novo Contato */}
+                  <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm mb-6">
+                    {/* Barra de Progresso */}
+                    <div className="space-y-2">
+                      <div className="flex justify-end">
+                        <span className="font-medium text-teal-600">
+                          {[formData.motivoPrincipal, formData.subcategoria, formData.detalhe].filter(Boolean).length}/3
+                        </span>
+                      </div>
+                      <div className="relative">
+                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-teal-600 transition-all duration-300"
+                            style={{ 
+                              width: `${([formData.motivoPrincipal, formData.subcategoria, formData.detalhe].filter(Boolean).length / 3) * 100}%` 
+                            }}
+                          />
+                        </div>
+                        <div className="absolute top-0 left-0 w-full h-full flex justify-between items-center pointer-events-none">
+                          {[1, 2, 3].map((step) => (
+                            <div
+                              key={step}
+                              className={`w-3 h-3 rounded-full border-2 transition-colors duration-300 ${
+                                step <= [formData.motivoPrincipal, formData.subcategoria, formData.detalhe].filter(Boolean).length
+                                  ? 'bg-teal-600 border-teal-600'
+                                  : 'bg-white border-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Motivo Principal */}
+                    {!formData.motivoPrincipal && (
+                      <div className="space-y-2">
+                        <Label className="font-medium">Motivo Principal</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full justify-between h-11"
+                            >
+                              <div className="flex items-center gap-2">
+                                <ClipboardList className="h-4 w-4 text-teal-600" />
+                                <span>Selecione o motivo principal</span>
+                              </div>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                            <Command>
+                              <CommandInput placeholder="Buscar motivo..." />
+                              <CommandEmpty>Nenhum motivo encontrado.</CommandEmpty>
+                              <CommandGroup>
+                                <CommandItem value="Qualidade" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Qualidade", subcategoria: "", detalhe: "" }))}>
+                                  <ClipboardList className="mr-2 h-4 w-4" />
+                                  Qualidade
+                                </CommandItem>
+                                <CommandItem value="Embalagem" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Embalagem", subcategoria: "", detalhe: "" }))}>
+                                  <ClipboardList className="mr-2 h-4 w-4" />
+                                  Embalagem
+                                </CommandItem>
+                                <CommandItem value="Vencimento" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Vencimento", subcategoria: "", detalhe: "" }))}>
+                                  <ClipboardList className="mr-2 h-4 w-4" />
+                                  Vencimento
+                                </CommandItem>
+                                <CommandItem value="Outro" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Outro", subcategoria: "", detalhe: "" }))}>
+                                  <ClipboardList className="mr-2 h-4 w-4" />
+                                  Outro
+                                </CommandItem>
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    )}
+
+                    {/* Subcategoria */}
+                    {formData.motivoPrincipal && !formData.subcategoria && (
+                      <div className="space-y-2">
+                        <Label className="font-medium">Subcategoria</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full justify-between h-11"
+                            >
+                              <div className="flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-teal-600" />
+                                <span>Selecione a subcategoria</span>
+                              </div>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                            <Command>
+                              <CommandInput placeholder="Buscar subcategoria..." />
+                              <CommandEmpty>Nenhuma subcategoria encontrada.</CommandEmpty>
+                              <CommandGroup>
+                                <CommandItem value="Aparência" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Aparência", detalhe: "" }))}>
+                                  <FileText className="mr-2 h-4 w-4" />
+                                  Aparência
+                                </CommandItem>
+                                <CommandItem value="Odor" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Odor", detalhe: "" }))}>
+                                  <FileText className="mr-2 h-4 w-4" />
+                                  Odor
+                                </CommandItem>
+                                <CommandItem value="Integridade" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Integridade", detalhe: "" }))}>
+                                  <FileText className="mr-2 h-4 w-4" />
+                                  Integridade
+                                </CommandItem>
+                                <CommandItem value="Outro" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Outro", detalhe: "" }))}>
+                                  <FileText className="mr-2 h-4 w-4" />
+                                  Outro
+                                </CommandItem>
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    )}
+
+                    {/* Detalhe */}
+                    {formData.motivoPrincipal && formData.subcategoria && !formData.detalhe && (
+                      <div className="space-y-2">
+                        <Label className="font-medium">Detalhe</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full justify-between h-11"
+                            >
+                              <div className="flex items-center gap-2">
+                                <Info className="h-4 w-4 text-teal-600" />
+                                <span>Selecione o detalhe</span>
+                              </div>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                            <Command>
+                              <CommandInput placeholder="Buscar detalhe..." />
+                              <CommandEmpty>Nenhum detalhe encontrado.</CommandEmpty>
+                              <CommandGroup>
+                                <CommandItem value="Risco" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Risco" }))}>
+                                  <Info className="mr-2 h-4 w-4" />
+                                  Risco
+                                </CommandItem>
+                                <CommandItem value="Quebra" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Quebra" }))}>
+                                  <Info className="mr-2 h-4 w-4" />
+                                  Quebra
+                                </CommandItem>
+                                <CommandItem value="Falta" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Falta" }))}>
+                                  <Info className="mr-2 h-4 w-4" />
+                                  Falta
+                                </CommandItem>
+                                <CommandItem value="Outro" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Outro" }))}>
+                                  <Info className="mr-2 h-4 w-4" />
+                                  Outro
+                                </CommandItem>
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    )}
+
+                    {/* Cards-resumo dos passos escolhidos */}
+                    {(formData.motivoPrincipal || formData.subcategoria || formData.detalhe) && (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {formData.motivoPrincipal && (
+                          <Card className="border-teal-100 bg-teal-50/50">
+                            <CardContent className="p-3">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
+                                    <ClipboardList className="h-4 w-4 text-teal-600" />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <p className="text-xs text-gray-500 truncate">Motivo Principal</p>
+                                    <h4 className="font-medium text-teal-900 truncate">{formData.motivoPrincipal}</h4>
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                  onClick={() => setFormData(prev => ({ ...prev, motivoPrincipal: "", subcategoria: "", detalhe: "" }))}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
+                        {formData.subcategoria && (
+                          <Card className="border-teal-100 bg-teal-50/50">
+                            <CardContent className="p-3">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
+                                    <FileText className="h-4 w-4 text-teal-600" />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <p className="text-xs text-gray-500 truncate">Subcategoria</p>
+                                    <h4 className="font-medium text-teal-900 truncate">{formData.subcategoria}</h4>
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                  onClick={() => setFormData(prev => ({ ...prev, subcategoria: "", detalhe: "" }))}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
+                        {formData.detalhe && (
+                          <Card className="border-teal-100 bg-teal-50/50">
+                            <CardContent className="p-3">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
+                                    <Info className="h-4 w-4 text-teal-600" />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <p className="text-xs text-gray-500 truncate">Detalhe</p>
+                                    <h4 className="font-medium text-teal-900 truncate">{formData.detalhe}</h4>
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                  onClick={() => setFormData(prev => ({ ...prev, detalhe: "" }))}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {/* Fim dos selects */}
+                  <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                      <div className="space-y-2">
                         <div className="flex items-center gap-2">
                           <Label htmlFor="quantidadeComprada" className="text-base font-medium">Quantidade Comprada</Label>
                           <TooltipProvider>
@@ -1373,6 +1636,8 @@ export default function NovaQueixaTecnicaPage() {
                               {protocoloVinculado.farmacovigilancia.map(fv => {
                                 const isSelected = formData.numeroFarmacovigilancia === fv.id;
                                 const isLinked = farmacoVinculada === fv.id;
+                                // Se houver um card vinculado, só mostra ele
+                                if (farmacoVinculada && !isLinked) return null;
                                 return (
                                   <CardFarmacovigilancia
                                     key={fv.id}
@@ -1403,7 +1668,7 @@ export default function NovaQueixaTecnicaPage() {
                         )}
                       </div>
                     )}
-                  </div>
+              </div>
                 </CardContent>
               </Card>
 
