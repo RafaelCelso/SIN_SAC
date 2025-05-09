@@ -17,9 +17,10 @@ import { DatePicker } from "@/components/date-picker"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill, Save, Pencil, Info } from "lucide-react"
+import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill, Save, Pencil, Info, MoreVertical, MessageSquare } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import dynamic from "next/dynamic"
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
 import 'react-quill/dist/quill.snow.css'
@@ -248,6 +249,7 @@ export default function NovaQueixaTecnicaPage() {
   const [loading, setLoading] = useState(true)
   const [clienteSearchQuery, setClienteSearchQuery] = useState("")
   const [showResults, setShowResults] = useState(false)
+  const [status, setStatus] = useState<"Aberto" | "Revisão" | "Rejeitado" | "Qualidade" | "Retornado" | "Enviado para fábrica" | "Concluído">("Aberto")
   const [formData, setFormData] = useState({
     produto: "",
     sku: "",
@@ -309,6 +311,8 @@ export default function NovaQueixaTecnicaPage() {
   const [arquivos, setArquivos] = useState<ArquivoAnexo[]>([])
   // Adicione um novo estado para controlar a farmacovigilância vinculada
   const [farmacoVinculada, setFarmacoVinculada] = useState<string | null>(null)
+  const [comentarios, setComentarios] = useState<Record<string, string>>({})
+  const [comentarioGeral, setComentarioGeral] = useState("")
 
   // Filtrar clientes com base na busca
   const filteredClientes = CLIENTES_MOCK.filter(
@@ -384,17 +388,15 @@ export default function NovaQueixaTecnicaPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Atualiza o status para "Revisão" ao enviar
+    setStatus("Revisão")
+
     // Simulação de envio do formulário
     toast({
-      title: "Queixa técnica registrada",
-      description: `O protocolo ${protocolo} foi registrado com sucesso.`,
+      title: "Queixa técnica enviada para revisão",
+      description: "O formulário foi enviado e está aguardando revisão.",
       duration: 5000,
     })
-
-    // Redirecionar para a página de listagem de queixas
-    setTimeout(() => {
-      router.push("/atendimentos/queixas")
-    }, 1500)
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -475,6 +477,142 @@ export default function NovaQueixaTecnicaPage() {
     }));
   };
 
+  // Função para renderizar a tag de status com a cor correta
+  const renderStatusBadge = () => {
+    const statusConfig = {
+      "Aberto": {
+        bg: "bg-gray-50",
+        text: "text-gray-700",
+        border: "border-gray-200"
+      },
+      "Revisão": {
+        bg: "bg-blue-50",
+        text: "text-blue-700",
+        border: "border-blue-200"
+      },
+      "Rejeitado": {
+        bg: "bg-red-50",
+        text: "text-red-700",
+        border: "border-red-200"
+      },
+      "Qualidade": {
+        bg: "bg-purple-50",
+        text: "text-purple-700",
+        border: "border-purple-200"
+      },
+      "Retornado": {
+        bg: "bg-amber-50",
+        text: "text-amber-700",
+        border: "border-amber-200"
+      },
+      "Enviado para fábrica": {
+        bg: "bg-indigo-50",
+        text: "text-indigo-700",
+        border: "border-indigo-200"
+      },
+      "Concluído": {
+        bg: "bg-green-50",
+        text: "text-green-700",
+        border: "border-green-200"
+      }
+    }
+
+    const config = statusConfig[status]
+
+    return (
+      <Badge className={`${config.bg} ${config.text} ${config.border} text-sm px-3 py-1 font-medium`}>
+        {status}
+      </Badge>
+    )
+  }
+
+  // Função para atualizar o status
+  const updateStatus = (newStatus: typeof status) => {
+    setStatus(newStatus)
+    toast({
+      title: "Status atualizado",
+      description: `Status alterado para "${newStatus}"`,
+      duration: 3000,
+    })
+  }
+
+  // Função para verificar se uma transição de status é permitida
+  const canTransitionTo = (targetStatus: typeof status) => {
+    const allowedTransitions: Record<typeof status, typeof status[]> = {
+      "Aberto": ["Revisão"],
+      "Revisão": ["Rejeitado", "Qualidade"],
+      "Rejeitado": ["Revisão"],
+      "Qualidade": ["Retornado", "Enviado para fábrica"],
+      "Retornado": ["Qualidade"],
+      "Enviado para fábrica": ["Concluído"],
+      "Concluído": []
+    }
+    return allowedTransitions[status].includes(targetStatus)
+  }
+
+  // Função para renderizar o menu de ações de status
+  const renderStatusActions = () => {
+    const allStatuses: typeof status[] = ["Aberto", "Revisão", "Rejeitado", "Qualidade", "Retornado", "Enviado para fábrica", "Concluído"]
+    
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {allStatuses.map((targetStatus) => (
+            <DropdownMenuItem
+              key={targetStatus}
+              disabled={!canTransitionTo(targetStatus)}
+              onClick={() => updateStatus(targetStatus)}
+              className={!canTransitionTo(targetStatus) ? "opacity-50 cursor-not-allowed" : ""}
+            >
+              {targetStatus}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
+  // Função para renderizar o ícone de comentário
+  const renderCommentIcon = (fieldId: string) => {
+    if (status !== "Revisão") return null;
+    
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              onClick={() => {
+                const currentComment = comentarios[fieldId] || "";
+                const newComment = prompt("Adicione um comentário:", currentComment);
+                if (newComment !== null) {
+                  setComentarios(prev => ({
+                    ...prev,
+                    [fieldId]: newComment
+                  }));
+                }
+              }}
+            >
+              <MessageSquare className="h-4 w-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Adicionar comentário</p>
+            {comentarios[fieldId] && (
+              <p className="text-xs mt-1 text-gray-500">{comentarios[fieldId]}</p>
+            )}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -488,6 +626,17 @@ export default function NovaQueixaTecnicaPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6 p-4">
+        {/* Alerta de Revisão */}
+        {status === "Revisão" && (
+          <Alert className="bg-blue-50 border-blue-200">
+            <AlertTriangle className="h-4 w-4 text-blue-600" />
+            <AlertTitle>Modo de Revisão</AlertTitle>
+            <AlertDescription>
+              Este formulário está em modo de revisão. Use os ícones de mensagem para adicionar comentários em cada campo.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -505,8 +654,12 @@ export default function NovaQueixaTecnicaPage() {
           )}
           </div>
           {/* Número da queixa técnica */}
-          <div className="mt-6">
+          <div className="mt-6 flex items-center gap-3">
             <Badge className="bg-[#26B99D] text-white text-base px-4 py-1 rounded font-bold shadow">QT-2024-0001</Badge>
+            <div className="flex items-center gap-2">
+              {renderStatusBadge()}
+              {renderStatusActions()}
+            </div>
           </div>
         </div>
 
@@ -807,6 +960,7 @@ export default function NovaQueixaTecnicaPage() {
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
+                      {renderCommentIcon("produto")}
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -1173,9 +1327,9 @@ export default function NovaQueixaTecnicaPage() {
                     )}
                   </div>
                   {/* Fim dos selects */}
-                  <div className="space-y-4">
+                <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
+                  <div className="space-y-2">
                         <div className="flex items-center gap-2">
                           <Label htmlFor="quantidadeComprada" className="text-base font-medium">Quantidade Comprada</Label>
                           <TooltipProvider>
@@ -1423,14 +1577,14 @@ export default function NovaQueixaTecnicaPage() {
                             onValueChange={(value) => handleSelectChange("utilizouProduto", value)}
                             className="flex gap-4 mt-4"
                           >
-                            <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2">
                               <RadioGroupItem value="sim" id="utilizouProduto-sim" />
                               <Label htmlFor="utilizouProduto-sim">Sim</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
+                      </div>
+                      <div className="flex items-center space-x-2">
                               <RadioGroupItem value="nao" id="utilizouProduto-nao" />
                               <Label htmlFor="utilizouProduto-nao">Não</Label>
-                            </div>
+                      </div>
                           </RadioGroup>
                           {formData.utilizouProduto === "sim" && (
                             <>
@@ -1463,16 +1617,16 @@ export default function NovaQueixaTecnicaPage() {
                                     onValueChange={(value) => handleSelectChange("apresentouSintoma", value)}
                                     className="flex gap-4 mt-4"
                                   >
-                                    <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2">
                                       <RadioGroupItem value="sim" id="apresentouSintoma-sim" />
                                       <Label htmlFor="apresentouSintoma-sim">Sim</Label>
-                  </div>
-                                    <div className="flex items-center space-x-2">
+                      </div>
+                      <div className="flex items-center space-x-2">
                                       <RadioGroupItem value="nao" id="apresentouSintoma-nao" />
                                       <Label htmlFor="apresentouSintoma-nao">Não</Label>
-                </div>
-                                  </RadioGroup>
-              </div>
+                      </div>
+                    </RadioGroup>
+                  </div>
                               </div>
                             </>
                           )}
@@ -1504,7 +1658,7 @@ export default function NovaQueixaTecnicaPage() {
                       className="mt-0"
                       style={{ minHeight: 250, height: 250, width: '100%' }}
                     />
-                </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -1543,7 +1697,7 @@ export default function NovaQueixaTecnicaPage() {
                             />
                           </label>
                 </div>
-                        <div className="space-y-2">
+                  <div className="space-y-2">
                           <div className="text-sm text-gray-500">
                             Arquivos anexados:
               </div>
@@ -1653,7 +1807,7 @@ export default function NovaQueixaTecnicaPage() {
                                   />
                                 );
                               })}
-                            </div>
+                    </div>
                             {/* Botão Vincular */}
                             {formData.numeroFarmacovigilancia && !farmacoVinculada && (
                               <button
@@ -1681,7 +1835,7 @@ export default function NovaQueixaTecnicaPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6 p-6">
-              <div className="space-y-2">
+                  <div className="space-y-2">
                     <Label className="text-base font-medium">Paciente aceita envio da amostra?</Label>
                     <RadioGroup
                       value={formData.envioAmostra || ''}
@@ -1691,13 +1845,13 @@ export default function NovaQueixaTecnicaPage() {
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="sim" id="envioAmostra-sim" />
                         <Label htmlFor="envioAmostra-sim">Sim</Label>
-                      </div>
+                  </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="nao" id="envioAmostra-nao" />
                         <Label htmlFor="envioAmostra-nao">Não</Label>
-                      </div>
+                </div>
                     </RadioGroup>
-                  </div>
+              </div>
                   {formData.envioAmostra === "sim" && (
                     <div className="mt-6 space-y-8 border-t pt-6">
                       <h4 className="text-lg font-semibold mb-4">Informações para Ressarcimento</h4>
@@ -1790,9 +1944,9 @@ export default function NovaQueixaTecnicaPage() {
                                 onClick={handlePreencherEnderecoCliente}
                               >
                                 Usar dados do cliente selecionado
-                              </Button>
+                    </Button>
                             )}
-                          </div>
+                  </div>
                         </CardHeader>
                         <CardContent className="space-y-6 px-0 pt-0">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1836,15 +1990,35 @@ export default function NovaQueixaTecnicaPage() {
                               </SelectContent>
                             </Select>
                             <Input name="reembolsoCep" placeholder="CEP" value={formData.reembolsoCep || ''} onChange={handleInputChange} />
-                          </div>
+                </div>
                         </CardContent>
                       </Card>
-                    </div>
+              </div>
                   )}
                 </CardContent>
               </Card>
 
               <Separator />
+
+              {/* Seção de Comentários Gerais */}
+              {status === "Revisão" && (
+                <Card className="border-blue-100 bg-blue-50/50">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="h-5 w-5 text-blue-600" />
+                      <CardTitle>Comentários Gerais</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                <Textarea
+                      placeholder="Adicione seus comentários gerais sobre a queixa técnica..."
+                      value={comentarioGeral}
+                      onChange={(e) => setComentarioGeral(e.target.value)}
+                      className="min-h-[100px]"
+                    />
+                  </CardContent>
+                </Card>
+              )}
             </CardContent>
             <CardFooter className="flex justify-between">
               <Button variant="destructive" type="button" onClick={() => router.push("/atendimentos/queixas")}>
@@ -1858,7 +2032,11 @@ export default function NovaQueixaTecnicaPage() {
                   <Save className="mr-2 h-4 w-4 text-[#26B99D]" />
                   Salvar
                 </Button>
-                <Button type="submit" className="bg-teal-600 hover:bg-teal-700 flex items-center">
+                <Button 
+                  type="submit" 
+                  className="bg-teal-600 hover:bg-teal-700 flex items-center"
+                  disabled={status === "Revisão"}
+                >
                 <CheckCircle className="mr-2 h-4 w-4" />
                   Enviar Queixa Técnica
               </Button>
