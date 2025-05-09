@@ -71,6 +71,7 @@ type Protocolo = {
   motivo: string;
   subcategoria?: string;
   detalhe?: string;
+  farmacovigilancia?: { id: string; gravidade: string; status: string }[];
 }
 const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
   "1": [
@@ -86,6 +87,10 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       motivo: "Dúvida sobre uso",
       subcategoria: "Medicamento",
       detalhe: "Antagonista",
+      farmacovigilancia: [
+        { id: "FV-2023-0001", gravidade: "Leve", status: "Em análise" },
+        { id: "FV-2023-0002", gravidade: "Moderada", status: "Pendente" }
+      ]
     },
     {
       id: "P-1002",
@@ -99,6 +104,7 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       motivo: "Reclamação de funcionamento",
       subcategoria: "Dispositivo",
       detalhe: "Implante",
+      farmacovigilancia: []
     },
   ],
   "2": [
@@ -114,6 +120,7 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       motivo: "Solicitação de troca",
       subcategoria: "Medicamento",
       detalhe: "Antagonista",
+      farmacovigilancia: []
     },
   ],
   "3": [
@@ -129,6 +136,7 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       motivo: "Dúvida sobre validade",
       subcategoria: "Medicamento",
       detalhe: "Antagonista",
+      farmacovigilancia: []
     },
     {
       id: "P-3002",
@@ -142,6 +150,7 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       motivo: "Reclamação de embalagem",
       subcategoria: "Dispositivo",
       detalhe: "Implante",
+      farmacovigilancia: []
     },
     {
       id: "P-3003",
@@ -155,6 +164,7 @@ const PROTOCOLOS_MOCK: Record<string, Protocolo[]> = {
       motivo: "Solicitação de devolução",
       subcategoria: "Medicamento",
       detalhe: "Antagonista",
+      farmacovigilancia: []
     },
   ],
 };
@@ -165,6 +175,52 @@ type ArquivoAnexo = {
   tamanho: number;
   tipo: string;
   arquivo: File;
+}
+
+// Função utilitária para renderizar o card de farmacovigilância igual ao card de protocolo, incluindo o produto
+function CardFarmacovigilancia({ fv, produto, isSelected, isLinked, onSelect, onUnlink }: {
+  fv: { id: string; gravidade: string; status: string };
+  produto: string;
+  isSelected: boolean;
+  isLinked: boolean;
+  onSelect: () => void;
+  onUnlink: () => void;
+}) {
+  return (
+    <div
+      className={`relative px-4 py-2 rounded-md border flex flex-col items-start min-w-[200px] shadow-sm transition-colors min-h-[120px]
+        ${isLinked ? 'border-[#15937E] bg-[#e6faf7] ring-2 ring-[#15937E]' : isSelected ? 'border-[#26B99D] bg-[#e6faf7]' : 'border-gray-200 bg-white hover:border-[#26B99D]'}
+      `}
+      style={{ boxShadow: '0 1px 2px 0 rgb(38 185 157 / 0.08), 0 1.5px 6px 0 rgb(38 185 157 / 0.08)' }}
+    >
+      {isLinked && (
+        <button
+          type="button"
+          className="absolute top-2 right-2 p-1 rounded hover:bg-red-100 text-red-700"
+          onClick={onUnlink}
+          aria-label="Desvincular farmacovigilância"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      )}
+      <button
+        type="button"
+        className="w-full text-left"
+        disabled={isLinked}
+        onClick={onSelect}
+      >
+        <span className="font-bold text-base text-[#26B99D] tracking-wide">{fv.id}</span>
+        <span className="text-sm text-gray-900 flex items-center gap-2 mb-3 mt-4">
+          <Pill className="h-4 w-4 text-[#26B99D]" />
+          {produto}
+        </span>
+        <div className="flex flex-wrap gap-2 items-center mt-auto">
+          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">Gravidade: {fv.gravidade}</span>
+          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">Status: {fv.status}</span>
+        </div>
+      </button>
+    </div>
+  );
 }
 
 export default function NovaQueixaTecnicaPage() {
@@ -238,6 +294,8 @@ export default function NovaQueixaTecnicaPage() {
   const [protocoloSelecionado, setProtocoloSelecionado] = useState<Protocolo | null>(null)
   const [protocoloVinculado, setProtocoloVinculado] = useState<Protocolo | null>(null)
   const [arquivos, setArquivos] = useState<ArquivoAnexo[]>([])
+  // Adicione um novo estado para controlar a farmacovigilância vinculada
+  const [farmacoVinculada, setFarmacoVinculada] = useState<string | null>(null)
 
   // Filtrar clientes com base na busca
   const filteredClientes = CLIENTES_MOCK.filter(
@@ -1304,16 +1362,48 @@ export default function NovaQueixaTecnicaPage() {
                       </div>
                     </RadioGroup>
                     {formData.farmacovigilancia === "sim" && (
-                      <Input
-                        id="numeroFarmacovigilancia"
-                        name="numeroFarmacovigilancia"
-                        placeholder="Número da farmacovigilância"
-                        value={formData.numeroFarmacovigilancia}
-                  onChange={handleInputChange}
-                        className="mt-2"
-                />
+                      <div className="space-y-2 mt-2">
+                        {(!protocoloVinculado || !protocoloVinculado.farmacovigilancia || protocoloVinculado.farmacovigilancia.length === 0) ? (
+                          <div className="bg-amber-50 border border-amber-200 text-amber-700 rounded px-3 py-2 text-sm mb-2">
+                            Nenhuma farmacovigilância vinculada ao protocolo.
+                          </div>
+                        ) : (
+                          <div>
+                            <div className="flex flex-wrap gap-3">
+                              {protocoloVinculado.farmacovigilancia.map(fv => {
+                                const isSelected = formData.numeroFarmacovigilancia === fv.id;
+                                const isLinked = farmacoVinculada === fv.id;
+                                return (
+                                  <CardFarmacovigilancia
+                                    key={fv.id}
+                                    fv={fv}
+                                    produto={protocoloVinculado.produto}
+                                    isSelected={isSelected}
+                                    isLinked={isLinked}
+                                    onSelect={() => setFormData(prev => ({ ...prev, numeroFarmacovigilancia: fv.id }))}
+                                    onUnlink={() => {
+                                      setFarmacoVinculada(null);
+                                      setFormData(prev => ({ ...prev, numeroFarmacovigilancia: '' }));
+                                    }}
+                                  />
+                                );
+                              })}
+                            </div>
+                            {/* Botão Vincular */}
+                            {formData.numeroFarmacovigilancia && !farmacoVinculada && (
+                              <button
+                                type="button"
+                                className="mt-4 px-4 py-2 rounded bg-[#26B99D] text-white text-sm font-semibold hover:bg-[#15937E] transition"
+                                onClick={() => setFarmacoVinculada(formData.numeroFarmacovigilancia)}
+                              >
+                                Vincular
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
-              </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -1326,7 +1416,7 @@ export default function NovaQueixaTecnicaPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6 p-6">
-                  <div className="space-y-2">
+              <div className="space-y-2">
                     <Label className="text-base font-medium">Paciente aceita envio da amostra?</Label>
                     <RadioGroup
                       value={formData.envioAmostra || ''}
@@ -1418,7 +1508,7 @@ export default function NovaQueixaTecnicaPage() {
                                   <Input name="financeiroConta" placeholder="Conta" value={formData.financeiroConta || ''} onChange={handleInputChange} />
                                 </div>
                               </div>
-                            </div>
+              </div>
                           </CardContent>
                         </Card>
                       )}
