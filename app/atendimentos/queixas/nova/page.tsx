@@ -36,7 +36,7 @@ const CLIENTES_MOCK = [
     telefone: "(11) 98765-4321",
     email: "maria.silva@email.com",
     endereco: "Av. Paulista, 1000 - São Paulo/SP",
-    tipo: "Pessoa Física",
+    tipo: "Médico",
     dataCadastro: "10/01/2023",
   },
   {
@@ -46,7 +46,7 @@ const CLIENTES_MOCK = [
     telefone: "(11) 91234-5678",
     email: "joao.santos@email.com",
     endereco: "Rua Augusta, 500 - São Paulo/SP",
-    tipo: "Pessoa Física",
+    tipo: "Médico",
     dataCadastro: "15/02/2023",
   },
   {
@@ -311,8 +311,19 @@ export default function NovaQueixaTecnicaPage() {
   const [arquivos, setArquivos] = useState<ArquivoAnexo[]>([])
   // Adicione um novo estado para controlar a farmacovigilância vinculada
   const [farmacoVinculada, setFarmacoVinculada] = useState<string | null>(null)
-  const [comentarios, setComentarios] = useState<Record<string, string>>({})
+  const [comentarios, setComentarios] = useState<Record<string, { id: string; texto: string; usuario: string; data: string }[]>>({})
   const [comentarioGeral, setComentarioGeral] = useState("")
+  // 1. Adicionar estado para destaque do campo Produto
+  const [camposAtencao, setCamposAtencao] = useState<{ [key: string]: boolean }>({})
+  const [novoComentario, setNovoComentario] = useState<{ [key: string]: string }>({})
+  const [editandoComentario, setEditandoComentario] = useState<{ [key: string]: string }>({})
+  // Adicione este estado junto aos outros useState
+  const [textoEdicaoComentario, setTextoEdicaoComentario] = useState<{ [key: string]: string }>({})
+  // Adicione o estado para comentários gerais registrados
+  const [comentariosGerais, setComentariosGerais] = useState<{id: string, texto: string, usuario: string, data: string}[]>([]);
+  // Adicione o estado para controlar edição de comentário geral
+  const [editandoComentarioGeral, setEditandoComentarioGeral] = useState<string | null>(null);
+  const [textoEdicaoComentarioGeral, setTextoEdicaoComentarioGeral] = useState<string>("");
 
   // Filtrar clientes com base na busca
   const filteredClientes = CLIENTES_MOCK.filter(
@@ -577,39 +588,35 @@ export default function NovaQueixaTecnicaPage() {
     )
   }
 
-  // Função para renderizar o ícone de comentário
+  // 2. Alterar renderCommentIcon para alinhar ícones centralizados
   const renderCommentIcon = (fieldId: string) => {
     if (status !== "Revisão") return null;
-    
+    const comentariosDoCampo = comentarios[fieldId] || [];
+    const isAtencao = camposAtencao[fieldId];
+    const hasComentario = comentariosDoCampo.length > 0;
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              onClick={() => {
-                const currentComment = comentarios[fieldId] || "";
-                const newComment = prompt("Adicione um comentário:", currentComment);
-                if (newComment !== null) {
-                  setComentarios(prev => ({
-                    ...prev,
-                    [fieldId]: newComment
-                  }));
-                }
-              }}
-            >
-              <MessageSquare className="h-4 w-4" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Adicionar comentário</p>
-            {comentarios[fieldId] && (
-              <p className="text-xs mt-1 text-gray-500">{comentarios[fieldId]}</p>
-            )}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className="flex items-center gap-2 justify-start mt-1 mb-1">
+        <button
+          type="button"
+          className={`flex items-center justify-center p-1 border-0 bg-transparent text-amber-500 mr-1 rounded-full transition-colors duration-150 hover:bg-amber-100 hover:text-amber-600${isAtencao ? ' bg-amber-100' : ''}`}
+          onClick={() => setCamposAtencao(prev => ({ ...prev, [fieldId]: !prev[fieldId] }))}
+          title="Destacar campo"
+        >
+          <AlertTriangle className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          className={`flex items-center justify-center rounded-full p-1 text-blue-500 hover:text-blue-600 transition-colors duration-150 border border-transparent ${hasComentario ? 'bg-blue-100' : ''} ${!hasComentario ? 'hover:bg-blue-100' : ''}`}
+          onClick={() => {
+            if (!novoComentario[fieldId]) {
+              setNovoComentario(prev => ({ ...prev, [fieldId]: "" }));
+            }
+          }}
+          title="Adicionar comentário"
+        >
+          <MessageSquare className="h-4 w-4" />
+        </button>
+      </div>
     );
   };
 
@@ -628,8 +635,8 @@ export default function NovaQueixaTecnicaPage() {
       <div className="space-y-6 p-4">
         {/* Alerta de Revisão */}
         {status === "Revisão" && (
-          <Alert className="bg-blue-50 border-blue-200">
-            <AlertTriangle className="h-4 w-4 text-blue-600" />
+          <Alert className="bg-amber-50 border-amber-200 text-gray-800">
+            <AlertTriangle className="h-4 w-4 text-amber-600" />
             <AlertTitle>Modo de Revisão</AlertTitle>
             <AlertDescription>
               Este formulário está em modo de revisão. Use os ícones de mensagem para adicionar comentários em cada campo.
@@ -942,126 +949,1211 @@ export default function NovaQueixaTecnicaPage() {
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="produto" className="flex items-center gap-2 text-base font-medium">
-                      <Pill className="h-4 w-4 text-[#26B99D]" />
-                      Produto <span className="text-red-500">*</span>
-                    </Label>
-                    <div className="relative">
-                    <Input
-                      id="produto"
-                      name="produto"
-                      placeholder="Produto"
-                      value={formData.produto}
-                      onChange={handleInputChange}
-                      required
-                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
-                        readOnly
-                    />
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
-                        <Lock className="h-4 w-4" />
-                      </div>
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="produto" className="flex items-center gap-2 text-base font-medium">
+                        <Pill className="h-4 w-4 text-[#26B99D]" />
+                        Produto <span className="text-red-500">*</span>
+                      </Label>
                       {renderCommentIcon("produto")}
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="sku" className="flex items-center gap-2 text-base font-medium">
-                      <Tag className="h-4 w-4 text-[#26B99D]" />
-                      SKU
-                    </Label>
                     <div className="relative">
-                    <Input
-                      id="sku"
-                      name="sku"
-                      placeholder="SKU"
-                      value={formData.sku}
-                      onChange={handleInputChange}
-                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
+                      <Input
+                        id="produto"
+                        name="produto"
+                        placeholder="Produto"
+                        value={formData.produto}
+                        onChange={handleInputChange}
+                        required
+                        className={`h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB] transition-all duration-200 ${camposAtencao['produto'] ? 'border-2 border-red-500 ring-2 ring-red-300 bg-red-50 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]' : ''}`}
                         readOnly
-                    />
+                      />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
+                    {/* Input de comentário alinhado */}
+                    {novoComentario['produto'] !== undefined && (
+                      <div className="w-full mt-2">
+                        <div className="relative w-full">
+                          <Input
+                            placeholder="Digite seu comentário..."
+                            value={novoComentario['produto']}
+                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['produto']: e.target.value }))}
+                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
+                            onKeyDown={e => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                if (novoComentario['produto'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['produto'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['produto']: [...(prev['produto'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['produto'];
+                                    return newState;
+                                  });
+                                }
+                              }
+                            }}
+                          />
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
+                              onClick={() => {
+                                setNovoComentario(prev => {
+                                  const newState = { ...prev };
+                                  delete newState['produto'];
+                                  return newState;
+                                });
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                              onClick={() => {
+                                if (novoComentario['produto'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['produto'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['produto']: [...(prev['produto'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['produto'];
+                                    return newState;
+                                  });
+                                }
+                              }}
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {/* Lista de comentários salvos */}
+                    {comentarios['produto'] && comentarios['produto'].length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {comentarios['produto'].map(comentario => (
+                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
+                            {editandoComentario['produto'] === comentario.id ? (
+                              <>
+                                <div className="flex-1 mr-2">
+                                  <Input
+                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
+                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
+                                    className="h-10 text-base w-full"
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['produto']: prev['produto'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['produto']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }
+                                    }}
+                                  />
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1 items-center">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['produto']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['produto']: prev['produto'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['produto']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <CheckCircle className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => ({ ...prev, ['produto']: comentario.id }));
+                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
+                                      }}
+                                    >
+                                      <Pencil className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['produto']: prev['produto'].filter(c => c.id !== comentario.id)
+                                        }));
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lote" className="flex items-center gap-2 text-base font-medium">
-                      <Hash className="h-4 w-4 text-[#26B99D]" />
-                      Lote
-                    </Label>
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="sku" className="flex items-center gap-2 text-base font-medium">
+                        <Tag className="h-4 w-4 text-[#26B99D]" />
+                        SKU
+                      </Label>
+                      {renderCommentIcon("sku")}
+                    </div>
                     <div className="relative">
-                    <Input
-                      id="lote"
-                      name="lote"
-                      placeholder="Lote"
-                      value={formData.lote}
-                      onChange={handleInputChange}
-                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
+                      <Input
+                        id="sku"
+                        name="sku"
+                        placeholder="SKU"
+                        value={formData.sku}
+                        onChange={handleInputChange}
+                        className={`h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB] transition-all duration-200 ${camposAtencao['sku'] ? 'border-2 border-red-500 ring-2 ring-red-300 bg-red-50 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]' : ''}`}
                         readOnly
-                    />
+                      />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
+                    {/* Input de comentário SKU */}
+                    {novoComentario['sku'] !== undefined && (
+                      <div className="w-full mt-2">
+                        <div className="relative w-full">
+                          <Input
+                            placeholder="Digite seu comentário..."
+                            value={novoComentario['sku']}
+                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['sku']: e.target.value }))}
+                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
+                            onKeyDown={e => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                if (novoComentario['sku'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['sku'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['sku']: [...(prev['sku'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['sku'];
+                                    return newState;
+                                  });
+                                }
+                              }
+                            }}
+                          />
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
+                              onClick={() => {
+                                setNovoComentario(prev => {
+                                  const newState = { ...prev };
+                                  delete newState['sku'];
+                                  return newState;
+                                });
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                              onClick={() => {
+                                if (novoComentario['sku'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['sku'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['sku']: [...(prev['sku'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['sku'];
+                                    return newState;
+                                  });
+                                }
+                              }}
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {/* Lista de comentários SKU */}
+                    {comentarios['sku'] && comentarios['sku'].length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {comentarios['sku'].map(comentario => (
+                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
+                            {editandoComentario['sku'] === comentario.id ? (
+                              <>
+                                <div className="flex-1 mr-2">
+                                  <Input
+                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
+                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
+                                    className="h-10 text-base w-full"
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['sku']: prev['sku'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['sku']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }
+                                    }}
+                                  />
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1 items-center">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['sku']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['sku']: prev['sku'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['sku']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <CheckCircle className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => ({ ...prev, ['sku']: comentario.id }));
+                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
+                                      }}
+                                    >
+                                      <Pencil className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['sku']: prev['sku'].filter(c => c.id !== comentario.id)
+                                        }));
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="ean" className="flex items-center gap-2 text-base font-medium">
-                      <Barcode className="h-4 w-4 text-[#26B99D]" />
-                      EAN
-                    </Label>
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="lote" className="flex items-center gap-2 text-base font-medium">
+                        <Hash className="h-4 w-4 text-[#26B99D]" />
+                        Lote
+                      </Label>
+                      {renderCommentIcon("lote")}
+                    </div>
                     <div className="relative">
-                    <Input
-                      id="ean"
-                      name="ean"
-                      placeholder="EAN"
-                      value={formData.ean}
-                      onChange={handleInputChange}
-                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
+                      <Input
+                        id="lote"
+                        name="lote"
+                        placeholder="Lote"
+                        value={formData.lote}
+                        onChange={handleInputChange}
+                        className={`h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB] transition-all duration-200 ${camposAtencao['lote'] ? 'border-2 border-red-500 ring-2 ring-red-300 bg-red-50 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]' : ''}`}
                         readOnly
-                    />
+                      />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
+                    {/* Input de comentário Lote */}
+                    {novoComentario['lote'] !== undefined && (
+                      <div className="w-full mt-2">
+                        <div className="relative w-full">
+                          <Input
+                            placeholder="Digite seu comentário..."
+                            value={novoComentario['lote']}
+                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['lote']: e.target.value }))}
+                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
+                            onKeyDown={e => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                if (novoComentario['lote'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['lote'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['lote']: [...(prev['lote'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['lote'];
+                                    return newState;
+                                  });
+                                }
+                              }
+                            }}
+                          />
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
+                              onClick={() => {
+                                setNovoComentario(prev => {
+                                  const newState = { ...prev };
+                                  delete newState['lote'];
+                                  return newState;
+                                });
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                              onClick={() => {
+                                if (novoComentario['lote'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['lote'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['lote']: [...(prev['lote'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['lote'];
+                                    return newState;
+                                  });
+                                }
+                              }}
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {/* Lista de comentários Lote */}
+                    {comentarios['lote'] && comentarios['lote'].length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {comentarios['lote'].map(comentario => (
+                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
+                            {editandoComentario['lote'] === comentario.id ? (
+                              <>
+                                <div className="flex-1 mr-2">
+                                  <Input
+                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
+                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
+                                    className="h-10 text-base w-full"
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['lote']: prev['lote'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['lote']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }
+                                    }}
+                                  />
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1 items-center">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['lote']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['lote']: prev['lote'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['lote']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <CheckCircle className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => ({ ...prev, ['lote']: comentario.id }));
+                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
+                                      }}
+                                    >
+                                      <Pencil className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['lote']: prev['lote'].filter(c => c.id !== comentario.id)
+                                        }));
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="dataFabricacao" className="flex items-center gap-2 text-base font-medium">
-                      <Calendar className="h-4 w-4 text-[#26B99D]" />
-                      Data de Fabricação
-                    </Label>
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="ean" className="flex items-center gap-2 text-base font-medium">
+                        <Barcode className="h-4 w-4 text-[#26B99D]" />
+                        EAN
+                      </Label>
+                      {renderCommentIcon("ean")}
+                    </div>
                     <div className="relative">
-                    <Input
-                      id="dataFabricacao"
-                      name="dataFabricacao"
-                      type="date"
-                      value={formData.dataFabricacao}
-                      onChange={handleInputChange}
-                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
+                      <Input
+                        id="ean"
+                        name="ean"
+                        placeholder="EAN"
+                        value={formData.ean}
+                        onChange={handleInputChange}
+                        className={`h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB] transition-all duration-200 ${camposAtencao['ean'] ? 'border-2 border-red-500 ring-2 ring-red-300 bg-red-50 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]' : ''}`}
                         readOnly
-                    />
+                      />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
+                    {/* Input de comentário EAN */}
+                    {novoComentario['ean'] !== undefined && (
+                      <div className="w-full mt-2">
+                        <div className="relative w-full">
+                          <Input
+                            placeholder="Digite seu comentário..."
+                            value={novoComentario['ean']}
+                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['ean']: e.target.value }))}
+                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
+                            onKeyDown={e => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                if (novoComentario['ean'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['ean'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['ean']: [...(prev['ean'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['ean'];
+                                    return newState;
+                                  });
+                                }
+                              }
+                            }}
+                          />
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
+                              onClick={() => {
+                                setNovoComentario(prev => {
+                                  const newState = { ...prev };
+                                  delete newState['ean'];
+                                  return newState;
+                                });
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                              onClick={() => {
+                                if (novoComentario['ean'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['ean'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['ean']: [...(prev['ean'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['ean'];
+                                    return newState;
+                                  });
+                                }
+                              }}
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {/* Lista de comentários EAN */}
+                    {comentarios['ean'] && comentarios['ean'].length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {comentarios['ean'].map(comentario => (
+                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
+                            {editandoComentario['ean'] === comentario.id ? (
+                              <>
+                                <div className="flex-1 mr-2">
+                                  <Input
+                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
+                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
+                                    className="h-10 text-base w-full"
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['ean']: prev['ean'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['ean']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }
+                                    }}
+                                  />
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1 items-center">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['ean']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['ean']: prev['ean'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['ean']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <CheckCircle className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => ({ ...prev, ['ean']: comentario.id }));
+                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
+                                      }}
+                                    >
+                                      <Pencil className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['ean']: prev['ean'].filter(c => c.id !== comentario.id)
+                                        }));
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="dataValidade" className="flex items-center gap-2 text-base font-medium">
-                      <CalendarCheck className="h-4 w-4 text-[#26B99D]" />
-                      Data de Validade
-                    </Label>
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="dataFabricacao" className="flex items-center gap-2 text-base font-medium">
+                        <Calendar className="h-4 w-4 text-[#26B99D]" />
+                        Data de Fabricação
+                      </Label>
+                      {renderCommentIcon("dataFabricacao")}
+                    </div>
                     <div className="relative">
-                    <Input
-                      id="dataValidade"
-                      name="dataValidade"
-                      type="date"
-                      value={formData.dataValidade}
-                      onChange={handleInputChange}
-                        className="h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB]"
+                      <Input
+                        id="dataFabricacao"
+                        name="dataFabricacao"
+                        type="date"
+                        value={formData.dataFabricacao}
+                        onChange={handleInputChange}
+                        className={`h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB] transition-all duration-200 ${camposAtencao['dataFabricacao'] ? 'border-2 border-red-500 ring-2 ring-red-300 bg-red-50 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]' : ''}`}
                         readOnly
-                    />
+                      />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
+                    {/* Input de comentário Data de Fabricação */}
+                    {novoComentario['dataFabricacao'] !== undefined && (
+                      <div className="w-full mt-2">
+                        <div className="relative w-full">
+                          <Input
+                            placeholder="Digite seu comentário..."
+                            value={novoComentario['dataFabricacao']}
+                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['dataFabricacao']: e.target.value }))}
+                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
+                            onKeyDown={e => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                if (novoComentario['dataFabricacao'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['dataFabricacao'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['dataFabricacao']: [...(prev['dataFabricacao'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['dataFabricacao'];
+                                    return newState;
+                                  });
+                                }
+                              }
+                            }}
+                          />
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
+                              onClick={() => {
+                                setNovoComentario(prev => {
+                                  const newState = { ...prev };
+                                  delete newState['dataFabricacao'];
+                                  return newState;
+                                });
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                              onClick={() => {
+                                if (novoComentario['dataFabricacao'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['dataFabricacao'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['dataFabricacao']: [...(prev['dataFabricacao'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['dataFabricacao'];
+                                    return newState;
+                                  });
+                                }
+                              }}
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {/* Lista de comentários Data de Fabricação */}
+                    {comentarios['dataFabricacao'] && comentarios['dataFabricacao'].length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {comentarios['dataFabricacao'].map(comentario => (
+                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
+                            {editandoComentario['dataFabricacao'] === comentario.id ? (
+                              <>
+                                <div className="flex-1 mr-2">
+                                  <Input
+                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
+                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
+                                    className="h-10 text-base w-full"
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['dataFabricacao']: prev['dataFabricacao'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataFabricacao']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }
+                                    }}
+                                  />
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1 items-center">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataFabricacao']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['dataFabricacao']: prev['dataFabricacao'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataFabricacao']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <CheckCircle className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => ({ ...prev, ['dataFabricacao']: comentario.id }));
+                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
+                                      }}
+                                    >
+                                      <Pencil className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['dataFabricacao']: prev['dataFabricacao'].filter(c => c.id !== comentario.id)
+                                        }));
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="dataValidade" className="flex items-center gap-2 text-base font-medium">
+                        <CalendarCheck className="h-4 w-4 text-[#26B99D]" />
+                        Data de Validade
+                      </Label>
+                      {renderCommentIcon("dataValidade")}
+                    </div>
+                    <div className="relative">
+                      <Input
+                        id="dataValidade"
+                        name="dataValidade"
+                        type="date"
+                        value={formData.dataValidade}
+                        onChange={handleInputChange}
+                        className={`h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB] transition-all duration-200 ${camposAtencao['dataValidade'] ? 'border-2 border-red-500 ring-2 ring-red-300 bg-red-50 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]' : ''}`}
+                        readOnly
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                        <Lock className="h-4 w-4" />
+                      </div>
+                    </div>
+                    {/* Input de comentário Data de Validade */}
+                    {novoComentario['dataValidade'] !== undefined && (
+                      <div className="w-full mt-2">
+                        <div className="relative w-full">
+                          <Input
+                            placeholder="Digite seu comentário..."
+                            value={novoComentario['dataValidade']}
+                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['dataValidade']: e.target.value }))}
+                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
+                            onKeyDown={e => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                if (novoComentario['dataValidade'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['dataValidade'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['dataValidade']: [...(prev['dataValidade'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['dataValidade'];
+                                    return newState;
+                                  });
+                                }
+                              }
+                            }}
+                          />
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
+                              onClick={() => {
+                                setNovoComentario(prev => {
+                                  const newState = { ...prev };
+                                  delete newState['dataValidade'];
+                                  return newState;
+                                });
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                              onClick={() => {
+                                if (novoComentario['dataValidade'].trim()) {
+                                  const novoComentarioObj = {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: novoComentario['dataValidade'],
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  };
+                                  setComentarios(prev => ({
+                                    ...prev,
+                                    ['dataValidade']: [...(prev['dataValidade'] || []), novoComentarioObj]
+                                  }));
+                                  setNovoComentario(prev => {
+                                    const newState = { ...prev };
+                                    delete newState['dataValidade'];
+                                    return newState;
+                                  });
+                                }
+                              }}
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {/* Lista de comentários Data de Validade */}
+                    {comentarios['dataValidade'] && comentarios['dataValidade'].length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {comentarios['dataValidade'].map(comentario => (
+                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
+                            {editandoComentario['dataValidade'] === comentario.id ? (
+                              <>
+                                <div className="flex-1 mr-2">
+                                  <Input
+                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
+                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
+                                    className="h-10 text-base w-full"
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['dataValidade']: prev['dataValidade'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataValidade']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }
+                                    }}
+                                  />
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1 items-center">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataValidade']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['dataValidade']: prev['dataValidade'].map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
+                                          )
+                                        }));
+                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataValidade']; return n; });
+                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
+                                      }}
+                                    >
+                                      <CheckCircle className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
+                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
+                                </div>
+                                {status !== 'Rejeitado' && (
+                                  <div className="flex gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0"
+                                      onClick={() => {
+                                        setEditandoComentario(prev => ({ ...prev, ['dataValidade']: comentario.id }));
+                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
+                                      }}
+                                    >
+                                      <Pencil className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                                      onClick={() => {
+                                        setComentarios(prev => ({
+                                          ...prev,
+                                          ['dataValidade']: prev['dataValidade'].filter(c => c.id !== comentario.id)
+                                        }));
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1845,16 +2937,43 @@ export default function NovaQueixaTecnicaPage() {
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="sim" id="envioAmostra-sim" />
                         <Label htmlFor="envioAmostra-sim">Sim</Label>
-                  </div>
+                      </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="nao" id="envioAmostra-nao" />
                         <Label htmlFor="envioAmostra-nao">Não</Label>
-                </div>
+                      </div>
                     </RadioGroup>
-              </div>
+                  </div>
                   {formData.envioAmostra === "sim" && (
                     <div className="mt-6 space-y-8 border-t pt-6">
-                      <h4 className="text-lg font-semibold mb-4">Informações para Ressarcimento</h4>
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold">Informações para Ressarcimento</h4>
+                        {cliente && (
+                          <Button
+                            type="button"
+                            className="bg-[#e6faf7] border border-[#26B99D] text-[#26B99D] hover:bg-[#d9f7f2] hover:border-[#26B99D] font-semibold shadow-sm"
+                            onClick={() => {
+                              setFormData(prev => ({
+                                ...prev,
+                                reembolsoNome: cliente.nome || '',
+                                reembolsoCpf: cliente.documento || '',
+                                reembolsoTelefone: cliente.telefone || '',
+                                reembolsoEndereco: cliente.endereco ? cliente.endereco.split(',')[0] : '',
+                                reembolsoNumero: cliente.endereco ? (cliente.endereco.split(',')[1] ? cliente.endereco.split(',')[1].split('-')[0].trim() : '') : '',
+                                reembolsoBairro: cliente.endereco ? (cliente.endereco.split('-')[1] ? cliente.endereco.split('-')[1].split('-')[0].trim() : '') : '',
+                                reembolsoCidade: cliente.endereco ? (cliente.endereco.split('-')[2] ? cliente.endereco.split('-')[2].split('/')[0].trim() : '') : '',
+                                reembolsoEstado: cliente.endereco ? (cliente.endereco.split('/')[1] ? cliente.endereco.split('/')[1].trim() : '') : '',
+                                reembolsoCep: '',
+                                reembolsoComplemento: '',
+                                financeiroNome: cliente.nome || '',
+                                financeiroCpf: cliente.documento || '',
+                              }))
+                            }}
+                          >
+                            Utilizar dados do cliente
+                          </Button>
+                        )}
+                      </div>
                       {/* Tipo de Ressarcimento */}
                       <div className="space-y-2">
                         <Label className="text-base font-medium mb-2 block">Tipo de ressarcimento</Label>
@@ -1873,15 +2992,66 @@ export default function NovaQueixaTecnicaPage() {
                           </div>
                         </RadioGroup>
                       </div>
-                      {/* Campos comuns de ressarcimento */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <Input name="reembolsoNome" placeholder="Nome" value={formData.reembolsoNome || ''} onChange={handleInputChange} />
-                        <Input name="reembolsoCpf" placeholder="CPF" value={formData.reembolsoCpf || ''} onChange={handleInputChange} />
-                        <Input name="reembolsoTelefone" placeholder="Telefone" value={formData.reembolsoTelefone || ''} onChange={handleInputChange} />
-                        <Input name="reembolsoCaixa" placeholder="Quantidade de caixas" value={formData.reembolsoCaixa || ''} onChange={handleInputChange} />
-                        <Input name="reembolsoCodigoPostal" placeholder="Código Postal" value={formData.reembolsoCodigoPostal || ''} onChange={handleInputChange} />
-                        <Input name="reembolsoValorPostal" placeholder="Valor Postal" value={formData.reembolsoValorPostal || ''} onChange={handleInputChange} />
+
+                      {/* Dados do Solicitante */}
+                      <div className="mt-8 space-y-6">
+                        <h4 className="text-lg font-semibold">Dados do Solicitante</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <Input name="reembolsoNome" placeholder="Nome" value={formData.reembolsoNome || ''} onChange={handleInputChange} />
+                          <Input name="reembolsoCpf" placeholder="CPF" value={formData.reembolsoCpf || ''} onChange={handleInputChange} />
+                          <Input name="reembolsoTelefone" placeholder="Telefone" value={formData.reembolsoTelefone || ''} onChange={handleInputChange} />
+                        </div>
+
+                        {/* Dados de Endereço */}
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h5 className="text-base font-semibold">Dados de Endereço</h5>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Input name="reembolsoEndereco" placeholder="Logradouro" value={formData.reembolsoEndereco || ''} onChange={handleInputChange} />
+                            <Input name="reembolsoNumero" placeholder="Nº" value={formData.reembolsoNumero || ''} onChange={handleInputChange} />
+                            <Input name="reembolsoComplemento" placeholder="Complemento" value={formData.reembolsoComplemento || ''} onChange={handleInputChange} />
+                            <Input name="reembolsoBairro" placeholder="Bairro" value={formData.reembolsoBairro || ''} onChange={handleInputChange} />
+                            <Input name="reembolsoCidade" placeholder="Cidade" value={formData.reembolsoCidade || ''} onChange={handleInputChange} />
+                            <Select value={formData.reembolsoEstado || ''} onValueChange={value => handleSelectChange('reembolsoEstado', value)}>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Estado" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="AC">AC</SelectItem>
+                                <SelectItem value="AL">AL</SelectItem>
+                                <SelectItem value="AP">AP</SelectItem>
+                                <SelectItem value="AM">AM</SelectItem>
+                                <SelectItem value="BA">BA</SelectItem>
+                                <SelectItem value="CE">CE</SelectItem>
+                                <SelectItem value="DF">DF</SelectItem>
+                                <SelectItem value="ES">ES</SelectItem>
+                                <SelectItem value="GO">GO</SelectItem>
+                                <SelectItem value="MA">MA</SelectItem>
+                                <SelectItem value="MT">MT</SelectItem>
+                                <SelectItem value="MS">MS</SelectItem>
+                                <SelectItem value="MG">MG</SelectItem>
+                                <SelectItem value="PA">PA</SelectItem>
+                                <SelectItem value="PB">PB</SelectItem>
+                                <SelectItem value="PR">PR</SelectItem>
+                                <SelectItem value="PE">PE</SelectItem>
+                                <SelectItem value="PI">PI</SelectItem>
+                                <SelectItem value="RJ">RJ</SelectItem>
+                                <SelectItem value="RN">RN</SelectItem>
+                                <SelectItem value="RS">RS</SelectItem>
+                                <SelectItem value="RO">RO</SelectItem>
+                                <SelectItem value="RR">RR</SelectItem>
+                                <SelectItem value="SC">SC</SelectItem>
+                                <SelectItem value="SP">SP</SelectItem>
+                                <SelectItem value="SE">SE</SelectItem>
+                                <SelectItem value="TO">TO</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Input name="reembolsoCep" placeholder="CEP" value={formData.reembolsoCep || ''} onChange={handleInputChange} />
+                          </div>
+                        </div>
                       </div>
+
                       {/* Card de Dados Bancários */}
                       {formData.tipoRessarcimento === 'financeiro' && (
                         <Card className="border-teal-100 bg-teal-50/50 shadow-sm mt-6">
@@ -1931,69 +3101,7 @@ export default function NovaQueixaTecnicaPage() {
                           </CardContent>
                         </Card>
                       )}
-                      {/* Dados de Endereço dentro de Ressarcimento */}
-                      <Card className="shadow-none border-0 mt-6">
-                        <CardHeader className="px-0 pb-0">
-                          <div className="flex items-center justify-between mb-4">
-                            <CardTitle className="text-lg font-semibold">Dados de Endereço</CardTitle>
-                            {cliente && (
-                              <Button
-                                type="button"
-                                size="sm"
-                                className="bg-[#e6faf7] border border-[#26B99D] text-[#26B99D] hover:bg-[#d9f7f2] hover:border-[#26B99D] font-semibold shadow-sm"
-                                onClick={handlePreencherEnderecoCliente}
-                              >
-                                Usar dados do cliente selecionado
-                    </Button>
-                            )}
-                  </div>
-                        </CardHeader>
-                        <CardContent className="space-y-6 px-0 pt-0">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Input name="reembolsoEndereco" placeholder="Logradouro" value={formData.reembolsoEndereco || ''} onChange={handleInputChange} />
-                            <Input name="reembolsoNumero" placeholder="Nº" value={formData.reembolsoNumero || ''} onChange={handleInputChange} />
-                            <Input name="reembolsoComplemento" placeholder="Complemento" value={formData.reembolsoComplemento || ''} onChange={handleInputChange} />
-                            <Input name="reembolsoBairro" placeholder="Bairro" value={formData.reembolsoBairro || ''} onChange={handleInputChange} />
-                            <Input name="reembolsoCidade" placeholder="Cidade" value={formData.reembolsoCidade || ''} onChange={handleInputChange} />
-                            <Select value={formData.reembolsoEstado || ''} onValueChange={value => handleSelectChange('reembolsoEstado', value)}>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Estado" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="AC">AC</SelectItem>
-                                <SelectItem value="AL">AL</SelectItem>
-                                <SelectItem value="AP">AP</SelectItem>
-                                <SelectItem value="AM">AM</SelectItem>
-                                <SelectItem value="BA">BA</SelectItem>
-                                <SelectItem value="CE">CE</SelectItem>
-                                <SelectItem value="DF">DF</SelectItem>
-                                <SelectItem value="ES">ES</SelectItem>
-                                <SelectItem value="GO">GO</SelectItem>
-                                <SelectItem value="MA">MA</SelectItem>
-                                <SelectItem value="MT">MT</SelectItem>
-                                <SelectItem value="MS">MS</SelectItem>
-                                <SelectItem value="MG">MG</SelectItem>
-                                <SelectItem value="PA">PA</SelectItem>
-                                <SelectItem value="PB">PB</SelectItem>
-                                <SelectItem value="PR">PR</SelectItem>
-                                <SelectItem value="PE">PE</SelectItem>
-                                <SelectItem value="PI">PI</SelectItem>
-                                <SelectItem value="RJ">RJ</SelectItem>
-                                <SelectItem value="RN">RN</SelectItem>
-                                <SelectItem value="RS">RS</SelectItem>
-                                <SelectItem value="RO">RO</SelectItem>
-                                <SelectItem value="RR">RR</SelectItem>
-                                <SelectItem value="SC">SC</SelectItem>
-                                <SelectItem value="SP">SP</SelectItem>
-                                <SelectItem value="SE">SE</SelectItem>
-                                <SelectItem value="TO">TO</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <Input name="reembolsoCep" placeholder="CEP" value={formData.reembolsoCep || ''} onChange={handleInputChange} />
-                </div>
-                        </CardContent>
-                      </Card>
-              </div>
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -2001,8 +3109,8 @@ export default function NovaQueixaTecnicaPage() {
               <Separator />
 
               {/* Seção de Comentários Gerais */}
-              {status === "Revisão" && (
-                <Card className="border-blue-100 bg-blue-50/50">
+              {(status === "Revisão" || status === "Rejeitado") && (
+                <Card className="border-gray-200 bg-gray-50">
                   <CardHeader className="pb-4">
                     <div className="flex items-center gap-2">
                       <MessageSquare className="h-5 w-5 text-blue-600" />
@@ -2010,12 +3118,128 @@ export default function NovaQueixaTecnicaPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                <Textarea
-                      placeholder="Adicione seus comentários gerais sobre a queixa técnica..."
-                      value={comentarioGeral}
-                      onChange={(e) => setComentarioGeral(e.target.value)}
-                      className="min-h-[100px]"
-                    />
+                    {status !== "Rejeitado" && (
+                      <>
+                        <Textarea
+                          placeholder="Adicione seus comentários gerais sobre a queixa técnica..."
+                          value={comentarioGeral}
+                          onChange={(e) => setComentarioGeral(e.target.value)}
+                          className="min-h-[100px]"
+                        />
+                        <div className="flex justify-end mt-2">
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              if (comentarioGeral.trim()) {
+                                setComentariosGerais(prev => [
+                                  ...prev,
+                                  {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    texto: comentarioGeral,
+                                    usuario: "Usuário Atual",
+                                    data: new Date().toLocaleString(),
+                                  }
+                                ]);
+                                setComentarioGeral("");
+                              }
+                            }}
+                          >
+                            Registrar comentário
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                    {/* Seção de comentários registrados */}
+                    {comentariosGerais.length > 0 && (
+                      <div className="mt-6">
+                        <h4 className="text-base font-semibold mb-2">Comentários</h4>
+                        <div className="space-y-2">
+                          {comentariosGerais.map(comentario => (
+                            <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span className="text-xs font-semibold text-gray-800">{comentario.usuario}</span>
+                                  <span className="text-xs text-gray-500">{comentario.data}</span>
+                                </div>
+                                {editandoComentarioGeral === comentario.id ? (
+                                  <>
+                                    <Textarea
+                                      value={textoEdicaoComentarioGeral}
+                                      onChange={e => setTextoEdicaoComentarioGeral(e.target.value)}
+                                      className="h-20 text-base w-full"
+                                      onKeyDown={e => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                          e.preventDefault();
+                                          setComentariosGerais(prev => prev.map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentarioGeral, data: new Date().toLocaleString() } : c
+                                          ));
+                                          setEditandoComentarioGeral(null);
+                                          setTextoEdicaoComentarioGeral("");
+                                        }
+                                      }}
+                                    />
+                                    <div className="flex justify-end gap-1 mt-2 w-full">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 w-8 p-0"
+                                        onClick={() => {
+                                          setEditandoComentarioGeral(null);
+                                          setTextoEdicaoComentarioGeral("");
+                                        }}
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
+                                        onClick={() => {
+                                          setComentariosGerais(prev => prev.map(c =>
+                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentarioGeral, data: new Date().toLocaleString() } : c
+                                          ));
+                                          setEditandoComentarioGeral(null);
+                                          setTextoEdicaoComentarioGeral("");
+                                        }}
+                                      >
+                                        <CheckCircle className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
+                                )}
+                              </div>
+                              {status !== "Rejeitado" && editandoComentarioGeral !== comentario.id && (
+                                <div className="flex gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0"
+                                    onClick={() => {
+                                      setEditandoComentarioGeral(comentario.id);
+                                      setTextoEdicaoComentarioGeral(comentario.texto);
+                                    }}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                                    onClick={() => {
+                                      setComentariosGerais(prev => prev.filter(c => c.id !== comentario.id));
+                                    }}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               )}
@@ -2032,14 +3256,27 @@ export default function NovaQueixaTecnicaPage() {
                   <Save className="mr-2 h-4 w-4 text-[#26B99D]" />
                   Salvar
                 </Button>
-                <Button 
-                  type="submit" 
+                {status !== "Rejeitado" && (
+                  <Button
+                    type="button"
+                    className="flex items-center bg-red-100 border border-red-400 text-red-600 hover:bg-red-200 hover:border-red-500 font-semibold shadow-sm"
+                    onClick={() => setStatus("Rejeitado")}
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Rejeitar
+                  </Button>
+                )}
+                <Button
+                  type="submit"
                   className="bg-teal-600 hover:bg-teal-700 flex items-center"
-                  disabled={status === "Revisão"}
+                  onClick={e => {
+                    e.preventDefault();
+                    setStatus('Qualidade');
+                  }}
                 >
-                <CheckCircle className="mr-2 h-4 w-4" />
-                  Enviar Queixa Técnica
-              </Button>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Enviar
+                </Button>
               </div>
             </CardFooter>
           </Card>

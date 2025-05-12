@@ -454,7 +454,7 @@ export default function QueixasTecnicasPage() {
                     <TableHead>Data</TableHead>
                     <TableHead>Cliente</TableHead>
                     <TableHead>Produto</TableHead>
-                    <TableHead>Tipo</TableHead>
+                    <TableHead>Motivo</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
