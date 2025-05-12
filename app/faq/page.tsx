@@ -17,7 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Search, Plus, ExternalLink, BookOpen, Save, X, Edit, Trash2 } from "lucide-react"
+import { Search, Plus, ExternalLink, BookOpen, Save, X, Edit, Trash2, Check } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
@@ -108,6 +108,7 @@ export default function FAQPage() {
     url: "",
     icone: "blue",
   })
+  const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>([])
 
   // Filtrar FAQs com base na busca
   const filteredFaqs = faqs.filter(
@@ -116,6 +117,9 @@ export default function FAQPage() {
         faq.resposta.toLowerCase().includes(searchQuery.toLowerCase())) &&
       (tagQuery.trim() === "" || faq.tags.some(tag => tag.toLowerCase().includes(tagQuery.toLowerCase())))
   )
+
+  // 1. Calcule as tags já existentes
+  const allTags = Array.from(new Set(faqs.flatMap(faq => faq.tags)));
 
   const handleAddFaq = () => {
     if (!newFaq.pergunta.trim() || !newFaq.resposta.trim()) {
@@ -126,12 +130,13 @@ export default function FAQPage() {
       })
       return
     }
-
+    // Unir tags selecionadas e adicionadas manualmente, sem duplicatas
+    const allTagsToSave = Array.from(new Set([...newFaq.tags, ...selectedSuggestedTags]))
     const newId = (faqs.length + 1).toString()
-    setFaqs([...faqs, { id: newId, ...newFaq }])
+    setFaqs([...faqs, { id: newId, pergunta: newFaq.pergunta, resposta: newFaq.resposta, tags: allTagsToSave }])
     setNewFaq({ pergunta: "", resposta: "", tags: [] })
+    setSelectedSuggestedTags([])
     setIsDialogOpen(false)
-
     toast({
       title: "Sucesso",
       description: "FAQ adicionado com sucesso",
@@ -301,6 +306,9 @@ export default function FAQPage() {
                               if (!newFaq.tags.includes(newTag.trim())) {
                                 setNewFaq({ ...newFaq, tags: [...newFaq.tags, newTag.trim()] });
                               }
+                              if (!selectedSuggestedTags.includes(newTag.trim())) {
+                                setSelectedSuggestedTags([...selectedSuggestedTags, newTag.trim()]);
+                              }
                               setNewTag("");
                             }
                           }}
@@ -310,18 +318,51 @@ export default function FAQPage() {
                           onClick={() => {
                             if (newTag.trim() && !newFaq.tags.includes(newTag.trim())) {
                               setNewFaq({ ...newFaq, tags: [...newFaq.tags, newTag.trim()] });
-                              setNewTag("");
                             }
+                            if (newTag.trim() && !selectedSuggestedTags.includes(newTag.trim())) {
+                              setSelectedSuggestedTags([...selectedSuggestedTags, newTag.trim()]);
+                            }
+                            setNewTag("");
                           }}
                         >Adicionar</Button>
                       </div>
+                      {/* Sugestões de tags já existentes */}
+                      {allTags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {allTags.map((tag: string) => {
+                            const isSelected = selectedSuggestedTags.includes(tag) || newFaq.tags.includes(tag);
+                            return (
+                              <button
+                                key={tag}
+                                type="button"
+                                className={
+                                  isSelected
+                                    ? "bg-green-100 text-green-700 border border-green-300 px-2 py-0.5 rounded text-xs flex items-center gap-1"
+                                    : "bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded text-xs hover:bg-blue-100 transition flex items-center gap-1"
+                                }
+                                onClick={() => {
+                                  if (selectedSuggestedTags.includes(tag)) {
+                                    setSelectedSuggestedTags(selectedSuggestedTags.filter(t => t !== tag));
+                                  } else {
+                                    setSelectedSuggestedTags([...selectedSuggestedTags, tag]);
+                                  }
+                                }}
+                              >
+                                {isSelected && <Check className="h-3 w-3 mr-1 text-green-700" />}
+                                {tag}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                       <div className="flex flex-wrap gap-2 mt-2">
                         {newFaq.tags.map((tag, idx) => (
-                          <span key={tag} className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs flex items-center gap-1">
+                          <span key={tag} className="bg-green-100 text-green-700 border border-green-300 px-2 py-0.5 rounded text-xs flex items-center gap-1">
+                            <Check className="h-3 w-3 mr-1 text-green-700" />
                             {tag}
                             <button
                               type="button"
-                              className="ml-1 text-blue-700 hover:text-red-500"
+                              className="ml-1 text-green-700 hover:text-red-500"
                               onClick={() => setNewFaq({ ...newFaq, tags: newFaq.tags.filter((t) => t !== tag) })}
                             >
                               <X className="h-3 w-3" />
