@@ -3256,7 +3256,7 @@ export default function NovaQueixaTecnicaPage() {
                   <Save className="mr-2 h-4 w-4 text-[#26B99D]" />
                   Salvar
                 </Button>
-                {status !== "Rejeitado" && (
+                {status !== "Rejeitado" && status !== "Aberto" && (
                   <Button
                     type="button"
                     className="flex items-center bg-red-100 border border-red-400 text-red-600 hover:bg-red-200 hover:border-red-500 font-semibold shadow-sm"
@@ -3270,8 +3270,14 @@ export default function NovaQueixaTecnicaPage() {
                   type="submit"
                   className="bg-teal-600 hover:bg-teal-700 flex items-center"
                   onClick={e => {
-                    e.preventDefault();
-                    setStatus('Qualidade');
+                    if (status === 'Aberto') {
+                      e.preventDefault();
+                      setStatus('Revisão');
+                    } else if (status === 'Revisão') {
+                      e.preventDefault();
+                      setStatus('Qualidade');
+                    }
+                    // Nos outros status, deixa o submit normal
                   }}
                 >
                   <CheckCircle className="mr-2 h-4 w-4" />
