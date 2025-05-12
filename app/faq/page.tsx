@@ -28,30 +28,35 @@ const INITIAL_FAQS = [
     pergunta: "Como registrar uma queixa técnica?",
     resposta:
       "Para registrar uma queixa técnica, acesse o menu 'Atendimentos' > 'Queixas Técnicas' e clique no botão 'Nova Queixa Técnica'. Preencha o formulário com as informações necessárias e clique em 'Salvar'.",
+    tags: ["registro", "queixa técnica"],
   },
   {
     id: "2",
     pergunta: "Qual a diferença entre queixa técnica e evento adverso?",
     resposta:
       "Uma queixa técnica está relacionada a problemas com o produto em si, como embalagem, rotulagem ou funcionamento inadequado. Já um evento adverso refere-se a reações indesejadas ou danos à saúde que podem estar relacionados ao uso do produto.",
+    tags: ["diferença", "queixa técnica", "evento adverso"],
   },
   {
     id: "3",
     pergunta: "Como consultar a bula de um medicamento?",
     resposta:
       "Você pode consultar a bula de um medicamento diretamente no site da Anvisa, através do Bulário Eletrônico. Acesse o link disponível na página de FAQ ou utilize o campo de busca para encontrar o medicamento desejado.",
+    tags: ["consulta", "bula", "medicamento"],
   },
   {
     id: "4",
     pergunta: "Quais informações são necessárias para registrar uma farmacovigilância?",
     resposta:
       "Para registrar uma farmacovigilância, você precisará informar dados do paciente (nome, idade, gênero), dados do medicamento (nome, lote, fabricante), descrição detalhada da reação adversa, data de início e término dos sintomas, e outras informações relevantes sobre o caso.",
+    tags: ["registro", "farmacovigilância"],
   },
   {
     id: "5",
     pergunta: "Como acompanhar o status de uma solicitação?",
     resposta:
       "Para acompanhar o status de uma solicitação, acesse o menu correspondente ao tipo de solicitação (Queixas Técnicas, Informações Médicas ou Farmacovigilância) e utilize os filtros para localizar a solicitação desejada. O status atual será exibido na coluna 'Status'.",
+    tags: ["acompanhamento", "status", "solicitação"],
   },
 ]
 
@@ -81,12 +86,14 @@ const INITIAL_LINKS = [
 ]
 
 export default function FAQPage() {
-  const [faqs, setFaqs] = useState(INITIAL_FAQS)
+  const [faqs, setFaqs] = useState<{ id: string; pergunta: string; resposta: string; tags: string[] }[]>(INITIAL_FAQS)
   const [links, setLinks] = useState(INITIAL_LINKS)
   const [searchQuery, setSearchQuery] = useState("")
-  const [newFaq, setNewFaq] = useState({ pergunta: "", resposta: "" })
+  const [tagQuery, setTagQuery] = useState("")
+  const [newFaq, setNewFaq] = useState<{ pergunta: string; resposta: string; tags: string[] }>({ pergunta: "", resposta: "", tags: [] })
+  const [newTag, setNewTag] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [editingFaq, setEditingFaq] = useState<{ id: string; pergunta: string; resposta: string } | null>(null)
+  const [editingFaq, setEditingFaq] = useState<{ id: string; pergunta: string; resposta: string; tags: string[] } | null>(null)
   const [editingLink, setEditingLink] = useState<{
     id: string
     titulo: string
@@ -105,8 +112,9 @@ export default function FAQPage() {
   // Filtrar FAQs com base na busca
   const filteredFaqs = faqs.filter(
     (faq) =>
-      faq.pergunta.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      faq.resposta.toLowerCase().includes(searchQuery.toLowerCase()),
+      (faq.pergunta.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        faq.resposta.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (tagQuery.trim() === "" || faq.tags.some(tag => tag.toLowerCase().includes(tagQuery.toLowerCase())))
   )
 
   const handleAddFaq = () => {
@@ -121,7 +129,7 @@ export default function FAQPage() {
 
     const newId = (faqs.length + 1).toString()
     setFaqs([...faqs, { id: newId, ...newFaq }])
-    setNewFaq({ pergunta: "", resposta: "" })
+    setNewFaq({ pergunta: "", resposta: "", tags: [] })
     setIsDialogOpen(false)
 
     toast({
@@ -236,7 +244,15 @@ export default function FAQPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-
+              <div className="relative w-full sm:w-auto">
+                <Input
+                  type="search"
+                  placeholder="Buscar por tag..."
+                  className="w-full sm:w-[220px]"
+                  value={tagQuery}
+                  onChange={e => setTagQuery(e.target.value)}
+                />
+              </div>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                   <Button className="w-full sm:w-auto bg-[#26B99D] hover:bg-[#1E9A82]">
@@ -271,9 +287,52 @@ export default function FAQPage() {
                         onChange={(e) => setNewFaq({ ...newFaq, resposta: e.target.value })}
                       />
                     </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tags">Tags</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="tags"
+                          placeholder="Digite uma tag e pressione Enter"
+                          value={newTag}
+                          onChange={e => setNewTag(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' && newTag.trim()) {
+                              e.preventDefault();
+                              if (!newFaq.tags.includes(newTag.trim())) {
+                                setNewFaq({ ...newFaq, tags: [...newFaq.tags, newTag.trim()] });
+                              }
+                              setNewTag("");
+                            }
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            if (newTag.trim() && !newFaq.tags.includes(newTag.trim())) {
+                              setNewFaq({ ...newFaq, tags: [...newFaq.tags, newTag.trim()] });
+                              setNewTag("");
+                            }
+                          }}
+                        >Adicionar</Button>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {newFaq.tags.map((tag, idx) => (
+                          <span key={tag} className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs flex items-center gap-1">
+                            {tag}
+                            <button
+                              type="button"
+                              className="ml-1 text-blue-700 hover:text-red-500"
+                              onClick={() => setNewFaq({ ...newFaq, tags: newFaq.tags.filter((t) => t !== tag) })}
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    <Button variant="destructive" onClick={() => setIsDialogOpen(false)}>
                       <X className="h-4 w-4 mr-2" />
                       Cancelar
                     </Button>
@@ -300,6 +359,11 @@ export default function FAQPage() {
                         <AccordionContent>
                           <div className="relative">
                             <p className="text-muted-foreground pr-16">{faq.resposta}</p>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {faq.tags && faq.tags.map(tag => (
+                                <span key={tag} className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs">{tag}</span>
+                              ))}
+                            </div>
                             <div className="absolute top-0 right-0 flex gap-1">
                               <Button
                                 variant="ghost"
@@ -357,7 +421,15 @@ export default function FAQPage() {
               <CardContent>
                 <div className="space-y-4">
                   {links.map((link) => (
-                    <div key={link.id} className="flex items-center gap-2 p-3 rounded-md border hover:bg-muted transition-colors group">
+                    <a
+                      key={link.id}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-3 rounded-md border hover:bg-muted transition-colors group cursor-pointer no-underline"
+                      style={{ position: 'relative' }}
+                      tabIndex={0}
+                    >
                       <div className={`h-10 w-10 rounded-full bg-${link.icone}-100 flex items-center justify-center`}>
                         <ExternalLink className={`h-5 w-5 text-${link.icone}-600`} />
                       </div>
@@ -365,12 +437,21 @@ export default function FAQPage() {
                         <p className="font-medium">{link.titulo}</p>
                         <p className="text-xs text-muted-foreground">{link.descricao}</p>
                       </div>
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div
+                        className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={e => e.stopPropagation()}
+                        onMouseDown={e => e.stopPropagation()}
+                        style={{ zIndex: 2 }}
+                      >
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => setEditingLink(link)}
+                          onClick={ev => {
+                            ev.preventDefault();
+                            ev.stopPropagation();
+                            setEditingLink(link);
+                          }}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -378,12 +459,16 @@ export default function FAQPage() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-destructive"
-                          onClick={() => handleDeleteLink(link.id)}
+                          onClick={ev => {
+                            ev.preventDefault();
+                            ev.stopPropagation();
+                            handleDeleteLink(link.id);
+                          }}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                    </div>
+                    </a>
                   ))}
                 </div>
               </CardContent>
@@ -447,7 +532,7 @@ export default function FAQPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsNewLinkDialogOpen(false)}>
+            <Button variant="destructive" onClick={() => setIsNewLinkDialogOpen(false)}>
               <X className="h-4 w-4 mr-2" />
               Cancelar
             </Button>
