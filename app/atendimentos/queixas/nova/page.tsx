@@ -17,7 +17,7 @@ import { DatePicker } from "@/components/date-picker"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill, Save, Pencil, Info, MoreVertical, MessageSquare } from "lucide-react"
+import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill, Save, Pencil, Info, MoreVertical, MessageSquare, Ban } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -305,6 +305,7 @@ export default function NovaQueixaTecnicaPage() {
     motivoPrincipal: "",
     subcategoria: "",
     detalhe: "",
+    motivo: "",
   })
   const [protocoloSelecionado, setProtocoloSelecionado] = useState<Protocolo | null>(null)
   const [protocoloVinculado, setProtocoloVinculado] = useState<Protocolo | null>(null)
@@ -640,6 +641,17 @@ export default function NovaQueixaTecnicaPage() {
             <AlertTitle>Modo de Revisão</AlertTitle>
             <AlertDescription>
               Este formulário está em modo de revisão. Use os ícones de mensagem para adicionar comentários em cada campo.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Alerta de Rejeitado */}
+        {status === "Rejeitado" && (
+          <Alert className="bg-red-50 border-red-200 text-gray-800">
+            <Ban className="h-4 w-4 text-red-600" />
+            <AlertTitle>Queixa Técnica Rejeitada</AlertTitle>
+            <AlertDescription>
+              Esta queixa técnica foi rejeitada. Verifique os comentários para entender os motivos da rejeição.
             </AlertDescription>
           </Alert>
         )}
@@ -2171,6 +2183,7 @@ export default function NovaQueixaTecnicaPage() {
                 <CardContent className="space-y-8 p-6">
                   {/* Fluxo Motivo Principal, Subcategoria e Detalhe igual ao modal Novo Contato */}
                   <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900">Motivo, Subcategoria e Detalhe</h3>
                     {/* Barra de Progresso */}
                     <div className="space-y-2">
                       <div className="flex justify-end">
@@ -2357,7 +2370,7 @@ export default function NovaQueixaTecnicaPage() {
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
-                                  onClick={() => setFormData(prev => ({ ...prev, motivoPrincipal: "", subcategoria: "", detalhe: "" }))}
+                                  onClick={() => setFormData(prev => ({ ...prev, motivoPrincipal: '', subcategoria: '', detalhe: '' }))}
                                 >
                                   <Pencil className="h-4 w-4" />
                                 </Button>
@@ -2382,7 +2395,7 @@ export default function NovaQueixaTecnicaPage() {
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
-                                  onClick={() => setFormData(prev => ({ ...prev, subcategoria: "", detalhe: "" }))}
+                                  onClick={() => setFormData(prev => ({ ...prev, subcategoria: '', detalhe: '' }))}
                                 >
                                   <Pencil className="h-4 w-4" />
                                 </Button>
@@ -2407,7 +2420,7 @@ export default function NovaQueixaTecnicaPage() {
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
-                                  onClick={() => setFormData(prev => ({ ...prev, detalhe: "" }))}
+                                  onClick={() => setFormData(prev => ({ ...prev, detalhe: '' }))}
                                 >
                                   <Pencil className="h-4 w-4" />
                                 </Button>
