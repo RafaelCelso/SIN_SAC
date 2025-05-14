@@ -793,11 +793,11 @@ export default function ClientePage() {
                                         <CollapsibleTrigger className="w-full">
                                           <div className="border-b bg-gray-50 p-4 rounded-t-lg hover:bg-gray-100">
                                             <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
-                                              <AlertTriangle className="h-4 w-4 text-amber-600" />
-                                            </div>
-                                            <div>
+                                              <div className="flex items-center gap-3">
+                                                <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
+                                                  <AlertTriangle className="h-4 w-4 text-amber-600" />
+                                                </div>
+                                                <div>
                                                   <p className="font-semibold text-gray-900">Queixa Técnica #QT-2023-0001</p>
                                                   <div className="flex items-center gap-2 mt-1">
                                                     <p className="text-sm text-gray-600">15/06/2023 10:45</p>
@@ -806,29 +806,26 @@ export default function ClientePage() {
                                                     </Badge>
                                                     <Badge
                                                       variant="outline"
-                                                      className={
-                                                        "Leve" === "Leve"
-                                                          ? "bg-green-50 text-green-700 border-green-200"
-                                                          : "Leve" === "Moderada"
-                                                            ? "bg-amber-50 text-amber-700 border-amber-200"
-                                                            : "bg-red-50 text-red-700 border-red-200"
-                                                      }
+                                                      className="bg-green-50 text-green-700 border-green-200"
                                                     >
                                                       Leve
                                                     </Badge>
-                                          </div>
-                                        </div>
-                                      </div>
-                                              <div className="flex gap-2">
-                                                <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
-                                                  <FileText className="h-4 w-4 mr-2" />
-                                                  Ver detalhes
-                                                </Button>
-                                                <Button variant="outline" size="sm" className="hover:bg-red-50 hover:text-red-600 hover:border-red-600">
-                                                  <Trash2 className="h-4 w-4 mr-2" />
-                                                  Excluir
-                                                </Button>
-                                      </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div className="flex items-center gap-2">
+                                                <div className="flex gap-2">
+                                                  <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
+                                                    <FileText className="h-4 w-4 mr-2" />
+                                                    Ver detalhes
+                                                  </Button>
+                                                  <Button variant="outline" size="sm" className="hover:bg-red-50 hover:text-red-600 hover:border-red-600">
+                                                    <Trash2 className="h-4 w-4 mr-2" />
+                                                    Excluir
+                                                  </Button>
+                                                </div>
+                                                <ChevronDown className="h-4 w-4 text-gray-500 transition-transform duration-200 data-[state=open]:rotate-180" />
+                                              </div>
                                             </div>
                                           </div>
                                         </CollapsibleTrigger>
@@ -1369,14 +1366,14 @@ export default function ClientePage() {
                                         <CollapsibleTrigger className="w-full">
                                           <div className="border-b bg-gray-50 p-4 rounded-t-lg hover:bg-gray-100">
                                             <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-3">
+                                              <div className="flex items-center gap-3">
                                                 <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center">
                                                   <Shield className="h-4 w-4 text-red-600" />
-                                            </div>
-                                            <div>
+                                                </div>
+                                                <div>
                                                   <p className="font-semibold text-gray-900">Farmacovigilância #FM-2023-0001</p>
                                                   <div className="flex items-center gap-2 mt-1">
-                                              <p className="text-sm text-gray-600">15/06/2023 10:45</p>
+                                                    <p className="text-sm text-gray-600">15/06/2023 10:45</p>
                                                     <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
                                                       Em análise
                                                     </Badge>
@@ -1392,10 +1389,10 @@ export default function ClientePage() {
                                                     >
                                                       {protocolo.farmacovigilancia?.[0]?.gravidade || "Não informada"}
                                                     </Badge>
-                                          </div>
-                                        </div>
-                                      </div>
-                                              <div className="flex gap-2">
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div className="flex items-center gap-2">
                                                 <Button variant="outline" size="sm" className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]">
                                                   <FileText className="h-4 w-4 mr-2" />
                                                   Ver detalhes
@@ -1404,9 +1401,10 @@ export default function ClientePage() {
                                                   <Trash2 className="h-4 w-4 mr-2" />
                                                   Excluir
                                                 </Button>
-                                      </div>
-                                      </div>
-                                    </div>
+                                                <ChevronDown className="h-4 w-4 text-gray-500 transition-transform duration-200 data-[state=open]:rotate-180" />
+                                              </div>
+                                            </div>
+                                          </div>
                                         </CollapsibleTrigger>
                                         <CollapsibleContent>
                                           <div className="p-4 border-t space-y-4">

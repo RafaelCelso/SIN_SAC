@@ -118,14 +118,7 @@ export function Header() {
 
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-4">
-            <div className="hidden md:flex relative max-w-sm items-center">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder={t.search}
-                className="pl-8 w-[200px] lg:w-[300px] rounded-full bg-muted border-none focus-visible:ring-1"
-              />
-            </div>
+            {/* Removida a barra de busca */}
           </div>
 
           <div className="flex items-center gap-4 md:gap-2">
