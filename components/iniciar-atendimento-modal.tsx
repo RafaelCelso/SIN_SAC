@@ -1579,7 +1579,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                   <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label className="font-medium">Tipo de Contato</Label>
+                        <Label className="font-medium">Forma de Contato</Label>
                         <RadioGroup
                           defaultValue="ativo"
                           className="flex gap-2"
@@ -1774,9 +1774,9 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {/* Tipo de Contato */}
+                  {/* Forma de Contato */}
                   <div className="space-y-2">
-                    <Label className="font-medium">Tipo de Contato <span className="text-red-500">*</span></Label>
+                    <Label className="font-medium">Forma de Contato <span className="text-red-500">*</span></Label>
                     <div className="flex flex-wrap gap-4">
                       <Button
                         variant={formData.tipoContato === "telefone" ? "default" : "outline"}
@@ -1785,6 +1785,14 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                       >
                         <Phone className="h-4 w-4" />
                         Telefone
+                      </Button>
+                      <Button
+                        variant={formData.tipoContato === "whatsapp" ? "default" : "outline"}
+                        className={`flex items-center gap-2 ${formData.tipoContato === "whatsapp" ? "bg-teal-600 hover:bg-teal-700" : ""}`}
+                        onClick={() => setFormData(prev => ({ ...prev, tipoContato: "whatsapp" }))}
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                        WhatsApp
                       </Button>
                       <Button
                         variant={formData.tipoContato === "email" ? "default" : "outline"}
@@ -1802,6 +1810,31 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                         <MapPin className="h-4 w-4" />
                         Presencial
                       </Button>
+                    </div>
+
+                    {/* Tipo de Contato */}
+                    <div className="space-y-2 mt-4">
+                      <Label className="font-medium">Tipo de Contato <span className="text-red-500">*</span></Label>
+                      <RadioGroup
+                        defaultValue="ativo"
+                        className="flex gap-4"
+                        onValueChange={(value) => setTipoContato(value as "ativo" | "receptivo")}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="ativo" id="tipo-ativo" />
+                          <Label htmlFor="tipo-ativo" className="flex items-center gap-2">
+                            <Phone className="h-4 w-4 text-teal-600" />
+                            Ativo
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="receptivo" id="tipo-receptivo" />
+                          <Label htmlFor="tipo-receptivo" className="flex items-center gap-2">
+                            <PhoneIncoming className="h-4 w-4 text-teal-600" />
+                            Receptivo
+                          </Label>
+                        </div>
+                      </RadioGroup>
                     </div>
                   </div>
 
