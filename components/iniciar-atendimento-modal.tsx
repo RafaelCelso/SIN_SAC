@@ -150,6 +150,12 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     },
   ]
 
+  // Estado para Informações do Relator
+  const [clienteEhRelator, setClienteEhRelator] = useState<"sim" | "nao">("sim")
+  const [relatorNome, setRelatorNome] = useState("")
+  const [relatorTelefone, setRelatorTelefone] = useState("")
+  const [relatorRelacao, setRelatorRelacao] = useState("")
+
   type Produto = {
     id: string
     nome: string
@@ -399,6 +405,15 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       urlCompleta += `&nome=${encodeURIComponent(nomeSemRegistro)}`
       if (telefoneSemRegistro) urlCompleta += `&telefone=${encodeURIComponent(telefoneSemRegistro)}`
       if (emailSemRegistro) urlCompleta += `&email=${encodeURIComponent(emailSemRegistro)}`
+    }
+
+    // Adicionar nome do relator e flag
+    if (clienteEhRelator === "sim") {
+      urlCompleta += `&relator=${encodeURIComponent(selectedCliente?.nome || nomeSemRegistro)}`
+      urlCompleta += `&clienteEhRelator=sim`
+    } else {
+      urlCompleta += `&relator=${encodeURIComponent(relatorNome)}`
+      urlCompleta += `&clienteEhRelator=nao`
     }
 
     router.push(urlCompleta)
@@ -1073,6 +1088,86 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                       )}
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Seção 0: Informações do Relator (agora após Produto) */}
+              <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
+                <div className="flex items-center gap-2 mb-3">
+                  <User className="h-5 w-5 text-teal-600" />
+                  <h3 className="font-medium text-lg text-gray-800">Informações do Relator <span className="text-red-500">*</span></h3>
+                </div>
+                <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
+                  <div className="mb-4">
+                    <Label className="font-medium">Cliente é o Relator?</Label>
+                    <div className="flex gap-6 mt-2">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="relator-sim"
+                          name="clienteEhRelator"
+                          value="sim"
+                          checked={clienteEhRelator === "sim"}
+                          onChange={() => setClienteEhRelator("sim")}
+                          className="accent-teal-600 h-4 w-4"
+                        />
+                        <Label htmlFor="relator-sim">Sim</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="relator-nao"
+                          name="clienteEhRelator"
+                          value="nao"
+                          checked={clienteEhRelator === "nao"}
+                          onChange={() => setClienteEhRelator("nao")}
+                          className="accent-teal-600 h-4 w-4"
+                        />
+                        <Label htmlFor="relator-nao">Não</Label>
+                      </div>
+                    </div>
+                  </div>
+                  {clienteEhRelator === "nao" && (
+                    <div className="mt-4 bg-teal-50/60 border border-teal-100 rounded-lg p-5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <User className="h-5 w-5 text-teal-600" />
+                        <span className="font-medium text-teal-900">Informar Relator</span>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="relator-nome">Nome <span className="text-red-500">*</span></Label>
+                          <Input
+                            id="relator-nome"
+                            placeholder="Digite nome do Relator"
+                            value={relatorNome}
+                            onChange={e => setRelatorNome(e.target.value)}
+                            required
+                            className="h-11"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="relator-telefone">Telefone</Label>
+                          <Input
+                            id="relator-telefone"
+                            placeholder="(00) 00000-0000"
+                            value={relatorTelefone}
+                            onChange={e => setRelatorTelefone(e.target.value)}
+                            className="h-11"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="relator-relacao">Relação com o Cliente</Label>
+                          <Input
+                            id="relator-relacao"
+                            placeholder="Relação do Relator com o Cliente"
+                            value={relatorRelacao}
+                            onChange={e => setRelatorRelacao(e.target.value)}
+                            className="h-11"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -270,6 +270,8 @@ export default function ClientePage() {
   const tabParam = searchParams.get("tab")
   const protocoloParam = searchParams.get("protocolo")
   const isNovoProtocolo = novoProtocolo && !protocoloParam
+  const nomeRelator = searchParams.get("relator");
+  const clienteEhRelator = searchParams.get("clienteEhRelator");
 
   const [cliente, setCliente] = useState<(typeof CLIENTES_MOCK)[0] | null>(null)
   const [protocolos, setProtocolos] = useState<typeof PROTOCOLOS_MOCK>([])
@@ -756,8 +758,8 @@ export default function ClientePage() {
                                               <User className="h-4 w-4 text-indigo-600" />
                                             </div>
                                             <div>
-                                              <p className="font-semibold text-gray-900">João Silva</p>
-                                              <p className="text-sm text-gray-600">Assistente</p>
+                                              <p className="font-semibold text-gray-900">{nomeRelator || cliente?.nome}</p>
+                                              <p className="text-sm text-gray-600">Relator</p>
                                             </div>
                                           </div>
                                           <div className="flex gap-2">

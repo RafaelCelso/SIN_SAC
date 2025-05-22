@@ -28,6 +28,7 @@ import {
   Clipboard,
   PhoneCall,
   Package2,
+  Tag,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -216,6 +217,12 @@ export function Sidebar() {
               label="Farmacovigilância"
               href="/atendimentos/farmacovigilancia"
               active={pathname.includes("/atendimentos/farmacovigilancia")}
+            />
+            <SidebarItem
+              icon={<Tag size={16} />}
+              label="Ressarcimento"
+              href="/atendimentos/ressarcimento"
+              active={pathname.includes("/atendimentos/ressarcimento")}
             />
           </div>
         </div>
