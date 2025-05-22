@@ -107,9 +107,11 @@ export default function RessarcimentoPage() {
             </h1>
             <p className="text-sm text-gray-600 mt-1">Gerenciamento de ressarcimentos de clientes</p>
           </div>
-          <Button className="bg-teal-600 hover:bg-teal-700">
-            <Plus className="mr-2 h-4 w-4" />
-            Novo Ressarcimento
+          <Button className="bg-teal-600 hover:bg-teal-700" asChild>
+            <Link href="/atendimentos/ressarcimento/novo">
+              <Plus className="mr-2 h-4 w-4" />
+              Novo Ressarcimento
+            </Link>
           </Button>
         </div>
 
