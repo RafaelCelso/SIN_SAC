@@ -155,6 +155,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
   const [relatorNome, setRelatorNome] = useState("")
   const [relatorTelefone, setRelatorTelefone] = useState("")
   const [relatorRelacao, setRelatorRelacao] = useState("")
+  const [relatorEmail, setRelatorEmail] = useState("")
 
   type Produto = {
     id: string
@@ -1152,6 +1153,17 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                             placeholder="(00) 00000-0000"
                             value={relatorTelefone}
                             onChange={e => setRelatorTelefone(e.target.value)}
+                            className="h-11"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="relator-email">E-mail</Label>
+                          <Input
+                            id="relator-email"
+                            type="email"
+                            placeholder="email@exemplo.com"
+                            value={relatorEmail}
+                            onChange={e => setRelatorEmail(e.target.value)}
                             className="h-11"
                           />
                         </div>

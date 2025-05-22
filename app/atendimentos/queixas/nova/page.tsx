@@ -17,7 +17,7 @@ import { DatePicker } from "@/components/date-picker"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill, Save, Pencil, Info, MoreVertical, MessageSquare, Ban } from "lucide-react"
+import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill, Save, Pencil, Info, MoreVertical, MessageSquare, Ban, User, Speech } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -325,6 +325,11 @@ export default function NovaQueixaTecnicaPage() {
   // Adicione o estado para controlar edição de comentário geral
   const [editandoComentarioGeral, setEditandoComentarioGeral] = useState<string | null>(null);
   const [textoEdicaoComentarioGeral, setTextoEdicaoComentarioGeral] = useState<string>("");
+  const [relatorNome, setRelatorNome] = useState("")
+  const [relatorTelefone, setRelatorTelefone] = useState("")
+  const [relatorRelacao, setRelatorRelacao] = useState("")
+  const [clienteEhRelator, setClienteEhRelator] = useState<"sim" | "nao">("sim")
+  const [relatorEmail, setRelatorEmail] = useState("")
 
   // Filtrar clientes com base na busca
   const filteredClientes = CLIENTES_MOCK.filter(
@@ -681,6 +686,93 @@ export default function NovaQueixaTecnicaPage() {
             </div>
           </div>
         </div>
+
+        {/* NOVA SEÇÃO: Informações do Relator */}
+        <Card>
+          <CardHeader className="bg-gray-50 border-b">
+            <div className="flex items-center gap-2">
+              <Speech className="h-7 w-7 text-teal-600" />
+              <span className="text-xl font-bold">Informações do Relator</span>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="mb-6">
+              <Label className="font-medium">Cliente é o Relator?</Label>
+              <div className="flex gap-6 mt-2">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="relator-sim"
+                    name="clienteEhRelator"
+                    value="sim"
+                    checked={clienteEhRelator === "sim"}
+                    onChange={() => setClienteEhRelator("sim")}
+                    className="accent-teal-600 h-4 w-4"
+                  />
+                  <Label htmlFor="relator-sim">Sim</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="relator-nao"
+                    name="clienteEhRelator"
+                    value="nao"
+                    checked={clienteEhRelator === "nao"}
+                    onChange={() => setClienteEhRelator("nao")}
+                    className="accent-teal-600 h-4 w-4"
+                  />
+                  <Label htmlFor="relator-nao">Não</Label>
+                </div>
+              </div>
+            </div>
+            {clienteEhRelator === "nao" && (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-teal-50/60 border border-teal-100 rounded-lg p-5">
+                <div className="space-y-2">
+                  <Label htmlFor="relator-nome">Nome <span className="text-red-500">*</span></Label>
+                  <Input
+                    id="relator-nome"
+                    placeholder="Digite nome do Relator"
+                    value={relatorNome}
+                    onChange={e => setRelatorNome(e.target.value)}
+                    required
+                    className="h-11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="relator-telefone">Telefone</Label>
+                  <Input
+                    id="relator-telefone"
+                    placeholder="(00) 00000-0000"
+                    value={relatorTelefone}
+                    onChange={e => setRelatorTelefone(e.target.value)}
+                    className="h-11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="relator-email">E-mail</Label>
+                  <Input
+                    id="relator-email"
+                    type="email"
+                    placeholder="email@exemplo.com"
+                    value={relatorEmail}
+                    onChange={e => setRelatorEmail(e.target.value)}
+                    className="h-11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="relator-relacao">Relação com o Cliente</Label>
+                  <Input
+                    id="relator-relacao"
+                    placeholder="Relação do Relator com o Cliente"
+                    value={relatorRelacao}
+                    onChange={e => setRelatorRelacao(e.target.value)}
+                    className="h-11"
+                  />
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Informações do Cliente */}
         <Card>
@@ -1349,207 +1441,6 @@ export default function NovaQueixaTecnicaPage() {
                                         setComentarios(prev => ({
                                           ...prev,
                                           ['sku']: prev['sku'].filter(c => c.id !== comentario.id)
-                                        }));
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <Label htmlFor="lote" className="flex items-center gap-2 text-base font-medium">
-                        <Hash className="h-4 w-4 text-[#26B99D]" />
-                        Lote
-                      </Label>
-                      {renderCommentIcon("lote")}
-                    </div>
-                    <div className="relative">
-                      <Input
-                        id="lote"
-                        name="lote"
-                        placeholder="Lote"
-                        value={formData.lote}
-                        onChange={handleInputChange}
-                        className={`h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB] transition-all duration-200 ${camposAtencao['lote'] ? 'border-2 border-red-500 ring-2 ring-red-300 bg-red-50 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]' : ''}`}
-                        readOnly
-                      />
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
-                        <Lock className="h-4 w-4" />
-                      </div>
-                    </div>
-                    {/* Input de comentário Lote */}
-                    {novoComentario['lote'] !== undefined && (
-                      <div className="w-full mt-2">
-                        <div className="relative w-full">
-                          <Input
-                            placeholder="Digite seu comentário..."
-                            value={novoComentario['lote']}
-                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['lote']: e.target.value }))}
-                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
-                            onKeyDown={e => {
-                              if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                if (novoComentario['lote'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['lote'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['lote']: [...(prev['lote'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['lote'];
-                                    return newState;
-                                  });
-                                }
-                              }
-                            }}
-                          />
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
-                              onClick={() => {
-                                setNovoComentario(prev => {
-                                  const newState = { ...prev };
-                                  delete newState['lote'];
-                                  return newState;
-                                });
-                              }}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                              onClick={() => {
-                                if (novoComentario['lote'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['lote'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['lote']: [...(prev['lote'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['lote'];
-                                    return newState;
-                                  });
-                                }
-                              }}
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {/* Lista de comentários Lote */}
-                    {comentarios['lote'] && comentarios['lote'].length > 0 && (
-                      <div className="space-y-2 mt-2">
-                        {comentarios['lote'].map(comentario => (
-                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
-                            {editandoComentario['lote'] === comentario.id ? (
-                              <>
-                                <div className="flex-1 mr-2">
-                                  <Input
-                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
-                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
-                                    className="h-10 text-base w-full"
-                                    onKeyDown={e => {
-                                      if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['lote']: prev['lote'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['lote']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }
-                                    }}
-                                  />
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1 items-center">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['lote']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['lote']: prev['lote'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['lote']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <CheckCircle className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => ({ ...prev, ['lote']: comentario.id }));
-                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
-                                      }}
-                                    >
-                                      <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['lote']: prev['lote'].filter(c => c.id !== comentario.id)
                                         }));
                                       }}
                                     >
