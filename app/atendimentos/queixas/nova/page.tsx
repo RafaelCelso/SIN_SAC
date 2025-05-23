@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
@@ -17,7 +15,7 @@ import { DatePicker } from "@/components/date-picker"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill, Save, Pencil, Info, MoreVertical, MessageSquare, Ban, User, Speech, FileCheck } from "lucide-react"
+import { ArrowLeft, Package, FileText, AlertTriangle, CheckCircle, Upload, Barcode, Search, X, Tag, Hash, Calendar, CalendarCheck, Lock, HelpCircle, ClipboardList, Pill, Save, Pencil, Info, MoreVertical, MessageSquare, Ban, User, Speech, FileCheck, Printer } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -231,6 +229,164 @@ function CardFarmacovigilancia({ fv, produto, isSelected, isLinked, onSelect, on
         </div>
       </button>
     </div>
+  );
+}
+
+// Componente de resumo do formulário
+interface ResumoFormularioProps {
+  formData: any;
+  cliente: any;
+  relatorNome: string;
+  relatorTelefone: string;
+  relatorEmail: string;
+  relatorRelacao: string;
+  clienteEhRelator: "sim" | "nao";
+  arquivos: ArquivoAnexo[];
+}
+function ResumoFormulario({ formData, cliente, relatorNome, relatorTelefone, relatorEmail, relatorRelacao, clienteEhRelator, arquivos }: ResumoFormularioProps) {
+  const [idioma, setIdioma] = useState("pt");
+  return (
+    <Card className="mb-8 border-2 border-teal-200 shadow-lg">
+      <CardHeader>
+        <div className="flex items-center justify-between w-full">
+          <CardTitle className="text-2xl text-teal-900">Resumo do Formulário</CardTitle>
+          <div className="flex items-center gap-2 ml-4">
+            <select
+              className="border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-200"
+              value={idioma}
+              onChange={e => setIdioma(e.target.value)}
+              style={{ minWidth: 120 }}
+            >
+              <option value="pt">Português</option>
+              <option value="en">Inglês</option>
+            </select>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => window.print()}
+              title="Imprimir resumo"
+            >
+              <Printer className="h-5 w-5 text-teal-700" />
+            </Button>
+          </div>
+        </div>
+        <CardDescription className="text-base text-gray-700 mt-2">Confira todos os dados informados antes de prosseguir.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-8">
+        {/* Relator */}
+        <div className="bg-white rounded-lg p-4 shadow-sm">
+          <div className="flex items-center mb-4">
+            <h3 className="font-bold text-lg text-teal-900 bg-gray-100 border-l-4 border-teal-400 pl-3 py-1 rounded w-full">Informações do Relator</h3>
+          </div>
+          {clienteEhRelator === 'sim' ? (
+            <p className="text-gray-700">O cliente é o relator.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-base leading-relaxed">
+              <div><span className="font-semibold text-gray-700">Nome:</span> <span className="text-teal-900 font-bold">{relatorNome}</span></div>
+              <div><span className="font-semibold text-gray-700">Telefone:</span> <span className="text-teal-900 font-bold">{relatorTelefone}</span></div>
+              <div><span className="font-semibold text-gray-700">E-mail:</span> <span className="text-teal-900 font-bold">{relatorEmail}</span></div>
+              <div><span className="font-semibold text-gray-700">Relação com o Cliente:</span> <span className="text-teal-900 font-bold">{relatorRelacao}</span></div>
+            </div>
+          )}
+        </div>
+        <Separator />
+        {/* Cliente */}
+        <div className="bg-white rounded-lg p-4 shadow-sm">
+          <div className="flex items-center mb-4">
+            <h3 className="font-bold text-lg text-teal-900 bg-gray-100 border-l-4 border-teal-400 pl-3 py-1 rounded w-full">Informações do Cliente</h3>
+          </div>
+          {cliente ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-base leading-relaxed">
+              <div><span className="font-semibold text-gray-700">Nome:</span> <span className="text-teal-900 font-bold">{cliente.nome}</span></div>
+              <div><span className="font-semibold text-gray-700">Documento:</span> <span className="text-teal-900 font-bold">{cliente.documento}</span></div>
+              <div><span className="font-semibold text-gray-700">Telefone:</span> <span className="text-teal-900 font-bold">{cliente.telefone}</span></div>
+              <div><span className="font-semibold text-gray-700">E-mail:</span> <span className="text-teal-900 font-bold">{cliente.email}</span></div>
+              <div className="md:col-span-2"><span className="font-semibold text-gray-700">Endereço:</span> <span className="text-teal-900 font-bold">{cliente.endereco}</span></div>
+            </div>
+          ) : (
+            <span className="text-gray-500">Cliente não selecionado.</span>
+          )}
+        </div>
+        <Separator />
+        {/* Produto */}
+        <div className="bg-white rounded-lg p-4 shadow-sm">
+          <div className="flex items-center mb-4">
+            <h3 className="font-bold text-lg text-teal-900 bg-gray-100 border-l-4 border-teal-400 pl-3 py-1 rounded w-full">Informações do Produto</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-base leading-relaxed">
+            <div><span className="font-semibold text-gray-700">Produto:</span> <span className="text-teal-900 font-bold">{formData.produto}</span></div>
+            <div><span className="font-semibold text-gray-700">SKU:</span> <span className="text-teal-900 font-bold">{formData.sku}</span></div>
+            <div><span className="font-semibold text-gray-700">Lote:</span> <span className="text-teal-900 font-bold">{formData.lote}</span></div>
+            <div><span className="font-semibold text-gray-700">EAN:</span> <span className="text-teal-900 font-bold">{formData.ean}</span></div>
+            <div><span className="font-semibold text-gray-700">Data de Fabricação:</span> <span className="text-teal-900 font-bold">{formData.dataFabricacao}</span></div>
+            <div><span className="font-semibold text-gray-700">Data de Validade:</span> <span className="text-teal-900 font-bold">{formData.dataValidade}</span></div>
+          </div>
+        </div>
+        <Separator />
+        {/* Detalhes da Queixa */}
+        <div className="bg-white rounded-lg p-4 shadow-sm">
+          <div className="flex items-center mb-4">
+            <h3 className="font-bold text-lg text-teal-900 bg-gray-100 border-l-4 border-teal-400 pl-3 py-1 rounded w-full">Detalhes da Queixa</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-base leading-relaxed">
+            <div><span className="font-semibold text-gray-700">Motivo Principal:</span> <span className="text-teal-900 font-bold">{formData.motivoPrincipal}</span></div>
+            <div><span className="font-semibold text-gray-700">Subcategoria:</span> <span className="text-teal-900 font-bold">{formData.subcategoria}</span></div>
+            <div><span className="font-semibold text-gray-700">Detalhe:</span> <span className="text-teal-900 font-bold">{formData.detalhe}</span></div>
+            <div><span className="font-semibold text-gray-700">Possui Amostra:</span> <span className="text-teal-900 font-bold">{formData.possuiAmostra === 'sim' ? 'Sim' : 'Não'}</span></div>
+          </div>
+            <div className="md:col-span-3 col-span-1 mt-4">
+              <span className="font-semibold text-gray-700 block mb-2">Narrativa:</span>
+              <div
+                className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words"
+                style={{ wordBreak: 'break-word' }}
+                dangerouslySetInnerHTML={{ __html: formData.narrativa || '<span class=\'text-gray-400\'>Nenhuma narrativa registrada.</span>' }}
+              />
+            </div>
+        </div>
+        <Separator />
+        {/* Compra */}
+        <div className="bg-white rounded-lg p-4 shadow-sm">
+          <div className="flex items-center mb-4">
+            <h3 className="font-bold text-lg text-teal-900 bg-gray-100 border-l-4 border-teal-400 pl-3 py-1 rounded w-full">Informações de Compra</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-base leading-relaxed">
+            <div><span className="font-semibold text-gray-700">Quantidade Comprada:</span> <span className="text-teal-900 font-bold">{formData.quantidadeComprada}</span></div>
+            <div><span className="font-semibold text-gray-700">Quantidade com Desvio:</span> <span className="text-teal-900 font-bold">{formData.quantidadeDesvio}</span></div>
+            <div><span className="font-semibold text-gray-700">Local de Compra:</span> <span className="text-teal-900 font-bold">{formData.localCompra}</span></div>
+            <div><span className="font-semibold text-gray-700">Data de Compra:</span> <span className="text-teal-900 font-bold">{formData.dataCompra}</span></div>
+          </div>
+        </div>
+        <Separator />
+        {/* Armazenamento */}
+        <div className="bg-white rounded-lg p-4 shadow-sm">
+          <div className="flex items-center mb-4">
+            <h3 className="font-bold text-lg text-teal-900 bg-gray-100 border-l-4 border-teal-400 pl-3 py-1 rounded w-full">Armazenamento</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-base leading-relaxed">
+            <div><span className="font-semibold text-gray-700">Local de Armazenamento:</span> <span className="text-teal-900 font-bold">{formData.localArmazenamento}</span></div>
+            <div><span className="font-semibold text-gray-700">Modo de Armazenamento:</span> <span className="text-teal-900 font-bold">{formData.modoArmazenamento}</span></div>
+            <div><span className="font-semibold text-gray-700">Caixa Lacrada:</span> <span className="text-teal-900 font-bold">{formData.caixaLacrada === 'sim' ? 'Sim' : 'Não'}</span></div>
+          </div>
+        </div>
+        <Separator />
+        
+        {/* Anexos */}
+        <div className="bg-white rounded-lg p-4 shadow-sm">
+          <div className="flex items-center mb-4">
+            <h3 className="font-bold text-lg text-teal-900 bg-gray-100 border-l-4 border-teal-400 pl-3 py-1 rounded w-full">Anexos</h3>
+          </div>
+          {arquivos && arquivos.length > 0 ? (
+            <ul className="list-disc ml-6 text-teal-900 font-bold text-base">
+              {arquivos.map((a: ArquivoAnexo) => (
+                <li key={a.id}>{a.nome}</li>
+              ))}
+            </ul>
+          ) : (
+            <span className="text-gray-500">Nenhum arquivo anexado.</span>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -671,6 +827,9 @@ export default function NovaQueixaTecnicaPage() {
           </Alert>
         )}
 
+        
+        
+
         <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -696,15 +855,151 @@ export default function NovaQueixaTecnicaPage() {
             </div>
           </div>
         </div>
+          {/* RESUMO DO FORMULÁRIO PARA QUALIDADE */}
+          {status === "Qualidade" && (
+            <>
+              <ResumoFormulario
+                formData={formData}
+                cliente={cliente}
+                relatorNome={relatorNome}
+                relatorTelefone={relatorTelefone}
+                relatorEmail={relatorEmail}
+                relatorRelacao={relatorRelacao}
+                clienteEhRelator={clienteEhRelator}
+                arquivos={arquivos}
+              />
+              {/* Seção Análise de Qualidade */}
+              <Card className="mb-8 border border-gray-200 shadow">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-amber-500" />
+                    <CardTitle className="text-xl text-gray-900">Análise de Qualidade</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Número de Protocolo Interno */}
+                  <div>
+                    <Label className="font-semibold text-gray-700">Número de Protocolo Interno <span className="text-gray-400 font-normal">(opcional)</span></Label>
+                    <div className="flex gap-2 mt-1">
+                      <Input
+                        placeholder="Ex: QT-INT-2025-0123"
+                        className="w-64"
+                      />
+                      <Button variant="outline" className="h-10">Gerar Automático</Button>
+                    </div>
+                    <span className="text-xs text-gray-400">Número de protocolo para uso interno do setor de qualidade</span>
+                  </div>
+                  {/* Criticidade */}
+                  <div>
+                    <Label className="font-semibold text-gray-700">Criticidade</Label>
+                    <div className="flex gap-3 mt-2 flex-wrap">
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input type="radio" name="criticidade" className="accent-red-600" />
+                        <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-bold">Alta</span>
+                        <span className="text-xs text-gray-700 ml-1">Risco à saúde ou segurança</span>
+                      </label>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input type="radio" name="criticidade" className="accent-yellow-500" />
+                        <span className="px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 text-xs font-bold">Média</span>
+                        <span className="text-xs text-gray-700 ml-1">Problema significativo</span>
+                      </label>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input type="radio" name="criticidade" className="accent-green-600" />
+                        <span className="px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs font-bold">Baixa</span>
+                        <span className="text-xs text-gray-700 ml-1">Problema menor</span>
+                      </label>
+                    </div>
+                  </div>
+                  {/* Tipo de Problema */}
+                  <div>
+                    <Label className="font-semibold text-gray-700">Tipo de Problema</Label>
+                    <Select>
+                      <SelectTrigger className="w-full mt-1">
+                        <SelectValue placeholder="Problema no produto" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="produto">Problema no produto</SelectItem>
+                        <SelectItem value="processo">Problema no processo</SelectItem>
+                        <SelectItem value="documentacao">Problema de documentação</SelectItem>
+                        <SelectItem value="outro">Outro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {/* Necessita de análise laboratorial? */}
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div>
+                      <Label className="font-semibold text-gray-700">Necessita de análise laboratorial?</Label>
+                      <div className="flex gap-4 mt-2">
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input type="radio" name="analiseLab" className="accent-green-600" />
+                          <span>Sim</span>
+                        </label>
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input type="radio" name="analiseLab" className="accent-green-600" />
+                          <span>Não</span>
+                        </label>
+                      </div>
+                    </div>
+                    {/* Necessita de amostra adicional? */}
+                    <div>
+                      <Label className="font-semibold text-gray-700">Necessita de amostra adicional?</Label>
+                      <div className="flex gap-4 mt-2">
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input type="radio" name="amostraAdicional" className="accent-green-600" />
+                          <span>Sim</span>
+                        </label>
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input type="radio" name="amostraAdicional" className="accent-green-600" />
+                          <span>Não</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Prazo para Resolução e Responsável */}
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="flex-1">
+                      <Label className="font-semibold text-gray-700">Prazo para Resolução</Label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Input type="date" className="w-48" />
+                        <span className="text-xs text-gray-400">Tempo estimado: 7 dias</span>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <Label className="font-semibold text-gray-700">Responsável pela Análise</Label>
+                      <Select>
+                        <SelectTrigger className="w-full mt-1">
+                          <SelectValue placeholder="Ana Paula (Controle de Qualidade)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ana">Ana Paula (Controle de Qualidade)</SelectItem>
+                          <SelectItem value="joao">João Silva (Controle de Qualidade)</SelectItem>
+                          <SelectItem value="outro">Outro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  {/* Observações e Recomendações */}
+                  <div>
+                    <Label className="font-semibold text-gray-700">Observações e Recomendações</Label>
+                    <Textarea
+                      placeholder="Adicione observações e recomendações para a análise desta queixa..."
+                      className="mt-1 min-h-[80px]"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
 
         {/* NOVA SEÇÃO: Informações do Relator */}
+        {status !== 'Qualidade' && (
         <Card>
           <CardHeader className="bg-gray-50 border-b">
-            <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
               <Speech className="h-7 w-7 text-teal-600" />
               <span className="text-xl font-bold">Informações do Relator</span>
-            </div>
-          </CardHeader>
+                  </div>
+                </CardHeader>
           <CardContent className="p-4">
             <div className="mb-6">
               <Label className="font-medium">Cliente é o Relator?</Label>
@@ -739,7 +1034,7 @@ export default function NovaQueixaTecnicaPage() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-teal-50/60 border border-teal-100 rounded-lg p-5">
                 <div className="space-y-2">
                   <Label htmlFor="relator-nome">Nome <span className="text-red-500">*</span></Label>
-                  <Input
+                      <Input
                     id="relator-nome"
                     placeholder="Digite nome do Relator"
                     value={relatorNome}
@@ -747,7 +1042,7 @@ export default function NovaQueixaTecnicaPage() {
                     required
                     className="h-11"
                   />
-                </div>
+                    </div>
                 <div className="space-y-2">
                   <Label htmlFor="relator-telefone">Telefone</Label>
                   <Input
@@ -757,7 +1052,7 @@ export default function NovaQueixaTecnicaPage() {
                     onChange={e => setRelatorTelefone(e.target.value)}
                     className="h-11"
                   />
-                </div>
+                  </div>
                 <div className="space-y-2">
                   <Label htmlFor="relator-email">E-mail</Label>
                   <Input
@@ -783,8 +1078,10 @@ export default function NovaQueixaTecnicaPage() {
             )}
           </CardContent>
         </Card>
+        )}
 
         {/* Informações do Cliente */}
+        {status !== 'Qualidade' && (
         <Card>
           <CardHeader className="bg-gray-50 border-b">
             <div className="flex items-center justify-between">
@@ -834,20 +1131,20 @@ export default function NovaQueixaTecnicaPage() {
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D] mt-1">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                       </svg>
-                      <div>
+                  <div>
                         <span className="font-medium text-gray-500 text-sm">Telefone</span>
                         <p className="text-gray-900">{cliente.telefone}</p>
-                      </div>
                     </div>
+                  </div>
                     <div className="flex items-start gap-3 text-gray-700">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#26B99D] mt-1">
                         <rect width="20" height="16" x="2" y="4" rx="2"/>
                         <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                       </svg>
-                      <div>
+                  <div>
                         <span className="font-medium text-gray-500 text-sm">Email</span>
                         <p className="text-gray-900">{cliente.email}</p>
-                      </div>
+                  </div>
                     </div>
                   </div>
                   <div className="space-y-6">
@@ -858,7 +1155,7 @@ export default function NovaQueixaTecnicaPage() {
                         <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                       </svg>
-                      <div>
+                    <div>
                         <span className="font-medium text-gray-500 text-sm">Documento</span>
                         <p className="text-gray-900">{cliente.documento}</p>
                       </div>
@@ -868,13 +1165,13 @@ export default function NovaQueixaTecnicaPage() {
                         <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
                         <circle cx="12" cy="10" r="3"/>
                       </svg>
-                      <div>
+                    <div>
                         <span className="font-medium text-gray-500 text-sm">Endereço</span>
                         <p className="text-gray-900">{cliente.endereco}</p>
                       </div>
                     </div>
                   </div>
-                </div>
+                      </div>
 
                 {/* Protocolos do cliente */}
                 {PROTOCOLOS_MOCK[cliente.id] && PROTOCOLOS_MOCK[cliente.id].length > 0 && (
@@ -913,7 +1210,7 @@ export default function NovaQueixaTecnicaPage() {
                             {protocoloVinculado.detalhe && (
                               <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200">{protocoloVinculado.detalhe}</span>
                             )}
-                          </div>
+                    </div>
                         </div>
                       </div>
                     ) : (
@@ -1048,8 +1345,10 @@ export default function NovaQueixaTecnicaPage() {
             )}
           </CardContent>
         </Card>
+        )}
 
         {/* Formulário de Queixa Técnica */}
+        {status !== 'Qualidade' && (
         <form onSubmit={handleSubmit}>
           <Card>
             <CardHeader>
@@ -2430,12 +2729,12 @@ export default function NovaQueixaTecnicaPage() {
                           >
                             <SelectTrigger className="w-[120px]">
                               <SelectValue placeholder="Formato" />
-                            </SelectTrigger>
-                            <SelectContent>
+                        </SelectTrigger>
+                        <SelectContent>
                               <SelectItem value="MM/AA">MM/AA</SelectItem>
                               <SelectItem value="DD/MM/AAAA">DD/MM/AAAA</SelectItem>
-                            </SelectContent>
-                          </Select>
+                        </SelectContent>
+                      </Select>
                           <Input
                             id="dataCompra"
                             name="dataCompra"
@@ -2444,8 +2743,8 @@ export default function NovaQueixaTecnicaPage() {
                             onChange={handleInputChange}
                             className="flex-1 h-12 text-base"
                           />
-                      </div>
-                      </div>
+                    </div>
+                  </div>
 
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
@@ -2752,7 +3051,7 @@ export default function NovaQueixaTecnicaPage() {
                 </CardHeader>
                 <CardContent className="space-y-6 p-6">
               <div className="space-y-2">
-                    <div>
+                  <div>
                       <Label className="text-base font-medium">Solicita laudo de análise?</Label>
                       <RadioGroup
                         value={formData.solicitaLaudo || ''}
@@ -2830,7 +3129,7 @@ export default function NovaQueixaTecnicaPage() {
                         )}
                       </div>
                     )}
-              </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -2875,8 +3174,8 @@ export default function NovaQueixaTecnicaPage() {
                             Registrar comentário
                           </Button>
                         </div>
-                      </>
-                    )}
+            </>
+          )}
                     {/* Seção de comentários registrados */}
                     {comentariosGerais.length > 0 && (
                       <div className="mt-6">
@@ -2972,49 +3271,51 @@ export default function NovaQueixaTecnicaPage() {
                 </Card>
               )}
             </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button variant="destructive" type="button" onClick={() => router.push("/atendimentos/queixas")}>
-                Cancelar
-              </Button>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  className="flex items-center bg-[#e6faf7] border border-[#26B99D] text-[#26B99D] hover:bg-[#d9f7f2] hover:border-[#26B99D] font-semibold shadow-sm"
-                >
-                  <Save className="mr-2 h-4 w-4 text-[#26B99D]" />
-                  Salvar
-                </Button>
-                {status !== "Rejeitado" && status !== "Aberto" && (
-                  <Button
-                    type="button"
-                    className="flex items-center bg-red-100 border border-red-400 text-red-600 hover:bg-red-200 hover:border-red-500 font-semibold shadow-sm"
-                    onClick={() => setStatus("Rejeitado")}
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    Rejeitar
-                  </Button>
-                )}
-                <Button
-                  type="submit"
-                  className="bg-teal-600 hover:bg-teal-700 flex items-center"
-                  onClick={e => {
-                    if (status === 'Aberto') {
-                      e.preventDefault();
-                      setStatus('Revisão');
-                    } else if (status === 'Revisão') {
-                      e.preventDefault();
-                      setStatus('Qualidade');
-                    }
-                    // Nos outros status, deixa o submit normal
-                  }}
-                >
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Enviar
-                </Button>
-              </div>
-            </CardFooter>
+          
           </Card>
         </form>
+        )}
+
+        {/* Botões de ação sempre visíveis */}
+        <div className="flex justify-between mt-6">
+          <Button variant="destructive" type="button" onClick={() => router.push("/atendimentos/queixas")}>Cancelar</Button>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              className="flex items-center bg-[#e6faf7] border border-[#26B99D] text-[#26B99D] hover:bg-[#d9f7f2] hover:border-[#26B99D] font-semibold shadow-sm"
+            >
+              <Save className="mr-2 h-4 w-4 text-[#26B99D]" />
+              Salvar
+            </Button>
+            {status !== "Rejeitado" && status !== "Aberto" && (
+              <Button
+                type="button"
+                className="flex items-center bg-red-100 border border-red-400 text-red-600 hover:bg-red-200 hover:border-red-500 font-semibold shadow-sm"
+                onClick={() => setStatus("Rejeitado")}
+              >
+                <X className="mr-2 h-4 w-4" />
+                Rejeitar
+              </Button>
+            )}
+            <Button
+              type="submit"
+              className="bg-teal-600 hover:bg-teal-700 flex items-center"
+              onClick={e => {
+                if (status === 'Aberto') {
+                  e.preventDefault();
+                  setStatus('Revisão');
+                } else if (status === 'Revisão') {
+                  e.preventDefault();
+                  setStatus('Qualidade');
+                }
+                // Nos outros status, deixa o submit normal
+              }}
+            >
+              <CheckCircle className="mr-2 h-4 w-4" />
+              Enviar
+            </Button>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   )
