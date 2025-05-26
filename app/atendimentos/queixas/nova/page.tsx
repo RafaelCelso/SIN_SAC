@@ -24,6 +24,7 @@ const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
 import 'react-quill/dist/quill.snow.css'
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 // Dados simulados de clientes
 const CLIENTES_MOCK = [
@@ -486,6 +487,13 @@ export default function NovaQueixaTecnicaPage() {
   const [relatorRelacao, setRelatorRelacao] = useState("")
   const [clienteEhRelator, setClienteEhRelator] = useState<"sim" | "nao">("sim")
   const [relatorEmail, setRelatorEmail] = useState("")
+  const [showJustificativaModal, setShowJustificativaModal] = useState(false);
+  const [justificativaRejeicao, setJustificativaRejeicao] = useState("");
+  const [justificativaRejeicaoTemp, setJustificativaRejeicaoTemp] = useState("");
+  const [amostraRecebida, setAmostraRecebida] = useState('nao');
+  const [dataRecebimentoAmostra, setDataRecebimentoAmostra] = useState('');
+  const [tipoAmostra, setTipoAmostra] = useState('');
+  const [descricaoAmostra, setDescricaoAmostra] = useState('');
 
   // Filtrar clientes com base na busca
   const filteredClientes = CLIENTES_MOCK.filter(
@@ -795,6 +803,49 @@ export default function NovaQueixaTecnicaPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6 p-4">
+        {/* Exibir justificativa no topo se status for Retornado */}
+        {status === "Retornado" && justificativaRejeicao && (
+          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded shadow flex items-start gap-3">
+            <AlertTriangle className="h-6 w-6 text-red-500 mt-1" />
+            <div>
+              <div className="font-bold text-red-700 text-lg mb-1">Justificativa da Rejeição</div>
+              <div className="text-gray-800 whitespace-pre-line">{justificativaRejeicao}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de Justificativa de Rejeição */}
+        <Dialog open={showJustificativaModal} onOpenChange={setShowJustificativaModal}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Justificativa da Rejeição</DialogTitle>
+            </DialogHeader>
+            <div className="py-2">
+              <Label htmlFor="justificativa-rejeicao">Explique o motivo da rejeição:</Label>
+              <Textarea
+                id="justificativa-rejeicao"
+                value={justificativaRejeicaoTemp}
+                onChange={e => setJustificativaRejeicaoTemp(e.target.value)}
+                placeholder="Digite a justificativa..."
+                className="mt-2 min-h-[80px]"
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowJustificativaModal(false)}>Cancelar</Button>
+              <Button
+                onClick={() => {
+                  setJustificativaRejeicao(justificativaRejeicaoTemp);
+                  setShowJustificativaModal(false);
+                  setStatus("Retornado");
+                }}
+                disabled={!justificativaRejeicaoTemp.trim()}
+              >
+                Confirmar Rejeição
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {/* Alerta de Revisão */}
         {status === "Revisão" && (
           <Alert className="bg-amber-50 border-amber-200 text-gray-800">
@@ -882,12 +933,11 @@ export default function NovaQueixaTecnicaPage() {
                     <Label className="font-semibold text-gray-700">Número de Protocolo Interno <span className="text-gray-400 font-normal">(opcional)</span></Label>
                     <div className="flex gap-2 mt-1">
                       <Input
-                        placeholder="Ex: QT-INT-2025-0123"
+                        placeholder=""
                         className="w-64"
                       />
-                      <Button variant="outline" className="h-10">Gerar Automático</Button>
                     </div>
-                    <span className="text-xs text-gray-400">Número de protocolo para uso interno do setor de qualidade</span>
+                    <span className="text-xs text-gray-400">Número de protocolo para uso interno.</span>
                   </div>
                   {/* Criticidade */}
                   <div>
@@ -910,79 +960,72 @@ export default function NovaQueixaTecnicaPage() {
                       </label>
                     </div>
                   </div>
-                  {/* Tipo de Problema */}
+                  {/* Amostra recebida? */}
                   <div>
-                    <Label className="font-semibold text-gray-700">Tipo de Problema</Label>
-                    <Select>
-                      <SelectTrigger className="w-full mt-1">
-                        <SelectValue placeholder="Problema no produto" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="produto">Problema no produto</SelectItem>
-                        <SelectItem value="processo">Problema no processo</SelectItem>
-                        <SelectItem value="documentacao">Problema de documentação</SelectItem>
-                        <SelectItem value="outro">Outro</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label className="font-semibold text-gray-700">Amostra recebida?</Label>
+                    <div className="flex gap-4 mt-2">
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input type="radio" name="amostraRecebida" value="sim" checked={amostraRecebida === 'sim'} onChange={() => setAmostraRecebida('sim')} className="accent-green-600" />
+                        <span>Sim</span>
+                      </label>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input type="radio" name="amostraRecebida" value="nao" checked={amostraRecebida === 'nao'} onChange={() => setAmostraRecebida('nao')} className="accent-green-600" />
+                        <span>Não</span>
+                      </label>
+                    </div>
+                    {amostraRecebida === 'sim' && (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        <div>
+                          <Label className="font-semibold text-gray-700">Data do recebimento</Label>
+                          <Input type="date" className="mt-1" value={dataRecebimentoAmostra} onChange={e => setDataRecebimentoAmostra(e.target.value)} />
+                        </div>
+                        <div>
+                          <Label className="font-semibold text-gray-700">Tipo de amostra</Label>
+                          <Select value={tipoAmostra} onValueChange={setTipoAmostra}>
+                            <SelectTrigger className="w-full mt-1">
+                              <SelectValue placeholder="Selecione o tipo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="blister">Blister</SelectItem>
+                              <SelectItem value="comprimido">Comprimido</SelectItem>
+                              <SelectItem value="capsula">Cápsula</SelectItem>
+                              <SelectItem value="ampola">Ampola</SelectItem>
+                              <SelectItem value="frasco">Frasco</SelectItem>
+                              <SelectItem value="outro">Outro</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="md:col-span-3">
+                          <Label className="font-semibold text-gray-700">Descrição da Amostra</Label>
+                          <Textarea
+                            className="mt-1 min-h-[60px]"
+                            placeholder="Descreva a amostra recebida..."
+                            value={descricaoAmostra}
+                            onChange={e => setDescricaoAmostra(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                   {/* Necessita de análise laboratorial? */}
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <div>
-                      <Label className="font-semibold text-gray-700">Necessita de análise laboratorial?</Label>
-                      <div className="flex gap-4 mt-2">
-                        <label className="flex items-center gap-1 cursor-pointer">
-                          <input type="radio" name="analiseLab" className="accent-green-600" />
-                          <span>Sim</span>
-                        </label>
-                        <label className="flex items-center gap-1 cursor-pointer">
-                          <input type="radio" name="analiseLab" className="accent-green-600" />
-                          <span>Não</span>
-                        </label>
-                      </div>
-                    </div>
-                    {/* Necessita de amostra adicional? */}
-                    <div>
-                      <Label className="font-semibold text-gray-700">Necessita de amostra adicional?</Label>
-                      <div className="flex gap-4 mt-2">
-                        <label className="flex items-center gap-1 cursor-pointer">
-                          <input type="radio" name="amostraAdicional" className="accent-green-600" />
-                          <span>Sim</span>
-                        </label>
-                        <label className="flex items-center gap-1 cursor-pointer">
-                          <input type="radio" name="amostraAdicional" className="accent-green-600" />
-                          <span>Não</span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Prazo para Resolução e Responsável */}
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <div className="flex-1">
-                      <Label className="font-semibold text-gray-700">Prazo para Resolução</Label>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Input type="date" className="w-48" />
-                        <span className="text-xs text-gray-400">Tempo estimado: 7 dias</span>
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <Label className="font-semibold text-gray-700">Responsável pela Análise</Label>
-                      <Select>
-                        <SelectTrigger className="w-full mt-1">
-                          <SelectValue placeholder="Ana Paula (Controle de Qualidade)" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="ana">Ana Paula (Controle de Qualidade)</SelectItem>
-                          <SelectItem value="joao">João Silva (Controle de Qualidade)</SelectItem>
-                          <SelectItem value="outro">Outro</SelectItem>
-                        </SelectContent>
-                      </Select>
+                  <div>
+                    <Label className="font-semibold text-gray-700">Necessita de análise laboratorial?</Label>
+                    <div className="flex gap-4 mt-2">
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input type="radio" name="analiseLab" className="accent-green-600" />
+                        <span>Sim</span>
+                      </label>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input type="radio" name="analiseLab" className="accent-green-600" />
+                        <span>Não</span>
+                      </label>
                     </div>
                   </div>
                   {/* Observações e Recomendações */}
                   <div>
-                    <Label className="font-semibold text-gray-700">Observações e Recomendações</Label>
+                    <Label className="font-semibold text-gray-700">Observações e/ou Recomendações</Label>
                     <Textarea
-                      placeholder="Adicione observações e recomendações para a análise desta queixa..."
+                      placeholder="Adicione observações e/ou recomendações para a análise desta queixa..."
                       className="mt-1 min-h-[80px]"
                     />
                   </div>
@@ -3287,11 +3330,18 @@ export default function NovaQueixaTecnicaPage() {
               <Save className="mr-2 h-4 w-4 text-[#26B99D]" />
               Salvar
             </Button>
-            {status !== "Rejeitado" && status !== "Aberto" && (
+            {/* Exibir botão Rejeitar apenas se status não for 'Rejeitado', 'Aberto' ou 'Retornado' */}
+            {status !== "Rejeitado" && status !== "Aberto" && status !== "Retornado" && (
               <Button
                 type="button"
                 className="flex items-center bg-red-100 border border-red-400 text-red-600 hover:bg-red-200 hover:border-red-500 font-semibold shadow-sm"
-                onClick={() => setStatus("Rejeitado")}
+                onClick={() => {
+                  if (status === "Qualidade") {
+                    setShowJustificativaModal(true);
+                  } else {
+                    setStatus("Rejeitado");
+                  }
+                }}
               >
                 <X className="mr-2 h-4 w-4" />
                 Rejeitar
@@ -3305,6 +3355,9 @@ export default function NovaQueixaTecnicaPage() {
                   e.preventDefault();
                   setStatus('Revisão');
                 } else if (status === 'Revisão') {
+                  e.preventDefault();
+                  setStatus('Qualidade');
+                } else if (status === 'Retornado') {
                   e.preventDefault();
                   setStatus('Qualidade');
                 }
