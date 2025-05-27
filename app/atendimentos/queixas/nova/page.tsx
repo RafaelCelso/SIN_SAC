@@ -451,7 +451,7 @@ function ResumoFormulario({
         </div>
 
         {/* Análise de Qualidade */}
-        {status === "Enviado para fábrica" && (
+        {status === "Em análise" && (
           <>
             <Separator />
             <div className="bg-white rounded-lg p-4 shadow-sm">
@@ -590,7 +590,7 @@ export default function NovaQueixaTecnicaPage() {
   const [loading, setLoading] = useState(true)
   const [clienteSearchQuery, setClienteSearchQuery] = useState("")
   const [showResults, setShowResults] = useState(false)
-  const [status, setStatus] = useState<"Aberto" | "Revisão" | "Rejeitado" | "Qualidade" | "Retornado" | "Enviado para fábrica" | "Concluído">("Aberto")
+  const [status, setStatus] = useState<"Aberto" | "Revisão" | "Rejeitado" | "Qualidade" | "Retornado" | "Em análise" | "Concluído">("Aberto")
   const [formData, setFormData] = useState({
     produto: "",
     sku: "",
@@ -683,7 +683,7 @@ export default function NovaQueixaTecnicaPage() {
   const [criticidade, setCriticidade] = useState('');
   const [analiseLab, setAnaliseLab] = useState('');
   const [observacoesRecomendacoes, setObservacoesRecomendacoes] = useState('');
-  // Estados para as seções extras do status 'Enviado para fábrica'
+  // Estados para as seções extras do status 'Em análise'
   const [responsavelInvestigacao, setResponsavelInvestigacao] = useState("");
   const [analiseCausaRaiz, setAnaliseCausaRaiz] = useState("");
   const [investigacaoProcesso, setInvestigacaoProcesso] = useState("");
@@ -885,7 +885,7 @@ export default function NovaQueixaTecnicaPage() {
         text: "text-amber-700",
         border: "border-amber-200"
       },
-      "Enviado para fábrica": {
+      "Em análise": {
         bg: "bg-indigo-50",
         text: "text-indigo-700",
         border: "border-indigo-200"
@@ -922,9 +922,9 @@ export default function NovaQueixaTecnicaPage() {
       "Aberto": ["Revisão"],
       "Revisão": ["Rejeitado", "Qualidade"],
       "Rejeitado": ["Revisão"],
-      "Qualidade": ["Retornado", "Enviado para fábrica"],
+      "Qualidade": ["Retornado", "Em análise"],
       "Retornado": ["Qualidade"],
-      "Enviado para fábrica": ["Concluído"],
+      "Em análise": ["Concluído"],
       "Concluído": []
     }
     return allowedTransitions[status].includes(targetStatus)
@@ -932,7 +932,7 @@ export default function NovaQueixaTecnicaPage() {
 
   // Função para renderizar o menu de ações de status
   const renderStatusActions = () => {
-    const allStatuses: typeof status[] = ["Aberto", "Revisão", "Rejeitado", "Qualidade", "Retornado", "Enviado para fábrica", "Concluído"]
+    const allStatuses: typeof status[] = ["Aberto", "Revisão", "Rejeitado", "Qualidade", "Retornado", "Em análise", "Concluído"]
     
     return (
       <DropdownMenu>
@@ -1106,7 +1106,7 @@ export default function NovaQueixaTecnicaPage() {
           </div>
         </div>
           {/* RESUMO DO FORMULÁRIO PARA QUALIDADE */}
-          {(status === "Qualidade" || status === "Enviado para fábrica") && (
+          {(status === "Qualidade" || status === "Em análise") && (
             <>
               <ResumoFormulario
                 formData={formData}
@@ -1267,7 +1267,7 @@ export default function NovaQueixaTecnicaPage() {
           )}
 
         {/* NOVA SEÇÃO: Informações do Relator */}
-        {status !== 'Qualidade' && status !== 'Enviado para fábrica' && (
+        {status !== 'Qualidade' && status !== 'Em análise' && (
         <Card>
           <CardHeader className="bg-gray-50 border-b">
             <div className="flex items-center gap-2">
@@ -1356,7 +1356,7 @@ export default function NovaQueixaTecnicaPage() {
         )}
 
         {/* Informações do Cliente */}
-        {status !== 'Qualidade' && status !== 'Enviado para fábrica' && (
+        {status !== 'Qualidade' && status !== 'Em análise' && (
         <Card>
           <CardHeader className="bg-gray-50 border-b">
             <div className="flex items-center justify-between">
@@ -1623,7 +1623,7 @@ export default function NovaQueixaTecnicaPage() {
         )}
 
         {/* Formulário de Queixa Técnica */}
-        {status !== 'Qualidade' && status !== 'Enviado para fábrica' && (
+        {status !== 'Qualidade' && status !== 'Em análise' && (
         <form onSubmit={handleSubmit}>
           <Card>
             <CardHeader>
@@ -3594,10 +3594,10 @@ export default function NovaQueixaTecnicaPage() {
                       setStatus('Qualidade');
                     } else if (status === 'Qualidade') {
                       e.preventDefault();
-                      setStatus('Enviado para fábrica');
+                      setStatus('Em análise');
                       toast({
                         title: 'Queixa técnica enviada para a fábrica',
-                        description: 'O status foi alterado para "Enviado para fábrica".',
+                        description: 'O status foi alterado para "Em análise".',
                         duration: 5000,
                       });
                     }

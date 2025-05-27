@@ -661,7 +661,9 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                                           </div>
                                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm">
                                             <div className="flex items-center gap-2 text-gray-600">
-                                              <span className="font-medium">CPF:</span>
+                                              <span className="font-medium">{
+                                                cliente.documento.replace(/\D/g, "").length === 14 ? "CNPJ:" : "CPF:"
+                                              }</span>
                                               <span>{cliente.documento}</span>
                                             </div>
                                             <div className="flex items-center gap-2 text-gray-600">
@@ -670,7 +672,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                                             </div>
                                             <div className="flex items-center gap-2 text-gray-600">
                                               <span className="font-medium">Email:</span>
-                                              <span>{cliente.email}</span>
+                                              <span className="truncate max-w-[180px] overflow-hidden">{cliente.email}</span>
                                             </div>
                                           </div>
                                         </div>
@@ -1718,7 +1720,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                         {selectedCliente?.email && (
                           <div className="flex items-center gap-2 text-gray-600">
                             <span className="font-medium">Email:</span>
-                            <span>{selectedCliente.email}</span>
+                            <span className="truncate max-w-[180px] overflow-hidden">{selectedCliente.email}</span>
                           </div>
                         )}
                       </div>
