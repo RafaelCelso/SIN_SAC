@@ -16,6 +16,7 @@ import { toast } from "@/components/ui/use-toast"
 
 export default function NovoClientePage() {
   const router = useRouter()
+  const [tipoDocumento, setTipoDocumento] = useState<'cpf' | 'cnpj'>('cpf')
   const [formData, setFormData] = useState({
     nome: "",
     documento: "",
@@ -32,12 +33,29 @@ export default function NovoClientePage() {
     tipoCliente: "",
   })
 
+  // Função para aplicar máscara
+  const aplicarMascaraDocumento = (valor: string, tipo: 'cpf' | 'cnpj') => {
+    const numeros = valor.replace(/\D/g, "")
+    if (tipo === 'cpf') {
+      return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
+    } else {
+      return numeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5")
+    }
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    if (name === 'documento') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: aplicarMascaraDocumento(value, tipoDocumento),
+      }))
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }))
+    }
   }
 
   const handleSelectChange = (name: string, value: string) => {
@@ -99,23 +117,42 @@ export default function NovoClientePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="nome">
-                      Nome Completo <span className="text-red-500">*</span>
+                      Nome<span className="text-red-500">*</span>
                     </Label>
                     <Input id="nome" name="nome" value={formData.nome} onChange={handleInputChange} required />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="documento">
-                      CPF <span className="text-red-500">*</span>
+                      Documento <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                      id="documento"
-                      name="documento"
-                      value={formData.documento}
-                      onChange={handleInputChange}
-                      placeholder="000.000.000-00"
-                      required
-                    />
+                    <div className="flex gap-2">
+                      <Select
+                        value={tipoDocumento}
+                        onValueChange={(value: 'cpf' | 'cnpj') => {
+                          setTipoDocumento(value)
+                          setFormData(prev => ({ ...prev, documento: '' }))
+                        }}
+                      >
+                        <SelectTrigger className="w-[100px] h-11">
+                          <SelectValue placeholder="Tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cpf">CPF</SelectItem>
+                          <SelectItem value="cnpj">CNPJ</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        id="documento"
+                        name="documento"
+                        value={formData.documento}
+                        onChange={handleInputChange}
+                        placeholder={tipoDocumento === 'cpf' ? '000.000.000-00' : '00.000.000/0000-00'}
+                        required
+                        maxLength={tipoDocumento === 'cpf' ? 14 : 18}
+                        className="h-11 flex-1"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">

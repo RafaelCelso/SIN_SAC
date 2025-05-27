@@ -43,6 +43,15 @@ const CLIENTES_MOCK = [
     email: "joao.santos@email.com",
     endereco: "Rua Augusta, 500 - São Paulo/SP",
   },
+  // Cliente com CNPJ
+  {
+    id: "3",
+    nome: "Farmácia Central Ltda",
+    documento: "12.345.678/0001-99",
+    telefone: "(11) 4002-8922",
+    email: "contato@farmaciacentral.com",
+    endereco: "Rua das Flores, 123 - Centro/SP",
+  },
 ]
 
 // Dados simulados de produtos
@@ -115,6 +124,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     dataRetorno: "",
     horaRetorno: "",
     lote: "",
+    documento: "",
   })
 
   // Campos para cliente sem registro
@@ -156,6 +166,8 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
   const [relatorTelefone, setRelatorTelefone] = useState("")
   const [relatorRelacao, setRelatorRelacao] = useState("")
   const [relatorEmail, setRelatorEmail] = useState("")
+
+  const [tipoDocumento, setTipoDocumento] = useState<"cpf" | "cnpj">("cpf")
 
   type Produto = {
     id: string
@@ -254,6 +266,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       dataRetorno: "",
       horaRetorno: "",
       lote: "",
+      documento: "",
     })
   }
 
@@ -520,6 +533,16 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     return true
   }
 
+  // Função para aplicar máscara ao documento
+  const aplicarMascaraDocumento = (valor: string, tipo: "cpf" | "cnpj") => {
+    const numeros = valor.replace(/\D/g, "")
+    if (tipo === "cpf") {
+      return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
+    } else {
+      return numeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5")
+    }
+  }
+
   return (
     <Dialog
       open={open}
@@ -536,7 +559,576 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
         <div className="p-6">
           {currentStep === "info" ? (
             <div className="space-y-8">
-              {/* Seção 1: Motivo do Contato */}
+              {/* Seção 1: Informações do Cliente */}
+              <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
+                <div className="flex items-center gap-2 mb-3">
+                  <User className="h-5 w-5 text-teal-600" />
+                  <h3 className="font-medium text-lg text-gray-800">Informações do Cliente <span className="text-red-500">*</span></h3>
+                </div>
+
+                <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
+                  <div className="flex flex-wrap gap-4 mb-4">
+                    <Button
+                      variant={tipoCliente === "cadastrado" ? "default" : "outline"}
+                      className={`flex items-center gap-2 h-11 ${
+                        tipoCliente === "cadastrado" ? "bg-teal-600 hover:bg-teal-700" : ""
+                      }`}
+                      onClick={() => {
+                        setTipoCliente("cadastrado");
+                        setShowClienteForm(false);
+                        setSelectedCliente(null);
+                        setShowResults(false);
+                      }}
+                    >
+                      <User className="h-4 w-4" />
+                      Cliente Cadastrado
+                    </Button>
+                    <Button
+                      variant={tipoCliente === "novo" ? "default" : "outline"}
+                      className={`flex items-center gap-2 h-11 ${
+                        tipoCliente === "novo" ? "bg-teal-600 hover:bg-teal-700" : ""
+                      }`}
+                      onClick={() => {
+                        setTipoCliente("novo");
+                        setShowClienteForm(true);
+                        setSelectedCliente(null);
+                        setShowResults(false);
+                      }}
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      Novo Cliente
+                    </Button>
+                    <Button
+                      variant={tipoCliente === "sem-registro" ? "default" : "outline"}
+                      className={`flex items-center gap-2 h-11 ${
+                        tipoCliente === "sem-registro" ? "bg-teal-600 hover:bg-teal-700" : ""
+                      }`}
+                      onClick={() => {
+                        setTipoCliente("sem-registro");
+                        setShowClienteForm(false);
+                        setSelectedCliente(null);
+                        setShowResults(false);
+                      }}
+                    >
+                      <UserX className="h-4 w-4" />
+                      Sem Registro
+                    </Button>
+                  </div>
+
+                  {/* Conteúdo específico para cada tipo de cliente */}
+                  {tipoCliente === "cadastrado" ? (
+                    <div className="space-y-4">
+                      <div className="flex flex-col md:flex-row gap-2">
+                        <div className="flex-1 relative">
+                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="search"
+                            placeholder="Buscar por nome, CPF/CNPJ, telefone ou email"
+                            className="pl-8 h-11"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                          />
+                        </div>
+                        <Button onClick={handleSearch} className="bg-teal-600 hover:bg-teal-700 h-11">
+                          <Search className="mr-2 h-4 w-4" />
+                          Buscar
+                        </Button>
+                      </div>
+
+                      {showResults && (
+                        <Card className="border-teal-100 shadow-sm">
+                          <CardContent className="p-0">
+                            {searchResults.length > 0 ? (
+                              <div className="grid grid-cols-1 gap-4 p-4">
+                                {searchResults.map((cliente) => (
+                                  <Card key={cliente.id} className="border-gray-200 hover:border-teal-200 transition-colors">
+                                    <CardContent className="p-4">
+                                      <div className="flex items-start gap-4">
+                                        <div className="h-12 w-12 rounded-full bg-teal-100 flex items-center justify-center">
+                                          <User className="h-6 w-6 text-teal-600" />
+                                        </div>
+                                        <div className="flex-1">
+                                          <div className="flex items-center justify-between">
+                                            <h3 className="text-lg font-medium">{cliente.nome}</h3>
+                                            <Button
+                                              size="sm"
+                                              onClick={() => handleClienteSelect(cliente)}
+                                              className="bg-teal-600 hover:bg-teal-700"
+                                            >
+                                              Selecionar
+                                            </Button>
+                                          </div>
+                                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm">
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                              <span className="font-medium">CPF:</span>
+                                              <span>{cliente.documento}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                              <span className="font-medium">Telefone:</span>
+                                              <span>{cliente.telefone}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                              <span className="font-medium">Email:</span>
+                                              <span>{cliente.email}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="p-6 text-center space-y-4">
+                                <p className="text-gray-600">
+                                  Nenhum cliente encontrado. Verifique os critérios de busca ou cadastre um novo cliente.
+                                </p>
+                                <Button
+                                  onClick={() => {
+                                    setTipoCliente("novo");
+                                    setShowClienteForm(true);
+                                    setShowResults(false);
+                                    const radioInput = document.querySelector('input[value="novo"]') as HTMLInputElement;
+                                    if (radioInput) {
+                                      radioInput.checked = true;
+                                    }
+                                  }}
+                                  className="bg-teal-600 hover:bg-teal-700"
+                                >
+                                  <UserPlus className="mr-2 h-4 w-4" />
+                                  Cadastrar Cliente
+                                </Button>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {selectedCliente && (
+                        <>
+                          <Card className="border-teal-100 bg-gray-50 shadow-sm">
+                            <CardContent className="p-5">
+                              <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-full bg-teal-100 flex items-center justify-center">
+                                  <User className="h-6 w-6 text-teal-600" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <h3 className="text-lg font-medium">{selectedCliente.nome}</h3>
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 mt-2 text-sm">
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                      <span>{selectedCliente.email}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                      <span>{selectedCliente.telefone}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                      <span>{selectedCliente.documento}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-gray-600">
+                                      <span>{selectedCliente.endereco}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          {/* Protocolos Abertos do Cliente */}
+                          {clienteProtocolos.length > 0 && (
+                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
+                              <div className="p-6 border-b border-gray-200">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
+                                      <Clipboard className="h-5 w-5 text-blue-600" />
+                                    </div>
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-gray-900">Protocolos Abertos</h3>
+                                      <p className="text-sm text-gray-500">Protocolos em andamento do cliente</p>
+                                    </div>
+                                  </div>
+                                  <Badge className="bg-gray-100 text-gray-700 border-gray-200">
+                                    {clienteProtocolos.length} protocolo(s)
+                                  </Badge>
+                                </div>
+                              </div>
+                              <div className="p-6 space-y-4">
+                                {clienteProtocolos.map((protocolo) => (
+                                  <div 
+                                    key={protocolo.id}
+                                    className="group relative bg-white border border-gray-200 rounded-xl p-5 hover:border-[#26B99D]/30 hover:shadow-sm transition-all duration-200"
+                                  >
+                                    <div className="flex items-start justify-between gap-4">
+                                      <div className="flex-1 min-w-0">
+                                        <div className="mb-3">
+                                          <span className="font-medium text-gray-900 text-lg">{protocolo.id}</span>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
+                                              <Calendar className="h-4 w-4 text-gray-500" />
+                                            </div>
+                                            <div>
+                                              <p className="text-xs text-gray-500">Aberto em</p>
+                                              <p className="text-sm font-medium text-gray-900">{protocolo.data}</p>
+                                            </div>
+                                          </div>
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
+                                              <FileText className="h-4 w-4 text-gray-500" />
+                                            </div>
+                                            <div>
+                                              <p className="text-xs text-gray-500">Motivo</p>
+                                              <p className="text-sm font-medium text-gray-900">{protocolo.tipo}</p>
+                                            </div>
+                                          </div>
+                                          <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
+                                              <Package className="h-4 w-4 text-gray-500" />
+                                            </div>
+                                            <div>
+                                              <p className="text-xs text-gray-500">Produto</p>
+                                              <p className="text-sm font-medium text-gray-900">{protocolo.produto}</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-[#26B99D]/10 hover:text-[#26B99D] hover:border-[#26B99D]/20"
+                                      >
+                                        <FileText className="h-4 w-4 mr-2" />
+                                        Ver detalhes
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  ) : tipoCliente === "novo" ? (
+                    <Card className="border-dashed border-2 border-teal-200 shadow-sm">
+                      <CardHeader className="pb-2">
+                        <h3 className="text-lg flex items-center font-medium">
+                          <UserPlus className="mr-2 h-5 w-5 text-teal-500" />
+                          Cadastro de Novo Cliente
+                        </h3>
+                        <p className="text-sm text-muted-foreground">Preencha os dados do novo cliente</p>
+                      </CardHeader>
+                      <CardContent>
+                        {/* Informações Básicas */}
+                        <div>
+                          <h3 className="text-lg font-medium flex items-center mb-4">
+                            <User className="mr-2 h-5 w-5 text-primary" />
+                            Informações Básicas
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="nome">
+                                Nome<span className="text-red-500">*</span>
+                              </Label>
+                              <Input id="nome" placeholder="Nome completo do cliente" required className="h-11" />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="documento">
+                                Documento {["queixa", "farmacovigilancia"].includes(motivoSelecionado) && <span className="text-red-500">*</span>}
+                              </Label>
+                              <div className="flex gap-2">
+                                <Select
+                                  value={tipoDocumento}
+                                  onValueChange={(value: "cpf" | "cnpj") => {
+                                    setTipoDocumento(value)
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      documento: ""
+                                    }))
+                                  }}
+                                >
+                                  <SelectTrigger className="w-[120px] h-11">
+                                    <SelectValue placeholder="Tipo" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="cpf">CPF</SelectItem>
+                                    <SelectItem value="cnpj">CNPJ</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Input
+                                  id="documento"
+                                  placeholder={tipoDocumento === "cpf" ? "000.000.000-00" : "00.000.000/0000-00"}
+                                  value={formData.documento}
+                                  onChange={(e) => {
+                                    const valor = e.target.value
+                                    const valorComMascara = aplicarMascaraDocumento(valor, tipoDocumento)
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      documento: valorComMascara
+                                    }))
+                                  }}
+                                  required={["queixa", "farmacovigilancia"].includes(motivoSelecionado)}
+                                  className="h-11 flex-1"
+                                  maxLength={tipoDocumento === "cpf" ? 14 : 18}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="tipo-cliente">
+                                Tipo do Cliente <span className="text-red-500">*</span>
+                              </Label>
+                              <Select>
+                                <SelectTrigger id="tipo-cliente" className="h-11">
+                                  <SelectValue placeholder="Selecione o tipo" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="aut-reg-orgao-publico">Aut. Reg./Órgão Público</SelectItem>
+                                  <SelectItem value="colaborador">Colaborador/Força de Vendas</SelectItem>
+                                  <SelectItem value="convenio">Convênio/Outros PJ</SelectItem>
+                                  <SelectItem value="distribuidor">Distribuidor</SelectItem>
+                                  <SelectItem value="farmacia">Farmácia/Drogaria</SelectItem>
+                                  <SelectItem value="hospital">Hospital/Clínica</SelectItem>
+                                  <SelectItem value="medico">Médico</SelectItem>
+                                  <SelectItem value="nao-informado">Não informado</SelectItem>
+                                  <SelectItem value="outros">Outros</SelectItem>
+                                  <SelectItem value="paciente">Paciente</SelectItem>
+                                  <SelectItem value="prestador">Prestador de Serviço</SelectItem>
+                                  <SelectItem value="profissional-saude">Profissional de Saúde</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Contato */}
+                        <div className="mt-6">
+                          <h3 className="text-lg font-medium flex items-center mb-4">
+                            <Phone className="mr-2 h-5 w-5 text-primary" />
+                            Informações de Contato
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="telefone">
+                                Telefone <span className="text-red-500">*</span>
+                              </Label>
+                              <Input
+                                id="telefone"
+                                placeholder="(00) 00000-0000"
+                                required
+                                className="h-11"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="email">Email</Label>
+                              <Input
+                                id="email"
+                                type="email"
+                                placeholder="email@exemplo.com"
+                                className="h-11"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Endereço */}
+                        <div className="mt-6">
+                          <h3 className="text-lg font-medium flex items-center mb-4">
+                            <MapPin className="mr-2 h-5 w-5 text-primary" />
+                            Logradouro
+                          </h3>
+                          <div className="grid grid-cols-1 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="logradouro">Logradouro</Label>
+                                <Input
+                                  id="logradouro"
+                                  placeholder="Logradouro"
+                                  className="h-11"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="numero">N°</Label>
+                                <Input
+                                  id="numero"
+                                  placeholder="Número"
+                                  className="h-11"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="complemento">Complemento</Label>
+                                <Input
+                                  id="complemento"
+                                  placeholder="Complemento"
+                                  className="h-11"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="bairro">Bairro</Label>
+                                <Input
+                                  id="bairro"
+                                  placeholder="Bairro"
+                                  className="h-11"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="cidade">Cidade</Label>
+                                <Input
+                                  id="cidade"
+                                  placeholder="Cidade"
+                                  className="h-11"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="estado">Estado</Label>
+                                <Select>
+                                  <SelectTrigger id="estado" className="h-11">
+                                    <SelectValue placeholder="Selecione" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="AC">Acre</SelectItem>
+                                    <SelectItem value="AL">Alagoas</SelectItem>
+                                    <SelectItem value="AP">Amapá</SelectItem>
+                                    <SelectItem value="AM">Amazonas</SelectItem>
+                                    <SelectItem value="BA">Bahia</SelectItem>
+                                    <SelectItem value="CE">Ceará</SelectItem>
+                                    <SelectItem value="DF">Distrito Federal</SelectItem>
+                                    <SelectItem value="ES">Espírito Santo</SelectItem>
+                                    <SelectItem value="GO">Goiás</SelectItem>
+                                    <SelectItem value="MA">Maranhão</SelectItem>
+                                    <SelectItem value="MT">Mato Grosso</SelectItem>
+                                    <SelectItem value="MS">Mato Grosso do Sul</SelectItem>
+                                    <SelectItem value="MG">Minas Gerais</SelectItem>
+                                    <SelectItem value="PA">Pará</SelectItem>
+                                    <SelectItem value="PB">Paraíba</SelectItem>
+                                    <SelectItem value="PR">Paraná</SelectItem>
+                                    <SelectItem value="PE">Pernambuco</SelectItem>
+                                    <SelectItem value="PI">Piauí</SelectItem>
+                                    <SelectItem value="RJ">Rio de Janeiro</SelectItem>
+                                    <SelectItem value="RN">Rio Grande do Norte</SelectItem>
+                                    <SelectItem value="RS">Rio Grande do Sul</SelectItem>
+                                    <SelectItem value="RO">Rondônia</SelectItem>
+                                    <SelectItem value="RR">Roraima</SelectItem>
+                                    <SelectItem value="SC">Santa Catarina</SelectItem>
+                                    <SelectItem value="SP">São Paulo</SelectItem>
+                                    <SelectItem value="SE">Sergipe</SelectItem>
+                                    <SelectItem value="TO">Tocantins</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="cep">CEP</Label>
+                                <Input
+                                  id="cep"
+                                  placeholder="00000-000"
+                                  className="h-11"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="space-y-4 p-5 border rounded-lg bg-white shadow-sm">
+                      <div className="space-y-2">
+                        <Label htmlFor="nome-sem-registro" className="font-medium">
+                          Nome <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="nome-sem-registro"
+                          placeholder="Nome do cliente"
+                          value={nomeSemRegistro}
+                          onChange={(e) => setNomeSemRegistro(e.target.value)}
+                          required
+                          className="h-11"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="telefone-sem-registro">Telefone</Label>
+                        <Input
+                          id="telefone-sem-registro"
+                          placeholder="(00) 00000-0000"
+                          value={telefoneSemRegistro}
+                          onChange={(e) => setTelefoneSemRegistro(e.target.value)}
+                          className="h-11"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email-sem-registro">E-mail</Label>
+                        <Input
+                          id="email-sem-registro"
+                          type="email"
+                          placeholder="email@exemplo.com"
+                          value={emailSemRegistro}
+                          onChange={(e) => setEmailSemRegistro(e.target.value)}
+                          className="h-11"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Seção 2: Contato (exibir apenas se cliente cadastrado selecionado e CNPJ) */}
+              {selectedCliente && selectedCliente.documento && selectedCliente.documento.replace(/\D/g, "").length === 14 && (
+                <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
+                  <div className="flex items-center gap-2 mb-3">
+                    <User className="h-5 w-5 text-teal-600" />
+                    <h3 className="font-medium text-lg text-gray-800">Contato <span className="text-red-500">*</span></h3>
+                  </div>
+                  <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="contato-nome">Nome <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="contato-nome"
+                          placeholder="Nome do contato"
+                          value={relatorNome}
+                          onChange={e => setRelatorNome(e.target.value)}
+                          required
+                          className="h-11"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="contato-telefone">Telefone</Label>
+                        <Input
+                          id="contato-telefone"
+                          placeholder="(00) 00000-0000"
+                          value={relatorTelefone}
+                          onChange={e => setRelatorTelefone(e.target.value)}
+                          className="h-11"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="contato-email">E-mail</Label>
+                        <Input
+                          id="contato-email"
+                          type="email"
+                          placeholder="email@exemplo.com"
+                          value={relatorEmail}
+                          onChange={e => setRelatorEmail(e.target.value)}
+                          className="h-11"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Seção 3: Motivo do Contato */}
               <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
                 <div className="flex items-center gap-2 mb-3">
                   <Clipboard className="h-5 w-5 text-teal-600" />
@@ -575,6 +1167,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                     </div>
                   </div>
 
+                  {/* Seleção de motivo, subcategoria e detalhe */}
                   {!motivoSelecionado && (
                     <div className="space-y-2">
                       <Label className="font-medium">Motivo Principal</Label>
@@ -870,7 +1463,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                 </div>
               </div>
 
-              {/* Seção 2: Produto */}
+              {/* Seção 4: Produto */}
               <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
                 <div className="flex items-center gap-2 mb-3">
                   <Package className="h-5 w-5 text-teal-600" />
@@ -1091,738 +1684,6 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                   </div>
                 </div>
               </div>
-
-              {/* Seção 0: Informações do Relator (agora após Produto) */}
-              <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
-                <div className="flex items-center gap-2 mb-3">
-                  <User className="h-5 w-5 text-teal-600" />
-                  <h3 className="font-medium text-lg text-gray-800">Informações do Relator <span className="text-red-500">*</span></h3>
-                </div>
-                <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-                  <div className="mb-4">
-                    <Label className="font-medium">Cliente é o Relator?</Label>
-                    <div className="flex gap-6 mt-2">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="radio"
-                          id="relator-sim"
-                          name="clienteEhRelator"
-                          value="sim"
-                          checked={clienteEhRelator === "sim"}
-                          onChange={() => setClienteEhRelator("sim")}
-                          className="accent-teal-600 h-4 w-4"
-                        />
-                        <Label htmlFor="relator-sim">Sim</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="radio"
-                          id="relator-nao"
-                          name="clienteEhRelator"
-                          value="nao"
-                          checked={clienteEhRelator === "nao"}
-                          onChange={() => setClienteEhRelator("nao")}
-                          className="accent-teal-600 h-4 w-4"
-                        />
-                        <Label htmlFor="relator-nao">Não</Label>
-                      </div>
-                    </div>
-                  </div>
-                  {clienteEhRelator === "nao" && (
-                    <div className="mt-4 bg-teal-50/60 border border-teal-100 rounded-lg p-5">
-                      <div className="flex items-center gap-2 mb-3">
-                        <User className="h-5 w-5 text-teal-600" />
-                        <span className="font-medium text-teal-900">Informar Relator</span>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="relator-nome">Nome <span className="text-red-500">*</span></Label>
-                          <Input
-                            id="relator-nome"
-                            placeholder="Digite nome do Relator"
-                            value={relatorNome}
-                            onChange={e => setRelatorNome(e.target.value)}
-                            required
-                            className="h-11"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="relator-telefone">Telefone</Label>
-                          <Input
-                            id="relator-telefone"
-                            placeholder="(00) 00000-0000"
-                            value={relatorTelefone}
-                            onChange={e => setRelatorTelefone(e.target.value)}
-                            className="h-11"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="relator-email">E-mail</Label>
-                          <Input
-                            id="relator-email"
-                            type="email"
-                            placeholder="email@exemplo.com"
-                            value={relatorEmail}
-                            onChange={e => setRelatorEmail(e.target.value)}
-                            className="h-11"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="relator-relacao">Relação com o Cliente</Label>
-                          <Input
-                            id="relator-relacao"
-                            placeholder="Relação do Relator com o Cliente"
-                            value={relatorRelacao}
-                            onChange={e => setRelatorRelacao(e.target.value)}
-                            className="h-11"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Seção 3: Informações do Cliente */}
-              <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
-                <div className="flex items-center gap-2 mb-3">
-                  <User className="h-5 w-5 text-teal-600" />
-                  <h3 className="font-medium text-lg text-gray-800">Informações do Cliente <span className="text-red-500">*</span></h3>
-                </div>
-
-                <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-                  <div className="flex flex-wrap gap-4 mb-4">
-                    <Button
-                      variant={tipoCliente === "cadastrado" ? "default" : "outline"}
-                      className={`flex items-center gap-2 h-11 ${
-                        tipoCliente === "cadastrado" ? "bg-teal-600 hover:bg-teal-700" : ""
-                      }`}
-                      onClick={() => {
-                        setTipoCliente("cadastrado");
-                        setShowClienteForm(false);
-                        setSelectedCliente(null);
-                        setShowResults(false);
-                      }}
-                    >
-                      <User className="h-4 w-4" />
-                      Cliente Cadastrado
-                    </Button>
-                    <Button
-                      variant={tipoCliente === "novo" ? "default" : "outline"}
-                      className={`flex items-center gap-2 h-11 ${
-                        tipoCliente === "novo" ? "bg-teal-600 hover:bg-teal-700" : ""
-                      }`}
-                      onClick={() => {
-                        setTipoCliente("novo");
-                        setShowClienteForm(true);
-                        setSelectedCliente(null);
-                        setShowResults(false);
-                      }}
-                    >
-                      <UserPlus className="h-4 w-4" />
-                      Novo Cliente
-                    </Button>
-                    <Button
-                      variant={tipoCliente === "sem-registro" ? "default" : "outline"}
-                      className={`flex items-center gap-2 h-11 ${
-                        tipoCliente === "sem-registro" ? "bg-teal-600 hover:bg-teal-700" : ""
-                      }`}
-                      onClick={() => {
-                        setTipoCliente("sem-registro");
-                        setShowClienteForm(false);
-                        setSelectedCliente(null);
-                        setShowResults(false);
-                      }}
-                    >
-                      <UserX className="h-4 w-4" />
-                      Sem Registro
-                    </Button>
-                  </div>
-
-                  {tipoCliente === "cadastrado" ? (
-                    <div className="space-y-4">
-                      <div className="flex flex-col md:flex-row gap-2">
-                        <div className="flex-1 relative">
-                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            type="search"
-                            placeholder="Buscar por nome, CPF, telefone ou email"
-                            className="pl-8 h-11"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                          />
-                        </div>
-                        <Button onClick={handleSearch} className="bg-teal-600 hover:bg-teal-700 h-11">
-                          <Search className="mr-2 h-4 w-4" />
-                          Buscar
-                        </Button>
-                      </div>
-
-                      {showResults && (
-                        <Card className="border-teal-100 shadow-sm">
-                          <CardContent className="p-0">
-                            {searchResults.length > 0 ? (
-                              <div className="grid grid-cols-1 gap-4 p-4">
-                                {searchResults.map((cliente) => (
-                                  <Card key={cliente.id} className="border-gray-200 hover:border-teal-200 transition-colors">
-                                    <CardContent className="p-4">
-                                      <div className="flex items-start gap-4">
-                                        <div className="h-12 w-12 rounded-full bg-teal-100 flex items-center justify-center">
-                                          <User className="h-6 w-6 text-teal-600" />
-                                        </div>
-                                        <div className="flex-1">
-                                          <div className="flex items-center justify-between">
-                                            <h3 className="text-lg font-medium">{cliente.nome}</h3>
-                                            <Button
-                                              size="sm"
-                                              onClick={() => handleClienteSelect(cliente)}
-                                              className="bg-teal-600 hover:bg-teal-700"
-                                            >
-                                              Selecionar
-                                            </Button>
-                                          </div>
-                                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm">
-                                            <div className="flex items-center gap-2 text-gray-600">
-                                              <span className="font-medium">CPF:</span>
-                                              <span>{cliente.documento}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2 text-gray-600">
-                                              <span className="font-medium">Telefone:</span>
-                                              <span>{cliente.telefone}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2 text-gray-600">
-                                              <span className="font-medium">Email:</span>
-                                              <span>{cliente.email}</span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-                                ))}
-                              </div>
-                            ) : (
-                              <div className="p-6 text-center space-y-4">
-                                <p className="text-gray-600">
-                                  Nenhum cliente encontrado. Verifique os critérios de busca ou cadastre um novo cliente.
-                                </p>
-                                <Button
-                                  onClick={() => {
-                                    setTipoCliente("novo");
-                                    setShowClienteForm(true);
-                                    setShowResults(false);
-                                    const radioInput = document.querySelector('input[value="novo"]') as HTMLInputElement;
-                                    if (radioInput) {
-                                      radioInput.checked = true;
-                                    }
-                                  }}
-                                  className="bg-teal-600 hover:bg-teal-700"
-                                >
-                                  <UserPlus className="mr-2 h-4 w-4" />
-                                  Cadastrar Cliente
-                                </Button>
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      )}
-
-                      {selectedCliente && (
-                        <>
-                          <Card className="border-teal-100 bg-gray-50 shadow-sm">
-                            <CardContent className="p-5">
-                              <div className="flex items-start gap-4">
-                                <div className="h-12 w-12 rounded-full bg-teal-100 flex items-center justify-center">
-                                  <User className="h-6 w-6 text-teal-600" />
-                                </div>
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2">
-                                    <h3 className="text-lg font-medium">{selectedCliente.nome}</h3>
-                                  </div>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 mt-2 text-sm">
-                                    <div className="flex items-center gap-1 text-gray-600">
-                                      <span>{selectedCliente.email}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1 text-gray-600">
-                                      <span>{selectedCliente.telefone}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1 text-gray-600">
-                                      <span>{selectedCliente.documento}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1 text-gray-600">
-                                      <span>{selectedCliente.endereco}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-
-                          {/* Protocolos Abertos do Cliente */}
-                          {clienteProtocolos.length > 0 && (
-                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
-                              <div className="p-6 border-b border-gray-200">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
-                                      <Clipboard className="h-5 w-5 text-blue-600" />
-                                    </div>
-                                    <div>
-                                      <h3 className="text-lg font-semibold text-gray-900">Protocolos Abertos</h3>
-                                      <p className="text-sm text-gray-500">Protocolos em andamento do cliente</p>
-                                    </div>
-                                  </div>
-                                  <Badge className="bg-gray-100 text-gray-700 border-gray-200">
-                                    {clienteProtocolos.length} protocolo(s)
-                                  </Badge>
-                                </div>
-                              </div>
-                              <div className="p-6 space-y-4">
-                                {clienteProtocolos.map((protocolo) => (
-                                  <div 
-                                    key={protocolo.id}
-                                    className="group relative bg-white border border-gray-200 rounded-xl p-5 hover:border-[#26B99D]/30 hover:shadow-sm transition-all duration-200"
-                                  >
-                                    <div className="flex items-start justify-between gap-4">
-                                      <div className="flex-1 min-w-0">
-                                        <div className="mb-3">
-                                          <span className="font-medium text-gray-900 text-lg">{protocolo.id}</span>
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                          <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
-                                              <Calendar className="h-4 w-4 text-gray-500" />
-                                            </div>
-                                            <div>
-                                              <p className="text-xs text-gray-500">Aberto em</p>
-                                              <p className="text-sm font-medium text-gray-900">{protocolo.data}</p>
-                                            </div>
-                                          </div>
-                                          <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
-                                              <FileText className="h-4 w-4 text-gray-500" />
-                                            </div>
-                                            <div>
-                                              <p className="text-xs text-gray-500">Motivo</p>
-                                              <p className="text-sm font-medium text-gray-900">{protocolo.tipo}</p>
-                                            </div>
-                                          </div>
-                                          <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
-                                              <Package className="h-4 w-4 text-gray-500" />
-                                            </div>
-                                            <div>
-                                              <p className="text-xs text-gray-500">Produto</p>
-                                              <p className="text-sm font-medium text-gray-900">{protocolo.produto}</p>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-[#26B99D]/10 hover:text-[#26B99D] hover:border-[#26B99D]/20"
-                                      >
-                                        <FileText className="h-4 w-4 mr-2" />
-                                        Ver detalhes
-                                      </Button>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  ) : tipoCliente === "novo" ? (
-                    <Card className="border-dashed border-2 border-teal-200 shadow-sm">
-                      <CardHeader className="pb-2">
-                        <h3 className="text-lg flex items-center font-medium">
-                          <UserPlus className="mr-2 h-5 w-5 text-teal-500" />
-                          Cadastro de Novo Cliente
-                        </h3>
-                        <p className="text-sm text-muted-foreground">Preencha os dados do novo cliente</p>
-                      </CardHeader>
-                      <CardContent>
-                        {/* Informações Básicas */}
-                        <div>
-                          <h3 className="text-lg font-medium flex items-center mb-4">
-                            <User className="mr-2 h-5 w-5 text-primary" />
-                            Informações Básicas
-                          </h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="nome">
-                                Nome Completo <span className="text-red-500">*</span>
-                              </Label>
-                              <Input id="nome" placeholder="Nome completo do cliente" required className="h-11" />
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="documento">
-                                CPF {["queixa", "farmacovigilancia"].includes(motivoSelecionado) && <span className="text-red-500">*</span>}
-                              </Label>
-                              <Input
-                                id="documento"
-                                placeholder="000.000.000-00"
-                                required={["queixa", "farmacovigilancia"].includes(motivoSelecionado)}
-                                className="h-11"
-                              />
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="tipo-cliente">
-                                Tipo do Cliente <span className="text-red-500">*</span>
-                              </Label>
-                              <Select>
-                                <SelectTrigger id="tipo-cliente" className="h-11">
-                                  <SelectValue placeholder="Selecione o tipo" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="aut-reg-orgao-publico">Aut. Reg./Órgão Público</SelectItem>
-                                  <SelectItem value="colaborador">Colaborador/Força de Vendas</SelectItem>
-                                  <SelectItem value="convenio">Convênio/Outros PJ</SelectItem>
-                                  <SelectItem value="distribuidor">Distribuidor</SelectItem>
-                                  <SelectItem value="farmacia">Farmácia/Drogaria</SelectItem>
-                                  <SelectItem value="hospital">Hospital/Clínica</SelectItem>
-                                  <SelectItem value="medico">Médico</SelectItem>
-                                  <SelectItem value="nao-informado">Não informado</SelectItem>
-                                  <SelectItem value="outros">Outros</SelectItem>
-                                  <SelectItem value="paciente">Paciente</SelectItem>
-                                  <SelectItem value="prestador">Prestador de Serviço</SelectItem>
-                                  <SelectItem value="profissional-saude">Profissional de Saúde</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Contato */}
-                        <div className="mt-6">
-                          <h3 className="text-lg font-medium flex items-center mb-4">
-                            <Phone className="mr-2 h-5 w-5 text-primary" />
-                            Informações de Contato
-                          </h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="telefone">
-                                Telefone <span className="text-red-500">*</span>
-                              </Label>
-                              <Input
-                                id="telefone"
-                                placeholder="(00) 00000-0000"
-                                required
-                                className="h-11"
-                              />
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="email">Email</Label>
-                              <Input
-                                id="email"
-                                type="email"
-                                placeholder="email@exemplo.com"
-                                className="h-11"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Endereço */}
-                        <div className="mt-6">
-                          <h3 className="text-lg font-medium flex items-center mb-4">
-                            <MapPin className="mr-2 h-5 w-5 text-primary" />
-                            Logradouro
-                          </h3>
-                          <div className="grid grid-cols-1 gap-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="logradouro">Logradouro</Label>
-                                <Input
-                                  id="logradouro"
-                                  placeholder="Logradouro"
-                                  className="h-11"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="numero">N°</Label>
-                                <Input
-                                  id="numero"
-                                  placeholder="Número"
-                                  className="h-11"
-                                />
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="complemento">Complemento</Label>
-                                <Input
-                                  id="complemento"
-                                  placeholder="Complemento"
-                                  className="h-11"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="bairro">Bairro</Label>
-                                <Input
-                                  id="bairro"
-                                  placeholder="Bairro"
-                                  className="h-11"
-                                />
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="cidade">Cidade</Label>
-                                <Input
-                                  id="cidade"
-                                  placeholder="Cidade"
-                                  className="h-11"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="estado">Estado</Label>
-                                <Select>
-                                  <SelectTrigger id="estado" className="h-11">
-                                    <SelectValue placeholder="Selecione" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="AC">Acre</SelectItem>
-                                    <SelectItem value="AL">Alagoas</SelectItem>
-                                    <SelectItem value="AP">Amapá</SelectItem>
-                                    <SelectItem value="AM">Amazonas</SelectItem>
-                                    <SelectItem value="BA">Bahia</SelectItem>
-                                    <SelectItem value="CE">Ceará</SelectItem>
-                                    <SelectItem value="DF">Distrito Federal</SelectItem>
-                                    <SelectItem value="ES">Espírito Santo</SelectItem>
-                                    <SelectItem value="GO">Goiás</SelectItem>
-                                    <SelectItem value="MA">Maranhão</SelectItem>
-                                    <SelectItem value="MT">Mato Grosso</SelectItem>
-                                    <SelectItem value="MS">Mato Grosso do Sul</SelectItem>
-                                    <SelectItem value="MG">Minas Gerais</SelectItem>
-                                    <SelectItem value="PA">Pará</SelectItem>
-                                    <SelectItem value="PB">Paraíba</SelectItem>
-                                    <SelectItem value="PR">Paraná</SelectItem>
-                                    <SelectItem value="PE">Pernambuco</SelectItem>
-                                    <SelectItem value="PI">Piauí</SelectItem>
-                                    <SelectItem value="RJ">Rio de Janeiro</SelectItem>
-                                    <SelectItem value="RN">Rio Grande do Norte</SelectItem>
-                                    <SelectItem value="RS">Rio Grande do Sul</SelectItem>
-                                    <SelectItem value="RO">Rondônia</SelectItem>
-                                    <SelectItem value="RR">Roraima</SelectItem>
-                                    <SelectItem value="SC">Santa Catarina</SelectItem>
-                                    <SelectItem value="SP">São Paulo</SelectItem>
-                                    <SelectItem value="SE">Sergipe</SelectItem>
-                                    <SelectItem value="TO">Tocantins</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="cep">CEP</Label>
-                                <Input
-                                  id="cep"
-                                  placeholder="00000-000"
-                                  className="h-11"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <div className="space-y-4 p-5 border rounded-lg bg-white shadow-sm">
-                      <div className="space-y-2">
-                        <Label htmlFor="nome-sem-registro" className="font-medium">
-                          Nome <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                          id="nome-sem-registro"
-                          placeholder="Nome do cliente"
-                          value={nomeSemRegistro}
-                          onChange={(e) => setNomeSemRegistro(e.target.value)}
-                          required
-                          className="h-11"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="telefone-sem-registro">Telefone</Label>
-                        <Input
-                          id="telefone-sem-registro"
-                          placeholder="(00) 00000-0000"
-                          value={telefoneSemRegistro}
-                          onChange={(e) => setTelefoneSemRegistro(e.target.value)}
-                          className="h-11"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email-sem-registro">E-mail</Label>
-                        <Input
-                          id="email-sem-registro"
-                          type="email"
-                          placeholder="email@exemplo.com"
-                          value={emailSemRegistro}
-                          onChange={(e) => setEmailSemRegistro(e.target.value)}
-                          className="h-11"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Seção 3: Informações do Contato - Mostrar apenas para "Sem Registro" */}
-              {tipoCliente === "sem-registro" && (
-                <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Phone className="h-5 w-5 text-teal-600" />
-                    <h3 className="font-medium text-lg text-gray-800">Informações do Contato</h3>
-                  </div>
-
-                  <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="contato-via" className="font-medium">
-                          Forma de Contato
-                        </Label>
-                        {tipoCliente === "sem-registro" ? (
-                          <div className="flex flex-wrap gap-2">
-                            <Button
-                              variant={formData.tipoContato === "telefone" ? "default" : "outline"}
-                              className={`h-9 px-3 ${
-                                formData.tipoContato === "telefone" ? "bg-teal-600 hover:bg-teal-700" : ""
-                              }`}
-                              onClick={() => setFormData(prev => ({ ...prev, tipoContato: "telefone" }))}
-                            >
-                              <Phone className="h-3.5 w-3.5 mr-1" />
-                              Telefone
-                            </Button>
-                            <Button
-                              variant={formData.tipoContato === "email" ? "default" : "outline"}
-                              className={`h-9 px-3 ${
-                                formData.tipoContato === "email" ? "bg-teal-600 hover:bg-teal-700" : ""
-                              }`}
-                              onClick={() => setFormData(prev => ({ ...prev, tipoContato: "email" }))}
-                            >
-                              <Mail className="h-3.5 w-3.5 mr-1" />
-                              Email
-                            </Button>
-                            <Button
-                              variant={formData.tipoContato === "whatsapp" ? "default" : "outline"}
-                              className={`h-9 px-3 ${
-                                formData.tipoContato === "whatsapp" ? "bg-teal-600 hover:bg-teal-700" : ""
-                              }`}
-                              onClick={() => setFormData(prev => ({ ...prev, tipoContato: "whatsapp" }))}
-                            >
-                              <MessageSquare className="h-3.5 w-3.5 mr-1" />
-                              WhatsApp
-                            </Button>
-                            <Button
-                              variant={formData.tipoContato === "presencial" ? "default" : "outline"}
-                              className={`h-9 px-3 ${
-                                formData.tipoContato === "presencial" ? "bg-teal-600 hover:bg-teal-700" : ""
-                              }`}
-                              onClick={() => setFormData(prev => ({ ...prev, tipoContato: "presencial" }))}
-                            >
-                              <MapPin className="h-3.5 w-3.5 mr-1" />
-                              Presencial
-                            </Button>
-                          </div>
-                        ) : (
-                          <Select>
-                            <SelectTrigger id="contato-via" className="h-11">
-                              <SelectValue placeholder="Selecione" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="telefone">Telefone</SelectItem>
-                              <SelectItem value="email">Email</SelectItem>
-                              <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                              <SelectItem value="presencial">Presencial</SelectItem>
-                              <SelectItem value="outro">Outro</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label className="font-medium">Tipo de Contato</Label>
-                        <RadioGroup
-                          defaultValue="ativo"
-                          className="flex gap-4"
-                          onValueChange={(value) => setTipoContato(value as "ativo" | "receptivo")}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="ativo" id="tipo-ativo" />
-                            <Label htmlFor="tipo-ativo" className="flex items-center gap-2">
-                              <Phone className="h-4 w-4 text-teal-600" />
-                              Ativo
-                            </Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="receptivo" id="tipo-receptivo" />
-                            <Label htmlFor="tipo-receptivo" className="flex items-center gap-2">
-                              <PhoneIncoming className="h-4 w-4 text-teal-600" />
-                              Receptivo
-                            </Label>
-                          </div>
-                        </RadioGroup>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Seção 4: Descrição do contato - Mostrar apenas para "Sem Registro" */}
-              {tipoCliente === "sem-registro" && (
-                <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Info className="h-5 w-5 text-teal-600" />
-                    <h3 className="font-medium text-lg text-gray-800">Descrição do Contato</h3>
-                  </div>
-
-                  <div className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm space-y-4">
-                    {/* Produtos do Atendimento - Mostrar apenas para clientes cadastrados ou novos */}
-                    {tipoCliente !== "sem-registro" && (
-                      <div className="space-y-2">
-                        <Label htmlFor="produtos" className="font-medium">
-                          Produtos do Atendimento
-                        </Label>
-                        <Select>
-                          <SelectTrigger id="produtos" className="h-11 bg-gray-50">
-                            <SelectValue placeholder="Selecione" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="produto1">Medicamento A</SelectItem>
-                            <SelectItem value="produto2">Medicamento B</SelectItem>
-                            <SelectItem value="produto3">Medicamento C</SelectItem>
-                            <SelectItem value="produto4">Dispositivo Médico X</SelectItem>
-                            <SelectItem value="produto5">Dispositivo Médico Y</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-
-                    <Separator />
-
-                    {/* Observações */}
-                    <div className="space-y-2">
-                      <Label htmlFor="observacoes" className="font-medium">
-                        Descrição do Contato
-                      </Label>
-                      <Textarea
-                        id="observacoes"
-                        placeholder="Adicione informações relevantes sobre o atendimento"
-                        rows={4}
-                        className="resize-none"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           ) : (
             <div className="space-y-6">

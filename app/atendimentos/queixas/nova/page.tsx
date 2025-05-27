@@ -261,6 +261,15 @@ interface ResumoFormularioProps {
   procedenciaQueixa?: string;
   conclusaoFinal?: string;
   recomendacoes?: string;
+  onResponsavelInvestigacaoChange?: (value: string) => void;
+  onAnaliseCausaRaizChange?: (value: string) => void;
+  onInvestigacaoProcessoChange?: (value: string) => void;
+  onVerificacaoLotesChange?: (value: string) => void;
+  onAcoesCorretivasChange?: (value: string) => void;
+  onAcoesPreventivasChange?: (value: string) => void;
+  onProcedenciaQueixaChange?: (value: string) => void;
+  onConclusaoFinalChange?: (value: string) => void;
+  onRecomendacoesChange?: (value: string) => void;
 }
 function ResumoFormulario({ 
   formData, 
@@ -288,7 +297,16 @@ function ResumoFormulario({
   acoesPreventivas,
   procedenciaQueixa,
   conclusaoFinal,
-  recomendacoes
+  recomendacoes,
+  onResponsavelInvestigacaoChange,
+  onAnaliseCausaRaizChange,
+  onInvestigacaoProcessoChange,
+  onVerificacaoLotesChange,
+  onAcoesCorretivasChange,
+  onAcoesPreventivasChange,
+  onProcedenciaQueixaChange,
+  onConclusaoFinalChange,
+  onRecomendacoesChange
 }: ResumoFormularioProps) {
   const [idioma, setIdioma] = useState("pt");
   return (
@@ -1117,6 +1135,15 @@ export default function NovaQueixaTecnicaPage() {
                 procedenciaQueixa={procedenciaQueixa}
                 conclusaoFinal={conclusaoFinal}
                 recomendacoes={recomendacoes}
+                onResponsavelInvestigacaoChange={setResponsavelInvestigacao}
+                onAnaliseCausaRaizChange={setAnaliseCausaRaiz}
+                onInvestigacaoProcessoChange={setInvestigacaoProcesso}
+                onVerificacaoLotesChange={setVerificacaoLotes}
+                onAcoesCorretivasChange={setAcoesCorretivas}
+                onAcoesPreventivasChange={setAcoesPreventivas}
+                onProcedenciaQueixaChange={setProcedenciaQueixa}
+                onConclusaoFinalChange={setConclusaoFinal}
+                onRecomendacoesChange={setRecomendacoes}
               />
               {/* Seção Análise de Qualidade - Apenas quando status for Qualidade */}
               {status === "Qualidade" && (
