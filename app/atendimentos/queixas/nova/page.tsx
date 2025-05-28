@@ -1007,20 +1007,20 @@ export default function NovaQueixaTecnicaPage() {
           <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded shadow flex items-start gap-3">
             <AlertTriangle className="h-6 w-6 text-red-500 mt-1" />
             <div>
-              <div className="font-bold text-red-700 text-lg mb-1">Justificativa da Rejeição</div>
+              <div className="font-bold text-red-700 text-lg mb-1">{status === "Qualidade" ? "Justificativa do Retorno" : "Justificativa do Retorno"}</div>
               <div className="text-gray-800 whitespace-pre-line">{justificativaRejeicao}</div>
             </div>
           </div>
         )}
 
-        {/* Modal de Justificativa de Rejeição */}
+        {/* Modal de Justificativa de Retorno */}
         <Dialog open={showJustificativaModal} onOpenChange={setShowJustificativaModal}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Justificativa da Rejeição</DialogTitle>
+              <DialogTitle>{status === "Qualidade" ? "Justificativa do Retorno" : "Justificativa do Retorno"}</DialogTitle>
             </DialogHeader>
             <div className="py-2">
-              <Label htmlFor="justificativa-rejeicao">Explique o motivo da rejeição:</Label>
+              <Label htmlFor="justificativa-rejeicao">{status === "Qualidade" ? "Explique o motivo do retorno:" : "Explique o motivo do Retorno:"}</Label>
               <Textarea
                 id="justificativa-rejeicao"
                 value={justificativaRejeicaoTemp}
@@ -1039,7 +1039,7 @@ export default function NovaQueixaTecnicaPage() {
                 }}
                 disabled={!justificativaRejeicaoTemp.trim()}
               >
-                Confirmar Rejeição
+                {status === "Qualidade" ? "Confirmar Retorno" : "Confirmar Retorno"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1062,7 +1062,7 @@ export default function NovaQueixaTecnicaPage() {
             <Ban className="h-4 w-4 text-red-600" />
             <AlertTitle>Queixa Técnica Rejeitada</AlertTitle>
             <AlertDescription>
-              Esta queixa técnica foi rejeitada. Verifique os comentários para entender os motivos da rejeição.
+              Esta queixa técnica foi rejeitada. Verifique os comentários para entender os motivos do Retorno.
             </AlertDescription>
           </Alert>
         )}
@@ -3576,7 +3576,7 @@ export default function NovaQueixaTecnicaPage() {
                 }}
                   >
                     <X className="mr-2 h-4 w-4" />
-                    Rejeitar
+                    {status === "Qualidade" ? "Retornar" : "Rejeitar"}
                   </Button>
                 )}
                 <Button
