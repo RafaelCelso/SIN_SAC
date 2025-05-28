@@ -449,125 +449,198 @@ function ResumoFormulario({
             <span className="text-gray-500">Nenhum arquivo anexado.</span>
           )}
         </div>
+        {/* Análise de Qualidade - para Em análise e Concluído */}
+        {(status === "Em análise" || status === "Concluído") && (
+          <div className="bg-white rounded-lg p-4 shadow-sm mt-8">
+            <div className="flex items-center mb-4">
+              <h3 className="font-bold text-lg text-teal-900 bg-gray-100 border-l-4 border-teal-400 pl-3 py-1 rounded w-full">Análise de Qualidade</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-base leading-relaxed">
+              <div>
+                <span className="font-semibold text-gray-700">Número de Protocolo Interno:</span>
+                <span className="text-teal-900 font-bold ml-2">{protocoloInterno || 'Não informado'}</span>
+              </div>
+              <div>
+                <span className="font-semibold text-gray-700">Criticidade:</span>
+                <span className="text-teal-900 font-bold ml-2">{criticidade || 'Não informado'}</span>
+              </div>
+              <div>
+                <span className="font-semibold text-gray-700">Amostra Recebida:</span>
+                <span className="text-teal-900 font-bold ml-2">{amostraRecebida === 'sim' ? 'Sim' : 'Não'}</span>
+              </div>
+              <div>
+                <span className="font-semibold text-gray-700">Necessita de análise laboratorial?</span>
+                <span className="text-teal-900 font-bold ml-2">{analiseLab === 'sim' ? 'Sim' : analiseLab === 'nao' ? 'Não' : 'Não informado'}</span>
+              </div>
+            </div>
+            {amostraRecebida === 'sim' && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div>
+                  <span className="font-semibold text-gray-700">Data do Recebimento:</span>
+                  <span className="text-teal-900 font-bold ml-2">{dataRecebimentoAmostra || 'Não informado'}</span>
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-700">Tipo de Amostra:</span>
+                  <span className="text-teal-900 font-bold ml-2">{tipoAmostra || 'Não informado'}</span>
+                </div>
+                <div className="md:col-span-3">
+                  <span className="font-semibold text-gray-700 block mb-2">Descrição da Amostra:</span>
+                  <div className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words">
+                    {descricaoAmostra || 'Nenhuma descrição registrada.'}
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="mt-4">
+              <span className="font-semibold text-gray-700 block mb-2">Observações e/ou Recomendações:</span>
+              <div className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words">
+                {observacoesRecomendacoes || 'Nenhuma observação registrada.'}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Análise de Qualidade */}
-        {status === "Em análise" && (
+        {(status === "Em análise" || status === "Concluído") && (
           <>
             <Separator />
+            {/* Investigação Técnica */}
             <div className="bg-white rounded-lg p-4 shadow-sm">
               <div className="flex items-center mb-4">
-                <h3 className="font-bold text-lg text-teal-900 bg-gray-100 border-l-4 border-teal-400 pl-3 py-1 rounded w-full">Análise de Qualidade</h3>
+                <span className="text-green-600 mr-2">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9 12l2 2 4-4" />
+                  </svg>
+                </span>
+                <h3 className="font-bold text-lg text-teal-900">Investigação Técnica</h3>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-base leading-relaxed">
-                <div><span className="font-semibold text-gray-700">Número de Protocolo Interno:</span> <span className="text-teal-900 font-bold">{protocoloInterno || 'Não informado'}</span></div>
-                <div><span className="font-semibold text-gray-700">Criticidade:</span> <span className="text-teal-900 font-bold">{criticidade || 'Não informado'}</span></div>
-                <div><span className="font-semibold text-gray-700">Amostra Recebida:</span> <span className="text-teal-900 font-bold">{amostraRecebida === 'sim' ? 'Sim' : 'Não'}</span></div>
-                <div><span className="font-semibold text-gray-700">Necessita de análise laboratorial?</span> <span className="text-teal-900 font-bold">{analiseLab === 'sim' ? 'Sim' : analiseLab === 'nao' ? 'Não' : 'Não informado'}</span></div>
-                {amostraRecebida === 'sim' && (
-                  <>
-                    <div><span className="font-semibold text-gray-700">Data do Recebimento:</span> <span className="text-teal-900 font-bold">{dataRecebimentoAmostra}</span></div>
-                    <div><span className="font-semibold text-gray-700">Tipo de Amostra:</span> <span className="text-teal-900 font-bold">{tipoAmostra}</span></div>
-                    <div className="md:col-span-2">
-                      <span className="font-semibold text-gray-700 block mb-2">Descrição da Amostra:</span>
-                      <div className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words">
-                        {descricaoAmostra || 'Nenhuma descrição registrada.'}
-                      </div>
-                    </div>
-                  </>
-                )}
-                <div className="md:col-span-2">
-                  <span className="font-semibold text-gray-700 block mb-2">Observações e/ou Recomendações:</span>
-                  <div className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words">
-                    {observacoesRecomendacoes || 'Nenhuma observação registrada.'}
-                  </div>
+              <div className="grid grid-cols-1 gap-4 text-base leading-relaxed">
+                <div>
+                  <span className="font-semibold text-gray-700">Responsável pela Investigação:</span>
+                  {status === 'Em análise' ? (
+                    <Input className="mt-1" value={responsavelInvestigacao} onChange={e => onResponsavelInvestigacaoChange && onResponsavelInvestigacaoChange(e.target.value)} />
+                  ) : (
+                    <span className="text-teal-900 font-bold ml-2">{responsavelInvestigacao || 'Não informado'}</span>
+                  )}
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-700">Análise da Causa Raiz:</span>
+                  {status === 'Em análise' ? (
+                    <Textarea className="mt-1" value={analiseCausaRaiz} onChange={e => onAnaliseCausaRaizChange && onAnaliseCausaRaizChange(e.target.value)} />
+                  ) : (
+                    <div className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words mt-1">{analiseCausaRaiz || 'Não informado'}</div>
+                  )}
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-700">Investigação do Processo de Fabricação:</span>
+                  {status === 'Em análise' ? (
+                    <Textarea className="mt-1" value={investigacaoProcesso} onChange={e => onInvestigacaoProcessoChange && onInvestigacaoProcessoChange(e.target.value)} />
+                  ) : (
+                    <div className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words mt-1">{investigacaoProcesso || 'Não informado'}</div>
+                  )}
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-700">Verificação de Outros Lotes:</span>
+                  {status === 'Em análise' ? (
+                    <Textarea className="mt-1" value={verificacaoLotes} onChange={e => onVerificacaoLotesChange && onVerificacaoLotesChange(e.target.value)} />
+                  ) : (
+                    <div className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words mt-1">{verificacaoLotes || 'Não informado'}</div>
+                  )}
                 </div>
               </div>
             </div>
-            {/* Investigação Técnica */}
-            <Card className="mb-8 border border-gray-200 shadow">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <span className="text-green-600"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></span>
-                  <CardTitle>Investigação Técnica</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <Label>Responsável pela Investigação</Label>
-                  <Input value={responsavelInvestigacao} readOnly />
-                </div>
-                <div>
-                  <Label>Análise da Causa Raiz</Label>
-                  <Textarea value={analiseCausaRaiz} readOnly />
-                </div>
-                <div>
-                  <Label>Investigação do Processo de Fabricação</Label>
-                  <Textarea value={investigacaoProcesso} readOnly />
-                </div>
-                <div>
-                  <Label>Verificação de Outros Lotes</Label>
-                  <Textarea value={verificacaoLotes} readOnly />
-                </div>
-              </CardContent>
-            </Card>
+            <Separator />
             {/* Ações Corretivas e Preventivas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Ações Corretivas Implementadas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Textarea value={acoesCorretivas} readOnly />
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Ações Preventivas Propostas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Textarea value={acoesPreventivas} readOnly />
-                </CardContent>
-              </Card>
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="flex items-center mb-4">
+                  <span className="text-green-600 mr-2">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M9 12l2 2 4-4" />
+                    </svg>
+                  </span>
+                  <span className="font-bold text-lg text-teal-900">Ações Corretivas Implementadas</span>
+                </div>
+                {status === 'Em análise' ? (
+                  <Textarea className="mt-1" value={acoesCorretivas} onChange={e => onAcoesCorretivasChange && onAcoesCorretivasChange(e.target.value)} />
+                ) : (
+                  <div className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words">{acoesCorretivas || 'Nenhuma ação registrada.'}</div>
+                )}
+              </div>
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="flex items-center mb-4">
+                  <span className="text-green-600 mr-2">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M9 12l2 2 4-4" />
+                    </svg>
+                  </span>
+                  <span className="font-bold text-lg text-teal-900">Ações Preventivas Propostas</span>
+                </div>
+                {status === 'Em análise' ? (
+                  <Textarea className="mt-1" value={acoesPreventivas} onChange={e => onAcoesPreventivasChange && onAcoesPreventivasChange(e.target.value)} />
+                ) : (
+                  <div className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words">{acoesPreventivas || 'Nenhuma ação registrada.'}</div>
+                )}
+              </div>
             </div>
+            <Separator />
             {/* Conclusões e Encerramento */}
-            <Card className="mb-8 border border-gray-200 shadow">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <span className="text-green-600"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></span>
-                  <CardTitle>Conclusões e Encerramento</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
+            <div className="bg-white rounded-lg p-4 shadow-sm mb-8">
+              <div className="flex items-center mb-4">
+                <span className="text-green-600 mr-2">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9 12l2 2 4-4" />
+                  </svg>
+                </span>
+                <h3 className="font-bold text-lg text-teal-900">Conclusões e Encerramento</h3>
+              </div>
+              <div className="grid grid-cols-1 gap-4 text-base leading-relaxed">
                 <div>
-                  <Label>Procedência da Queixa</Label>
-                  <div className="flex flex-wrap gap-4 mt-2">
-                    <label className="flex items-center gap-1 cursor-pointer">
-                      <input type="radio" name="procedenciaQueixa" value="Procedente" checked={procedenciaQueixa === 'Procedente'} readOnly className="accent-green-600" />
-                      <span className="rounded bg-red-100 text-red-700 px-2 py-0.5 text-xs font-semibold">Procedente</span>
-                      <span>Problema confirmado</span>
-                    </label>
-                    <label className="flex items-center gap-1 cursor-pointer">
-                      <input type="radio" name="procedenciaQueixa" value="Parcialmente Procedente" checked={procedenciaQueixa === 'Parcialmente Procedente'} readOnly className="accent-yellow-500" />
-                      <span className="rounded bg-yellow-100 text-yellow-700 px-2 py-0.5 text-xs font-semibold">Parcialmente Procedente</span>
-                      <span>Problema parcial</span>
-                    </label>
-                    <label className="flex items-center gap-1 cursor-pointer">
-                      <input type="radio" name="procedenciaQueixa" value="Improcedente" checked={procedenciaQueixa === 'Improcedente'} readOnly className="accent-green-600" />
-                      <span className="rounded bg-green-100 text-green-700 px-2 py-0.5 text-xs font-semibold">Improcedente</span>
-                      <span>Problema não confirmado</span>
-                    </label>
-                  </div>
+                  <span className="font-semibold text-gray-700">Procedência da Queixa:</span>
+                  {status === 'Em análise' ? (
+                    <div className="flex flex-wrap gap-4 mt-2">
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input type="radio" name="procedenciaQueixa" value="Procedente" checked={procedenciaQueixa === 'Procedente'} onChange={() => onProcedenciaQueixaChange && onProcedenciaQueixaChange('Procedente')} className="accent-green-600" />
+                        <span className="rounded bg-red-100 text-red-700 px-2 py-0.5 text-xs font-semibold">Procedente</span>
+                        <span>Problema confirmado</span>
+                      </label>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input type="radio" name="procedenciaQueixa" value="Parcialmente Procedente" checked={procedenciaQueixa === 'Parcialmente Procedente'} onChange={() => onProcedenciaQueixaChange && onProcedenciaQueixaChange('Parcialmente Procedente')} className="accent-yellow-500" />
+                        <span className="rounded bg-yellow-100 text-yellow-700 px-2 py-0.5 text-xs font-semibold">Parcialmente Procedente</span>
+                        <span>Problema parcial</span>
+                      </label>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input type="radio" name="procedenciaQueixa" value="Improcedente" checked={procedenciaQueixa === 'Improcedente'} onChange={() => onProcedenciaQueixaChange && onProcedenciaQueixaChange('Improcedente')} className="accent-green-600" />
+                        <span className="rounded bg-green-100 text-green-700 px-2 py-0.5 text-xs font-semibold">Improcedente</span>
+                        <span>Problema não confirmado</span>
+                      </label>
+                    </div>
+                  ) : (
+                    <span className="text-teal-900 font-bold ml-2">{procedenciaQueixa || 'Não informado'}</span>
+                  )}
                 </div>
                 <div>
-                  <Label>Conclusão Final</Label>
-                  <Textarea value={conclusaoFinal} readOnly />
+                  <span className="font-semibold text-gray-700">Conclusão Final:</span>
+                  {status === 'Em análise' ? (
+                    <Textarea className="mt-1" value={conclusaoFinal} onChange={e => onConclusaoFinalChange && onConclusaoFinalChange(e.target.value)} />
+                  ) : (
+                    <div className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words mt-1">{conclusaoFinal || 'Nenhuma conclusão registrada.'}</div>
+                  )}
                 </div>
                 <div>
-                  <Label>Recomendações</Label>
-                  <Textarea value={recomendacoes} readOnly />
+                  <span className="font-semibold text-gray-700">Recomendações:</span>
+                  {status === 'Em análise' ? (
+                    <Textarea className="mt-1" value={recomendacoes} onChange={e => onRecomendacoesChange && onRecomendacoesChange(e.target.value)} />
+                  ) : (
+                    <div className="text-teal-900 font-bold text-base bg-gray-50 border-l-4 border-teal-400 p-4 rounded whitespace-pre-line break-words mt-1">{recomendacoes || 'Nenhuma recomendação registrada.'}</div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </>
         )}
       </CardContent>
@@ -1007,7 +1080,7 @@ export default function NovaQueixaTecnicaPage() {
           <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded shadow flex items-start gap-3">
             <AlertTriangle className="h-6 w-6 text-red-500 mt-1" />
             <div>
-              <div className="font-bold text-red-700 text-lg mb-1">{status === "Qualidade" ? "Justificativa do Retorno" : "Justificativa do Retorno"}</div>
+              <div className="font-bold text-red-700 text-lg mb-1">Justificativa do Retorno</div>
               <div className="text-gray-800 whitespace-pre-line">{justificativaRejeicao}</div>
             </div>
           </div>
@@ -1017,10 +1090,10 @@ export default function NovaQueixaTecnicaPage() {
         <Dialog open={showJustificativaModal} onOpenChange={setShowJustificativaModal}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>{status === "Qualidade" ? "Justificativa do Retorno" : "Justificativa do Retorno"}</DialogTitle>
+              <DialogTitle>Justificativa do Retorno</DialogTitle>
             </DialogHeader>
             <div className="py-2">
-              <Label htmlFor="justificativa-rejeicao">{status === "Qualidade" ? "Explique o motivo do retorno:" : "Explique o motivo do Retorno:"}</Label>
+              <Label htmlFor="justificativa-rejeicao">Explique o motivo do retorno:</Label>
               <Textarea
                 id="justificativa-rejeicao"
                 value={justificativaRejeicaoTemp}
@@ -1039,7 +1112,7 @@ export default function NovaQueixaTecnicaPage() {
                 }}
                 disabled={!justificativaRejeicaoTemp.trim()}
               >
-                {status === "Qualidade" ? "Confirmar Retorno" : "Confirmar Retorno"}
+                Confirmar Retorno
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1077,9 +1150,6 @@ export default function NovaQueixaTecnicaPage() {
           </Alert>
         )}
 
-        
-        
-
         <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -1106,7 +1176,7 @@ export default function NovaQueixaTecnicaPage() {
           </div>
         </div>
           {/* RESUMO DO FORMULÁRIO PARA QUALIDADE */}
-          {(status === "Qualidade" || status === "Em análise") && (
+          {(status === "Qualidade" || status === "Em análise" || status === "Concluído") && (
             <>
               <ResumoFormulario
                 formData={formData}
@@ -1189,68 +1259,95 @@ export default function NovaQueixaTecnicaPage() {
                         </label>
                       </div>
                     </div>
-                    {/* Amostra recebida? */}
+                    {/* Amostra */}
                     <div>
-                      <Label className="font-semibold text-gray-700">Amostra recebida?</Label>
+                      <Label className="font-semibold text-gray-700">Amostra Recebida <span className="text-red-500">*</span></Label>
                       <div className="flex gap-4 mt-2">
-                        <label className="flex items-center gap-1 cursor-pointer">
-                          <input type="radio" name="amostraRecebida" value="sim" checked={amostraRecebida === 'sim'} onChange={() => setAmostraRecebida('sim')} className="accent-green-600" />
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="amostraRecebida"
+                            value="sim"
+                            checked={amostraRecebida === 'sim'}
+                            onChange={e => setAmostraRecebida(e.target.value)}
+                            className="accent-teal-600"
+                          />
                           <span>Sim</span>
                         </label>
-                        <label className="flex items-center gap-1 cursor-pointer">
-                          <input type="radio" name="amostraRecebida" value="nao" checked={amostraRecebida === 'nao'} onChange={() => setAmostraRecebida('nao')} className="accent-green-600" />
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="amostraRecebida"
+                            value="nao"
+                            checked={amostraRecebida === 'nao'}
+                            onChange={e => setAmostraRecebida(e.target.value)}
+                            className="accent-teal-600"
+                          />
                           <span>Não</span>
                         </label>
                       </div>
-                      {amostraRecebida === 'sim' && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                          <div>
-                            <Label className="font-semibold text-gray-700">Data do recebimento</Label>
-                            <Input type="date" className="mt-1" value={dataRecebimentoAmostra} onChange={e => setDataRecebimentoAmostra(e.target.value)} />
-                          </div>
-                          <div>
-                            <Label className="font-semibold text-gray-700">Tipo de amostra</Label>
-                            <Select value={tipoAmostra} onValueChange={setTipoAmostra}>
-                              <SelectTrigger className="w-full mt-1">
-                                <SelectValue placeholder="Selecione o tipo" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="blister">Blister</SelectItem>
-                                <SelectItem value="comprimido">Comprimido</SelectItem>
-                                <SelectItem value="capsula">Cápsula</SelectItem>
-                                <SelectItem value="ampola">Ampola</SelectItem>
-                                <SelectItem value="frasco">Frasco</SelectItem>
-                                <SelectItem value="outro">Outro</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="md:col-span-3">
-                            <Label className="font-semibold text-gray-700">Descrição da Amostra</Label>
-                            <Textarea
-                              className="mt-1 min-h-[60px]"
-                              placeholder="Descreva a amostra recebida..."
-                              value={descricaoAmostra}
-                              onChange={e => setDescricaoAmostra(e.target.value)}
+                    </div>
+                    {amostraRecebida === 'sim' && (
+                      <>
+                        <div>
+                          <Label className="font-semibold text-gray-700">Data do Recebimento <span className="text-red-500">*</span></Label>
+                          <div className="flex gap-2 mt-1">
+                            <Input
+                              type="date"
+                              value={dataRecebimentoAmostra}
+                              onChange={e => setDataRecebimentoAmostra(e.target.value)}
+                              className="w-64"
                             />
                           </div>
                         </div>
-                      )}
-                    </div>
-                    {/* Necessita de análise laboratorial? */}
+                        <div>
+                          <Label className="font-semibold text-gray-700">Tipo de Amostra <span className="text-red-500">*</span></Label>
+                          <div className="flex gap-2 mt-1">
+                            <Input
+                              value={tipoAmostra}
+                              onChange={e => setTipoAmostra(e.target.value)}
+                              className="w-64"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="font-semibold text-gray-700">Descrição da Amostra <span className="text-red-500">*</span></Label>
+                          <Textarea
+                            value={descricaoAmostra}
+                            onChange={e => setDescricaoAmostra(e.target.value)}
+                            className="mt-1 min-h-[80px]"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {/* Análise Laboratorial */}
                     <div>
-                      <Label className="font-semibold text-gray-700">Necessita de análise laboratorial?</Label>
+                      <Label className="font-semibold text-gray-700">Necessita de análise laboratorial? <span className="text-red-500">*</span></Label>
                       <div className="flex gap-4 mt-2">
-                        <label className="flex items-center gap-1 cursor-pointer">
-                          <input type="radio" name="analiseLab" value="sim" checked={analiseLab === 'sim'} onChange={() => setAnaliseLab('sim')} className="accent-green-600" />
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="analiseLab"
+                            value="sim"
+                            checked={analiseLab === 'sim'}
+                            onChange={e => setAnaliseLab(e.target.value)}
+                            className="accent-teal-600"
+                          />
                           <span>Sim</span>
                         </label>
-                        <label className="flex items-center gap-1 cursor-pointer">
-                          <input type="radio" name="analiseLab" value="nao" checked={analiseLab === 'nao'} onChange={() => setAnaliseLab('nao')} className="accent-green-600" />
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="analiseLab"
+                            value="nao"
+                            checked={analiseLab === 'nao'}
+                            onChange={e => setAnaliseLab(e.target.value)}
+                            className="accent-teal-600"
+                          />
                           <span>Não</span>
                         </label>
                       </div>
                     </div>
-                    {/* Observações e Recomendações */}
                     <div>
                       <Label className="font-semibold text-gray-700">Observações e/ou Recomendações</Label>
                       <Textarea
@@ -1267,7 +1364,7 @@ export default function NovaQueixaTecnicaPage() {
           )}
 
         {/* NOVA SEÇÃO: Informações do Relator */}
-        {status !== 'Qualidade' && status !== 'Em análise' && (
+        {status !== 'Qualidade' && status !== 'Em análise' && status !== 'Concluído' && (
         <Card>
           <CardHeader className="bg-gray-50 border-b">
             <div className="flex items-center gap-2">
@@ -1356,7 +1453,7 @@ export default function NovaQueixaTecnicaPage() {
         )}
 
         {/* Informações do Cliente */}
-        {status !== 'Qualidade' && status !== 'Em análise' && (
+        {status !== 'Qualidade' && status !== 'Em análise' && status !== 'Concluído' && (
         <Card>
           <CardHeader className="bg-gray-50 border-b">
             <div className="flex items-center justify-between">
@@ -1623,7 +1720,7 @@ export default function NovaQueixaTecnicaPage() {
         )}
 
         {/* Formulário de Queixa Técnica */}
-        {status !== 'Qualidade' && status !== 'Em análise' && (
+        {status !== 'Qualidade' && status !== 'Em análise' && status !== 'Concluído' && (
         <form onSubmit={handleSubmit}>
           <Card>
             <CardHeader>
@@ -3551,64 +3648,74 @@ export default function NovaQueixaTecnicaPage() {
         </form>
         )}
 
-        {/* Botões de ação sempre visíveis */}
-        <div className="flex justify-between mt-6">
-          <Button variant="destructive" type="button" onClick={() => router.push("/atendimentos/queixas")}>Cancelar</Button>
-              <div className="flex gap-2">
+        {/* Botões de ação - não exibir se status for 'Concluído' */}
+        {status !== 'Concluído' && (
+          <div className="flex justify-between mt-6">
+            <Button variant="destructive" type="button" onClick={() => router.push("/atendimentos/queixas")}>Cancelar</Button>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                className="flex items-center bg-[#e6faf7] border border-[#26B99D] text-[#26B99D] hover:bg-[#d9f7f2] hover:border-[#26B99D] font-semibold shadow-sm"
+              >
+                <Save className="mr-2 h-4 w-4 text-[#26B99D]" />
+                Salvar
+              </Button>
+              {/* Exibir botão Rejeitar apenas se status não for 'Rejeitado', 'Aberto' ou 'Retornado' */}
+              {status !== "Rejeitado" && status !== "Aberto" && status !== "Retornado" && (
                 <Button
                   type="button"
-                  className="flex items-center bg-[#e6faf7] border border-[#26B99D] text-[#26B99D] hover:bg-[#d9f7f2] hover:border-[#26B99D] font-semibold shadow-sm"
-                >
-                  <Save className="mr-2 h-4 w-4 text-[#26B99D]" />
-                  Salvar
-                </Button>
-            {/* Exibir botão Rejeitar apenas se status não for 'Rejeitado', 'Aberto' ou 'Retornado' */}
-            {status !== "Rejeitado" && status !== "Aberto" && status !== "Retornado" && (
-                  <Button
-                    type="button"
-                    className="flex items-center bg-red-100 border border-red-400 text-red-600 hover:bg-red-200 hover:border-red-500 font-semibold shadow-sm"
-                onClick={() => {
-                  if (status === "Qualidade") {
-                    setShowJustificativaModal(true);
-                  } else {
-                    setStatus("Rejeitado");
-                  }
-                }}
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    {status === "Qualidade" ? "Retornar" : "Rejeitar"}
-                  </Button>
-                )}
-                <Button
-                  type="submit"
-                  className="bg-teal-600 hover:bg-teal-700 flex items-center"
-                  onClick={e => {
-                    if (status === 'Aberto') {
-                      e.preventDefault();
-                      setStatus('Revisão');
-                    } else if (status === 'Revisão') {
-                      e.preventDefault();
-                      setStatus('Qualidade');
-                    } else if (status === 'Retornado') {
-                      e.preventDefault();
-                      setStatus('Qualidade');
-                    } else if (status === 'Qualidade') {
-                      e.preventDefault();
-                      setStatus('Em análise');
-                      toast({
-                        title: 'Queixa técnica enviada para a fábrica',
-                        description: 'O status foi alterado para "Em análise".',
-                        duration: 5000,
-                      });
+                  className="flex items-center bg-red-100 border border-red-400 text-red-600 hover:bg-red-200 hover:border-red-500 font-semibold shadow-sm"
+                  onClick={() => {
+                    if (status === "Qualidade" || status === "Em análise") {
+                      setShowJustificativaModal(true);
+                    } else {
+                      setStatus("Rejeitado");
                     }
-                    // Nos outros status, deixa o submit normal
                   }}
                 >
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Enviar
+                  <X className="mr-2 h-4 w-4" />
+                  {status === "Qualidade" || status === "Em análise" ? "Retornar" : "Rejeitar"}
                 </Button>
-              </div>
-        </div>
+              )}
+              <Button
+                type="submit"
+                className="bg-teal-600 hover:bg-teal-700 flex items-center"
+                onClick={e => {
+                  if (status === 'Aberto') {
+                    e.preventDefault();
+                    setStatus('Revisão');
+                  } else if (status === 'Revisão') {
+                    e.preventDefault();
+                    setStatus('Qualidade');
+                  } else if (status === 'Retornado') {
+                    e.preventDefault();
+                    setStatus('Qualidade');
+                  } else if (status === 'Qualidade') {
+                    e.preventDefault();
+                    setStatus('Em análise');
+                    toast({
+                      title: 'Queixa técnica enviada para a fábrica',
+                      description: 'O status foi alterado para "Em análise".',
+                      duration: 5000,
+                    });
+                  } else if (status === 'Em análise') {
+                    e.preventDefault();
+                    setStatus('Concluído');
+                    toast({
+                      title: 'Queixa técnica concluída',
+                      description: 'O status foi alterado para "Concluído".',
+                      duration: 5000,
+                    });
+                  }
+                  // Nos outros status, deixa o submit normal
+                }}
+              >
+                <CheckCircle className="mr-2 h-4 w-4" />
+                {status === 'Em análise' ? 'Concluir' : 'Enviar'}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   )
