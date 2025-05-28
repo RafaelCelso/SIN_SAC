@@ -456,6 +456,7 @@ export default function QueixasTecnicasPage() {
                     <TableHead>Produto</TableHead>
                     <TableHead>Motivo</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Procedência</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -516,6 +517,24 @@ export default function QueixasTecnicasPage() {
                               </>
                             )}
                           </div>
+                        </TableCell>
+                        <TableCell>
+                          {queixa.status === "Concluído" ? (
+                            (() => {
+                              const procedencias = ["Procedente", "Parcialmente Procedente", "Improcedente"];
+                              const idx = parseInt(queixa.id.replace(/\D/g, "")) % 3;
+                              const valor = procedencias[idx];
+                              let cor = "";
+                              if (valor === "Procedente") cor = "bg-green-100 text-green-700 border-green-200";
+                              if (valor === "Parcialmente Procedente") cor = "bg-yellow-100 text-yellow-700 border-yellow-200";
+                              if (valor === "Improcedente") cor = "bg-gray-100 text-gray-700 border-gray-300";
+                              return (
+                                <span className={`px-2 py-0.5 rounded text-xs font-semibold border ${cor}`}>{valor}</span>
+                              );
+                            })()
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
                         </TableCell>
                         <TableCell className="text-right">
                           <Button
