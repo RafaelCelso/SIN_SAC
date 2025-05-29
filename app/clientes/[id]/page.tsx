@@ -784,33 +784,21 @@ export default function ClientePage() {
 
                                 <TabsContent value="queixas" className="mt-4">
                                   <div className="space-y-4">
-                                    <div className="flex items-center justify-between mb-4">
-                                      <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        Nova Queixa Técnica
-                                      </Button>
-                                    </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <Collapsible>
                                         <CollapsibleTrigger className="w-full">
                                           <div className="border-b bg-gray-50 p-4 rounded-t-lg hover:bg-gray-100">
                                             <div className="flex items-center justify-between">
-                                              <div className="flex items-center gap-3">
+                                              <div className="flex items-center gap-3 w-full">
                                                 <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
                                                   <AlertTriangle className="h-4 w-4 text-amber-600" />
                                                 </div>
-                                                <div>
-                                                  <p className="font-semibold text-gray-900">Queixa Técnica #QT-2023-0001</p>
+                                                <div className="flex flex-col w-full">
+                                                  <p className="font-semibold text-gray-900 text-left">QT-2023-0001</p>
                                                   <div className="flex items-center gap-2 mt-1">
                                                     <p className="text-sm text-gray-600">15/06/2023 10:45</p>
                                                     <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
                                                       Em análise
-                                                    </Badge>
-                                                    <Badge
-                                                      variant="outline"
-                                                      className="bg-green-50 text-green-700 border-green-200"
-                                                    >
-                                                      Leve
                                                     </Badge>
                                                   </div>
                                                 </div>
@@ -1357,23 +1345,17 @@ export default function ClientePage() {
 
                                 <TabsContent value="farmacovigilancia" className="mt-4">
                                   <div className="space-y-4">
-                                    <div className="flex items-center justify-between mb-4">
-                                      <Button className="bg-[#26B99D] hover:bg-[#1E9A82] text-white">
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        Nova Farmacovigilância
-                                      </Button>
-                                    </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <Collapsible>
                                         <CollapsibleTrigger className="w-full">
                                           <div className="border-b bg-gray-50 p-4 rounded-t-lg hover:bg-gray-100">
                                             <div className="flex items-center justify-between">
-                                              <div className="flex items-center gap-3">
+                                              <div className="flex items-center gap-3 w-full">
                                                 <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center">
                                                   <Shield className="h-4 w-4 text-red-600" />
                                                 </div>
-                                                <div>
-                                                  <p className="font-semibold text-gray-900">Farmacovigilância #FM-2023-0001</p>
+                                                <div className="flex flex-col w-full">
+                                                  <p className="font-semibold text-gray-900 text-left">FM-2023-0001</p>
                                                   <div className="flex items-center gap-2 mt-1">
                                                     <p className="text-sm text-gray-600">15/06/2023 10:45</p>
                                                     <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
