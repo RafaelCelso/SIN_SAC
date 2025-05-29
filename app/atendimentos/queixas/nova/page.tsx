@@ -338,6 +338,7 @@ function ResumoFormulario({
       </CardHeader>
       <CardContent className="space-y-8">
         {/* Relator */}
+        {status !== 'Retornado' && status !== 'Qualidade' && status !== 'Em análise' && status !== 'Concluído' && (
         <div className="bg-white rounded-lg p-4 shadow-sm">
           <div className="flex items-center mb-4">
             <h3 className="font-bold text-lg text-teal-900 bg-gray-100 border-l-4 border-teal-400 pl-3 py-1 rounded w-full">Informações do Relator</h3>
@@ -353,6 +354,7 @@ function ResumoFormulario({
             </div>
           )}
         </div>
+        )}
         <Separator />
         {/* Cliente */}
         <div className="bg-white rounded-lg p-4 shadow-sm">
@@ -1140,6 +1142,50 @@ export default function NovaQueixaTecnicaPage() {
           </Alert>
         )}
 
+        {/* Alerta de Aberto */}
+        {status === "Aberto" && (
+          <Alert className="bg-blue-50 border-blue-200 text-gray-800">
+            <FileText className="h-4 w-4 text-blue-600" />
+            <AlertTitle>Queixa Técnica em Aberto</AlertTitle>
+            <AlertDescription>
+              Esta queixa técnica está em aberto. Preencha todos os campos necessários e vincule um protocolo para prosseguir.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Alerta de Em análise */}
+        {status === "Em análise" && (
+          <Alert className="bg-indigo-50 border-indigo-200 text-gray-800">
+            <ClipboardList className="h-4 w-4 text-indigo-600" />
+            <AlertTitle>Queixa Técnica em Análise</AlertTitle>
+            <AlertDescription>
+              Esta queixa técnica está sendo analisada pela fábrica. Aguarde o resultado da análise.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Alerta de Retornado */}
+        {status === "Retornado" && (
+          <Alert className="bg-amber-50 border-amber-200 text-gray-800">
+            <ArrowLeft className="h-4 w-4 text-amber-600" />
+            <AlertTitle>Queixa Técnica Retornada</AlertTitle>
+            <AlertDescription>
+              Esta queixa técnica foi retornada para revisão. Verifique os comentários para entender os motivos do retorno.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Alerta de Concluído */}
+        {status === "Concluído" && (
+          <Alert className="bg-green-50 border-green-200 text-gray-800">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <AlertTitle>Queixa Técnica Concluída</AlertTitle>
+            <AlertDescription>
+              Esta queixa técnica foi concluída. Todas as análises e ações necessárias foram realizadas.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {status === "Qualidade" && (
           <Alert className="bg-teal-50 border-teal-200 text-gray-800">
             <FileCheck className="h-5 w-5 text-teal-600" />
@@ -1168,7 +1214,9 @@ export default function NovaQueixaTecnicaPage() {
           </div>
           {/* Número da queixa técnica */}
           <div className="mt-6 flex items-center gap-3">
-            <Badge className="bg-[#26B99D] text-white text-base px-4 py-1 rounded font-bold shadow">QT-2024-0001</Badge>
+            {protocoloVinculado && (
+              <Badge className="bg-[#26B99D] text-white text-base px-4 py-1 rounded font-bold shadow">QT-2024-0001</Badge>
+            )}
             <div className="flex items-center gap-2">
               {renderStatusBadge()}
               {renderStatusActions()}
@@ -1364,7 +1412,7 @@ export default function NovaQueixaTecnicaPage() {
           )}
 
         {/* NOVA SEÇÃO: Informações do Relator */}
-        {status !== 'Qualidade' && status !== 'Em análise' && status !== 'Concluído' && (
+        {status !== 'Qualidade' && status !== 'Em análise' && status !== 'Concluído' && status !== 'Aberto' && status !== 'Revisão' && status !== 'Rejeitado' && status !== 'Retornado' && (
         <Card>
           <CardHeader className="bg-gray-50 border-b">
             <div className="flex items-center gap-2">
@@ -1733,6 +1781,7 @@ export default function NovaQueixaTecnicaPage() {
               {/* Informações do Produto */}
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Linha 1: Produto | SKU */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <Label htmlFor="produto" className="flex items-center gap-2 text-base font-medium">
@@ -1756,184 +1805,6 @@ export default function NovaQueixaTecnicaPage() {
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
-                    {/* Input de comentário alinhado */}
-                    {novoComentario['produto'] !== undefined && (
-                      <div className="w-full mt-2">
-                        <div className="relative w-full">
-                          <Input
-                            placeholder="Digite seu comentário..."
-                            value={novoComentario['produto']}
-                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['produto']: e.target.value }))}
-                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
-                            onKeyDown={e => {
-                              if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                if (novoComentario['produto'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['produto'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['produto']: [...(prev['produto'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['produto'];
-                                    return newState;
-                                  });
-                                }
-                              }
-                            }}
-                          />
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
-                              onClick={() => {
-                                setNovoComentario(prev => {
-                                  const newState = { ...prev };
-                                  delete newState['produto'];
-                                  return newState;
-                                });
-                              }}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                              onClick={() => {
-                                if (novoComentario['produto'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['produto'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['produto']: [...(prev['produto'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['produto'];
-                                    return newState;
-                                  });
-                                }
-                              }}
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {/* Lista de comentários salvos */}
-                    {comentarios['produto'] && comentarios['produto'].length > 0 && (
-                      <div className="space-y-2 mt-2">
-                        {comentarios['produto'].map(comentario => (
-                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
-                            {editandoComentario['produto'] === comentario.id ? (
-                              <>
-                                <div className="flex-1 mr-2">
-                                  <Input
-                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
-                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
-                                    className="h-10 text-base w-full"
-                                    onKeyDown={e => {
-                                      if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['produto']: prev['produto'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['produto']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }
-                                    }}
-                                  />
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1 items-center">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['produto']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['produto']: prev['produto'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['produto']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <CheckCircle className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => ({ ...prev, ['produto']: comentario.id }));
-                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
-                                      }}
-                                    >
-                                      <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['produto']: prev['produto'].filter(c => c.id !== comentario.id)
-                                        }));
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
@@ -1957,185 +1828,8 @@ export default function NovaQueixaTecnicaPage() {
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
-                    {/* Input de comentário SKU */}
-                    {novoComentario['sku'] !== undefined && (
-                      <div className="w-full mt-2">
-                        <div className="relative w-full">
-                          <Input
-                            placeholder="Digite seu comentário..."
-                            value={novoComentario['sku']}
-                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['sku']: e.target.value }))}
-                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
-                            onKeyDown={e => {
-                              if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                if (novoComentario['sku'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['sku'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['sku']: [...(prev['sku'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['sku'];
-                                    return newState;
-                                  });
-                                }
-                              }
-                            }}
-                          />
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
-                              onClick={() => {
-                                setNovoComentario(prev => {
-                                  const newState = { ...prev };
-                                  delete newState['sku'];
-                                  return newState;
-                                });
-                              }}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                              onClick={() => {
-                                if (novoComentario['sku'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['sku'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['sku']: [...(prev['sku'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['sku'];
-                                    return newState;
-                                  });
-                                }
-                              }}
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {/* Lista de comentários SKU */}
-                    {comentarios['sku'] && comentarios['sku'].length > 0 && (
-                      <div className="space-y-2 mt-2">
-                        {comentarios['sku'].map(comentario => (
-                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
-                            {editandoComentario['sku'] === comentario.id ? (
-                              <>
-                                <div className="flex-1 mr-2">
-                                  <Input
-                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
-                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
-                                    className="h-10 text-base w-full"
-                                    onKeyDown={e => {
-                                      if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['sku']: prev['sku'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['sku']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }
-                                    }}
-                                  />
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1 items-center">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['sku']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['sku']: prev['sku'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['sku']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <CheckCircle className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => ({ ...prev, ['sku']: comentario.id }));
-                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
-                                      }}
-                                    >
-                                      <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['sku']: prev['sku'].filter(c => c.id !== comentario.id)
-                                        }));
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
+                  {/* Linha 2: EAN | Lote */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <Label htmlFor="ean" className="flex items-center gap-2 text-base font-medium">
@@ -2158,184 +1852,55 @@ export default function NovaQueixaTecnicaPage() {
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
-                    {/* Input de comentário EAN */}
-                    {novoComentario['ean'] !== undefined && (
-                      <div className="w-full mt-2">
-                        <div className="relative w-full">
-                          <Input
-                            placeholder="Digite seu comentário..."
-                            value={novoComentario['ean']}
-                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['ean']: e.target.value }))}
-                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
-                            onKeyDown={e => {
-                              if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                if (novoComentario['ean'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['ean'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['ean']: [...(prev['ean'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['ean'];
-                                    return newState;
-                                  });
-                                }
-                              }
-                            }}
-                          />
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
-                              onClick={() => {
-                                setNovoComentario(prev => {
-                                  const newState = { ...prev };
-                                  delete newState['ean'];
-                                  return newState;
-                                });
-                              }}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                              onClick={() => {
-                                if (novoComentario['ean'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['ean'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['ean']: [...(prev['ean'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['ean'];
-                                    return newState;
-                                  });
-                                }
-                              }}
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                          </div>
+                  </div>
+                  {(status === 'Aberto' || status === 'Revisão' || status === 'Rejeitado' || status === 'Retornado') && (
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <Label htmlFor="lote" className="flex items-center gap-2 text-base font-medium">
+                          <Hash className="h-4 w-4 text-[#26B99D]" />
+                          Lote
+                        </Label>
+                        {renderCommentIcon("lote")}
+                      </div>
+                      <div className="relative">
+                        <Input
+                          id="lote"
+                          name="lote"
+                          placeholder="Lote"
+                          value={formData.lote}
+                          onChange={handleInputChange}
+                          className={`h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB] transition-all duration-200 ${camposAtencao['lote'] ? 'border-2 border-red-500 ring-2 ring-red-300 bg-red-50 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]' : ''}`}
+                          readOnly
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                          <Lock className="h-4 w-4" />
                         </div>
                       </div>
-                    )}
-                    {/* Lista de comentários EAN */}
-                    {comentarios['ean'] && comentarios['ean'].length > 0 && (
-                      <div className="space-y-2 mt-2">
-                        {comentarios['ean'].map(comentario => (
-                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
-                            {editandoComentario['ean'] === comentario.id ? (
-                              <>
-                                <div className="flex-1 mr-2">
-                                  <Input
-                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
-                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
-                                    className="h-10 text-base w-full"
-                                    onKeyDown={e => {
-                                      if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['ean']: prev['ean'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['ean']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }
-                                    }}
-                                  />
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1 items-center">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['ean']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['ean']: prev['ean'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['ean']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <CheckCircle className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => ({ ...prev, ['ean']: comentario.id }));
-                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
-                                      }}
-                                    >
-                                      <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['ean']: prev['ean'].filter(c => c.id !== comentario.id)
-                                        }));
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        ))}
+                    </div>
+                  )}
+                  {/* Linha 3: Data de Validade | Data de Fabricação */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="dataValidade" className="flex items-center gap-2 text-base font-medium">
+                        <CalendarCheck className="h-4 w-4 text-[#26B99D]" />
+                        Data de Validade
+                      </Label>
+                      {renderCommentIcon("dataValidade")}
+                    </div>
+                    <div className="relative">
+                      <Input
+                        id="dataValidade"
+                        name="dataValidade"
+                        type="date"
+                        value={formData.dataValidade}
+                        onChange={handleInputChange}
+                        className={`h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB] transition-all duration-200 ${camposAtencao['dataValidade'] ? 'border-2 border-red-500 ring-2 ring-red-300 bg-red-50 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]' : ''}`}
+                        readOnly
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
+                        <Lock className="h-4 w-4" />
                       </div>
-                    )}
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
@@ -2359,385 +1924,6 @@ export default function NovaQueixaTecnicaPage() {
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
-                    {/* Input de comentário Data de Fabricação */}
-                    {novoComentario['dataFabricacao'] !== undefined && (
-                      <div className="w-full mt-2">
-                        <div className="relative w-full">
-                          <Input
-                            placeholder="Digite seu comentário..."
-                            value={novoComentario['dataFabricacao']}
-                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['dataFabricacao']: e.target.value }))}
-                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
-                            onKeyDown={e => {
-                              if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                if (novoComentario['dataFabricacao'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['dataFabricacao'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['dataFabricacao']: [...(prev['dataFabricacao'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['dataFabricacao'];
-                                    return newState;
-                                  });
-                                }
-                              }
-                            }}
-                          />
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
-                              onClick={() => {
-                                setNovoComentario(prev => {
-                                  const newState = { ...prev };
-                                  delete newState['dataFabricacao'];
-                                  return newState;
-                                });
-                              }}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                              onClick={() => {
-                                if (novoComentario['dataFabricacao'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['dataFabricacao'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['dataFabricacao']: [...(prev['dataFabricacao'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['dataFabricacao'];
-                                    return newState;
-                                  });
-                                }
-                              }}
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {/* Lista de comentários Data de Fabricação */}
-                    {comentarios['dataFabricacao'] && comentarios['dataFabricacao'].length > 0 && (
-                      <div className="space-y-2 mt-2">
-                        {comentarios['dataFabricacao'].map(comentario => (
-                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
-                            {editandoComentario['dataFabricacao'] === comentario.id ? (
-                              <>
-                                <div className="flex-1 mr-2">
-                                  <Input
-                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
-                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
-                                    className="h-10 text-base w-full"
-                                    onKeyDown={e => {
-                                      if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['dataFabricacao']: prev['dataFabricacao'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataFabricacao']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }
-                                    }}
-                                  />
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1 items-center">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataFabricacao']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['dataFabricacao']: prev['dataFabricacao'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataFabricacao']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <CheckCircle className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => ({ ...prev, ['dataFabricacao']: comentario.id }));
-                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
-                                      }}
-                                    >
-                                      <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['dataFabricacao']: prev['dataFabricacao'].filter(c => c.id !== comentario.id)
-                                        }));
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <Label htmlFor="dataValidade" className="flex items-center gap-2 text-base font-medium">
-                        <CalendarCheck className="h-4 w-4 text-[#26B99D]" />
-                        Data de Validade
-                      </Label>
-                      {renderCommentIcon("dataValidade")}
-                    </div>
-                    <div className="relative">
-                      <Input
-                        id="dataValidade"
-                        name="dataValidade"
-                        type="date"
-                        value={formData.dataValidade}
-                        onChange={handleInputChange}
-                        className={`h-12 border-gray-200 pr-10 text-base bg-[#F9FAFB] transition-all duration-200 ${camposAtencao['dataValidade'] ? 'border-2 border-red-500 ring-2 ring-red-300 bg-red-50 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]' : ''}`}
-                        readOnly
-                      />
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-gray-400">
-                        <Lock className="h-4 w-4" />
-                      </div>
-                    </div>
-                    {/* Input de comentário Data de Validade */}
-                    {novoComentario['dataValidade'] !== undefined && (
-                      <div className="w-full mt-2">
-                        <div className="relative w-full">
-                          <Input
-                            placeholder="Digite seu comentário..."
-                            value={novoComentario['dataValidade']}
-                            onChange={(e) => setNovoComentario(prev => ({ ...prev, ['dataValidade']: e.target.value }))}
-                            className="h-12 text-base w-full pr-20 overflow-x-hidden"
-                            onKeyDown={e => {
-                              if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                if (novoComentario['dataValidade'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['dataValidade'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['dataValidade']: [...(prev['dataValidade'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['dataValidade'];
-                                    return newState;
-                                  });
-                                }
-                              }
-                            }}
-                          />
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-600"
-                              onClick={() => {
-                                setNovoComentario(prev => {
-                                  const newState = { ...prev };
-                                  delete newState['dataValidade'];
-                                  return newState;
-                                });
-                              }}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                              onClick={() => {
-                                if (novoComentario['dataValidade'].trim()) {
-                                  const novoComentarioObj = {
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    texto: novoComentario['dataValidade'],
-                                    usuario: "Usuário Atual",
-                                    data: new Date().toLocaleString(),
-                                  };
-                                  setComentarios(prev => ({
-                                    ...prev,
-                                    ['dataValidade']: [...(prev['dataValidade'] || []), novoComentarioObj]
-                                  }));
-                                  setNovoComentario(prev => {
-                                    const newState = { ...prev };
-                                    delete newState['dataValidade'];
-                                    return newState;
-                                  });
-                                }
-                              }}
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {/* Lista de comentários Data de Validade */}
-                    {comentarios['dataValidade'] && comentarios['dataValidade'].length > 0 && (
-                      <div className="space-y-2 mt-2">
-                        {comentarios['dataValidade'].map(comentario => (
-                          <div key={comentario.id} className="bg-amber-50 border border-amber-300 rounded-lg p-3 flex justify-between items-start shadow-sm w-full">
-                            {editandoComentario['dataValidade'] === comentario.id ? (
-                              <>
-                                <div className="flex-1 mr-2">
-                                  <Input
-                                    value={textoEdicaoComentario[comentario.id] ?? comentario.texto}
-                                    onChange={e => setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: e.target.value }))}
-                                    className="h-10 text-base w-full"
-                                    onKeyDown={e => {
-                                      if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['dataValidade']: prev['dataValidade'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataValidade']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }
-                                    }}
-                                  />
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1 items-center">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataValidade']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-[#26B99D] hover:text-[#15937E]"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['dataValidade']: prev['dataValidade'].map(c =>
-                                            c.id === comentario.id ? { ...c, texto: textoEdicaoComentario[comentario.id] ?? c.texto, data: new Date().toLocaleString() } : c
-                                          )
-                                        }));
-                                        setEditandoComentario(prev => { const n = { ...prev }; delete n['dataValidade']; return n; });
-                                        setTextoEdicaoComentario(prev => { const n = { ...prev }; delete n[comentario.id]; return n; });
-                                      }}
-                                    >
-                                      <CheckCircle className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm text-gray-900 break-words whitespace-pre-line w-full">{comentario.texto}</p>
-                                  <p className="text-xs text-gray-500 mt-1"><span className="font-semibold text-gray-800">{comentario.usuario}</span> • {comentario.data}</p>
-                                </div>
-                                {status !== 'Rejeitado' && (
-                                  <div className="flex gap-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
-                                      onClick={() => {
-                                        setEditandoComentario(prev => ({ ...prev, ['dataValidade']: comentario.id }));
-                                        setTextoEdicaoComentario(prev => ({ ...prev, [comentario.id]: comentario.texto }));
-                                      }}
-                                    >
-                                      <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-                                      onClick={() => {
-                                        setComentarios(prev => ({
-                                          ...prev,
-                                          ['dataValidade']: prev['dataValidade'].filter(c => c.id !== comentario.id)
-                                        }));
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -2754,255 +1940,257 @@ export default function NovaQueixaTecnicaPage() {
                 </CardHeader>
                 <CardContent className="space-y-8 p-6">
                   {/* Fluxo Motivo Principal, Subcategoria e Detalhe igual ao modal Novo Contato */}
-                  <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900">Motivo, Subcategoria e Detalhe</h3>
-                    {/* Barra de Progresso */}
-                    <div className="space-y-2">
-                      <div className="flex justify-end">
-                        <span className="font-medium text-teal-600">
-                          {[formData.motivoPrincipal, formData.subcategoria, formData.detalhe].filter(Boolean).length}/3
-                        </span>
-                      </div>
-                      <div className="relative">
-                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-teal-600 transition-all duration-300"
-                            style={{ 
-                              width: `${([formData.motivoPrincipal, formData.subcategoria, formData.detalhe].filter(Boolean).length / 3) * 100}%` 
-                            }}
-                          />
+                  {status !== 'Aberto' && status !== 'Revisão' && status !== 'Rejeitado' && status !== 'Retornado' && (
+                    <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900">Motivo, Subcategoria e Detalhe</h3>
+                      {/* Barra de Progresso */}
+                      <div className="space-y-2">
+                        <div className="flex justify-end">
+                          <span className="font-medium text-teal-600">
+                            {[formData.motivoPrincipal, formData.subcategoria, formData.detalhe].filter(Boolean).length}/3
+                          </span>
                         </div>
-                        <div className="absolute top-0 left-0 w-full h-full flex justify-between items-center pointer-events-none">
-                          {[1, 2, 3].map((step) => (
-                            <div
-                              key={step}
-                              className={`w-3 h-3 rounded-full border-2 transition-colors duration-300 ${
-                                step <= [formData.motivoPrincipal, formData.subcategoria, formData.detalhe].filter(Boolean).length
-                                  ? 'bg-teal-600 border-teal-600'
-                                  : 'bg-white border-gray-300'
-                              }`}
+                        <div className="relative">
+                          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-teal-600 transition-all duration-300"
+                              style={{ 
+                                width: `${([formData.motivoPrincipal, formData.subcategoria, formData.detalhe].filter(Boolean).length / 3) * 100}%` 
+                              }}
                             />
-                          ))}
+                          </div>
+                          <div className="absolute top-0 left-0 w-full h-full flex justify-between items-center pointer-events-none">
+                            {[1, 2, 3].map((step) => (
+                              <div
+                                key={step}
+                                className={`w-3 h-3 rounded-full border-2 transition-colors duration-300 ${
+                                  step <= [formData.motivoPrincipal, formData.subcategoria, formData.detalhe].filter(Boolean).length
+                                    ? 'bg-teal-600 border-teal-600'
+                                    : 'bg-white border-gray-300'
+                                }`}
+                              />
+                            ))}
+                          </div>
                         </div>
                       </div>
+
+                      {/* Motivo Principal */}
+                      {!formData.motivoPrincipal && (
+                        <div className="space-y-2">
+                          <Label className="font-medium">Motivo Principal</Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between h-11"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <ClipboardList className="h-4 w-4 text-teal-600" />
+                                  <span>Selecione o motivo principal</span>
+                                </div>
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                              <Command>
+                                <CommandInput placeholder="Buscar motivo..." />
+                                <CommandEmpty>Nenhum motivo encontrado.</CommandEmpty>
+                                <CommandGroup>
+                                  <CommandItem value="Qualidade" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Qualidade", subcategoria: "", detalhe: "" }))}>
+                                    <ClipboardList className="mr-2 h-4 w-4" />
+                                    Qualidade
+                                  </CommandItem>
+                                  <CommandItem value="Embalagem" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Embalagem", subcategoria: "", detalhe: "" }))}>
+                                    <ClipboardList className="mr-2 h-4 w-4" />
+                                    Embalagem
+                                  </CommandItem>
+                                  <CommandItem value="Vencimento" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Vencimento", subcategoria: "", detalhe: "" }))}>
+                                    <ClipboardList className="mr-2 h-4 w-4" />
+                                    Vencimento
+                                  </CommandItem>
+                                  <CommandItem value="Outro" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Outro", subcategoria: "", detalhe: "" }))}>
+                                    <ClipboardList className="mr-2 h-4 w-4" />
+                                    Outro
+                                  </CommandItem>
+                                </CommandGroup>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                      )}
+
+                      {/* Subcategoria */}
+                      {formData.motivoPrincipal && !formData.subcategoria && (
+                        <div className="space-y-2">
+                          <Label className="font-medium">Subcategoria</Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between h-11"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-teal-600" />
+                                  <span>Selecione a subcategoria</span>
+                                </div>
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                              <Command>
+                                <CommandInput placeholder="Buscar subcategoria..." />
+                                <CommandEmpty>Nenhuma subcategoria encontrada.</CommandEmpty>
+                                <CommandGroup>
+                                  <CommandItem value="Aparência" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Aparência", detalhe: "" }))}>
+                                    <FileText className="mr-2 h-4 w-4" />
+                                    Aparência
+                                  </CommandItem>
+                                  <CommandItem value="Odor" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Odor", detalhe: "" }))}>
+                                    <FileText className="mr-2 h-4 w-4" />
+                                    Odor
+                                  </CommandItem>
+                                  <CommandItem value="Integridade" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Integridade", detalhe: "" }))}>
+                                    <FileText className="mr-2 h-4 w-4" />
+                                    Integridade
+                                  </CommandItem>
+                                  <CommandItem value="Outro" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Outro", detalhe: "" }))}>
+                                    <FileText className="mr-2 h-4 w-4" />
+                                    Outro
+                                  </CommandItem>
+                                </CommandGroup>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                      )}
+
+                      {/* Detalhe */}
+                      {formData.motivoPrincipal && formData.subcategoria && !formData.detalhe && (
+                        <div className="space-y-2">
+                          <Label className="font-medium">Detalhe</Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className="w-full justify-between h-11"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Info className="h-4 w-4 text-teal-600" />
+                                  <span>Selecione o detalhe</span>
+                                </div>
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                              <Command>
+                                <CommandInput placeholder="Buscar detalhe..." />
+                                <CommandEmpty>Nenhum detalhe encontrado.</CommandEmpty>
+                                <CommandGroup>
+                                  <CommandItem value="Risco" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Risco" }))}>
+                                    <Info className="mr-2 h-4 w-4" />
+                                    Risco
+                                  </CommandItem>
+                                  <CommandItem value="Quebra" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Quebra" }))}>
+                                    <Info className="mr-2 h-4 w-4" />
+                                    Quebra
+                                  </CommandItem>
+                                  <CommandItem value="Falta" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Falta" }))}>
+                                    <Info className="mr-2 h-4 w-4" />
+                                    Falta
+                                  </CommandItem>
+                                  <CommandItem value="Outro" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Outro" }))}>
+                                    <Info className="mr-2 h-4 w-4" />
+                                    Outro
+                                  </CommandItem>
+                                </CommandGroup>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                      )}
+
+                      {/* Cards-resumo dos passos escolhidos */}
+                      {(formData.motivoPrincipal || formData.subcategoria || formData.detalhe) && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {formData.motivoPrincipal && (
+                            <Card className="border-teal-100 bg-teal-50/50">
+                              <CardContent className="p-3">
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
+                                      <ClipboardList className="h-4 w-4 text-teal-600" />
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p className="text-xs text-gray-500 truncate">Motivo Principal</p>
+                                      <h4 className="font-medium text-teal-900 truncate">{formData.motivoPrincipal}</h4>
+                                    </div>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                    onClick={() => setFormData(prev => ({ ...prev, motivoPrincipal: '', subcategoria: '', detalhe: '' }))}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                          {formData.subcategoria && (
+                            <Card className="border-teal-100 bg-teal-50/50">
+                              <CardContent className="p-3">
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
+                                      <FileText className="h-4 w-4 text-teal-600" />
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p className="text-xs text-gray-500 truncate">Subcategoria</p>
+                                      <h4 className="font-medium text-teal-900 truncate">{formData.subcategoria}</h4>
+                                    </div>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                    onClick={() => setFormData(prev => ({ ...prev, subcategoria: '', detalhe: '' }))}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                          {formData.detalhe && (
+                            <Card className="border-teal-100 bg-teal-50/50">
+                              <CardContent className="p-3">
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
+                                      <Info className="h-4 w-4 text-teal-600" />
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p className="text-xs text-gray-500 truncate">Detalhe</p>
+                                      <h4 className="font-medium text-teal-900 truncate">{formData.detalhe}</h4>
+                                    </div>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                                    onClick={() => setFormData(prev => ({ ...prev, detalhe: '' }))}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </div>
+                      )}
                     </div>
-
-                    {/* Motivo Principal */}
-                    {!formData.motivoPrincipal && (
-                      <div className="space-y-2">
-                        <Label className="font-medium">Motivo Principal</Label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className="w-full justify-between h-11"
-                            >
-                              <div className="flex items-center gap-2">
-                                <ClipboardList className="h-4 w-4 text-teal-600" />
-                                <span>Selecione o motivo principal</span>
-                              </div>
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                            <Command>
-                              <CommandInput placeholder="Buscar motivo..." />
-                              <CommandEmpty>Nenhum motivo encontrado.</CommandEmpty>
-                              <CommandGroup>
-                                <CommandItem value="Qualidade" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Qualidade", subcategoria: "", detalhe: "" }))}>
-                                  <ClipboardList className="mr-2 h-4 w-4" />
-                                  Qualidade
-                                </CommandItem>
-                                <CommandItem value="Embalagem" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Embalagem", subcategoria: "", detalhe: "" }))}>
-                                  <ClipboardList className="mr-2 h-4 w-4" />
-                                  Embalagem
-                                </CommandItem>
-                                <CommandItem value="Vencimento" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Vencimento", subcategoria: "", detalhe: "" }))}>
-                                  <ClipboardList className="mr-2 h-4 w-4" />
-                                  Vencimento
-                                </CommandItem>
-                                <CommandItem value="Outro" onSelect={() => setFormData(prev => ({ ...prev, motivoPrincipal: "Outro", subcategoria: "", detalhe: "" }))}>
-                                  <ClipboardList className="mr-2 h-4 w-4" />
-                                  Outro
-                                </CommandItem>
-                              </CommandGroup>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                    )}
-
-                    {/* Subcategoria */}
-                    {formData.motivoPrincipal && !formData.subcategoria && (
-                      <div className="space-y-2">
-                        <Label className="font-medium">Subcategoria</Label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className="w-full justify-between h-11"
-                            >
-                              <div className="flex items-center gap-2">
-                                <FileText className="h-4 w-4 text-teal-600" />
-                                <span>Selecione a subcategoria</span>
-                              </div>
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                            <Command>
-                              <CommandInput placeholder="Buscar subcategoria..." />
-                              <CommandEmpty>Nenhuma subcategoria encontrada.</CommandEmpty>
-                              <CommandGroup>
-                                <CommandItem value="Aparência" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Aparência", detalhe: "" }))}>
-                                  <FileText className="mr-2 h-4 w-4" />
-                                  Aparência
-                                </CommandItem>
-                                <CommandItem value="Odor" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Odor", detalhe: "" }))}>
-                                  <FileText className="mr-2 h-4 w-4" />
-                                  Odor
-                                </CommandItem>
-                                <CommandItem value="Integridade" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Integridade", detalhe: "" }))}>
-                                  <FileText className="mr-2 h-4 w-4" />
-                                  Integridade
-                                </CommandItem>
-                                <CommandItem value="Outro" onSelect={() => setFormData(prev => ({ ...prev, subcategoria: "Outro", detalhe: "" }))}>
-                                  <FileText className="mr-2 h-4 w-4" />
-                                  Outro
-                                </CommandItem>
-                              </CommandGroup>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                    )}
-
-                    {/* Detalhe */}
-                    {formData.motivoPrincipal && formData.subcategoria && !formData.detalhe && (
-                      <div className="space-y-2">
-                        <Label className="font-medium">Detalhe</Label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className="w-full justify-between h-11"
-                            >
-                              <div className="flex items-center gap-2">
-                                <Info className="h-4 w-4 text-teal-600" />
-                                <span>Selecione o detalhe</span>
-                              </div>
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                            <Command>
-                              <CommandInput placeholder="Buscar detalhe..." />
-                              <CommandEmpty>Nenhum detalhe encontrado.</CommandEmpty>
-                              <CommandGroup>
-                                <CommandItem value="Risco" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Risco" }))}>
-                                  <Info className="mr-2 h-4 w-4" />
-                                  Risco
-                                </CommandItem>
-                                <CommandItem value="Quebra" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Quebra" }))}>
-                                  <Info className="mr-2 h-4 w-4" />
-                                  Quebra
-                                </CommandItem>
-                                <CommandItem value="Falta" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Falta" }))}>
-                                  <Info className="mr-2 h-4 w-4" />
-                                  Falta
-                                </CommandItem>
-                                <CommandItem value="Outro" onSelect={() => setFormData(prev => ({ ...prev, detalhe: "Outro" }))}>
-                                  <Info className="mr-2 h-4 w-4" />
-                                  Outro
-                                </CommandItem>
-                              </CommandGroup>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                    )}
-
-                    {/* Cards-resumo dos passos escolhidos */}
-                    {(formData.motivoPrincipal || formData.subcategoria || formData.detalhe) && (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {formData.motivoPrincipal && (
-                          <Card className="border-teal-100 bg-teal-50/50">
-                            <CardContent className="p-3">
-                              <div className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
-                                    <ClipboardList className="h-4 w-4 text-teal-600" />
-                                  </div>
-                                  <div className="min-w-0">
-                                    <p className="text-xs text-gray-500 truncate">Motivo Principal</p>
-                                    <h4 className="font-medium text-teal-900 truncate">{formData.motivoPrincipal}</h4>
-                                  </div>
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
-                                  onClick={() => setFormData(prev => ({ ...prev, motivoPrincipal: '', subcategoria: '', detalhe: '' }))}
-                                >
-                                  <Pencil className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )}
-                        {formData.subcategoria && (
-                          <Card className="border-teal-100 bg-teal-50/50">
-                            <CardContent className="p-3">
-                              <div className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
-                                    <FileText className="h-4 w-4 text-teal-600" />
-                                  </div>
-                                  <div className="min-w-0">
-                                    <p className="text-xs text-gray-500 truncate">Subcategoria</p>
-                                    <h4 className="font-medium text-teal-900 truncate">{formData.subcategoria}</h4>
-                                  </div>
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
-                                  onClick={() => setFormData(prev => ({ ...prev, subcategoria: '', detalhe: '' }))}
-                                >
-                                  <Pencil className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )}
-                        {formData.detalhe && (
-                          <Card className="border-teal-100 bg-teal-50/50">
-                            <CardContent className="p-3">
-                              <div className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div className="h-8 w-8 rounded-full bg-teal-100 flex-shrink-0 flex items-center justify-center">
-                                    <Info className="h-4 w-4 text-teal-600" />
-                                  </div>
-                                  <div className="min-w-0">
-                                    <p className="text-xs text-gray-500 truncate">Detalhe</p>
-                                    <h4 className="font-medium text-teal-900 truncate">{formData.detalhe}</h4>
-                                  </div>
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 flex-shrink-0 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
-                                  onClick={() => setFormData(prev => ({ ...prev, detalhe: '' }))}
-                                >
-                                  <Pencil className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  )}
                   {/* Fim dos selects */}
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -3362,14 +2550,18 @@ export default function NovaQueixaTecnicaPage() {
                               <p className="mb-2 text-sm text-gray-500">
                                 <span className="font-semibold">Clique para fazer upload</span> ou arraste e solte
                               </p>
-                              <p className="text-xs text-gray-500">PNG, JPG, PDF ou DOC (MAX. 10MB)</p>
+                              <p className="text-xs text-gray-500">PNG, JPG, PDF, DOC ou DOCX (MAX. 10MB)</p>
                   </div>
                             <input
                               id="dropzone-file"
                               type="file"
                               className="hidden"
                               multiple
-                              accept=".png,.jpg,.jpeg,.pdf,.doc,.docx"
+                              accept={
+                                status === 'Aberto' || status === 'Revisão' || status === 'Rejeitado' || status === 'Retornado'
+                                  ? '.png,.jpg,.jpeg,.pdf,.doc,.docx'
+                                  : '.png,.jpg,.jpeg,.pdf,.doc'
+                              }
                               onChange={handleFileChange}
                             />
                           </label>
@@ -3656,6 +2848,7 @@ export default function NovaQueixaTecnicaPage() {
               <Button
                 type="button"
                 className="flex items-center bg-[#e6faf7] border border-[#26B99D] text-[#26B99D] hover:bg-[#d9f7f2] hover:border-[#26B99D] font-semibold shadow-sm"
+                disabled={status === 'Aberto' && !protocoloVinculado}
               >
                 <Save className="mr-2 h-4 w-4 text-[#26B99D]" />
                 Salvar
@@ -3680,6 +2873,7 @@ export default function NovaQueixaTecnicaPage() {
               <Button
                 type="submit"
                 className="bg-teal-600 hover:bg-teal-700 flex items-center"
+                disabled={status === 'Aberto' && !protocoloVinculado}
                 onClick={e => {
                   if (status === 'Aberto') {
                     e.preventDefault();
