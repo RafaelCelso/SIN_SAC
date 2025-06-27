@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Search, FileText, Filter, CalendarIcon, Plus, Tag, CheckCircle, Clock, AlertTriangle, Loader, Eye, ArrowLeftCircle, XCircle, ClipboardPenLine, Package } from "lucide-react"
+import { Search, FileText, Filter, CalendarIcon, Plus, DollarSign, CheckCircle, Clock, AlertTriangle, Loader, Eye, ArrowLeftCircle, XCircle, ClipboardPenLine, Package } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
@@ -102,7 +102,7 @@ export default function RessarcimentoPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="p-4 rounded-lg flex-1">
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Tag className="h-6 w-6 text-[#26B99D]" />
+              <DollarSign className="h-6 w-6 text-[#26B99D]" />
               Ressarcimentos
             </h1>
             <p className="text-sm text-gray-600 mt-1">Gerenciamento de ressarcimentos de clientes</p>
@@ -274,7 +274,7 @@ export default function RessarcimentoPage() {
                           <div className="flex items-center gap-2">
                             {item.tipo === "Financeiro" ? (
                               <>
-                                <Tag className="h-4 w-4 text-blue-500" />
+                                <DollarSign className="h-4 w-4 text-blue-500" />
                                 <span>{item.tipo}</span>
                               </>
                             ) : (

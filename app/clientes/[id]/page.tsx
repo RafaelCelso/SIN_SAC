@@ -1379,16 +1379,15 @@ export default function ClientePage() {
                                 <TabsContent value="ressarcimento" className="mt-4">
                                   <div className="space-y-4">
                                     <div className="flex items-center justify-between mb-4">
-                                      <Button 
-                                        className="bg-[#26B99D] hover:bg-[#1E9A82]"
-                                        onClick={() => {
-                                          setTipoRegistro("ressarcimento")
-                                          setShowNovoRegistroModal(true)
-                                        }}
-                                      >
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        Novo Ressarcimento
-                                      </Button>
+                                                            <Button 
+                        className="bg-[#26B99D] hover:bg-[#1E9A82]"
+                        asChild
+                      >
+                        <Link href={`/atendimentos/ressarcimento/novo?clienteId=${cliente.id}&clienteNome=${encodeURIComponent(cliente.nome)}`}>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Novo Ressarcimento
+                        </Link>
+                      </Button>
                                       <Button
                                         variant="outline"
                                         className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
@@ -2484,9 +2483,11 @@ export default function ClientePage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-medium">Solicitações de Ressarcimento do Cliente</h3>
-                    <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Novo Ressarcimento
+                    <Button className="bg-[#26B99D] hover:bg-[#1E9A82]" asChild>
+                      <Link href={`/atendimentos/ressarcimento/novo?clienteId=${cliente.id}&clienteNome=${encodeURIComponent(cliente.nome)}`}>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Novo Ressarcimento
+                      </Link>
                     </Button>
                   </div>
 

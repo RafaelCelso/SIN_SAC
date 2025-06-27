@@ -15,7 +15,7 @@ import { CheckCircle, User, FileText, AlertTriangle, Info, Activity, Phone, Pack
 interface NovoRegistroModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  tipo: "queixa" | "informacao" | "farmacovigilancia" | "contato"
+  tipo: "queixa" | "informacao" | "farmacovigilancia" | "contato" | "ressarcimento"
   clienteId?: string
   cliente?: {
     id: string
