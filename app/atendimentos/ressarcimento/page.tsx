@@ -274,7 +274,7 @@ export default function RessarcimentoPage() {
                           <div className="flex items-center gap-2">
                             {item.tipo === "Financeiro" ? (
                               <>
-                                <DollarSign className="h-4 w-4 text-blue-500" />
+                                <DollarSign className="h-4 w-4 text-[#26B99D]" />
                                 <span>{item.tipo}</span>
                               </>
                             ) : (
