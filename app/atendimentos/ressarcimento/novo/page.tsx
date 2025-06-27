@@ -481,7 +481,7 @@ export default function NovoRessarcimentoPage() {
                   
                   {!selectedQueixa ? (
                     <>
-                      <p className="text-sm text-gray-600">Selecione uma queixa técnica para vincular ao ressarcimento (opcional):</p>
+                      <p className="text-sm text-gray-600">Selecione uma queixa técnica para vincular ao ressarcimento:</p>
                       
                       <div className="grid grid-cols-1 gap-4">
                         {queixasTecnicas.map((queixa) => (
@@ -549,7 +549,7 @@ export default function NovoRessarcimentoPage() {
                     </>
                   ) : (
                     <>
-                      <p className="text-sm text-gray-600">Queixa técnica vinculada ao ressarcimento:</p>
+                      <p className="text-sm text-gray-600">Queixa técnica vinculada:</p>
                       
                       {/* Mostrar apenas a queixa selecionada com botão desvincular */}
                       {(() => {
