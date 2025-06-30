@@ -718,9 +718,6 @@ export default function RelatoriosPage() {
                                           <span className="text-red-500 ml-1">*</span>
                                         )}
                                       </label>
-                                      <Badge variant="outline" className="text-xs">
-                                        {field.type}
-                                      </Badge>
                                     </div>
                                   ))}
                                 </div>
