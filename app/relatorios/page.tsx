@@ -140,7 +140,7 @@ const REPORT_MODULES: Record<string, ReportModule[]> = {
   farmacovigilancia: [
     {
       id: "eventos_adversos",
-      name: "Eventos Adversos",
+      name: "Farmacovigilâncias",
       description: "Registro de eventos adversos e reações medicamentosas",
       icon: <Pill className="h-4 w-4" />,
       estimatedRecords: 67,
@@ -533,7 +533,7 @@ export default function RelatoriosPage() {
               <CardContent>
                                   <div className="space-y-4">
                   {/* Filtros de Data e Formato */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Data Inicial */}
                     <div className="space-y-2">
                       <Label>Data Inicial</Label>
@@ -550,7 +550,7 @@ export default function RelatoriosPage() {
                             {dateFrom ? format(dateFrom, "dd/MM/yyyy", { locale: ptBR }) : "Selecione a data"}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
+                        <PopoverContent className="w-auto p-0" align="start" side="bottom">
                           <Calendar
                             mode="single"
                             selected={dateFrom}
@@ -577,7 +577,7 @@ export default function RelatoriosPage() {
                             {dateTo ? format(dateTo, "dd/MM/yyyy", { locale: ptBR }) : "Selecione a data"}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
+                        <PopoverContent className="w-auto p-0" align="start" side="bottom">
                           <Calendar
                             mode="single"
                             selected={dateTo}
@@ -630,10 +630,10 @@ export default function RelatoriosPage() {
                         <TabsTrigger
                           key={tab.id}
                           value={tab.id}
-                          className="flex items-center gap-1"
+                          className="flex items-center gap-1 px-2 py-1"
                         >
-                          {tab.icon}
-                          <span className="hidden sm:inline">{tab.label}</span>
+                          <span className="flex items-center justify-center">{tab.icon}</span>
+                          <span className="hidden lg:inline text-xs">{tab.label}</span>
                         </TabsTrigger>
                       ))}
                     </TabsList>
