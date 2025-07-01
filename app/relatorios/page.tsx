@@ -392,6 +392,12 @@ export default function RelatoriosPage() {
     }
   }
 
+  const removeSelectedField = (moduleId: string, fieldId: string) => {
+    setSelectedFields(prev => 
+      prev.filter(field => !(field.moduleId === moduleId && field.fieldId === fieldId))
+    )
+  }
+
   const isFieldSelected = (moduleId: string, fieldId: string) => {
     return selectedFields.some(field => field.moduleId === moduleId && field.fieldId === fieldId)
   }
@@ -520,215 +526,451 @@ export default function RelatoriosPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-          {/* Seleção de Módulos e Campos */}
+          {/* Modelos de Relatório */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Configuração do Relatório */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Configuração do Relatório
+                  <FileText className="h-5 w-5" />
+                  Modelos de Relatório
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                                  <div className="space-y-4">
-                  {/* Filtros de Data e Formato */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {/* Data Inicial */}
-                    <div className="space-y-2">
-                      <Label>Data Inicial</Label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !dateFrom && "text-muted-foreground"
-                            )}
+                <Tabs defaultValue="modelos-padrao" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3 max-w-2xl mb-6">
+                    <TabsTrigger value="modelos-padrao" className="text-sm font-medium">Modelos Padrão</TabsTrigger>
+                    <TabsTrigger value="relatorios-personalizados" className="text-sm font-medium">Relatórios Personalizados</TabsTrigger>
+                    <TabsTrigger value="meus-relatorios" className="text-sm font-medium">Meus Relatórios</TabsTrigger>
+                  </TabsList>
+
+                  {/* Aba Modelos Padrão */}
+                  <TabsContent value="modelos-padrao" className="space-y-6">
+                    {/* Filtros de Data */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {/* Data Inicial */}
+                      <div className="space-y-2">
+                        <Label>Data Inicial</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !dateFrom && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {dateFrom ? format(dateFrom, "dd/MM/yyyy", { locale: ptBR }) : "Selecione a data"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start" side="bottom">
+                            <Calendar
+                              mode="single"
+                              selected={dateFrom}
+                              onSelect={setDateFrom}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      {/* Data Final */}
+                      <div className="space-y-2">
+                        <Label>Data Final</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !dateTo && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {dateTo ? format(dateTo, "dd/MM/yyyy", { locale: ptBR }) : "Selecione a data"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start" side="bottom">
+                            <Calendar
+                              mode="single"
+                              selected={dateTo}
+                              onSelect={setDateTo}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      {/* Botão Limpar Seleção */}
+                      <div className="space-y-2">
+                        <div className="h-6 flex items-end"></div>
+                        <Button
+                          variant="outline"
+                          className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => {
+                            setSelectedFields([])
+                            setExpandedModules({})
+                          }}
+                          disabled={selectedFields.length === 0}
+                        >
+                          <Minus className="mr-2 h-4 w-4" />
+                          Limpar Seleção
+                        </Button>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {DEFAULT_TEMPLATES.map((template) => (
+                        <Card key={template.id} className="border border-gray-200 hover:border-blue-300 cursor-pointer transition-colors">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="flex-1">
+                                <h4 className="font-medium text-sm">{template.name}</h4>
+                                <p className="text-xs text-gray-600 mt-1">{template.description}</p>
+                              </div>
+                              <Badge variant="secondary" className="text-xs ml-2">
+                                {template.fields.length} campos
+                              </Badge>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full mt-2"
+                              onClick={() => loadTemplate(template)}
+                            >
+                              Carregar Modelo
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  {/* Aba Relatórios Personalizados */}
+                  <TabsContent value="relatorios-personalizados" className="space-y-6">
+                    {/* Filtros de Data e Formato */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {/* Data Inicial */}
+                      <div className="space-y-2">
+                        <Label>Data Inicial</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !dateFrom && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {dateFrom ? format(dateFrom, "dd/MM/yyyy", { locale: ptBR }) : "Selecione a data"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start" side="bottom">
+                            <Calendar
+                              mode="single"
+                              selected={dateFrom}
+                              onSelect={setDateFrom}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      {/* Data Final */}
+                      <div className="space-y-2">
+                        <Label>Data Final</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !dateTo && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {dateTo ? format(dateTo, "dd/MM/yyyy", { locale: ptBR }) : "Selecione a data"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start" side="bottom">
+                            <Calendar
+                              mode="single"
+                              selected={dateTo}
+                              onSelect={setDateTo}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      {/* Botão Limpar Seleção */}
+                      <div className="space-y-2">
+                        <div className="h-6 flex items-end"></div>
+                        <Button
+                          variant="outline"
+                          className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => {
+                            setSelectedFields([])
+                            setExpandedModules({})
+                          }}
+                          disabled={selectedFields.length === 0}
+                        >
+                          <Minus className="mr-2 h-4 w-4" />
+                          Limpar Seleção
+                        </Button>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Abas por Categoria */}
+                    <Tabs defaultValue="clientes" className="w-full">
+                      <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 text-xs">
+                        {TAB_CONFIG.map((tab) => (
+                          <TabsTrigger
+                            key={tab.id}
+                            value={tab.id}
+                            className="flex items-center gap-1 px-2 py-1"
                           >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {dateFrom ? format(dateFrom, "dd/MM/yyyy", { locale: ptBR }) : "Selecione a data"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start" side="bottom">
-                          <Calendar
-                            mode="single"
-                            selected={dateFrom}
-                            onSelect={setDateFrom}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
+                            <span className="flex items-center justify-center">{tab.icon}</span>
+                            <span className="hidden lg:inline text-xs">{tab.label}</span>
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+
+                      {Object.entries(REPORT_MODULES).map(([category, modules]) => (
+                        <TabsContent key={category} value={category} className="space-y-4">
+                          {modules.map((module) => (
+                            <Card key={module.id} className="border-l-4 border-l-blue-500">
+                              <CardHeader className="pb-3 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => toggleModuleExpansion(module.id)}>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2">
+                                      {expandedModules[module.id] ? (
+                                        <ChevronDown className="h-4 w-4 text-gray-500" />
+                                      ) : (
+                                        <ChevronRight className="h-4 w-4 text-gray-500" />
+                                      )}
+                                      {module.icon}
+                                      <div>
+                                        <CardTitle className="text-base">{module.name}</CardTitle>
+                                        <p className="text-sm text-gray-600">{module.description}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="text-sm font-medium">
+                                      {getSelectedFieldsCount(module.id)} / {module.fields.length} campos
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                      ~{module.estimatedRecords.toLocaleString()} registros
+                                    </div>
+                                  </div>
+                                </div>
+                              </CardHeader>
+                              
+                              {expandedModules[module.id] && (
+                                <CardContent className="pt-0">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleSelectAllFields(module.id, module)
+                                      }}
+                                    >
+                                      <Plus className="h-3 w-3 mr-1" />
+                                      Selecionar Todos
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleDeselectAllFields(module.id)
+                                      }}
+                                    >
+                                      <Minus className="h-3 w-3 mr-1" />
+                                      Desmarcar Todos
+                                    </Button>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+                                    {module.fields.map((field) => (
+                                      <div
+                                        key={field.id}
+                                        className="flex items-center space-x-2 p-2 rounded border hover:bg-gray-50"
+                                      >
+                                        <Checkbox
+                                          id={`field-${module.id}-${field.id}`}
+                                          checked={isFieldSelected(module.id, field.id)}
+                                          onCheckedChange={(checked) =>
+                                            handleFieldToggle(module.id, field.id, field.label, checked as boolean)
+                                          }
+                                        />
+                                        <label
+                                          htmlFor={`field-${module.id}-${field.id}`}
+                                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
+                                        >
+                                          {field.label}
+                                          {field.required && (
+                                            <span className="text-red-500 ml-1">*</span>
+                                          )}
+                                        </label>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </CardContent>
+                              )}
+                            </Card>
+                          ))}
+                        </TabsContent>
+                      ))}
+                    </Tabs>
+                  </TabsContent>
+
+                  {/* Aba Meus Relatórios */}
+                  <TabsContent value="meus-relatorios" className="space-y-6">
+                    {/* Filtros de Data e Formato */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {/* Data Inicial */}
+                      <div className="space-y-2">
+                        <Label>Data Inicial</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !dateFrom && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {dateFrom ? format(dateFrom, "dd/MM/yyyy", { locale: ptBR }) : "Selecione a data"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start" side="bottom">
+                            <Calendar
+                              mode="single"
+                              selected={dateFrom}
+                              onSelect={setDateFrom}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      {/* Data Final */}
+                      <div className="space-y-2">
+                        <Label>Data Final</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !dateTo && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {dateTo ? format(dateTo, "dd/MM/yyyy", { locale: ptBR }) : "Selecione a data"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start" side="bottom">
+                            <Calendar
+                              mode="single"
+                              selected={dateTo}
+                              onSelect={setDateTo}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      {/* Botão Limpar Seleção */}
+                      <div className="space-y-2">
+                        <div className="h-6 flex items-end"></div>
+                        <Button
+                          variant="outline"
+                          className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => {
+                            setSelectedFields([])
+                            setExpandedModules({})
+                          }}
+                          disabled={selectedFields.length === 0}
+                        >
+                          <Minus className="mr-2 h-4 w-4" />
+                          Limpar Seleção
+                        </Button>
+                      </div>
                     </div>
 
-                    {/* Data Final */}
-                    <div className="space-y-2">
-                      <Label>Data Final</Label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !dateTo && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {dateTo ? format(dateTo, "dd/MM/yyyy", { locale: ptBR }) : "Selecione a data"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start" side="bottom">
-                          <Calendar
-                            mode="single"
-                            selected={dateTo}
-                            onSelect={setDateTo}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
+                    <Separator />
 
-                    {/* Formato */}
-                    <div className="space-y-2">
-                      <Label>Formato de Exportação</Label>
-                      <Select value={exportFormat} onValueChange={setExportFormat}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="excel">Excel (.xlsx)</SelectItem>
-                          <SelectItem value="csv">CSV (.csv)</SelectItem>
-                          <SelectItem value="pdf">PDF (.pdf)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Botão Limpar Seleção */}
-                    <div className="space-y-2">
-                      <div className="h-6 flex items-end"></div>
+                    <div className="flex justify-end mb-3">
                       <Button
                         variant="outline"
-                        className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => {
-                          setSelectedFields([])
-                          setExpandedModules({})
-                        }}
+                        size="sm"
+                        onClick={() => setShowSaveTemplateModal(true)}
                         disabled={selectedFields.length === 0}
                       >
-                        <Minus className="mr-2 h-4 w-4" />
-                        Limpar Seleção
+                        <Plus className="h-3 w-3 mr-1" />
+                        Salvar Template
                       </Button>
                     </div>
-                  </div>
 
-                  <Separator />
-
-                  {/* Abas por Categoria */}
-                  <Tabs defaultValue="clientes" className="w-full">
-                    <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 text-xs">
-                      {TAB_CONFIG.map((tab) => (
-                        <TabsTrigger
-                          key={tab.id}
-                          value={tab.id}
-                          className="flex items-center gap-1 px-2 py-1"
-                        >
-                          <span className="flex items-center justify-center">{tab.icon}</span>
-                          <span className="hidden lg:inline text-xs">{tab.label}</span>
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-
-                    {Object.entries(REPORT_MODULES).map(([category, modules]) => (
-                      <TabsContent key={category} value={category} className="space-y-4">
-                        {modules.map((module) => (
-                          <Card key={module.id} className="border-l-4 border-l-blue-500">
-                            <CardHeader className="pb-3 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => toggleModuleExpansion(module.id)}>
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <div className="flex items-center gap-2">
-                                    {expandedModules[module.id] ? (
-                                      <ChevronDown className="h-4 w-4 text-gray-500" />
-                                    ) : (
-                                      <ChevronRight className="h-4 w-4 text-gray-500" />
-                                    )}
-                                    {module.icon}
-                                    <div>
-                                      <CardTitle className="text-base">{module.name}</CardTitle>
-                                      <p className="text-sm text-gray-600">{module.description}</p>
-                                    </div>
-                                  </div>
+                    {savedTemplates.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500 text-sm">
+                        <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                        <h3 className="font-medium mb-1">Nenhum relatório personalizado</h3>
+                        <p className="text-xs">Configure um relatório e clique em "Salvar Template" para começar</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {savedTemplates.map((template) => (
+                          <Card key={template.id} className="border border-gray-200 hover:border-blue-300 cursor-pointer transition-colors">
+                            <CardContent className="p-4">
+                              <div className="flex items-start justify-between mb-2">
+                                <div className="flex-1">
+                                  <h4 className="font-medium text-sm">{template.name}</h4>
+                                  <p className="text-xs text-gray-600 mt-1">{template.description}</p>
                                 </div>
-                                <div className="text-right">
-                                  <div className="text-sm font-medium">
-                                    {getSelectedFieldsCount(module.id)} / {module.fields.length} campos
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    ~{module.estimatedRecords.toLocaleString()} registros
-                                  </div>
+                                <div className="flex items-center gap-1">
+                                  <Badge variant="outline" className="text-xs">
+                                    {template.fields.length} campos
+                                  </Badge>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      deleteTemplate(template.id)
+                                    }}
+                                  >
+                                    <Minus className="h-3 w-3" />
+                                  </Button>
                                 </div>
                               </div>
-                            </CardHeader>
-                            
-                            {expandedModules[module.id] && (
-                              <CardContent className="pt-0">
-                                <div className="flex items-center gap-2 mb-3">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      handleSelectAllFields(module.id, module)
-                                    }}
-                                  >
-                                    <Plus className="h-3 w-3 mr-1" />
-                                    Selecionar Todos
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      handleDeselectAllFields(module.id)
-                                    }}
-                                  >
-                                    <Minus className="h-3 w-3 mr-1" />
-                                    Desmarcar Todos
-                                  </Button>
-                                </div>
-                                
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto">
-                                  {module.fields.map((field) => (
-                                    <div
-                                      key={field.id}
-                                      className="flex items-center space-x-2 p-2 rounded border hover:bg-gray-50"
-                                    >
-                                      <Checkbox
-                                        id={`field-${module.id}-${field.id}`}
-                                        checked={isFieldSelected(module.id, field.id)}
-                                        onCheckedChange={(checked) =>
-                                          handleFieldToggle(module.id, field.id, field.label, checked as boolean)
-                                        }
-                                      />
-                                      <label
-                                        htmlFor={`field-${module.id}-${field.id}`}
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
-                                      >
-                                        {field.label}
-                                        {field.required && (
-                                          <span className="text-red-500 ml-1">*</span>
-                                        )}
-                                      </label>
-                                    </div>
-                                  ))}
-                                </div>
-                              </CardContent>
-                            )}
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full mt-2"
+                                onClick={() => loadTemplate(template)}
+                              >
+                                Carregar Template
+                              </Button>
+                            </CardContent>
                           </Card>
                         ))}
-                      </TabsContent>
-                    ))}
-                  </Tabs>
-                </div>
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
@@ -754,30 +996,6 @@ export default function RelatoriosPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 p-6 flex flex-col flex-1 min-h-0">
-                {/* Estatísticas em destaque */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-lg border" style={{ 
-                    background: 'linear-gradient(to bottom right, #27B99E10, #27B99E20)',
-                    borderColor: '#27B99E40'
-                  }}>
-                    <div className="text-2xl font-bold" style={{ color: '#27B99E' }}>
-                      {selectedFields.length}
-                    </div>
-                    <div className="text-xs font-medium" style={{ color: '#27B99E' }}>
-                      Campos Selecionados
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg border border-gray-200">
-                    <div className="text-2xl font-bold text-gray-700">
-                      {getTotalEstimatedRecords().toLocaleString()}
-                    </div>
-                    <div className="text-xs text-gray-600 font-medium">
-                      Registros Estimados
-                    </div>
-                  </div>
-                </div>
-
-                <div className="h-px w-full" style={{ background: `linear-gradient(to right, #27B99E20, #27B99E40, #27B99E20)` }}></div>
 
                 {/* Seção de campos selecionados - expansível */}
                 <div className="flex-1 min-h-0">
@@ -821,15 +1039,25 @@ export default function RelatoriosPage() {
                               <div key={index} className="text-xs p-2 bg-white rounded shadow-sm hover:shadow-md transition-shadow" style={{ borderLeft: `4px solid #27B99E` }}>
                                 <div className="flex items-center justify-between gap-2">
                                   <span className="font-medium text-gray-700 flex-1">{field.label}</span>
-                                  <div 
-                                    className="px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap"
-                                    style={{ 
-                                      color: categoryInfo.color,
-                                      backgroundColor: categoryInfo.bgColor,
-                                      border: `1px solid ${categoryInfo.color}20`
-                                    }}
-                                  >
-                                    {categoryInfo.label}
+                                  <div className="flex items-center gap-1">
+                                    <div 
+                                      className="px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap"
+                                      style={{ 
+                                        color: categoryInfo.color,
+                                        backgroundColor: categoryInfo.bgColor,
+                                        border: `1px solid ${categoryInfo.color}20`
+                                      }}
+                                    >
+                                      {categoryInfo.label}
+                                    </div>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-5 w-5 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                      onClick={() => removeSelectedField(field.moduleId, field.fieldId)}
+                                    >
+                                      <Minus className="h-3 w-3" />
+                                    </Button>
                                   </div>
                                 </div>
                               </div>
@@ -850,6 +1078,21 @@ export default function RelatoriosPage() {
                 </div>
 
                 <div className="h-px w-full" style={{ background: `linear-gradient(to right, #27B99E20, #27B99E40, #27B99E20)` }}></div>
+
+                {/* Formato de Exportação */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-gray-800">Formato de Exportação</Label>
+                  <Select value={exportFormat} onValueChange={setExportFormat}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="excel">Excel (.xlsx)</SelectItem>
+                      <SelectItem value="csv">CSV (.csv)</SelectItem>
+                      <SelectItem value="pdf">PDF (.pdf)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 {/* Botão de Gerar Relatório */}
                 <div className="mt-auto pt-4">
@@ -880,114 +1123,7 @@ export default function RelatoriosPage() {
           </div>
         </div>
 
-        {/* Modelos de Relatório - Largura Completa */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Modelos de Relatório
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="modelos-padrao" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 max-w-md">
-                <TabsTrigger value="modelos-padrao">Modelos Padrão</TabsTrigger>
-                <TabsTrigger value="meus-relatorios">Meus Relatórios</TabsTrigger>
-              </TabsList>
 
-              {/* Aba Modelos Padrão */}
-              <TabsContent value="modelos-padrao" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                  {DEFAULT_TEMPLATES.map((template) => (
-                    <Card key={template.id} className="border border-gray-200 hover:border-blue-300 cursor-pointer transition-colors">
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-sm">{template.name}</h4>
-                            <p className="text-xs text-gray-600 mt-1">{template.description}</p>
-                          </div>
-                          <Badge variant="secondary" className="text-xs ml-2">
-                            {template.fields.length} campos
-                          </Badge>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full mt-2"
-                          onClick={() => loadTemplate(template)}
-                        >
-                          Carregar Modelo
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-
-              {/* Aba Meus Relatórios */}
-              <TabsContent value="meus-relatorios" className="space-y-4">
-                <div className="flex justify-end mb-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowSaveTemplateModal(true)}
-                    disabled={selectedFields.length === 0}
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    Salvar Template
-                  </Button>
-                </div>
-
-                {savedTemplates.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500 text-sm">
-                    <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <h3 className="font-medium mb-1">Nenhum relatório personalizado</h3>
-                    <p className="text-xs">Configure um relatório e clique em "Salvar Template" para começar</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                    {savedTemplates.map((template) => (
-                      <Card key={template.id} className="border border-gray-200 hover:border-blue-300 cursor-pointer transition-colors">
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex-1">
-                              <h4 className="font-medium text-sm">{template.name}</h4>
-                              <p className="text-xs text-gray-600 mt-1">{template.description}</p>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Badge variant="outline" className="text-xs">
-                                {template.fields.length} campos
-                              </Badge>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  deleteTemplate(template.id)
-                                }}
-                              >
-                                <Minus className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full mt-2"
-                            onClick={() => loadTemplate(template)}
-                          >
-                            Carregar Template
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
 
         {/* Modal para Salvar Template */}
         {showSaveTemplateModal && (
