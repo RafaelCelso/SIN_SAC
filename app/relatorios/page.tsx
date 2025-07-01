@@ -513,9 +513,9 @@ export default function RelatoriosPage() {
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Relatórios Personalizados</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Relatórios</h1>
             <p className="text-gray-600">
-              Crie relatórios customizados selecionando os módulos e campos específicos
+              Extraia relatórios usando modelos pré-definidos ou crie relatórios personalizados
             </p>
           </div>
           
