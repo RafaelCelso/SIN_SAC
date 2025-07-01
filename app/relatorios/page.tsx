@@ -518,11 +518,6 @@ export default function RelatoriosPage() {
               Extraia relatórios usando modelos pré-definidos ou crie relatórios personalizados
             </p>
           </div>
-          
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Clock className="h-4 w-4" />
-            <span>Última atualização: {format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
@@ -995,10 +990,10 @@ export default function RelatoriosPage() {
                   </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 p-6 flex flex-col flex-1 min-h-0">
+              <CardContent className="p-6 flex flex-col flex-1 min-h-0">
 
                 {/* Seção de campos selecionados - expansível */}
-                <div className="flex-1 min-h-0">
+                <div className="flex-1 min-h-0 mb-4">
                   {selectedFields.length > 0 ? (
                     <div className="h-full flex flex-col">
                       <div className="flex items-center gap-2 mb-3">
@@ -1014,7 +1009,10 @@ export default function RelatoriosPage() {
                           {selectedFields.length}
                         </Badge>
                       </div>
-                      <ScrollArea className="flex-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg border" style={{ maxHeight: selectedFields.length > 5 ? '240px' : 'auto' }}>
+                      <ScrollArea 
+                        className="flex-1 bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg border min-h-0" 
+                        style={{ maxHeight: selectedFields.length > 7 ? '280px' : 'none' }}
+                      >
                         <div className="space-y-1 p-2">
                           {selectedFields.map((field, index) => {
                             // Mapear categoria baseada no moduleId
@@ -1077,44 +1075,46 @@ export default function RelatoriosPage() {
                   )}
                 </div>
 
-                <div className="h-px w-full" style={{ background: `linear-gradient(to right, #27B99E20, #27B99E40, #27B99E20)` }}></div>
+                <div className="mt-auto space-y-4">
+                  <div className="h-px w-full" style={{ background: `linear-gradient(to right, #27B99E20, #27B99E40, #27B99E20)` }}></div>
 
-                {/* Formato de Exportação */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-gray-800">Formato de Exportação</Label>
-                  <Select value={exportFormat} onValueChange={setExportFormat}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="excel">Excel (.xlsx)</SelectItem>
-                      <SelectItem value="csv">CSV (.csv)</SelectItem>
-                      <SelectItem value="pdf">PDF (.pdf)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                  {/* Formato de Exportação */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-gray-800">Formato de Exportação</Label>
+                    <Select value={exportFormat} onValueChange={setExportFormat}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="excel">Excel (.xlsx)</SelectItem>
+                        <SelectItem value="csv">CSV (.csv)</SelectItem>
+                        <SelectItem value="pdf">PDF (.pdf)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                {/* Botão de Gerar Relatório */}
-                <div className="mt-auto pt-4">
-                  <Button
-                    onClick={handleGenerateReport}
-                    disabled={selectedFields.length === 0 || isGenerating}
-                    className="w-full text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 hover:opacity-90"
-                    style={{ 
-                      background: `linear-gradient(to right, #27B99E, #1F9A85)`
-                    }}
-                    size="lg"
-                  >
-                    <Download className="mr-2 h-5 w-5" />
-                    {isGenerating ? (
-                      <div className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        Gerando Relatório...
-                      </div>
-                    ) : (
-                      "Baixar Relatório"
-                    )}
-                  </Button>
+                                    {/* Botão de Gerar Relatório */}
+                  <div>
+                    <Button
+                      onClick={handleGenerateReport}
+                      disabled={selectedFields.length === 0 || isGenerating}
+                      className="w-full text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 hover:opacity-90"
+                      style={{ 
+                        background: `linear-gradient(to right, #27B99E, #1F9A85)`
+                      }}
+                      size="lg"
+                    >
+                      <Download className="mr-2 h-5 w-5" />
+                      {isGenerating ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Gerando Relatório...
+                        </div>
+                      ) : (
+                        "Baixar Relatório"
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
