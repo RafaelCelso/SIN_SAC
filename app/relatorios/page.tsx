@@ -760,9 +760,6 @@ export default function RelatoriosPage() {
                                     <div className="text-sm font-medium">
                                       {getSelectedFieldsCount(module.id)} / {module.fields.length} campos
                                     </div>
-                                    <div className="text-xs text-gray-500">
-                                      ~{module.estimatedRecords.toLocaleString()} registros
-                                    </div>
                                   </div>
                                 </div>
                               </CardHeader>
