@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Filter, FileText, CheckCircle, Clock, AlertTriangle, Plus, CalendarIcon, Package, Barcode } from "lucide-react"
+import { Search, Filter, FileText, CheckCircle, Clock, AlertTriangle, Plus, CalendarIcon, Package, Barcode, ArrowLeft } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
+import { NovaFarmacovigilanciaForm } from "./NovaFarmacovigilanciaForm"
 
 // Dados simulados de farmacovigilância
 const FARMACOVIGILANCIA_MOCK = [
@@ -136,6 +137,7 @@ export default function FarmacovigilanciaPage() {
   const [statusFiltro, setStatusFiltro] = useState<string>("")
   const [showFilters, setShowFilters] = useState(false)
   const [isNovoRegistroDialogOpen, setIsNovoRegistroDialogOpen] = useState(false)
+  const [showNovaFarmacovigilancia, setShowNovaFarmacovigilancia] = useState(false)
 
   // Estado para o formulário de novo registro
   const [formData, setFormData] = useState({
@@ -245,8 +247,32 @@ export default function FarmacovigilanciaPage() {
     })
   }
 
+  const handleNovaFarmacovigilancia = (data: any) => {
+    toast({
+      title: "Farmacovigilância criada",
+      description: "O registro de farmacovigilância foi criado com sucesso",
+      duration: 3000,
+    });
+    setShowNovaFarmacovigilancia(false);
+  };
+
   return (
     <DashboardLayout>
+      {showNovaFarmacovigilancia ? (
+        <div className="space-y-6 p-4">
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => setShowNovaFarmacovigilancia(false)}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-2xl font-bold">Nova Farmacovigilância</h1>
+          </div>
+          <NovaFarmacovigilanciaForm onSubmit={handleNovaFarmacovigilancia} />
+        </div>
+      ) : (
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="p-4 rounded-lg flex-1">
@@ -280,7 +306,7 @@ export default function FarmacovigilanciaPage() {
 
             <Button
               className="bg-[#26B99D] hover:bg-[#1E9A82] w-full sm:w-auto text-white"
-              onClick={() => setIsNovoRegistroDialogOpen(true)}
+                onClick={() => setShowNovaFarmacovigilancia(true)}
             >
               <Plus className="h-4 w-4 mr-2" />
               Nova Farmacovigilância
@@ -467,234 +493,7 @@ export default function FarmacovigilanciaPage() {
           </CardFooter>
         </Card>
       </div>
-
-      {/* Dialog para novo registro de farmacovigilância */}
-      <Dialog open={isNovoRegistroDialogOpen} onOpenChange={setIsNovoRegistroDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Novo Registro de Farmacovigilância</DialogTitle>
-            <DialogDescription>Preencha o formulário abaixo para registrar um novo evento adverso</DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmitForm} className="space-y-6">
-            {/* Informações do Paciente */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-[#26B99D]">Informações do Paciente</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="cliente">
-                    Paciente <span className="text-red-500">*</span>
-                  </Label>
-                  <Select
-                    name="cliente"
-                    value={formData.cliente}
-                    onValueChange={(value) => handleSelectChange("cliente", value)}
-                    required
-                  >
-                    <SelectTrigger id="cliente">
-                      <SelectValue placeholder="Selecione o paciente" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CLIENTES_MOCK.map((cliente) => (
-                        <SelectItem key={cliente.id} value={cliente.id}>
-                          {cliente.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="idade">Idade</Label>
-                  <Input id="idade" placeholder="Idade do paciente" type="number" />
-                </div>
-              </div>
-            </div>
-
-            {/* Informações do Medicamento */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-[#26B99D]">Informações do Medicamento</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="produto" className="flex items-center space-x-2">
-                    <Package className="h-4 w-4 text-[#26B99D]" />
-                    <span>Medicamento <span className="text-red-500">*</span></span>
-                  </Label>
-                  <Select
-                    name="produto"
-                    value={formData.produto}
-                    onValueChange={(value) => handleSelectChange("produto", value)}
-                    required
-                  >
-                    <SelectTrigger id="produto" className="h-11">
-                      <SelectValue placeholder="Selecione o medicamento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="medicamento-a">Medicamento A</SelectItem>
-                      <SelectItem value="medicamento-b">Medicamento B</SelectItem>
-                      <SelectItem value="medicamento-c">Medicamento C</SelectItem>
-                      <SelectItem value="medicamento-d">Medicamento D</SelectItem>
-                      <SelectItem value="medicamento-e">Medicamento E</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="lote" className="flex items-center space-x-2">
-                    <Barcode className="h-4 w-4 text-[#26B99D]" />
-                    <span>Número do Lote</span>
-                  </Label>
-                  <Input 
-                    id="lote" 
-                    placeholder="Ex: ABC123456" 
-                    className="h-11"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="dataInicio">Data de Início do Uso</Label>
-                  <Input
-                    id="dataInicio"
-                    name="dataInicio"
-                    type="date"
-                    value={formData.dataInicio}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="dataFim">Data de Término do Uso</Label>
-                  <Input
-                    id="dataFim"
-                    name="dataFim"
-                    type="date"
-                    value={formData.dataFim}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Informações da Reação Adversa */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-[#26B99D]">Informações da Reação Adversa</h3>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="reacaoAdversa">
-                    Reação Adversa <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="reacaoAdversa"
-                    name="reacaoAdversa"
-                    placeholder="Ex: Náusea, Erupção cutânea, etc."
-                    value={formData.reacaoAdversa}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="descricao">
-                    Descrição Detalhada <span className="text-red-500">*</span>
-                  </Label>
-                  <Textarea
-                    id="descricao"
-                    name="descricao"
-                    placeholder="Descreva detalhadamente a reação adversa observada"
-                    rows={4}
-                    value={formData.descricao}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="gravidade">Gravidade</Label>
-                    <Select
-                      name="gravidade"
-                      value={formData.gravidade}
-                      onValueChange={(value) => handleSelectChange("gravidade", value)}
-                    >
-                      <SelectTrigger id="gravidade">
-                        <SelectValue placeholder="Selecione a gravidade" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="leve">Leve</SelectItem>
-                        <SelectItem value="moderada">Moderada</SelectItem>
-                        <SelectItem value="grave">Grave</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="desfecho">Desfecho</Label>
-                    <Select
-                      name="desfecho"
-                      value={formData.desfecho}
-                      onValueChange={(value) => handleSelectChange("desfecho", value)}
-                    >
-                      <SelectTrigger id="desfecho">
-                        <SelectValue placeholder="Selecione o desfecho" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="recuperado">Recuperado</SelectItem>
-                        <SelectItem value="em-recuperacao">Em recuperação</SelectItem>
-                        <SelectItem value="nao-recuperado">Não recuperado</SelectItem>
-                        <SelectItem value="sequela">Sequela</SelectItem>
-                        <SelectItem value="fatal">Fatal</SelectItem>
-                        <SelectItem value="desconhecido">Desconhecido</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="medicamentosSuspensos"
-                      checked={formData.medicamentosSuspensos}
-                      onCheckedChange={(checked) => handleCheckboxChange("medicamentosSuspensos", checked as boolean)}
-                    />
-                    <Label htmlFor="medicamentosSuspensos">Medicamentos suspensos após a reação</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="hospitalizado"
-                      checked={formData.hospitalizado}
-                      onCheckedChange={(checked) => handleCheckboxChange("hospitalizado", checked as boolean)}
-                    />
-                    <Label htmlFor="hospitalizado">Paciente foi hospitalizado</Label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Observações */}
-            <div className="space-y-2">
-              <Label htmlFor="observacoes">Observações Adicionais</Label>
-              <Textarea
-                id="observacoes"
-                name="observacoes"
-                placeholder="Informações adicionais relevantes"
-                rows={3}
-                value={formData.observacoes}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <DialogFooter>
-              <Button variant="outline" type="button" onClick={() => setIsNovoRegistroDialogOpen(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit" className="bg-[#26B99D] hover:bg-[#1E9A82]">
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Registrar Evento Adverso
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      )}
     </DashboardLayout>
   )
 }
