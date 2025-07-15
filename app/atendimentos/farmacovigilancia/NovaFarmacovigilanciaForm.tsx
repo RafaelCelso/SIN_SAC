@@ -81,6 +81,46 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
     relacaoEventoMedicamento: string;
   }>>([]);
 
+  const [historicoMedicoItems, setHistoricoMedicoItems] = useState<Array<{
+    id: string;
+    descricaoCondicao: string;
+    emCursoCondicao: boolean;
+    dataInicio: string;
+    tipoDataInicio: "mes-ano" | "dia-mes-ano";
+    emCursoDataInicio: boolean;
+    dataTermino: string;
+    tipoDataTermino: "mes-ano" | "dia-mes-ano";
+    emCursoDataTermino: boolean;
+  }>>([{
+    id: '1',
+    descricaoCondicao: '',
+    emCursoCondicao: false,
+    dataInicio: '',
+    tipoDataInicio: 'dia-mes-ano',
+    emCursoDataInicio: false,
+    dataTermino: '',
+    tipoDataTermino: 'dia-mes-ano',
+    emCursoDataTermino: false,
+  }]);
+
+  const [examesLaboratoriais, setExamesLaboratoriais] = useState<Array<{
+    id: string;
+    nomeExame: string;
+    resultado: string;
+    unidade: string;
+    faixaReferencia: "alto" | "baixo" | "";
+    dataExame: string;
+    tipoDataExame: "mes-ano" | "dia-mes-ano";
+  }>>([{
+    id: '1',
+    nomeExame: '',
+    resultado: '',
+    unidade: '',
+    faixaReferencia: '',
+    dataExame: '',
+    tipoDataExame: 'dia-mes-ano',
+  }]);
+
   const [form, setForm] = useState<{
     cliente: ClienteMock | null;
     protocolo: ProtocoloMock | null;
@@ -94,6 +134,9 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
     peso: string;
     sexo: "masculino" | "feminino" | "";
     gestante: "sim" | "nao" | "";
+    idadeGestacional: string;
+    ultimoPeriodoMenstrual: string;
+    tipoDataUltimoPeriodoMenstrual: "mes-ano" | "dia-mes-ano";
     produtoSuspeito: string;
     eanSuspeito: string;
     loteSuspeito: string;
@@ -143,12 +186,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
       telefone: string;
       email: string;
     };
-    historicoMedico: {
-      doencasPreexistentes: string;
-      alergiasConhecidas: string;
-      medicamentosUsoContinuo: string;
-      historicoEventosAdversos: string;
-    };
+
   }>({
     cliente: null,
     protocolo: null,
@@ -162,6 +200,9 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
     peso: "",
     sexo: "",
     gestante: "",
+    idadeGestacional: "",
+    ultimoPeriodoMenstrual: "",
+    tipoDataUltimoPeriodoMenstrual: "dia-mes-ano",
     produtoSuspeito: "",
     eanSuspeito: "",
     loteSuspeito: "",
@@ -211,12 +252,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
       telefone: '',
       email: '',
     },
-    historicoMedico: {
-      doencasPreexistentes: '',
-      alergiasConhecidas: '',
-      medicamentosUsoContinuo: '',
-      historicoEventosAdversos: '',
-    },
+
   });
   const [clienteSearch, setClienteSearch] = useState("");
   const [showResults, setShowResults] = useState(false);
@@ -293,12 +329,56 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
     );
   };
 
+
+
+  // Função para atualizar item do histórico médico
+  const atualizarHistoricoMedico = (id: string, campo: string, valor: string | boolean) => {
+    setHistoricoMedicoItems(prev => 
+      prev.map(item => 
+        item.id === id ? { ...item, [campo]: valor } : item
+      )
+    );
+  };
+
+  // Função para adicionar novo exame laboratorial
+  const adicionarExameLaboratorial = () => {
+    const novoExame = {
+      id: Date.now().toString(),
+      nomeExame: '',
+      resultado: '',
+      unidade: '',
+      faixaReferencia: '' as const,
+      dataExame: '',
+      tipoDataExame: 'dia-mes-ano' as const,
+    };
+    setExamesLaboratoriais(prev => [...prev, novoExame]);
+  };
+
+  // Função para remover exame laboratorial
+  const removerExameLaboratorial = (id: string) => {
+    setExamesLaboratoriais(prev => prev.filter(exame => exame.id !== id));
+  };
+
+  // Função para atualizar exames laboratoriais
+  const atualizarExamesLaboratoriais = (id: string, campo: string, valor: string) => {
+    setExamesLaboratoriais(prev => 
+      prev.map(exame => 
+        exame.id === id ? { ...exame, [campo]: valor } : exame
+      )
+    );
+  };
+
   return (
     <TooltipProvider>
     <form
       onSubmit={e => {
         e.preventDefault();
-        onSubmit(form);
+        onSubmit({
+          ...form,
+          historicoMedico: historicoMedicoItems[0],
+          examesLaboratoriais: examesLaboratoriais,
+          eventosAdicionais: eventosAdicionais
+        });
       }}
       className="space-y-6"
     >
@@ -482,10 +562,10 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
           {form.relatorEhPaciente === "nao" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-teal-50/60 border border-teal-100 rounded-lg p-5">
               <div className="space-y-2">
-                <Label htmlFor="relator-nome">Nome completo <span className="text-red-500">*</span></Label>
+                <Label htmlFor="relator-nome">Nome completo do Paciente <span className="text-red-500">*</span></Label>
                 <Input
                   id="relator-nome"
-                  placeholder="Digite o nome do relator"
+                  placeholder="Digite o nome do paciente"
                   value={form.relatorNome || ""}
                   onChange={e => setForm(f => ({ ...f, relatorNome: e.target.value }))}
                   required
@@ -529,7 +609,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
                         name="sexo"
                         value="masculino"
                         checked={form.sexo === "masculino"}
-                        onChange={() => setForm(f => ({ ...f, sexo: "masculino", gestante: "" }))}
+                        onChange={() => setForm(f => ({ ...f, sexo: "masculino", gestante: "", idadeGestacional: "", ultimoPeriodoMenstrual: "" }))}
                         className="accent-teal-600 h-4 w-4"
                       />
                       <Label htmlFor="sexo-masculino">Masculino</Label>
@@ -551,34 +631,109 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
               </div>
 
               {form.sexo === "feminino" && (
-                <div className="space-y-2 bg-pink-50/60 border border-pink-100 rounded-lg p-4">
-                  <Label className="font-medium">Gestante</Label>
-                  <div className="flex gap-6 mt-2">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        id="gestante-sim"
-                        name="gestante"
-                        value="sim"
-                        checked={form.gestante === "sim"}
-                        onChange={() => setForm(f => ({ ...f, gestante: "sim" }))}
-                        className="accent-pink-600 h-4 w-4"
-                      />
-                      <Label htmlFor="gestante-sim">Sim</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        id="gestante-nao"
-                        name="gestante"
-                        value="nao"
-                        checked={form.gestante === "nao"}
-                        onChange={() => setForm(f => ({ ...f, gestante: "nao" }))}
-                        className="accent-pink-600 h-4 w-4"
-                      />
-                      <Label htmlFor="gestante-nao">Não</Label>
+                <div className="space-y-4 bg-pink-50/60 border border-pink-100 rounded-lg p-4">
+                  <div className="space-y-2">
+                    <Label className="font-medium">Gestante</Label>
+                    <div className="flex gap-6 mt-2">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="gestante-sim"
+                          name="gestante"
+                          value="sim"
+                          checked={form.gestante === "sim"}
+                          onChange={() => setForm(f => ({ ...f, gestante: "sim" }))}
+                          className="accent-pink-600 h-4 w-4"
+                        />
+                        <Label htmlFor="gestante-sim">Sim</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="gestante-nao"
+                          name="gestante"
+                          value="nao"
+                          checked={form.gestante === "nao"}
+                          onChange={() => setForm(f => ({ ...f, gestante: "nao", idadeGestacional: "", ultimoPeriodoMenstrual: "" }))}
+                          className="accent-pink-600 h-4 w-4"
+                        />
+                        <Label htmlFor="gestante-nao">Não</Label>
+                      </div>
                     </div>
                   </div>
+                  
+                  {form.gestante === "sim" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="idade-gestacional">Idade gestacional</Label>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <HelpCircle className="h-4 w-4 text-gray-400" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Idade gestacional no início do EA</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                        <Input
+                          id="idade-gestacional"
+                          type="number"
+                          placeholder="Ex: 20 semanas"
+                          value={form.idadeGestacional}
+                          onChange={e => setForm(f => ({ ...f, idadeGestacional: e.target.value }))}
+                          className="h-11"
+                          min="0"
+                          max="42"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="ultimo-periodo-menstrual">Último período menstrual (DPM)</Label>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <HelpCircle className="h-4 w-4 text-gray-400" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Data do último período menstrual</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                        <div className="flex gap-2">
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button variant="outline" role="combobox" className="w-24 justify-between h-11 text-xs">
+                                <span>{form.tipoDataUltimoPeriodoMenstrual === "mes-ano" ? "MM/AAAA" : "DD/MM/AAAA"}</span>
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                              <Command>
+                                <CommandGroup>
+                                  <CommandItem value="dia-mes-ano" onSelect={() => setForm(f => ({ ...f, tipoDataUltimoPeriodoMenstrual: "dia-mes-ano" }))}>
+                                    DD/MM/AAAA
+                                  </CommandItem>
+                                  <CommandItem value="mes-ano" onSelect={() => setForm(f => ({ ...f, tipoDataUltimoPeriodoMenstrual: "mes-ano" }))}>
+                                    MM/AAAA
+                                  </CommandItem>
+                                </CommandGroup>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                          <div className="relative flex-1">
+                            <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              id="ultimo-periodo-menstrual"
+                              type={form.tipoDataUltimoPeriodoMenstrual === "mes-ano" ? "month" : "date"}
+                              value={form.ultimoPeriodoMenstrual}
+                              onChange={e => setForm(f => ({ ...f, ultimoPeriodoMenstrual: e.target.value }))}
+                              className="pl-8 h-11"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -624,49 +779,274 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
             <span className="text-xl font-bold">Histórico Médico</span>
           </div>
         </CardHeader>
-        <CardContent className="p-4 space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="doencas-preexistentes" className="font-medium">Doenças preexistentes</Label>
-            <Textarea
-              id="doencas-preexistentes"
-              placeholder="Liste as doenças preexistentes do paciente..."
-              value={form.historicoMedico.doencasPreexistentes}
-              onChange={e => setForm(f => ({ ...f, historicoMedico: { ...f.historicoMedico, doencasPreexistentes: e.target.value } }))}
-              className="min-h-[80px]"
-            />
+                <CardContent className="p-8">
+          {/* Seção Principal do Histórico Médico */}
+          <div className="mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Descrição da Condição */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <Label className="font-medium text-gray-700 text-base">Descrição da Condição</Label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      id="em-curso-condicao"
+                      checked={historicoMedicoItems[0]?.emCursoCondicao || false}
+                      onChange={e => atualizarHistoricoMedico('1', 'emCursoCondicao', e.target.checked)}
+                      className="accent-teal-600 h-4 w-4"
+                    />
+                    <Label htmlFor="em-curso-condicao" className="text-sm text-gray-600 whitespace-nowrap font-medium">Em curso</Label>
+                  </div>
+                </div>
+                <Input
+                  placeholder="Descreva a condição médica..."
+                  value={historicoMedicoItems[0]?.descricaoCondicao || ''}
+                  onChange={e => atualizarHistoricoMedico('1', 'descricaoCondicao', e.target.value)}
+                  className="h-12 text-base"
+                />
+              </div>
+
+              {/* Data de Início */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <Label className="font-medium text-gray-700 text-base">Data de Início</Label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      id="em-curso-inicio"
+                      checked={historicoMedicoItems[0]?.emCursoDataInicio || false}
+                      onChange={e => atualizarHistoricoMedico('1', 'emCursoDataInicio', e.target.checked)}
+                      className="accent-teal-600 h-4 w-4"
+                    />
+                    <Label htmlFor="em-curso-inicio" className="text-sm text-gray-600 whitespace-nowrap font-medium">Em curso</Label>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" role="combobox" className="w-32 justify-between h-12 text-sm border-gray-300">
+                        <span>{historicoMedicoItems[0]?.tipoDataInicio === "mes-ano" ? "MM/AAAA" : "DD/MM/AAAA"}</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                      <Command>
+                        <CommandGroup>
+                          <CommandItem value="dia-mes-ano" onSelect={() => atualizarHistoricoMedico('1', 'tipoDataInicio', 'dia-mes-ano')}>
+                            DD/MM/AAAA
+                          </CommandItem>
+                          <CommandItem value="mes-ano" onSelect={() => atualizarHistoricoMedico('1', 'tipoDataInicio', 'mes-ano')}>
+                            MM/AAAA
+                          </CommandItem>
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <div className="relative flex-1 min-w-0">
+                    <Calendar className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      type={historicoMedicoItems[0]?.tipoDataInicio === "mes-ano" ? "month" : "date"}
+                      value={historicoMedicoItems[0]?.dataInicio || ''}
+                      onChange={e => atualizarHistoricoMedico('1', 'dataInicio', e.target.value)}
+                      className="pl-10 h-12 text-base"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Data de Término */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <Label className="font-medium text-gray-700 text-base">Data de Término</Label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      id="em-curso-termino"
+                      checked={historicoMedicoItems[0]?.emCursoDataTermino || false}
+                      onChange={e => atualizarHistoricoMedico('1', 'emCursoDataTermino', e.target.checked)}
+                      className="accent-teal-600 h-4 w-4"
+                    />
+                    <Label htmlFor="em-curso-termino" className="text-sm text-gray-600 whitespace-nowrap font-medium">Em curso</Label>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" role="combobox" className="w-32 justify-between h-12 text-sm border-gray-300">
+                        <span>{historicoMedicoItems[0]?.tipoDataTermino === "mes-ano" ? "MM/AAAA" : "DD/MM/AAAA"}</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                      <Command>
+                        <CommandGroup>
+                          <CommandItem value="dia-mes-ano" onSelect={() => atualizarHistoricoMedico('1', 'tipoDataTermino', 'dia-mes-ano')}>
+                            DD/MM/AAAA
+                          </CommandItem>
+                          <CommandItem value="mes-ano" onSelect={() => atualizarHistoricoMedico('1', 'tipoDataTermino', 'mes-ano')}>
+                            MM/AAAA
+                          </CommandItem>
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <div className="relative flex-1 min-w-0">
+                    <Calendar className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      type={historicoMedicoItems[0]?.tipoDataTermino === "mes-ano" ? "month" : "date"}
+                      value={historicoMedicoItems[0]?.dataTermino || ''}
+                      onChange={e => atualizarHistoricoMedico('1', 'dataTermino', e.target.value)}
+                      className="pl-10 h-12 text-base"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="alergias-conhecidas" className="font-medium">Alergias conhecidas</Label>
-            <Textarea
-              id="alergias-conhecidas"
-              placeholder="Liste as alergias conhecidas do paciente..."
-              value={form.historicoMedico.alergiasConhecidas}
-              onChange={e => setForm(f => ({ ...f, historicoMedico: { ...f.historicoMedico, alergiasConhecidas: e.target.value } }))}
-              className="min-h-[80px]"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="medicamentos-uso-continuo" className="font-medium">Medicamentos em uso contínuo</Label>
-            <Textarea
-              id="medicamentos-uso-continuo"
-              placeholder="Liste os medicamentos que o paciente utiliza continuamente..."
-              value={form.historicoMedico.medicamentosUsoContinuo}
-              onChange={e => setForm(f => ({ ...f, historicoMedico: { ...f.historicoMedico, medicamentosUsoContinuo: e.target.value } }))}
-              className="min-h-[80px]"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="historico-eventos-adversos" className="font-medium">Histórico de eventos adversos anteriores</Label>
-            <Textarea
-              id="historico-eventos-adversos"
-              placeholder="Descreva eventos adversos anteriores experimentados pelo paciente..."
-              value={form.historicoMedico.historicoEventosAdversos}
-              onChange={e => setForm(f => ({ ...f, historicoMedico: { ...f.historicoMedico, historicoEventosAdversos: e.target.value } }))}
-              className="min-h-[80px]"
-            />
+
+          {/* Divider com mais espaçamento */}
+          <div className="border-t border-gray-200 my-10"></div>
+
+          {/* Exames Laboratoriais */}
+          <div className="space-y-6">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-3">
+                  <FileText className="h-6 w-6 text-teal-600" />
+                  Exames Laboratoriais
+                </h3>
+                <p className="text-sm text-gray-500 mt-2">Adicione informações sobre exames laboratoriais relevantes</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="flex items-center gap-2 text-teal-600 border-teal-300 hover:bg-teal-50"
+                onClick={adicionarExameLaboratorial}
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar Exame
+              </Button>
+            </div>
+            
+            {/* Lista de Exames */}
+            <div className="space-y-8">
+              {examesLaboratoriais.map((exame, index) => (
+                <div key={exame.id} className="border border-gray-200 rounded-lg p-6 bg-gray-50/50">
+                  <div className="flex items-center justify-between mb-6">
+                    <h4 className="font-semibold text-gray-900 text-lg">Exame {index + 1}</h4>
+                    {examesLaboratoriais.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removerExameLaboratorial(exame.id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-6">
+                    {/* Nome do Exame */}
+                    <div className="space-y-3">
+                      <Label className="font-medium text-gray-700">Nome do Exame</Label>
+                      <Input
+                        placeholder="Ex: Hemograma completo"
+                        value={exame.nomeExame}
+                        onChange={e => atualizarExamesLaboratoriais(exame.id, 'nomeExame', e.target.value)}
+                        className="h-11"
+                      />
+                    </div>
+
+                    {/* Resultado */}
+                    <div className="space-y-3">
+                      <Label className="font-medium text-gray-700">Resultado</Label>
+                      <Input
+                        placeholder="Ex: 4.5"
+                        value={exame.resultado}
+                        onChange={e => atualizarExamesLaboratoriais(exame.id, 'resultado', e.target.value)}
+                        className="h-11"
+                      />
+                    </div>
+
+                    {/* Unidade */}
+                    <div className="space-y-3">
+                      <Label className="font-medium text-gray-700">Unidade</Label>
+                      <Input
+                        placeholder="Ex: mg/dL"
+                        value={exame.unidade}
+                        onChange={e => atualizarExamesLaboratoriais(exame.id, 'unidade', e.target.value)}
+                        className="h-11"
+                      />
+                    </div>
+
+                    {/* Faixa de Referência */}
+                    <div className="space-y-3">
+                      <Label className="font-medium text-gray-700">Faixa de Referência</Label>
+                      <div className="flex gap-6 pt-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id={`faixa-alto-${exame.id}`}
+                            name={`faixaReferencia-${exame.id}`}
+                            value="alto"
+                            checked={exame.faixaReferencia === "alto"}
+                            onChange={e => atualizarExamesLaboratoriais(exame.id, 'faixaReferencia', e.target.value)}
+                            className="accent-teal-600 h-4 w-4"
+                          />
+                          <Label htmlFor={`faixa-alto-${exame.id}`} className="text-sm font-medium">Alto</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id={`faixa-baixo-${exame.id}`}
+                            name={`faixaReferencia-${exame.id}`}
+                            value="baixo"
+                            checked={exame.faixaReferencia === "baixo"}
+                            onChange={e => atualizarExamesLaboratoriais(exame.id, 'faixaReferencia', e.target.value)}
+                            className="accent-teal-600 h-4 w-4"
+                          />
+                          <Label htmlFor={`faixa-baixo-${exame.id}`} className="text-sm font-medium">Baixo</Label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Data do Exame */}
+                    <div className="space-y-3">
+                      <Label className="font-medium text-gray-700">Data do Exame</Label>
+                      <div className="flex gap-2">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" role="combobox" className="w-28 justify-between h-11 text-xs border-gray-300">
+                              <span>{exame.tipoDataExame === "mes-ano" ? "MM/AAAA" : "DD/MM/AAAA"}</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                            <Command>
+                              <CommandGroup>
+                                <CommandItem value="dia-mes-ano" onSelect={() => atualizarExamesLaboratoriais(exame.id, 'tipoDataExame', 'dia-mes-ano')}>
+                                  DD/MM/AAAA
+                                </CommandItem>
+                                <CommandItem value="mes-ano" onSelect={() => atualizarExamesLaboratoriais(exame.id, 'tipoDataExame', 'mes-ano')}>
+                                  MM/AAAA
+                                </CommandItem>
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <div className="relative flex-1 min-w-0">
+                          <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type={exame.tipoDataExame === "mes-ano" ? "month" : "date"}
+                            value={exame.dataExame}
+                            onChange={e => atualizarExamesLaboratoriais(exame.id, 'dataExame', e.target.value)}
+                            className="pl-8 h-11"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </CardContent>
       </Card>
