@@ -84,23 +84,19 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
   const [historicoMedicoItems, setHistoricoMedicoItems] = useState<Array<{
     id: string;
     descricaoCondicao: string;
-    emCursoCondicao: boolean;
     dataInicio: string;
     tipoDataInicio: "mes-ano" | "dia-mes-ano";
     emCursoDataInicio: boolean;
     dataTermino: string;
     tipoDataTermino: "mes-ano" | "dia-mes-ano";
-    emCursoDataTermino: boolean;
   }>>([{
     id: '1',
     descricaoCondicao: '',
-    emCursoCondicao: false,
     dataInicio: '',
     tipoDataInicio: 'dia-mes-ano',
     emCursoDataInicio: false,
     dataTermino: '',
     tipoDataTermino: 'dia-mes-ano',
-    emCursoDataTermino: false,
   }]);
 
   const [examesLaboratoriais, setExamesLaboratoriais] = useState<Array<{
@@ -119,6 +115,24 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
     faixaReferencia: '',
     dataExame: '',
     tipoDataExame: 'dia-mes-ano',
+  }]);
+
+  const [medicamentosConcomitantes, setMedicamentosConcomitantes] = useState<Array<{
+    id: string;
+    produto: string;
+    ean: string;
+    lote: string;
+    dosagem: string;
+    viaAdministracao: string;
+    indicacao: string;
+  }>>([{
+    id: '1',
+    produto: '',
+    ean: '',
+    lote: '',
+    dosagem: '',
+    viaAdministracao: '',
+    indicacao: '',
   }]);
 
   const [form, setForm] = useState<{
@@ -171,14 +185,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
       viaAdministracao: string;
       indicacao: string;
     };
-    medicamentoConcomitante: {
-      produto: string;
-      ean: string;
-      lote: string;
-      dosagem: string;
-      viaAdministracao: string;
-      indicacao: string;
-    };
+
     medicoPrescritor: {
       nome: string;
       crm: string;
@@ -237,14 +244,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
       viaAdministracao: '',
       indicacao: '',
     },
-    medicamentoConcomitante: {
-      produto: '',
-      ean: '',
-      lote: '',
-      dosagem: '',
-      viaAdministracao: '',
-      indicacao: '',
-    },
+
     medicoPrescritor: {
       nome: '',
       crm: '',
@@ -340,6 +340,25 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
     );
   };
 
+  // Função para adicionar nova condição médica
+  const adicionarCondicaoMedica = () => {
+    const novaCondicao = {
+      id: Date.now().toString(),
+      descricaoCondicao: '',
+      dataInicio: '',
+      tipoDataInicio: 'dia-mes-ano' as const,
+      emCursoDataInicio: false,
+      dataTermino: '',
+      tipoDataTermino: 'dia-mes-ano' as const,
+    };
+    setHistoricoMedicoItems(prev => [...prev, novaCondicao]);
+  };
+
+  // Função para remover condição médica
+  const removerCondicaoMedica = (id: string) => {
+    setHistoricoMedicoItems(prev => prev.filter(item => item.id !== id));
+  };
+
   // Função para adicionar novo exame laboratorial
   const adicionarExameLaboratorial = () => {
     const novoExame = {
@@ -368,16 +387,45 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
     );
   };
 
+  // Função para adicionar novo medicamento concomitante
+  const adicionarMedicamentoConcomitante = () => {
+    const novoMedicamento = {
+      id: Date.now().toString(),
+      produto: '',
+      ean: '',
+      lote: '',
+      dosagem: '',
+      viaAdministracao: '',
+      indicacao: '',
+    };
+    setMedicamentosConcomitantes(prev => [...prev, novoMedicamento]);
+  };
+
+  // Função para remover medicamento concomitante
+  const removerMedicamentoConcomitante = (id: string) => {
+    setMedicamentosConcomitantes(prev => prev.filter(medicamento => medicamento.id !== id));
+  };
+
+  // Função para atualizar medicamentos concomitantes
+  const atualizarMedicamentoConcomitante = (id: string, campo: string, valor: string) => {
+    setMedicamentosConcomitantes(prev => 
+      prev.map(medicamento => 
+        medicamento.id === id ? { ...medicamento, [campo]: valor } : medicamento
+      )
+    );
+  };
+
   return (
     <TooltipProvider>
     <form
-      onSubmit={e => {
+              onSubmit={e => {
         e.preventDefault();
         onSubmit({
           ...form,
-          historicoMedico: historicoMedicoItems[0],
+          historicoMedico: historicoMedicoItems,
           examesLaboratoriais: examesLaboratoriais,
-          eventosAdicionais: eventosAdicionais
+          eventosAdicionais: eventosAdicionais,
+          medicamentosConcomitantes: medicamentosConcomitantes
         });
       }}
       className="space-y-6"
@@ -780,126 +828,145 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
           </div>
         </CardHeader>
                 <CardContent className="p-8">
-          {/* Seção Principal do Histórico Médico */}
-          <div className="mb-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Descrição da Condição */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <Label className="font-medium text-gray-700 text-base">Descrição da Condição</Label>
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      id="em-curso-condicao"
-                      checked={historicoMedicoItems[0]?.emCursoCondicao || false}
-                      onChange={e => atualizarHistoricoMedico('1', 'emCursoCondicao', e.target.checked)}
-                      className="accent-teal-600 h-4 w-4"
-                    />
-                    <Label htmlFor="em-curso-condicao" className="text-sm text-gray-600 whitespace-nowrap font-medium">Em curso</Label>
-                  </div>
-                </div>
-                <Input
-                  placeholder="Descreva a condição médica..."
-                  value={historicoMedicoItems[0]?.descricaoCondicao || ''}
-                  onChange={e => atualizarHistoricoMedico('1', 'descricaoCondicao', e.target.value)}
-                  className="h-12 text-base"
-                />
-              </div>
-
-              {/* Data de Início */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <Label className="font-medium text-gray-700 text-base">Data de Início</Label>
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      id="em-curso-inicio"
-                      checked={historicoMedicoItems[0]?.emCursoDataInicio || false}
-                      onChange={e => atualizarHistoricoMedico('1', 'emCursoDataInicio', e.target.checked)}
-                      className="accent-teal-600 h-4 w-4"
-                    />
-                    <Label htmlFor="em-curso-inicio" className="text-sm text-gray-600 whitespace-nowrap font-medium">Em curso</Label>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" role="combobox" className="w-32 justify-between h-12 text-sm border-gray-300">
-                        <span>{historicoMedicoItems[0]?.tipoDataInicio === "mes-ano" ? "MM/AAAA" : "DD/MM/AAAA"}</span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                      <Command>
-                        <CommandGroup>
-                          <CommandItem value="dia-mes-ano" onSelect={() => atualizarHistoricoMedico('1', 'tipoDataInicio', 'dia-mes-ano')}>
-                            DD/MM/AAAA
-                          </CommandItem>
-                          <CommandItem value="mes-ano" onSelect={() => atualizarHistoricoMedico('1', 'tipoDataInicio', 'mes-ano')}>
-                            MM/AAAA
-                          </CommandItem>
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <div className="relative flex-1 min-w-0">
-                    <Calendar className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      type={historicoMedicoItems[0]?.tipoDataInicio === "mes-ano" ? "month" : "date"}
-                      value={historicoMedicoItems[0]?.dataInicio || ''}
-                      onChange={e => atualizarHistoricoMedico('1', 'dataInicio', e.target.value)}
-                      className="pl-10 h-12 text-base"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Data de Término */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <Label className="font-medium text-gray-700 text-base">Data de Término</Label>
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      id="em-curso-termino"
-                      checked={historicoMedicoItems[0]?.emCursoDataTermino || false}
-                      onChange={e => atualizarHistoricoMedico('1', 'emCursoDataTermino', e.target.checked)}
-                      className="accent-teal-600 h-4 w-4"
-                    />
-                    <Label htmlFor="em-curso-termino" className="text-sm text-gray-600 whitespace-nowrap font-medium">Em curso</Label>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" role="combobox" className="w-32 justify-between h-12 text-sm border-gray-300">
-                        <span>{historicoMedicoItems[0]?.tipoDataTermino === "mes-ano" ? "MM/AAAA" : "DD/MM/AAAA"}</span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                      <Command>
-                        <CommandGroup>
-                          <CommandItem value="dia-mes-ano" onSelect={() => atualizarHistoricoMedico('1', 'tipoDataTermino', 'dia-mes-ano')}>
-                            DD/MM/AAAA
-                          </CommandItem>
-                          <CommandItem value="mes-ano" onSelect={() => atualizarHistoricoMedico('1', 'tipoDataTermino', 'mes-ano')}>
-                            MM/AAAA
-                          </CommandItem>
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <div className="relative flex-1 min-w-0">
-                    <Calendar className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      type={historicoMedicoItems[0]?.tipoDataTermino === "mes-ano" ? "month" : "date"}
-                      value={historicoMedicoItems[0]?.dataTermino || ''}
-                      onChange={e => atualizarHistoricoMedico('1', 'dataTermino', e.target.value)}
-                      className="pl-10 h-12 text-base"
-                    />
-                  </div>
-                </div>
-              </div>
+          {/* Cabeçalho com botão Adicionar Condição */}
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800">Condições Médicas</h3>
+              <p className="text-sm text-gray-500 mt-1">Adicione informações sobre condições médicas relevantes</p>
             </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center gap-2 text-teal-600 border-teal-300 hover:bg-teal-50"
+              onClick={adicionarCondicaoMedica}
+            >
+              <Plus className="h-4 w-4" />
+              Adicionar Condição
+            </Button>
+          </div>
+
+          {/* Lista de Condições Médicas */}
+          <div className="space-y-8">
+            {historicoMedicoItems.map((item, index) => (
+              <div key={item.id} className="border border-gray-200 rounded-lg p-6 bg-gray-50/50">
+                <div className="flex items-center justify-between mb-6">
+                  <h4 className="font-semibold text-gray-900 text-lg">Condição {index + 1}</h4>
+                  {historicoMedicoItems.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removerCondicaoMedica(item.id)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                
+                <div className={`grid grid-cols-1 gap-8 ${item.emCursoDataInicio ? 'lg:grid-cols-2' : 'lg:grid-cols-3'}`}>
+                  {/* Descrição da Condição */}
+                  <div className="space-y-4">
+                    <Label className="font-medium text-gray-700 text-base">Descrição da Condição</Label>
+                    <Input
+                      placeholder="Descreva a condição médica..."
+                      value={item.descricaoCondicao || ''}
+                      onChange={e => atualizarHistoricoMedico(item.id, 'descricaoCondicao', e.target.value)}
+                      className="h-12 text-base"
+                    />
+                  </div>
+
+                  {/* Data de Início */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                      <Label className="font-medium text-gray-700 text-base">Data de Início</Label>
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          id={`em-curso-inicio-${item.id}`}
+                          checked={item.emCursoDataInicio || false}
+                          onChange={e => {
+                            atualizarHistoricoMedico(item.id, 'emCursoDataInicio', e.target.checked);
+                            // Limpar campos de término quando marcar como em curso
+                            if (e.target.checked) {
+                              atualizarHistoricoMedico(item.id, 'dataTermino', '');
+                            }
+                          }}
+                          className="accent-teal-600 h-4 w-4"
+                        />
+                        <Label htmlFor={`em-curso-inicio-${item.id}`} className="text-sm text-gray-600 whitespace-nowrap font-medium">Em curso</Label>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" role="combobox" className="w-32 justify-between h-12 text-sm border-gray-300">
+                            <span>{item.tipoDataInicio === "mes-ano" ? "MM/AAAA" : "DD/MM/AAAA"}</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                          <Command>
+                            <CommandGroup>
+                              <CommandItem value="dia-mes-ano" onSelect={() => atualizarHistoricoMedico(item.id, 'tipoDataInicio', 'dia-mes-ano')}>
+                                DD/MM/AAAA
+                              </CommandItem>
+                              <CommandItem value="mes-ano" onSelect={() => atualizarHistoricoMedico(item.id, 'tipoDataInicio', 'mes-ano')}>
+                                MM/AAAA
+                              </CommandItem>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <div className="relative flex-1 min-w-0">
+                        <Calendar className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                        <Input
+                          type={item.tipoDataInicio === "mes-ano" ? "month" : "date"}
+                          value={item.dataInicio || ''}
+                          onChange={e => atualizarHistoricoMedico(item.id, 'dataInicio', e.target.value)}
+                          className="pl-10 h-12 text-base"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Data de Término - Oculto quando em curso */}
+                  {!item.emCursoDataInicio && (
+                    <div className="space-y-4">
+                      <Label className="font-medium text-gray-700 text-base">Data de Término</Label>
+                      <div className="flex gap-3">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" role="combobox" className="w-32 justify-between h-12 text-sm border-gray-300">
+                              <span>{item.tipoDataTermino === "mes-ano" ? "MM/AAAA" : "DD/MM/AAAA"}</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                            <Command>
+                              <CommandGroup>
+                                <CommandItem value="dia-mes-ano" onSelect={() => atualizarHistoricoMedico(item.id, 'tipoDataTermino', 'dia-mes-ano')}>
+                                  DD/MM/AAAA
+                                </CommandItem>
+                                <CommandItem value="mes-ano" onSelect={() => atualizarHistoricoMedico(item.id, 'tipoDataTermino', 'mes-ano')}>
+                                  MM/AAAA
+                                </CommandItem>
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <div className="relative flex-1 min-w-0">
+                          <Calendar className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                          <Input
+                            type={item.tipoDataTermino === "mes-ano" ? "month" : "date"}
+                            value={item.dataTermino || ''}
+                            onChange={e => atualizarHistoricoMedico(item.id, 'dataTermino', e.target.value)}
+                            className="pl-10 h-12 text-base"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Divider com mais espaçamento */}
@@ -2358,183 +2425,221 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
             <span className="text-xl font-bold">Medicamentos Concomitantes</span>
           </div>
         </CardHeader>
-                <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="produto-concomitante">Produto</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="h-4 w-4 text-gray-400" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Nome do medicamento concomitante</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Input
-                  id="produto-concomitante"
-                  placeholder="Nome do produto"
-                  value={form.medicamentoConcomitante.produto}
-                  onChange={e => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, produto: e.target.value } }))}
-                  className="h-11"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="ean-concomitante">EAN</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="h-4 w-4 text-gray-400" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Código de barras EAN do produto</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Input
-                  id="ean-concomitante"
-                  placeholder="Código EAN"
-                  value={form.medicamentoConcomitante.ean}
-                  onChange={e => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, ean: e.target.value } }))}
-                  className="h-11"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="lote-concomitante">Lote</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="h-4 w-4 text-gray-400" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Número do lote do medicamento</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Input
-                  id="lote-concomitante"
-                  placeholder="Número do lote"
-                  value={form.medicamentoConcomitante.lote}
-                  onChange={e => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, lote: e.target.value } }))}
-                  className="h-11"
-                />
-              </div>
+        <CardContent className="p-8">
+          {/* Cabeçalho com botão Adicionar Medicamento */}
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800">Medicamentos Concomitantes</h3>
+              <p className="text-sm text-gray-500 mt-1">Adicione medicamentos utilizados concomitantemente</p>
             </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center gap-2 text-teal-600 border-teal-300 hover:bg-teal-50"
+              onClick={adicionarMedicamentoConcomitante}
+            >
+              <Plus className="h-4 w-4" />
+              Adicionar Medicamento
+            </Button>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="dosagem-concomitante">Dosagem</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="h-4 w-4 text-gray-400" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Dose administrada do medicamento (ex: 500mg, 10ml)</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Input
-                  id="dosagem-concomitante"
-                  placeholder="Ex: 500mg"
-                  value={form.medicamentoConcomitante.dosagem}
-                  onChange={e => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, dosagem: e.target.value } }))}
-                  className="h-11"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="via-administracao-concomitante">Via de Administração</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="h-4 w-4 text-gray-400" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Via pela qual o medicamento foi administrado</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                      <div className="flex items-center gap-2">
-                        <Pill className="h-4 w-4 text-teal-600" />
-                        <span>{form.medicamentoConcomitante.viaAdministracao || "Selecione a via de administração"}</span>
-                      </div>
+          {/* Lista de Medicamentos Concomitantes */}
+          <div className="space-y-8">
+            {medicamentosConcomitantes.map((medicamento, index) => (
+              <div key={medicamento.id} className="border border-gray-200 rounded-lg p-6 bg-gray-50/50">
+                <div className="flex items-center justify-between mb-6">
+                  <h4 className="font-semibold text-gray-900 text-lg">Medicamento {index + 1}</h4>
+                  {medicamentosConcomitantes.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removerMedicamentoConcomitante(medicamento.id)}
+                    >
+                      <X className="h-4 w-4" />
                     </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                    <Command>
-                      <CommandInput placeholder="Buscar via de administração..." />
-                      <CommandEmpty>Nenhuma via encontrada.</CommandEmpty>
-                      <CommandGroup>
-                        <CommandItem value="Oral" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Oral" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Oral
-                        </CommandItem>
-                        <CommandItem value="Intravenosa" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Intravenosa" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Intravenosa
-                        </CommandItem>
-                        <CommandItem value="Intramuscular" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Intramuscular" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Intramuscular
-                        </CommandItem>
-                        <CommandItem value="Subcutânea" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Subcutânea" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Subcutânea
-                        </CommandItem>
-                        <CommandItem value="Tópica" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Tópica" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Tópica
-                        </CommandItem>
-                        <CommandItem value="Inalatória" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Inalatória" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Inalatória
-                        </CommandItem>
-                        <CommandItem value="Retal" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Retal" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Retal
-                        </CommandItem>
-                        <CommandItem value="Vaginal" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Vaginal" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Vaginal
-                        </CommandItem>
-                        <CommandItem value="Oftálmica" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Oftálmica" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Oftálmica
-                        </CommandItem>
-                        <CommandItem value="Otológica" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Otológica" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Otológica
-                        </CommandItem>
-                        <CommandItem value="Nasal" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Nasal" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Nasal
-                        </CommandItem>
-                        <CommandItem value="Outra" onSelect={() => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, viaAdministracao: "Outra" } }))}>
-                          <Pill className="mr-2 h-4 w-4" />Outra
-                        </CommandItem>
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
+                  )}
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor={`produto-concomitante-${medicamento.id}`}>Produto</Label>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-4 w-4 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Nome do medicamento concomitante</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <Input
+                      id={`produto-concomitante-${medicamento.id}`}
+                      placeholder="Nome do produto"
+                      value={medicamento.produto}
+                      onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'produto', e.target.value)}
+                      className="h-11"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor={`ean-concomitante-${medicamento.id}`}>EAN</Label>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-4 w-4 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Código de barras EAN do produto</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <Input
+                      id={`ean-concomitante-${medicamento.id}`}
+                      placeholder="Código EAN"
+                      value={medicamento.ean}
+                      onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'ean', e.target.value)}
+                      className="h-11"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor={`lote-concomitante-${medicamento.id}`}>Lote</Label>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-4 w-4 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Número do lote do medicamento</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <Input
+                      id={`lote-concomitante-${medicamento.id}`}
+                      placeholder="Número do lote"
+                      value={medicamento.lote}
+                      onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'lote', e.target.value)}
+                      className="h-11"
+                    />
+                  </div>
+                </div>
 
-            <div className="space-y-2 mt-4">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="indicacao-concomitante">Indicação</Label>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Indicação terapêutica para qual o medicamento foi utilizado</p>
-                  </TooltipContent>
-                </Tooltip>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor={`dosagem-concomitante-${medicamento.id}`}>Dosagem</Label>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-4 w-4 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Dose administrada do medicamento (ex: 500mg, 10ml)</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <Input
+                      id={`dosagem-concomitante-${medicamento.id}`}
+                      placeholder="Ex: 500mg"
+                      value={medicamento.dosagem}
+                      onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'dosagem', e.target.value)}
+                      className="h-11"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor={`via-administracao-concomitante-${medicamento.id}`}>Via de Administração</Label>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-4 w-4 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Via pela qual o medicamento foi administrado</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" role="combobox" className="w-full justify-between h-11">
+                          <div className="flex items-center gap-2">
+                            <Pill className="h-4 w-4 text-teal-600" />
+                            <span>{medicamento.viaAdministracao || "Selecione a via de administração"}</span>
+                          </div>
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                        <Command>
+                          <CommandInput placeholder="Buscar via de administração..." />
+                          <CommandEmpty>Nenhuma via encontrada.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandItem value="Oral" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Oral')}>
+                              <Pill className="mr-2 h-4 w-4" />Oral
+                            </CommandItem>
+                            <CommandItem value="Intravenosa" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Intravenosa')}>
+                              <Pill className="mr-2 h-4 w-4" />Intravenosa
+                            </CommandItem>
+                            <CommandItem value="Intramuscular" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Intramuscular')}>
+                              <Pill className="mr-2 h-4 w-4" />Intramuscular
+                            </CommandItem>
+                            <CommandItem value="Subcutânea" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Subcutânea')}>
+                              <Pill className="mr-2 h-4 w-4" />Subcutânea
+                            </CommandItem>
+                            <CommandItem value="Tópica" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Tópica')}>
+                              <Pill className="mr-2 h-4 w-4" />Tópica
+                            </CommandItem>
+                            <CommandItem value="Inalatória" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Inalatória')}>
+                              <Pill className="mr-2 h-4 w-4" />Inalatória
+                            </CommandItem>
+                            <CommandItem value="Retal" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Retal')}>
+                              <Pill className="mr-2 h-4 w-4" />Retal
+                            </CommandItem>
+                            <CommandItem value="Vaginal" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Vaginal')}>
+                              <Pill className="mr-2 h-4 w-4" />Vaginal
+                            </CommandItem>
+                            <CommandItem value="Oftálmica" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Oftálmica')}>
+                              <Pill className="mr-2 h-4 w-4" />Oftálmica
+                            </CommandItem>
+                            <CommandItem value="Otológica" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Otológica')}>
+                              <Pill className="mr-2 h-4 w-4" />Otológica
+                            </CommandItem>
+                            <CommandItem value="Nasal" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Nasal')}>
+                              <Pill className="mr-2 h-4 w-4" />Nasal
+                            </CommandItem>
+                            <CommandItem value="Outra" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Outra')}>
+                              <Pill className="mr-2 h-4 w-4" />Outra
+                            </CommandItem>
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+
+                <div className="space-y-2 mt-4">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor={`indicacao-concomitante-${medicamento.id}`}>Indicação</Label>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <HelpCircle className="h-4 w-4 text-gray-400" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Indicação terapêutica para qual o medicamento foi utilizado</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <Input
+                    id={`indicacao-concomitante-${medicamento.id}`}
+                    placeholder="Indicação terapêutica"
+                    value={medicamento.indicacao}
+                    onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'indicacao', e.target.value)}
+                    className="h-11"
+                  />
+                </div>
               </div>
-              <Input
-                id="indicacao-concomitante"
-                placeholder="Indicação terapêutica"
-                value={form.medicamentoConcomitante.indicacao}
-                onChange={e => setForm(f => ({ ...f, medicamentoConcomitante: { ...f.medicamentoConcomitante, indicacao: e.target.value } }))}
-                className="h-11"
-              />
-            </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
 
