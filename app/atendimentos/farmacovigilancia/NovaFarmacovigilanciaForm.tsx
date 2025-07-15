@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, ClipboardList, Info, FileText, User, Search, Pill, X, Calendar, HelpCircle, Plus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Upload, ClipboardList, Info, FileText, User, Search, Pill, X, Calendar, HelpCircle, Plus, ArrowLeft, MoreVertical, Save, Send, XCircle, RotateCcw, Check, LogOut } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 
 type ClienteMock = {
   id: string;
@@ -66,9 +69,13 @@ const PROTOCOLOS_MOCK: Record<string, ProtocoloMock[]> = {
 
 export interface NovaFarmacovigilanciaFormProps {
   onSubmit: (data: any) => void;
+  onBack?: () => void;
 }
 
-export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFormProps) {
+export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigilanciaFormProps) {
+  const { toast } = useToast();
+  const [status, setStatus] = useState<"Aberto" | "Revisão" | "Rejeitado" | "Retornado" | "Farmacovigilância" | "Concluído">("Aberto");
+  
   const [eventosAdicionais, setEventosAdicionais] = useState<Array<{
     id: string;
     eventoAdverso: string;
@@ -415,21 +422,278 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
     );
   };
 
+  // Função para renderizar o badge de status
+  const renderStatusBadge = () => {
+    const statusConfig = {
+      "Aberto": {
+        bg: "bg-gray-50",
+        text: "text-gray-700",
+        border: "border-gray-200"
+      },
+      "Revisão": {
+        bg: "bg-blue-50",
+        text: "text-blue-700",
+        border: "border-blue-200"
+      },
+      "Rejeitado": {
+        bg: "bg-red-50",
+        text: "text-red-700",
+        border: "border-red-200"
+      },
+      "Retornado": {
+        bg: "bg-amber-50",
+        text: "text-amber-700",
+        border: "border-amber-200"
+      },
+      "Farmacovigilância": {
+        bg: "bg-purple-50",
+        text: "text-purple-700",
+        border: "border-purple-200"
+      },
+      "Concluído": {
+        bg: "bg-green-50",
+        text: "text-green-700",
+        border: "border-green-200"
+      }
+    };
+
+    const config = statusConfig[status];
+
+    return (
+      <Badge className={`${config.bg} ${config.text} ${config.border} text-sm px-3 py-1 font-medium`}>
+        {status}
+      </Badge>
+    );
+  };
+
+  // Função para atualizar o status
+  const updateStatus = (newStatus: typeof status) => {
+    setStatus(newStatus);
+    toast({
+      title: "Status atualizado",
+      description: `Status alterado para "${newStatus}"`,
+      duration: 3000,
+    });
+  };
+
+  // Função para verificar se uma transição de status é permitida
+  const canTransitionTo = (targetStatus: typeof status) => {
+    const allowedTransitions: Record<typeof status, typeof status[]> = {
+      "Aberto": ["Revisão"],
+      "Revisão": ["Rejeitado", "Farmacovigilância"],
+      "Rejeitado": ["Revisão"],
+      "Farmacovigilância": ["Retornado", "Concluído"],
+      "Retornado": ["Farmacovigilância"],
+      "Concluído": []
+    };
+    return allowedTransitions[status].includes(targetStatus);
+  };
+
+  // Função para renderizar o menu de ações de status
+  const renderStatusActions = () => {
+    const allStatuses: typeof status[] = ["Aberto", "Revisão", "Rejeitado", "Retornado", "Farmacovigilância", "Concluído"];
+    
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {allStatuses.map((targetStatus) => (
+            <DropdownMenuItem
+              key={targetStatus}
+              disabled={!canTransitionTo(targetStatus)}
+              onClick={() => updateStatus(targetStatus)}
+              className={!canTransitionTo(targetStatus) ? "opacity-50 cursor-not-allowed" : ""}
+            >
+              {targetStatus}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
+
+  // Função para renderizar botões baseados no status
+  const renderActionButtons = () => {
+    const handleCancel = () => {
+      if (onBack) {
+        onBack();
+      }
+    };
+
+    const handleSave = () => {
+      // Salvar sem alterar status
+      onSubmit({
+        ...form,
+        historicoMedico: historicoMedicoItems,
+        examesLaboratoriais: examesLaboratoriais,
+        eventosAdicionais: eventosAdicionais,
+        medicamentosConcomitantes: medicamentosConcomitantes,
+        status: status
+      });
+    };
+
+    const handleSubmit = (newStatus: typeof status) => {
+      updateStatus(newStatus);
+      onSubmit({
+        ...form,
+        historicoMedico: historicoMedicoItems,
+        examesLaboratoriais: examesLaboratoriais,
+        eventosAdicionais: eventosAdicionais,
+        medicamentosConcomitantes: medicamentosConcomitantes,
+        status: newStatus
+      });
+    };
+
+    const handleExit = () => {
+      if (onBack) {
+        onBack();
+      }
+    };
+
+    switch (status) {
+      case "Aberto":
+        return (
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              <X className="h-4 w-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button type="button" variant="secondary" onClick={handleSave}>
+              <Save className="h-4 w-4 mr-2" />
+              Salvar
+            </Button>
+            <Button type="button" onClick={() => handleSubmit("Revisão")} className="bg-teal-600 hover:bg-teal-700 text-white">
+              <Send className="h-4 w-4 mr-2" />
+              Enviar
+            </Button>
+          </div>
+        );
+
+      case "Revisão":
+        return (
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              <X className="h-4 w-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button type="button" variant="secondary" onClick={handleSave}>
+              <Save className="h-4 w-4 mr-2" />
+              Salvar
+            </Button>
+            <Button type="button" variant="destructive" onClick={() => handleSubmit("Rejeitado")}>
+              <XCircle className="h-4 w-4 mr-2" />
+              Rejeitar
+            </Button>
+            <Button type="button" onClick={() => handleSubmit("Farmacovigilância")} className="bg-teal-600 hover:bg-teal-700 text-white">
+              <Send className="h-4 w-4 mr-2" />
+              Enviar
+            </Button>
+          </div>
+        );
+
+      case "Rejeitado":
+        return (
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              <X className="h-4 w-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button type="button" variant="secondary" onClick={handleSave}>
+              <Save className="h-4 w-4 mr-2" />
+              Salvar
+            </Button>
+            <Button type="button" onClick={() => handleSubmit("Revisão")} className="bg-teal-600 hover:bg-teal-700 text-white">
+              <Send className="h-4 w-4 mr-2" />
+              Enviar
+            </Button>
+          </div>
+        );
+
+      case "Retornado":
+        return (
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              <X className="h-4 w-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button type="button" variant="secondary" onClick={handleSave}>
+              <Save className="h-4 w-4 mr-2" />
+              Salvar
+            </Button>
+            <Button type="button" onClick={() => handleSubmit("Farmacovigilância")} className="bg-teal-600 hover:bg-teal-700 text-white">
+              <Send className="h-4 w-4 mr-2" />
+              Enviar
+            </Button>
+          </div>
+        );
+
+      case "Farmacovigilância":
+        return (
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              <X className="h-4 w-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button type="button" variant="destructive" onClick={() => handleSubmit("Retornado")}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Retornar
+            </Button>
+            <Button type="button" variant="secondary" onClick={handleSave}>
+              <Save className="h-4 w-4 mr-2" />
+              Salvar
+            </Button>
+            <Button type="button" onClick={() => handleSubmit("Concluído")} className="bg-green-600 hover:bg-green-700 text-white">
+              <Check className="h-4 w-4 mr-2" />
+              Concluir
+            </Button>
+          </div>
+        );
+
+      case "Concluído":
+        return (
+          <div className="flex justify-end">
+            <Button type="button" variant="outline" onClick={handleExit}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Sair
+            </Button>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <TooltipProvider>
-    <form
-              onSubmit={e => {
-        e.preventDefault();
-        onSubmit({
-          ...form,
-          historicoMedico: historicoMedicoItems,
-          examesLaboratoriais: examesLaboratoriais,
-          eventosAdicionais: eventosAdicionais,
-          medicamentosConcomitantes: medicamentosConcomitantes
-        });
-      }}
-      className="space-y-6"
-    >
+      {/* Cabeçalho com Status */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={onBack}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-2xl font-bold">Nova Farmacovigilância</h1>
+          </div>
+        </div>
+        {/* Badge de Status */}
+        <div className="mt-6 flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {renderStatusBadge()}
+            {renderStatusActions()}
+          </div>
+        </div>
+      </div>
+      
+      <form className="space-y-6">
       {/* Informações do Cliente */}
       <Card>
         <CardHeader className="bg-gray-50 border-b">
@@ -2691,12 +2955,10 @@ export function NovaFarmacovigilanciaForm({ onSubmit }: NovaFarmacovigilanciaFor
               ))}
             </div>
           </div>
-          <div className="flex justify-end">
-            <Button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-semibold">Salvar Farmacovigilância</Button>
-          </div>
+          {renderActionButtons()}
         </CardContent>
       </Card>
-    </form>
+      </form>
     </TooltipProvider>
   );
 }

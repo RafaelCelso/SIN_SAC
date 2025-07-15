@@ -260,17 +260,10 @@ export default function FarmacovigilanciaPage() {
     <DashboardLayout>
       {showNovaFarmacovigilancia ? (
         <div className="space-y-6 p-4">
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={() => setShowNovaFarmacovigilancia(false)}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <h1 className="text-2xl font-bold">Nova Farmacovigilância</h1>
-          </div>
-          <NovaFarmacovigilanciaForm onSubmit={handleNovaFarmacovigilancia} />
+          <NovaFarmacovigilanciaForm 
+            onSubmit={handleNovaFarmacovigilancia} 
+            onBack={() => setShowNovaFarmacovigilancia(false)}
+          />
         </div>
       ) : (
       <div className="space-y-6">
