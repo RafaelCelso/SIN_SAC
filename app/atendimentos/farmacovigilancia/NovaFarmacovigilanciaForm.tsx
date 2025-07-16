@@ -155,8 +155,8 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
     dataNascimento: string;
     altura: string;
     peso: string;
-    sexo: "masculino" | "feminino" | "";
-    gestante: "sim" | "nao" | "";
+    sexo: "masculino" | "feminino" | "nao-informado" | "";
+    gestante: "sim" | "nao" | "nao-informado" | "";
     idadeGestacional: string;
     ultimoPeriodoMenstrual: string;
     tipoDataUltimoPeriodoMenstrual: "mes-ano" | "dia-mes-ano";
@@ -941,6 +941,18 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                       />
                       <Label htmlFor="sexo-feminino">Feminino</Label>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id="sexo-nao-informado"
+                        name="sexo"
+                        value="nao-informado"
+                        checked={form.sexo === "nao-informado"}
+                        onChange={() => setForm(f => ({ ...f, sexo: "nao-informado", gestante: "", idadeGestacional: "", ultimoPeriodoMenstrual: "" }))}
+                        className="accent-teal-600 h-4 w-4"
+                      />
+                      <Label htmlFor="sexo-nao-informado">Não informado</Label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -973,6 +985,18 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                           className="accent-pink-600 h-4 w-4"
                         />
                         <Label htmlFor="gestante-nao">Não</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="gestante-nao-informado"
+                          name="gestante"
+                          value="nao-informado"
+                          checked={form.gestante === "nao-informado"}
+                          onChange={() => setForm(f => ({ ...f, gestante: "nao-informado", idadeGestacional: "", ultimoPeriodoMenstrual: "" }))}
+                          className="accent-pink-600 h-4 w-4"
+                        />
+                        <Label htmlFor="gestante-nao-informado">Não informado</Label>
                       </div>
                     </div>
                   </div>

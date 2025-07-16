@@ -30,6 +30,8 @@ import {
   Package2,
   Tag,
   DollarSign,
+  AlertTriangle,
+  Syringe,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -280,6 +282,18 @@ export function Sidebar() {
               label="Motivos"
               href="/motivos"
               active={pathname.includes("/motivos")}
+            />
+            <SidebarItem
+              icon={<AlertTriangle size={16} />}
+              label="Evento Adverso"
+              href="/preferencias/evento-adverso"
+              active={pathname.includes("/preferencias/evento-adverso")}
+            />
+            <SidebarItem
+              icon={<Syringe size={16} />}
+              label="Via de Administração"
+              href="/preferencias/via-administracao"
+              active={pathname.includes("/preferencias/via-administracao")}
             />
             <SidebarItem
               icon={<FileEdit size={16} />}
