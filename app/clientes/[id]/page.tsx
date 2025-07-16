@@ -716,11 +716,94 @@ export default function ClientePage() {
                                 <Pencil className="h-4 w-4 mr-2" />
                                 Editar
                               </Button>
-                              <ChevronDown className="h-4 w-4 text-gray-500 transition-transform duration-200 data-[state=open]:rotate-180" />
+                            <ChevronDown className="h-4 w-4 text-gray-500 transition-transform duration-200 data-[state=open]:rotate-180" />
                             </div>
                           </CollapsibleTrigger>
                           <CollapsibleContent>
                             <div className="p-4 pt-6 border-t">
+
+                              {/* Seção de Comentários */}
+                              <div className="mb-8 bg-white rounded-lg border border-gray-200">
+                                <div className="border-b bg-gray-50 p-4 rounded-t-lg">
+                                  <div className="flex items-center gap-2">
+                                    <MessageSquare className="h-5 w-5 text-[#26B99D]" />
+                                    <h3 className="text-lg font-medium text-gray-900">Comentários</h3>
+                                </div>
+                                </div>
+                                <div className="p-6">
+                                  <div className="space-y-6">
+                                    <div className="flex gap-4">
+                                      <div className="flex flex-col items-center">
+                                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                          <User className="h-5 w-5 text-blue-600" />
+                                        </div>
+                                        <div className="w-px h-full bg-gray-200 my-2"></div>
+                                      </div>
+                                      <div className="flex-1">
+                                        <div className="bg-white rounded-2xl rounded-tl-none border border-gray-200 p-4 shadow-sm">
+                                          <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                              <p className="font-medium text-gray-900">Rafael Celso</p>
+                                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                Atendente
+                                              </Badge>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                              <Clock className="h-4 w-4" />
+                                              15/06/2023 11:30
+                                            </div>
+                                          </div>
+                                          <p className="text-gray-700">Protocolo criado e encaminhado para análise inicial.</p>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div className="flex gap-4">
+                                      <div className="flex flex-col items-center">
+                                        <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                                          <User className="h-5 w-5 text-purple-600" />
+                                        </div>
+                                        <div className="w-px h-full bg-gray-200 my-2"></div>
+                                      </div>
+                                      <div className="flex-1">
+                                        <div className="bg-white rounded-2xl rounded-tl-none border border-gray-200 p-4 shadow-sm">
+                                          <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                              <p className="font-medium text-gray-900">Eng. Carlos</p>
+                                              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                                Qualidade
+                                              </Badge>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                              <Clock className="h-4 w-4" />
+                                              15/06/2023 15:45
+                                            </div>
+                                          </div>
+                                          <p className="text-gray-700">Análise inicial realizada. Encaminhado para avaliação técnica.</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center gap-4 pt-4 border-t mt-6">
+                                    <div className="h-10 w-10 rounded-full bg-[#E6F7F5] flex items-center justify-center flex-shrink-0">
+                                      <User className="h-5 w-5 text-[#26B99D]" />
+                                    </div>
+                                    <div className="flex-1 relative">
+                                      <Input 
+                                        placeholder="Digite sua mensagem..." 
+                                        className="bg-white pr-24 focus-visible:ring-[#26B99D]" 
+                                      />
+                                      <Button 
+                                        size="sm"
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#26B99D] hover:bg-[#1E9A82]"
+                                      >
+                                        Enviar
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
 
                               {/* Abas de Navegação */}
                               <Tabs defaultValue="contatos" className="w-full">
@@ -801,26 +884,6 @@ export default function ClientePage() {
 
                                 <TabsContent value="queixas" className="mt-4">
                                   <div className="space-y-4">
-                                    <div className="flex items-center justify-between mb-4">
-                                      <Button 
-                                        className="bg-[#26B99D] hover:bg-[#1E9A82]"
-                                        onClick={() => {
-                                          setTipoRegistro("queixa")
-                                          setShowNovoRegistroModal(true)
-                                        }}
-                                      >
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        Nova Queixa Técnica
-                                      </Button>
-                                      <Button
-                                        variant="outline"
-                                        className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
-                                        onClick={() => setShowLogsContatosModal(true)}
-                                      >
-                                        <History className="h-4 w-4 mr-2" />
-                                        Logs
-                                      </Button>
-                                    </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <Collapsible>
                                         <CollapsibleTrigger className="w-full">
@@ -870,10 +933,6 @@ export default function ClientePage() {
                                                   <TabsTrigger value="documents" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
                                                     <ScrollText className="h-4 w-4 mr-2" />
                                                     Documentos
-                                                  </TabsTrigger>
-                                                  <TabsTrigger value="messages" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
-                                                    <MessageSquare className="h-4 w-4 mr-2" />
-                                                    Mensagens
                                                   </TabsTrigger>
                                                   <TabsTrigger value="logs" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
                                                     <History className="h-4 w-4 mr-2" />
@@ -945,81 +1004,7 @@ export default function ClientePage() {
                                   </div>
                                 </TabsContent>
 
-                                                <TabsContent value="messages" className="p-6">
-                                                  <div className="space-y-6">
-                                                    <div className="space-y-6">
-                                                      <div className="flex gap-4">
-                                                        <div className="flex flex-col items-center">
-                                                          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                                            <User className="h-5 w-5 text-blue-600" />
-                                                          </div>
-                                                          <div className="w-px h-full bg-gray-200 my-2"></div>
-                                                        </div>
-                                                        <div className="flex-1">
-                                                          <div className="bg-white rounded-2xl rounded-tl-none border border-gray-200 p-4 shadow-sm">
-                                                            <div className="flex items-center justify-between mb-2">
-                                                              <div className="flex items-center gap-2">
-                                                                <p className="font-medium text-gray-900">Rafael Celso</p>
-                                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                                                                  Atendente
-                                                                </Badge>
-                                                              </div>
-                                                              <div className="flex items-center gap-2 text-sm text-gray-500">
-                                                                <Clock className="h-4 w-4" />
-                                                                15/06/2023 11:30
-                                                              </div>
-                                                            </div>
-                                                            <p className="text-gray-700">Queixa técnica registrada e encaminhada para análise inicial.</p>
-                                                          </div>
-                                                        </div>
-                                                      </div>
 
-                                                      <div className="flex gap-4">
-                                                        <div className="flex flex-col items-center">
-                                                          <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-                                                            <User className="h-5 w-5 text-purple-600" />
-                                                          </div>
-                                                          <div className="w-px h-full bg-gray-200 my-2"></div>
-                                                        </div>
-                                                        <div className="flex-1">
-                                                          <div className="bg-white rounded-2xl rounded-tl-none border border-gray-200 p-4 shadow-sm">
-                                                            <div className="flex items-center justify-between mb-2">
-                                                              <div className="flex items-center gap-2">
-                                                                <p className="font-medium text-gray-900">Eng. Carlos</p>
-                                                                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                                                                  Qualidade
-                                                                </Badge>
-                                                              </div>
-                                                              <div className="flex items-center gap-2 text-sm text-gray-500">
-                                                                <Clock className="h-4 w-4" />
-                                                                15/06/2023 15:45
-                                                              </div>
-                                                            </div>
-                                                            <p className="text-gray-700">Análise inicial realizada. Encaminhado para avaliação técnica.</p>
-                                                          </div>
-                                                        </div>
-                                                      </div>
-                                                    </div>
-
-                                                    <div className="flex items-center gap-4 pt-4 border-t">
-                                                      <div className="h-10 w-10 rounded-full bg-[#E6F7F5] flex items-center justify-center flex-shrink-0">
-                                                        <User className="h-5 w-5 text-[#26B99D]" />
-                                                      </div>
-                                                      <div className="flex-1 relative">
-                                                        <Input 
-                                                          placeholder="Digite sua mensagem..." 
-                                                          className="bg-white pr-24 focus-visible:ring-[#26B99D]" 
-                                                        />
-                                                        <Button 
-                                                          size="sm"
-                                                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#26B99D] hover:bg-[#1E9A82]"
-                                                        >
-                                                          Enviar
-                                                        </Button>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </TabsContent>
 
                                                 <TabsContent value="documents" className="p-6">
                                                   <div className="space-y-6">
@@ -1166,25 +1151,6 @@ export default function ClientePage() {
 
                                 <TabsContent value="ressarcimento" className="mt-4">
                                   <div className="space-y-4">
-                                    <div className="flex items-center justify-between mb-4">
-                                                            <Button 
-                        className="bg-[#26B99D] hover:bg-[#1E9A82]"
-                        asChild
-                      >
-                        <Link href={`/atendimentos/ressarcimento/novo?clienteId=${cliente.id}&clienteNome=${encodeURIComponent(cliente.nome)}`}>
-                          <Plus className="h-4 w-4 mr-2" />
-                          Novo Ressarcimento
-                        </Link>
-                      </Button>
-                                      <Button
-                                        variant="outline"
-                                        className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
-                                        onClick={() => setShowLogsContatosModal(true)}
-                                      >
-                                        <History className="h-4 w-4 mr-2" />
-                                        Logs
-                                      </Button>
-                                    </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <Collapsible>
                                         <CollapsibleTrigger className="w-full">
@@ -1198,12 +1164,6 @@ export default function ClientePage() {
                                                   <p className="font-semibold text-gray-900 text-left">RS-2023-0001</p>
                                                   <div className="flex items-center gap-2 mt-1">
                                                     <p className="text-sm text-gray-600">15/06/2023 10:45</p>
-                                                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                                      Aprovado
-                                                    </Badge>
-                                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                                                      R$ 150,00
-                                                    </Badge>
                                                   </div>
                                                 </div>
                                               </div>
@@ -1223,131 +1183,18 @@ export default function ClientePage() {
                                         </CollapsibleTrigger>
                                         <CollapsibleContent>
                                           <div className="p-6 space-y-6 bg-white border-t border-gray-100">
-                                            <div>
-                                              <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center gap-2">
-                                                  <FileText className="h-5 w-5 text-[#26B99D]" />
-                                                  <Label htmlFor="relato-ressarcimento" className="text-base font-medium text-gray-800">Detalhes do Ressarcimento</Label>
-                                                </div>
-                                                <Button 
-                                                      variant="outline"
-                                                  size="sm" 
-                                                  className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
-                                                >
-                                                  <Pencil className="h-4 w-4 mr-2" />
-                                                  Editar
-                                                </Button>
-                                              </div>
-                                              <div className="space-y-4">
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                  <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
-                                                    <Label className="text-sm text-gray-500">Valor Solicitado</Label>
-                                                    <p className="text-gray-700 mt-1">R$ 150,00</p>
-                                                  </div>
-                                                  <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
-                                                    <Label className="text-sm text-gray-500">Motivo</Label>
-                                                    <p className="text-gray-700 mt-1">Defeito no produto</p>
-                                                  </div>
-                                                  <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
-                                                    <Label className="text-sm text-gray-500">Forma de Pagamento</Label>
-                                                    <p className="text-gray-700 mt-1">PIX</p>
-                                                  </div>
-                                                  <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
-                                                    <Label className="text-sm text-gray-500">Status</Label>
-                                                    <p className="text-gray-700 mt-1">Aprovado</p>
-                                                  </div>
-                                                </div>
-                                                <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
-                                                  <Label className="text-sm text-gray-500">Justificativa</Label>
-                                                  <p className="text-gray-700 mt-1">Cliente relatou defeito na embalagem do produto que impossibilitou o uso adequado. Após análise, foi constatado que o problema foi causado por falha na produção.</p>
-                                                </div>
-                                              </div>
-                                            </div>
+
 
                                             <div className="bg-white rounded-lg border border-gray-200">
-                                              <Tabs defaultValue="timeline" className="w-full">
+                                              <Tabs defaultValue="logs" className="w-full">
                                                 <TabsList className="w-full justify-start border-b bg-gray-50 p-2 rounded-t-lg gap-2">
-                                                  <TabsTrigger value="timeline" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
-                                                    <History className="h-4 w-4 mr-2" />
-                                                    Linha do Tempo
-                                                  </TabsTrigger>
-                                                  <TabsTrigger value="documents" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
-                                                    <ScrollText className="h-4 w-4 mr-2" />
-                                                    Documentos
-                                                  </TabsTrigger>
-                                                  <TabsTrigger value="messages" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
-                                                    <MessageSquare className="h-4 w-4 mr-2" />
-                                                    Mensagens
-                                                  </TabsTrigger>
                                                   <TabsTrigger value="logs" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
                                                     <History className="h-4 w-4 mr-2" />
                                                     Logs
                                                   </TabsTrigger>
                                                 </TabsList>
 
-                                                <TabsContent value="timeline" className="p-6">
-                                                  <div className="space-y-6">
-                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
-                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                                                        <CheckCircle className="h-5 w-5 text-green-600" />
-                                                      </div>
-                                                      <div>
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                          <h4 className="font-medium text-gray-900">Solicitação de ressarcimento</h4>
-                                                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                                            15/06/2023 10:45
-                                                    </Badge>
-                                                  </div>
-                                                        <p className="text-gray-600">Solicitação de ressarcimento registrada no sistema por Rafael Celso</p>
-                                                      </div>
-                                                    </div>
 
-                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
-                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                                                        <CheckCircle className="h-5 w-5 text-green-600" />
-                                                      </div>
-                                                      <div>
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                          <h4 className="font-medium text-gray-900">Análise financeira</h4>
-                                                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                                            15/06/2023 14:30
-                                                          </Badge>
-                                                        </div>
-                                                        <p className="text-gray-600">Solicitação encaminhada para o setor financeiro</p>
-                                                      </div>
-                                                    </div>
-
-                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
-                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                                                        <CheckCircle className="h-5 w-5 text-green-600" />
-                                                      </div>
-                                                      <div>
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                          <h4 className="font-medium text-gray-900">Aprovação</h4>
-                                                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                                            15/06/2023 16:20
-                                                          </Badge>
-                                                        </div>
-                                                        <p className="text-gray-600">Ressarcimento aprovado pelo departamento financeiro</p>
-                                                      </div>
-                                                    </div>
-
-                                                    <div className="relative pl-8 pb-6 border-l-2 border-gray-200 last:border-l-transparent">
-                                                      <div className="absolute -left-[16px] top-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                                                        <CheckCircle className="h-5 w-5 text-green-600" />
-                                                      </div>
-                                                      <div>
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                          <h4 className="font-medium text-gray-900">Pagamento realizado</h4>
-                                                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                                            16/06/2023 09:15
-                                                          </Badge>
-                                                        </div>
-                                                        <p className="text-gray-600">Valor de R$ 150,00 transferido via PIX</p>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </TabsContent>
 
                                                 <TabsContent value="messages" className="p-6">
                                                   <div className="space-y-6">
@@ -1425,76 +1272,7 @@ export default function ClientePage() {
                                                   </div>
                                                 </TabsContent>
 
-                                                <TabsContent value="documents" className="p-6">
-                                                  <div className="space-y-6">
-                                                    <div className="grid gap-4">
-                                                      <div className="bg-white p-4 rounded-lg border border-gray-200 hover:border-[#26B99D] transition-colors group">
-                                                        <div className="flex items-center justify-between">
-                                                          <div className="flex items-center gap-3">
-                                                            <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-[#E6F7F5]">
-                                                              <FileText className="h-5 w-5 text-gray-500 group-hover:text-[#26B99D]" />
-                                                            </div>
-                                                            <div>
-                                                              <p className="font-medium text-gray-900">Comprovante de Compra.pdf</p>
-                                                              <p className="text-sm text-gray-500">0.8 MB • 15/06/2023</p>
-                                                            </div>
-                                                          </div>
-                                                          <Button variant="ghost" size="sm" className="group-hover:text-[#26B99D]">
-                                                            <Download className="h-4 w-4" />
-                                                          </Button>
-                                                        </div>
-                                                      </div>
 
-                                                      <div className="bg-white p-4 rounded-lg border border-gray-200 hover:border-[#26B99D] transition-colors group">
-                                                        <div className="flex items-center justify-between">
-                                                          <div className="flex items-center gap-3">
-                                                            <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-[#E6F7F5]">
-                                                              <FileText className="h-5 w-5 text-gray-500 group-hover:text-[#26B99D]" />
-                                                            </div>
-                                                            <div>
-                                                              <p className="font-medium text-gray-900">Comprovante de Pagamento.pdf</p>
-                                                              <p className="text-sm text-gray-500">0.5 MB • 16/06/2023</p>
-                                                            </div>
-                                                          </div>
-                                                          <Button variant="ghost" size="sm" className="group-hover:text-[#26B99D]">
-                                                            <Download className="h-4 w-4" />
-                                                          </Button>
-                                                        </div>
-                                                      </div>
-                                                    </div>
-
-                                                    <div className="space-y-4 pt-4 border-t">
-                                                      <p className="text-sm text-gray-600">Adicionar novo documento</p>
-                                                      
-                                                      <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 hover:border-[#26B99D] transition-colors">
-                                                        <div className="flex flex-col items-center justify-center gap-4">
-                                                          <div className="h-12 w-12 rounded-lg bg-[#E6F7F5] flex items-center justify-center">
-                                                            <FileText className="h-6 w-6 text-[#26B99D]" />
-                                                          </div>
-                                                          <div className="text-center">
-                                                            <p className="text-sm font-medium text-gray-900">
-                                                              Arraste e solte seus arquivos aqui
-                                                            </p>
-                                                            <p className="text-sm text-gray-500 mt-1">
-                                                              ou
-                                                            </p>
-                                                            <div className="flex items-center gap-2 mt-2">
-                                                              <Button variant="outline" className="text-gray-600">
-                                                                Selecionar arquivo
-                                                              </Button>
-                                                              <Button className="bg-[#26B99D] hover:bg-[#1E9A82]">
-                                                                Enviar
-                                                              </Button>
-                                                            </div>
-                                                          </div>
-                                                          <p className="text-xs text-gray-500">
-                                                            Arquivos suportados: PDF, DOC, DOCX, JPG, PNG, WAV (máx. 10MB)
-                                                          </p>
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </TabsContent>
 
                                                 <TabsContent value="logs" className="p-6">
                                                   <div className="space-y-6">
@@ -1570,26 +1348,6 @@ export default function ClientePage() {
 
                                 <TabsContent value="farmacovigilancia" className="mt-4">
                                   <div className="space-y-4">
-                                    <div className="flex items-center justify-between mb-4">
-                                      <Button 
-                                        className="bg-[#26B99D] hover:bg-[#1E9A82]"
-                                        onClick={() => {
-                                          setTipoRegistro("farmacovigilancia")
-                                          setShowNovoRegistroModal(true)
-                                        }}
-                                      >
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        Nova Farmacovigilância
-                                      </Button>
-                                      <Button
-                                        variant="outline"
-                                        className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
-                                        onClick={() => setShowLogsContatosModal(true)}
-                                      >
-                                        <History className="h-4 w-4 mr-2" />
-                                        Logs
-                                      </Button>
-                                    </div>
                                     <div className="bg-white border rounded-lg shadow-sm">
                                       <Collapsible>
                                         <CollapsibleTrigger className="w-full">
@@ -1628,223 +1386,7 @@ export default function ClientePage() {
                                         </CollapsibleTrigger>
                                         <CollapsibleContent>
                                           <div className="p-6 space-y-6 bg-white border-t border-gray-100">
-                                            <div>
-                                              <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center gap-2">
-                                                  <FileText className="h-5 w-5 text-[#26B99D]" />
-                                                  <Label htmlFor="relato-farmacovigilancia" className="text-base font-medium text-gray-800">Detalhes</Label>
-                                                </div>
-                                                <Button 
-                                                  variant="outline" 
-                                                  size="sm" 
-                                                  className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
-                                                  onClick={() => setIsEditingFarmacoDescription(!isEditingFarmacoDescription)}
-                                                >
-                                                  {isEditingFarmacoDescription ? (
-                                                    <>
-                                                      <Save className="h-4 w-4 mr-2" />
-                                                      Salvar
-                                                    </>
-                                                  ) : (
-                                                    <>
-                                                      <Pencil className="h-4 w-4 mr-2" />
-                                                      Editar
-                                                    </>
-                                                  )}
-                                                </Button>
-                                              </div>
-                                              {isEditingFarmacoDescription ? (
-                                                <div className="space-y-4">
-                                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="space-y-2">
-                                                      <Label htmlFor="produto">Produto</Label>
-                                                      <div className="relative">
-                                                        <Select
-                                                          defaultValue={produto[0] || ""}
-                                                          onValueChange={(value) => {
-                                                            const newValue = produto.includes(value) 
-                                                              ? produto.filter(p => p !== value)
-                                                              : [...produto, value];
-                                                            setProduto(newValue);
-                                                            if (produto.length > newValue.length) {
-                                                              setLote(lote.filter(l => {
-                                                                const loteProduto = Object.entries(LOTES_MOCK).find(([_, lotes]) =>
-                                                                  lotes.some(loteItem => loteItem.id === l)
-                                                                )?.[0];
-                                                                return newValue.includes(loteProduto || "");
-                                                              }));
-                                                            }
-                                                          }}
-                                                        >
-                                                          <SelectTrigger id="produto" className="h-auto min-h-[2.75rem] text-left">
-                                                            <SelectValue>
-                                                              {produto.length > 0 ? (
-                                                                <div className="flex flex-wrap gap-2">
-                                                                  {produto.map(p => {
-                                                                    const prod = PRODUTOS_MOCK.find(pm => pm.id === p);
-                                                                    return prod && (
-                                                                      <Badge 
-                                                                        key={prod.id}
-                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-red-100 hover:text-red-600 hover:border-red-600 cursor-pointer group"
-                                                                        onClick={(e) => {
-                                                                          e.stopPropagation();
-                                                                          const newValue = produto.filter(item => item !== prod.id);
-                                                                          setProduto(newValue);
-                                                                          setLote(lote.filter(l => {
-                                                                            const loteProduto = Object.entries(LOTES_MOCK).find(([_, lotes]) =>
-                                                                              lotes.some(loteItem => loteItem.id === l)
-                                                                            )?.[0];
-                                                                            return newValue.includes(loteProduto || "");
-                                                                          }));
-                                                                        }}
-                                                                      >
-                                                                        {prod.nome}
-                                                                        <X className="h-3 w-3 ml-1 hidden group-hover:inline-block" />
-                                                                      </Badge>
-                                                                    );
-                                                                  })}
-                                                                </div>
-                                                              ) : (
-                                                                "Selecione o produto"
-                                                              )}
-                                                            </SelectValue>
-                                                          </SelectTrigger>
-                                                          <SelectContent>
-                                                            <div className="p-2">
-                                                              <Input 
-                                                                type="search" 
-                                                                placeholder="Buscar produto..."
-                                                                className="mb-2"
-                                                              />
-                                                            </div>
-                                                            {PRODUTOS_MOCK.map((produtoItem) => (
-                                                              <SelectItem 
-                                                                key={produtoItem.id} 
-                                                                value={produtoItem.id} 
-                                                                className="text-left"
-                                                              >
-                                                                <div className="flex items-center gap-2">
-                                                                  <div className="flex flex-col">
-                                                                    <span>{produtoItem.nome}</span>
-                                                                    <span className="text-sm text-gray-500">EAN: {produtoItem.ean}</span>
-                                                                  </div>
-                                                                  {produto.includes(produtoItem.id) && (
-                                                                    <CheckCircle className="h-4 w-4 text-[#26B99D] ml-auto" />
-                                                                  )}
-                                                                </div>
-                                                              </SelectItem>
-                                                            ))}
-                                                          </SelectContent>
-                                                        </Select>
-                                                      </div>
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                      <Label htmlFor="lote">Lote</Label>
-                                                      <div className="relative">
-                                                        <Select
-                                                          defaultValue={lote[0] || ""}
-                                                          onValueChange={(value) => {
-                                                            const newValue = lote.includes(value)
-                                                              ? lote.filter(l => l !== value)
-                                                              : [...lote, value];
-                                                            setLote(newValue);
-                                                          }}
-                                                          disabled={produto.length === 0}
-                                                        >
-                                                          <SelectTrigger id="lote" className="h-auto min-h-[2.75rem] text-left">
-                                                            <SelectValue>
-                                                              {lote.length > 0 ? (
-                                                                <div className="flex flex-wrap gap-2">
-                                                                  {lote.map(l => {
-                                                                    const loteProduto = Object.entries(LOTES_MOCK).find(([_, lotes]) =>
-                                                                      lotes.some(loteItem => loteItem.id === l)
-                                                                    )?.[0];
-                                                                    const loteInfo = LOTES_MOCK[loteProduto as keyof typeof LOTES_MOCK]?.find(
-                                                                      loteItem => loteItem.id === l
-                                                                    );
-                                                                    const produtoInfo = PRODUTOS_MOCK.find(p => p.id === loteProduto);
-                                                                    return loteInfo && (
-                                                                      <Badge 
-                                                                        key={loteInfo.id}
-                                                                        className="bg-[#E6F7F5] text-[#26B99D] hover:bg-red-100 hover:text-red-600 hover:border-red-600 cursor-pointer group"
-                                                                        onClick={(e) => {
-                                                                          e.stopPropagation();
-                                                                          setLote(lote.filter(item => item !== loteInfo.id));
-                                                                        }}
-                                                                      >
-                                                                        {produtoInfo?.nome} - Lote: {loteInfo.numero}
-                                                                        <X className="h-3 w-3 ml-1 hidden group-hover:inline-block" />
-                                                                      </Badge>
-                                                                    );
-                                                                  })}
-                                                                </div>
-                                                              ) : (
-                                                                "Selecione o lote"
-                                                              )}
-                                                            </SelectValue>
-                                                          </SelectTrigger>
-                                                          <SelectContent>
-                                                            <div className="p-2">
-                                                              <Input 
-                                                                type="search" 
-                                                                placeholder="Buscar lote..."
-                                                                className="mb-2"
-                                                              />
-                                                            </div>
-                                                            {produto.map(prodId => {
-                                                              const produtoInfo = PRODUTOS_MOCK.find(p => p.id === prodId);
-                                                              return LOTES_MOCK[prodId as keyof typeof LOTES_MOCK]?.map((loteItem) => (
-                                                                <SelectItem 
-                                                                  key={loteItem.id} 
-                                                                  value={loteItem.id} 
-                                                                  className="text-left"
-                                                                >
-                                                                  <div className="flex items-center gap-2">
-                                                                    <div className="flex flex-col">
-                                                                      <span>{produtoInfo?.nome} - Lote: {loteItem.numero}</span>
-                                                                    </div>
-                                                                    {lote.includes(loteItem.id) && (
-                                                                      <CheckCircle className="h-4 w-4 text-[#26B99D] ml-auto" />
-                                                                    )}
-                                                                  </div>
-                                                                </SelectItem>
-                                                              ));
-                                                            })}
-                                                          </SelectContent>
-                                                        </Select>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                  <div className="space-y-2">
-                                                    <Label htmlFor="relato-farmacovigilancia">Descrição</Label>
-                                                    <Textarea
-                                                      id="relato-farmacovigilancia"
-                                                      className="min-h-[100px] bg-white focus-visible:ring-[#26B99D]"
-                                                      value={farmacoDescricao}
-                                                      onChange={(e) => setFarmacoDescricao(e.target.value)}
-                                                      placeholder="Digite a descrição do evento adverso..."
-                                                    />
-                                                  </div>
-                                                </div>
-                                              ) : (
-                                                <div className="space-y-4">
-                                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
-                                                      <Label className="text-sm text-gray-500">Produto</Label>
-                                                      <p className="text-gray-700 mt-1">{produto.length > 0 ? produto.join(", ") : "Medicamento A"}</p>
-                                                    </div>
-                                                    <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
-                                                      <Label className="text-sm text-gray-500">Lote</Label>
-                                                      <p className="text-gray-700 mt-1">{lote.length > 0 ? lote.join(", ") : "ABC123"}</p>
-                                                    </div>
-                                                  </div>
-                                                  <div className="bg-[#F7FDFC] border border-[#E6F7F5] rounded-lg p-4 shadow-sm">
-                                                    <Label className="text-sm text-gray-500">Descrição</Label>
-                                                    <p className="text-gray-700 mt-1">{farmacoDescricao || "Relato de reação adversa ao medicamento."}</p>
-                                                  </div>
-                                                </div>
-                                              )}
-                                            </div>
+
 
                                             <div className="bg-white rounded-lg border border-gray-200">
                                               <Tabs defaultValue="timeline" className="w-full">
@@ -1856,10 +1398,6 @@ export default function ClientePage() {
                                                   <TabsTrigger value="documents" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
                                                     <ScrollText className="h-4 w-4 mr-2" />
                                                     Documentos
-                                                  </TabsTrigger>
-                                                  <TabsTrigger value="messages" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
-                                                    <MessageSquare className="h-4 w-4 mr-2" />
-                                                    Mensagens
                                                   </TabsTrigger>
                                                   <TabsTrigger value="logs" className="data-[state=active]:bg-white data-[state=active]:border-[#26B99D] data-[state=active]:text-[#26B99D] rounded-md px-4 py-2 hover:bg-gray-100">
                                                     <History className="h-4 w-4 mr-2" />
