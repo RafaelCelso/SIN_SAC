@@ -904,7 +904,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                       type="date"
                       value={form.dataNascimento}
                       onChange={e => setForm(f => ({ ...f, dataNascimento: e.target.value }))}
-                      className="pl-8 h-11"
+                      className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
               />
             </div>
                   {idade !== null && (
@@ -1042,7 +1042,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                               type={form.tipoDataUltimoPeriodoMenstrual === "mes-ano" ? "month" : "date"}
                               value={form.ultimoPeriodoMenstrual}
                               onChange={e => setForm(f => ({ ...f, ultimoPeriodoMenstrual: e.target.value }))}
-                              className="pl-8 h-11"
+                              className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                             />
                           </div>
                         </div>
@@ -1189,7 +1189,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                           type={item.tipoDataInicio === "mes-ano" ? "month" : "date"}
                           value={item.dataInicio || ''}
                           onChange={e => atualizarHistoricoMedico(item.id, 'dataInicio', e.target.value)}
-                          className="pl-10 h-12 text-base"
+                          className="pl-10 h-12 text-base [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                         />
                       </div>
                     </div>
@@ -1225,7 +1225,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                             type={item.tipoDataTermino === "mes-ano" ? "month" : "date"}
                             value={item.dataTermino || ''}
                             onChange={e => atualizarHistoricoMedico(item.id, 'dataTermino', e.target.value)}
-                            className="pl-10 h-12 text-base"
+                            className="pl-10 h-12 text-base [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                           />
                         </div>
                       </div>
@@ -1369,7 +1369,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                             type={exame.tipoDataExame === "mes-ano" ? "month" : "date"}
                             value={exame.dataExame}
                             onChange={e => atualizarExamesLaboratoriais(exame.id, 'dataExame', e.target.value)}
-                            className="pl-8 h-11"
+                            className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                           />
                         </div>
                       </div>
@@ -1661,7 +1661,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                         type={form.tipoDataInicio === "mes-ano" ? "month" : "date"}
                         value={form.inicioTratamento}
                         onChange={e => setForm(f => ({ ...f, inicioTratamento: e.target.value }))}
-                        className="pl-8 h-11"
+                        className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                       />
                     </div>
                   </div>
@@ -1759,7 +1759,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                           type={form.tipoDataTermino === "mes-ano" ? "month" : "date"}
                           value={form.terminoTratamento}
                           onChange={e => setForm(f => ({ ...f, terminoTratamento: e.target.value }))}
-                          className="pl-8 h-11"
+                          className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                         />
                       </div>
                     </div>
@@ -1925,7 +1925,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                       type={form.tipoDataInicialEvento === 'mes-ano' ? 'month' : 'date'}
                       value={form.dataInicialEvento}
                       onChange={e => setForm(f => ({ ...f, dataInicialEvento: e.target.value }))}
-                      className="pl-8 h-11 w-full min-w-[120px]"
+                      className="pl-8 h-11 w-full min-w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                     />
                   </div>
                 </div>
@@ -1966,7 +1966,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                       type={form.tipoDataFinalEvento === 'mes-ano' ? 'month' : 'date'}
                       value={form.dataFinalEvento}
                       onChange={e => setForm(f => ({ ...f, dataFinalEvento: e.target.value }))}
-                      className="pl-8 h-11 w-full min-w-[120px]"
+                      className="pl-8 h-11 w-full min-w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                     />
                   </div>
                 </div>
@@ -2158,7 +2158,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                           type={evento.tipoDataInicialEvento === 'mes-ano' ? 'month' : 'date'}
                           value={evento.dataInicialEvento}
                           onChange={e => atualizarEvento(evento.id, 'dataInicialEvento', e.target.value)}
-                          className="pl-8 h-11 w-full min-w-[120px]"
+                          className="pl-8 h-11 w-full min-w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                         />
                       </div>
                     </div>
@@ -2199,7 +2199,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                           type={evento.tipoDataFinalEvento === 'mes-ano' ? 'month' : 'date'}
                           value={evento.dataFinalEvento}
                           onChange={e => atualizarEvento(evento.id, 'dataFinalEvento', e.target.value)}
-                          className="pl-8 h-11 w-full min-w-[120px]"
+                          className="pl-8 h-11 w-full min-w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                         />
                       </div>
                     </div>
@@ -2923,7 +2923,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                 type="date"
                 value={form.dataRecebimento}
                 onChange={e => setForm(f => ({ ...f, dataRecebimento: e.target.value }))}
-                className="pl-8 h-11"
+                className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
               />
             </div>
           </div>
