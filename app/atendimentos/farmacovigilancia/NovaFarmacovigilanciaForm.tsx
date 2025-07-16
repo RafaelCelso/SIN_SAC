@@ -111,7 +111,8 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
     nomeExame: string;
     resultado: string;
     unidade: string;
-    faixaReferencia: "alto" | "baixo" | "";
+    faixaReferenciaBaixo: string;
+    faixaReferenciaAlto: string;
     dataExame: string;
     tipoDataExame: "mes-ano" | "dia-mes-ano";
   }>>([{
@@ -119,7 +120,8 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
     nomeExame: '',
     resultado: '',
     unidade: '',
-    faixaReferencia: '',
+    faixaReferenciaBaixo: '',
+    faixaReferenciaAlto: '',
     dataExame: '',
     tipoDataExame: 'dia-mes-ano',
   }]);
@@ -373,7 +375,8 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
       nomeExame: '',
       resultado: '',
       unidade: '',
-      faixaReferencia: '' as const,
+      faixaReferenciaBaixo: '',
+      faixaReferenciaAlto: '',
       dataExame: '',
       tipoDataExame: 'dia-mes-ano' as const,
     };
@@ -1275,7 +1278,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                     )}
                   </div>
                   
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Nome do Exame */}
                     <div className="space-y-3">
                       <Label className="font-medium text-gray-700">Nome do Exame</Label>
@@ -1308,34 +1311,31 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                         className="h-11"
                       />
                     </div>
+                  </div>
 
+                  {/* Segunda linha com Faixa de Referência e Data do Exame */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
                     {/* Faixa de Referência */}
                     <div className="space-y-3">
                       <Label className="font-medium text-gray-700">Faixa de Referência</Label>
-                      <div className="flex gap-6 pt-2">
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            id={`faixa-alto-${exame.id}`}
-                            name={`faixaReferencia-${exame.id}`}
-                            value="alto"
-                            checked={exame.faixaReferencia === "alto"}
-                            onChange={e => atualizarExamesLaboratoriais(exame.id, 'faixaReferencia', e.target.value)}
-                            className="accent-teal-600 h-4 w-4"
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                          <Label className="text-xs text-gray-600">Baixo</Label>
+                          <Input
+                            placeholder="Ex: 3,5"
+                            value={exame.faixaReferenciaBaixo || ''}
+                            onChange={e => atualizarExamesLaboratoriais(exame.id, 'faixaReferenciaBaixo', e.target.value)}
+                            className="h-11 text-sm"
                           />
-                          <Label htmlFor={`faixa-alto-${exame.id}`} className="text-sm font-medium">Alto</Label>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            id={`faixa-baixo-${exame.id}`}
-                            name={`faixaReferencia-${exame.id}`}
-                            value="baixo"
-                            checked={exame.faixaReferencia === "baixo"}
-                            onChange={e => atualizarExamesLaboratoriais(exame.id, 'faixaReferencia', e.target.value)}
-                            className="accent-teal-600 h-4 w-4"
+                        <div className="space-y-1">
+                          <Label className="text-xs text-gray-600">Alto</Label>
+                          <Input
+                            placeholder="Ex: 5,0"
+                            value={exame.faixaReferenciaAlto || ''}
+                            onChange={e => atualizarExamesLaboratoriais(exame.id, 'faixaReferenciaAlto', e.target.value)}
+                            className="h-11 text-sm"
                           />
-                          <Label htmlFor={`faixa-baixo-${exame.id}`} className="text-sm font-medium">Baixo</Label>
                         </div>
                       </div>
                     </div>
