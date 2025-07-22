@@ -76,7 +76,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
   const { toast } = useToast();
   const [status, setStatus] = useState<"Aberto" | "Revisão" | "Rejeitado" | "Retornado" | "Farmacovigilância" | "Concluído">("Aberto");
   
-  const [eventosAdicionais, setEventosAdicionais] = useState<Array<{
+  const [eventosAdversos, setEventosAdversos] = useState<Array<{
     id: string;
     eventoAdverso: string;
     dataInicialEvento: string;
@@ -86,7 +86,45 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
     dataFinalEvento: string;
     tipoDataFinalEvento: "mes-ano" | "dia-mes-ano";
     relacaoEventoMedicamento: string;
-  }>>([]);
+    informouMedico: string;
+    orientacaoMedica: string;
+    acaoTomada: string;
+    melhorouAposRetirada: string;
+    voltouAposRetorno: string;
+    usouMedicamentoTratamento: string;
+    medicamentoTratamento: {
+      produto: string;
+      ean: string;
+      lote: string;
+      dosagem: string;
+      viaAdministracao: string;
+      indicacao: string;
+    };
+  }>>([{
+    id: '1',
+    eventoAdverso: '',
+    dataInicialEvento: '',
+    tipoDataInicialEvento: 'dia-mes-ano',
+    resultadoEvento: '',
+    sequelas: '',
+    dataFinalEvento: '',
+    tipoDataFinalEvento: 'dia-mes-ano',
+    relacaoEventoMedicamento: '',
+    informouMedico: '',
+    orientacaoMedica: '',
+    acaoTomada: '',
+    melhorouAposRetirada: '',
+    voltouAposRetorno: '',
+    usouMedicamentoTratamento: '',
+    medicamentoTratamento: {
+      produto: '',
+      ean: '',
+      lote: '',
+      dosagem: '',
+      viaAdministracao: '',
+      indicacao: '',
+    },
+  }]);
 
   const [historicoMedicoItems, setHistoricoMedicoItems] = useState<Array<{
     id: string;
@@ -308,8 +346,8 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
     }
     }, [form.protocolo]);
 
-  // Função para adicionar novo evento
-  const adicionarEvento = () => {
+  // Função para adicionar novo evento adverso
+  const adicionarEventoAdverso = () => {
     const novoEvento = {
       id: Date.now().toString(),
       eventoAdverso: '',
@@ -320,21 +358,50 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
       dataFinalEvento: '',
       tipoDataFinalEvento: 'dia-mes-ano' as const,
       relacaoEventoMedicamento: '',
+      informouMedico: '',
+      orientacaoMedica: '',
+      acaoTomada: '',
+      melhorouAposRetirada: '',
+      voltouAposRetorno: '',
+      usouMedicamentoTratamento: '',
+      medicamentoTratamento: {
+        produto: '',
+        ean: '',
+        lote: '',
+        dosagem: '',
+        viaAdministracao: '',
+        indicacao: '',
+      },
     };
-    setEventosAdicionais(prev => [...prev, novoEvento]);
+    setEventosAdversos(prev => [...prev, novoEvento]);
   };
 
-  // Função para remover evento
-  const removerEvento = (id: string) => {
-    setEventosAdicionais(prev => prev.filter(evento => evento.id !== id));
+  // Função para remover evento adverso
+  const removerEventoAdverso = (id: string) => {
+    setEventosAdversos(prev => prev.filter(evento => evento.id !== id));
   };
 
-  // Função para atualizar evento
-  const atualizarEvento = (id: string, campo: string, valor: string) => {
-    setEventosAdicionais(prev => 
-      prev.map(evento => 
-        evento.id === id ? { ...evento, [campo]: valor } : evento
-      )
+  // Função para atualizar evento adverso
+  const atualizarEventoAdverso = (id: string, campo: string, valor: string | boolean, subcampo?: string) => {
+    setEventosAdversos(prev => 
+      prev.map(evento => {
+        if (evento.id === id) {
+          if (subcampo) {
+            // Para campos aninhados como medicamentoTratamento
+            return {
+              ...evento,
+              [campo]: {
+                ...evento[campo as keyof typeof evento] as any,
+                [subcampo]: valor
+              }
+            };
+          } else {
+            // Para campos simples
+            return { ...evento, [campo]: valor };
+          }
+        }
+        return evento;
+      })
     );
   };
 
@@ -533,7 +600,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
         ...form,
         historicoMedico: historicoMedicoItems,
         examesLaboratoriais: examesLaboratoriais,
-        eventosAdicionais: eventosAdicionais,
+        eventosAdversos: eventosAdversos,
         medicamentosConcomitantes: medicamentosConcomitantes,
         status: status
       });
@@ -545,7 +612,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
         ...form,
         historicoMedico: historicoMedicoItems,
         examesLaboratoriais: examesLaboratoriais,
-        eventosAdicionais: eventosAdicionais,
+        eventosAdversos: eventosAdversos,
         medicamentosConcomitantes: medicamentosConcomitantes,
         status: newStatus
       });
@@ -1875,677 +1942,701 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
               <span className="text-xl font-bold">Evento Adverso</span>
             </div>
           </CardHeader>
-          <CardContent className="p-4 space-y-6">
-            {/* Campos principais em uma linha: Evento adverso, Data inicial, Data final, Resultado, Relação do medicamento com o EA, Sequelas (condicional) e Botão Adicionar */}
-            <div className={`grid grid-cols-1 gap-4 mb-6 ${form.resultadoEvento === 'Recuperado' ? 'md:grid-cols-7' : 'md:grid-cols-6'}`}>
-              {/* 1. Evento adverso */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label>Evento adverso</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="h-4 w-4 text-gray-400" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Selecione o evento adverso apresentado pelo paciente</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                      <span className="truncate">{form.eventoAdverso || 'Selecione'}</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                    <Command>
-                      <CommandInput placeholder="Buscar evento..." />
-                      <CommandEmpty>Nenhum evento encontrado.</CommandEmpty>
-                      <CommandGroup>
-                        {/* Exemplos de eventos adversos */}
-                        <CommandItem value="Náusea" onSelect={() => setForm(f => ({ ...f, eventoAdverso: 'Náusea' }))}>Náusea</CommandItem>
-                        <CommandItem value="Vômito" onSelect={() => setForm(f => ({ ...f, eventoAdverso: 'Vômito' }))}>Vômito</CommandItem>
-                        <CommandItem value="Dor de cabeça" onSelect={() => setForm(f => ({ ...f, eventoAdverso: 'Dor de cabeça' }))}>Dor de cabeça</CommandItem>
-                        <CommandItem value="Erupção cutânea" onSelect={() => setForm(f => ({ ...f, eventoAdverso: 'Erupção cutânea' }))}>Erupção cutânea</CommandItem>
-                        <CommandItem value="Outro" onSelect={() => setForm(f => ({ ...f, eventoAdverso: 'Outro' }))}>Outro</CommandItem>
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+          <CardContent className="p-8">
+            {/* Cabeçalho com botão Adicionar Evento */}
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800">Eventos Adversos</h3>
+                <p className="text-sm text-gray-500 mt-1">Adicione informações sobre eventos adversos relacionados ao medicamento</p>
               </div>
-
-              {/* 2. Data inicial */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label>Data inicial</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="h-4 w-4 text-gray-400" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Data de início do evento adverso</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <div className="flex gap-2 w-full min-w-[220px]">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" role="combobox" className="w-24 min-w-[90px] justify-between h-11 text-xs">
-                        <span>{form.tipoDataInicialEvento === 'mes-ano' ? 'MM/AAAA' : 'DD/MM/AAAA'}</span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                      <Command>
-                        <CommandGroup>
-                          <CommandItem value="dia-mes-ano" onSelect={() => setForm(f => ({ ...f, tipoDataInicialEvento: 'dia-mes-ano' }))}>DD/MM/AAAA</CommandItem>
-                          <CommandItem value="mes-ano" onSelect={() => setForm(f => ({ ...f, tipoDataInicialEvento: 'mes-ano' }))}>MM/AAAA</CommandItem>
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <div className="relative flex-1 min-w-[120px]">
-                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type={form.tipoDataInicialEvento === 'mes-ano' ? 'month' : 'date'}
-                      value={form.dataInicialEvento}
-                      onChange={e => setForm(f => ({ ...f, dataInicialEvento: e.target.value }))}
-                      className="pl-8 h-11 w-full min-w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* 3. Data final */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label>Data final</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="h-4 w-4 text-gray-400" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Data de término do evento adverso</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <div className="flex gap-2 w-full min-w-[220px]">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" role="combobox" className="w-24 min-w-[90px] justify-between h-11 text-xs">
-                        <span>{form.tipoDataFinalEvento === 'mes-ano' ? 'MM/AAAA' : 'DD/MM/AAAA'}</span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                      <Command>
-                        <CommandGroup>
-                          <CommandItem value="dia-mes-ano" onSelect={() => setForm(f => ({ ...f, tipoDataFinalEvento: 'dia-mes-ano' }))}>DD/MM/AAAA</CommandItem>
-                          <CommandItem value="mes-ano" onSelect={() => setForm(f => ({ ...f, tipoDataFinalEvento: 'mes-ano' }))}>MM/AAAA</CommandItem>
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <div className="relative flex-1 min-w-[120px]">
-                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type={form.tipoDataFinalEvento === 'mes-ano' ? 'month' : 'date'}
-                      value={form.dataFinalEvento}
-                      onChange={e => setForm(f => ({ ...f, dataFinalEvento: e.target.value }))}
-                      className="pl-8 h-11 w-full min-w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* 4. Resultado */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label>Resultado</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="h-4 w-4 text-gray-400" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Resultado do evento adverso</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                      <span className="truncate">{form.resultadoEvento || 'Selecione'}</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                    <Command>
-                      <CommandGroup>
-                        <CommandItem value="Recuperado" onSelect={() => setForm(f => ({ ...f, resultadoEvento: 'Recuperado', sequelas: '' }))}>Recuperado</CommandItem>
-                        <CommandItem value="Não recuperado" onSelect={() => setForm(f => ({ ...f, resultadoEvento: 'Não recuperado', sequelas: '' }))}>Não recuperado</CommandItem>
-                        <CommandItem value="Não informado" onSelect={() => setForm(f => ({ ...f, resultadoEvento: 'Não informado', sequelas: '' }))}>Não informado</CommandItem>
-                        <CommandItem value="Não se aplica" onSelect={() => setForm(f => ({ ...f, resultadoEvento: 'Não se aplica', sequelas: '' }))}>Não se aplica</CommandItem>
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* 5. Relação do medicamento com o EA */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label>Relação do medicamento com o EA</Label>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HelpCircle className="h-4 w-4 text-gray-400" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Selecione a relação entre o evento adverso e o medicamento suspeito</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                      <span className="truncate">{form.relacaoEventoMedicamento || 'Selecione'}</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                    <Command>
-                      <CommandGroup>
-                        <CommandItem value="Muito provável" onSelect={() => setForm(f => ({ ...f, relacaoEventoMedicamento: 'Muito provável' }))}>Muito provável</CommandItem>
-                        <CommandItem value="Provável" onSelect={() => setForm(f => ({ ...f, relacaoEventoMedicamento: 'Provável' }))}>Provável</CommandItem>
-                        <CommandItem value="Duvidosa" onSelect={() => setForm(f => ({ ...f, relacaoEventoMedicamento: 'Duvidosa' }))}>Duvidosa</CommandItem>
-                        <CommandItem value="Não se aplica" onSelect={() => setForm(f => ({ ...f, relacaoEventoMedicamento: 'Não se aplica' }))}>Não se aplica</CommandItem>
-                        <CommandItem value="Não informado" onSelect={() => setForm(f => ({ ...f, relacaoEventoMedicamento: 'Não informado' }))}>Não informado</CommandItem>
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* 6. Sequelas (condicional - aparece na mesma linha quando Resultado = Recuperado) */}
-              {form.resultadoEvento === 'Recuperado' && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Label>Sequelas</Label>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <HelpCircle className="h-4 w-4 text-gray-400" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>O paciente apresentou sequelas após recuperação?</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                        <span className="truncate">{form.sequelas || 'Selecione'}</span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                      <Command>
-                        <CommandGroup>
-                          <CommandItem value="Sim" onSelect={() => setForm(f => ({ ...f, sequelas: 'Sim' }))}>Sim</CommandItem>
-                          <CommandItem value="Não" onSelect={() => setForm(f => ({ ...f, sequelas: 'Não' }))}>Não</CommandItem>
-                          <CommandItem value="Não informado" onSelect={() => setForm(f => ({ ...f, sequelas: 'Não informado' }))}>Não informado</CommandItem>
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              )}
-
-              {/* 7. Botão Adicionar Evento */}
-              <div className="flex items-end">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-11 w-11 flex items-center justify-center text-teal-600 border-teal-300 hover:bg-teal-50"
-                  onClick={adicionarEvento}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="flex items-center gap-2 text-teal-600 border-teal-300 hover:bg-teal-50"
+                onClick={adicionarEventoAdverso}
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar Evento
+              </Button>
             </div>
 
-            {/* Eventos Adicionais */}
-            {eventosAdicionais.map((evento) => (
-              <div key={evento.id} className="border-t pt-6">
-                {/* Campos do evento adicional */}
-                <div className={`grid grid-cols-1 gap-4 mb-6 ${evento.resultadoEvento === 'Recuperado' ? 'md:grid-cols-7' : 'md:grid-cols-6'}`}>
-                  {/* 1. Evento adverso */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label>Evento adverso</Label>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-gray-400" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Selecione o evento adverso apresentado pelo paciente</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                          <span className="truncate">{evento.eventoAdverso || 'Selecione'}</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                        <Command>
-                          <CommandInput placeholder="Buscar evento..." />
-                          <CommandEmpty>Nenhum evento encontrado.</CommandEmpty>
-                          <CommandGroup>
-                            <CommandItem value="Náusea" onSelect={() => atualizarEvento(evento.id, 'eventoAdverso', 'Náusea')}>Náusea</CommandItem>
-                            <CommandItem value="Vômito" onSelect={() => atualizarEvento(evento.id, 'eventoAdverso', 'Vômito')}>Vômito</CommandItem>
-                            <CommandItem value="Dor de cabeça" onSelect={() => atualizarEvento(evento.id, 'eventoAdverso', 'Dor de cabeça')}>Dor de cabeça</CommandItem>
-                            <CommandItem value="Erupção cutânea" onSelect={() => atualizarEvento(evento.id, 'eventoAdverso', 'Erupção cutânea')}>Erupção cutânea</CommandItem>
-                            <CommandItem value="Outro" onSelect={() => atualizarEvento(evento.id, 'eventoAdverso', 'Outro')}>Outro</CommandItem>
-                          </CommandGroup>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+            {/* Lista de Eventos Adversos */}
+            <div className="space-y-8">
+              {eventosAdversos.map((evento, index) => (
+                <div key={evento.id} className="border border-gray-200 rounded-lg p-6 bg-gray-50/50">
+                  <div className="flex items-center justify-between mb-6">
+                    <h4 className="font-semibold text-gray-900 text-lg">Evento {index + 1}</h4>
+                    {eventosAdversos.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removerEventoAdverso(evento.id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
-
-                  {/* 2. Data inicial */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label>Data inicial</Label>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-gray-400" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Data de início do evento adverso</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <div className="flex gap-2 w-full min-w-[220px]">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" role="combobox" className="w-24 min-w-[90px] justify-between h-11 text-xs">
-                            <span>{evento.tipoDataInicialEvento === 'mes-ano' ? 'MM/AAAA' : 'DD/MM/AAAA'}</span>
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                          <Command>
-                            <CommandGroup>
-                              <CommandItem value="dia-mes-ano" onSelect={() => atualizarEvento(evento.id, 'tipoDataInicialEvento', 'dia-mes-ano')}>DD/MM/AAAA</CommandItem>
-                              <CommandItem value="mes-ano" onSelect={() => atualizarEvento(evento.id, 'tipoDataInicialEvento', 'mes-ano')}>MM/AAAA</CommandItem>
-                            </CommandGroup>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <div className="relative flex-1 min-w-[120px]">
-                        <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          type={evento.tipoDataInicialEvento === 'mes-ano' ? 'month' : 'date'}
-                          value={evento.dataInicialEvento}
-                          onChange={e => atualizarEvento(evento.id, 'dataInicialEvento', e.target.value)}
-                          className="pl-8 h-11 w-full min-w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 3. Data final */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label>Data final</Label>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-gray-400" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Data de término do evento adverso</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <div className="flex gap-2 w-full min-w-[220px]">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" role="combobox" className="w-24 min-w-[90px] justify-between h-11 text-xs">
-                            <span>{evento.tipoDataFinalEvento === 'mes-ano' ? 'MM/AAAA' : 'DD/MM/AAAA'}</span>
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                          <Command>
-                            <CommandGroup>
-                              <CommandItem value="dia-mes-ano" onSelect={() => atualizarEvento(evento.id, 'tipoDataFinalEvento', 'dia-mes-ano')}>DD/MM/AAAA</CommandItem>
-                              <CommandItem value="mes-ano" onSelect={() => atualizarEvento(evento.id, 'tipoDataFinalEvento', 'mes-ano')}>MM/AAAA</CommandItem>
-                            </CommandGroup>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <div className="relative flex-1 min-w-[120px]">
-                        <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          type={evento.tipoDataFinalEvento === 'mes-ano' ? 'month' : 'date'}
-                          value={evento.dataFinalEvento}
-                          onChange={e => atualizarEvento(evento.id, 'dataFinalEvento', e.target.value)}
-                          className="pl-8 h-11 w-full min-w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 4. Resultado */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label>Resultado</Label>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-gray-400" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Resultado do evento adverso</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                          <span className="truncate">{evento.resultadoEvento || 'Selecione'}</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                        <Command>
-                          <CommandGroup>
-                            <CommandItem value="Recuperado" onSelect={() => atualizarEvento(evento.id, 'resultadoEvento', 'Recuperado')}>Recuperado</CommandItem>
-                            <CommandItem value="Não recuperado" onSelect={() => atualizarEvento(evento.id, 'resultadoEvento', 'Não recuperado')}>Não recuperado</CommandItem>
-                            <CommandItem value="Não informado" onSelect={() => atualizarEvento(evento.id, 'resultadoEvento', 'Não informado')}>Não informado</CommandItem>
-                            <CommandItem value="Não se aplica" onSelect={() => atualizarEvento(evento.id, 'resultadoEvento', 'Não se aplica')}>Não se aplica</CommandItem>
-                          </CommandGroup>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  {/* 5. Relação do medicamento com o EA */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label>Relação do medicamento com o EA</Label>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-gray-400" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Selecione a relação entre o evento adverso e o medicamento suspeito</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                                                 <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                           <span className="truncate">{evento.relacaoEventoMedicamento || 'Selecione'}</span>
-                         </Button>
-                       </PopoverTrigger>
-                       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                         <Command>
-                           <CommandGroup>
-                              <CommandItem value="Muito provável" onSelect={() => atualizarEvento(evento.id, 'relacaoEventoMedicamento', 'Muito provável')}>Muito provável</CommandItem>
-                             <CommandItem value="Provável" onSelect={() => atualizarEvento(evento.id, 'relacaoEventoMedicamento', 'Provável')}>Provável</CommandItem>
-                             <CommandItem value="Duvidosa" onSelect={() => atualizarEvento(evento.id, 'relacaoEventoMedicamento', 'Duvidosa')}>Duvidosa</CommandItem>
-                             <CommandItem value="Não se aplica" onSelect={() => atualizarEvento(evento.id, 'relacaoEventoMedicamento', 'Não se aplica')}>Não se aplica</CommandItem>
-                             <CommandItem value="Não informado" onSelect={() => atualizarEvento(evento.id, 'relacaoEventoMedicamento', 'Não informado')}>Não informado</CommandItem>
-                           </CommandGroup>
-                         </Command>
-                       </PopoverContent>
-                     </Popover>
-                   </div>
-  
-                   {/* 6. Sequelas (condicional) */}
-                  {evento.resultadoEvento === 'Recuperado' && (
-                    <div className="space-y-2">
+                  
+                  {/* Campos básicos do evento em grid */}
+                  <div className={`grid grid-cols-1 gap-6 mb-6 ${evento.resultadoEvento === 'Recuperado' ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}>
+                    {/* Evento adverso */}
+                    <div className="space-y-4">
                       <div className="flex items-center gap-2">
-                        <Label>Sequelas</Label>
+                        <Label className="font-medium text-gray-700 text-base">Evento adverso</Label>
                         <Tooltip>
                           <TooltipTrigger>
                             <HelpCircle className="h-4 w-4 text-gray-400" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>O paciente apresentou sequelas após recuperação?</p>
+                            <p>Selecione o evento adverso apresentado pelo paciente</p>
                           </TooltipContent>
                         </Tooltip>
                       </div>
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                            <span className="truncate">{evento.sequelas || 'Selecione'}</span>
+                          <Button variant="outline" role="combobox" className="w-full justify-between h-12 text-base">
+                            <span className="truncate">{evento.eventoAdverso || 'Selecione'}</span>
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                           <Command>
+                            <CommandInput placeholder="Buscar evento..." />
+                            <CommandEmpty>Nenhum evento encontrado.</CommandEmpty>
                             <CommandGroup>
-                              <CommandItem value="Sim" onSelect={() => atualizarEvento(evento.id, 'sequelas', 'Sim')}>Sim</CommandItem>
-                              <CommandItem value="Não" onSelect={() => atualizarEvento(evento.id, 'sequelas', 'Não')}>Não</CommandItem>
-                              <CommandItem value="Não informado" onSelect={() => atualizarEvento(evento.id, 'sequelas', 'Não informado')}>Não informado</CommandItem>
+                              <CommandItem value="Náusea" onSelect={() => atualizarEventoAdverso(evento.id, 'eventoAdverso', 'Náusea')}>Náusea</CommandItem>
+                              <CommandItem value="Vômito" onSelect={() => atualizarEventoAdverso(evento.id, 'eventoAdverso', 'Vômito')}>Vômito</CommandItem>
+                              <CommandItem value="Dor de cabeça" onSelect={() => atualizarEventoAdverso(evento.id, 'eventoAdverso', 'Dor de cabeça')}>Dor de cabeça</CommandItem>
+                              <CommandItem value="Erupção cutânea" onSelect={() => atualizarEventoAdverso(evento.id, 'eventoAdverso', 'Erupção cutânea')}>Erupção cutânea</CommandItem>
+                              <CommandItem value="Outro" onSelect={() => atualizarEventoAdverso(evento.id, 'eventoAdverso', 'Outro')}>Outro</CommandItem>
                             </CommandGroup>
                           </Command>
                         </PopoverContent>
                       </Popover>
                     </div>
-                  )}
 
-                  {/* 7. Botão Remover */}
-                  <div className="flex items-end">
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      className="h-11 w-11 flex items-center justify-center"
-                      onClick={() => removerEvento(evento.id)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                    {/* Data inicial */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Label className="font-medium text-gray-700 text-base">Data inicial</Label>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Data de início do evento adverso</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div className="flex gap-3">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" role="combobox" className="w-32 justify-between h-12 text-sm border-gray-300">
+                              <span>{evento.tipoDataInicialEvento === "mes-ano" ? "MM/AAAA" : "DD/MM/AAAA"}</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                            <Command>
+                              <CommandGroup>
+                                <CommandItem value="dia-mes-ano" onSelect={() => atualizarEventoAdverso(evento.id, 'tipoDataInicialEvento', 'dia-mes-ano')}>
+                                  DD/MM/AAAA
+                                </CommandItem>
+                                <CommandItem value="mes-ano" onSelect={() => atualizarEventoAdverso(evento.id, 'tipoDataInicialEvento', 'mes-ano')}>
+                                  MM/AAAA
+                                </CommandItem>
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <div className="relative flex-1 min-w-0">
+                          <Calendar className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                          <Input
+                            type={evento.tipoDataInicialEvento === "mes-ano" ? "month" : "date"}
+                            value={evento.dataInicialEvento || ''}
+                            onChange={e => atualizarEventoAdverso(evento.id, 'dataInicialEvento', e.target.value)}
+                            className="pl-10 h-12 text-base [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Data final */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Label className="font-medium text-gray-700 text-base">Data final</Label>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Data de término do evento adverso</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div className="flex gap-3">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" role="combobox" className="w-32 justify-between h-12 text-sm border-gray-300">
+                              <span>{evento.tipoDataFinalEvento === "mes-ano" ? "MM/AAAA" : "DD/MM/AAAA"}</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                            <Command>
+                              <CommandGroup>
+                                <CommandItem value="dia-mes-ano" onSelect={() => atualizarEventoAdverso(evento.id, 'tipoDataFinalEvento', 'dia-mes-ano')}>
+                                  DD/MM/AAAA
+                                </CommandItem>
+                                <CommandItem value="mes-ano" onSelect={() => atualizarEventoAdverso(evento.id, 'tipoDataFinalEvento', 'mes-ano')}>
+                                  MM/AAAA
+                                </CommandItem>
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <div className="relative flex-1 min-w-0">
+                          <Calendar className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                          <Input
+                            type={evento.tipoDataFinalEvento === "mes-ano" ? "month" : "date"}
+                            value={evento.dataFinalEvento || ''}
+                            onChange={e => atualizarEventoAdverso(evento.id, 'dataFinalEvento', e.target.value)}
+                            className="pl-10 h-12 text-base [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Segunda linha de campos */}
+                  <div className={`grid grid-cols-1 gap-6 mb-6 ${evento.resultadoEvento === 'Recuperado' ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}>
+                    {/* Resultado */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Label className="font-medium text-gray-700 text-base">Resultado</Label>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Resultado do evento adverso</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" role="combobox" className="w-full justify-between h-12 text-base">
+                            <span className="truncate">{evento.resultadoEvento || 'Selecione'}</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                          <Command>
+                            <CommandGroup>
+                              <CommandItem value="Recuperado" onSelect={() => atualizarEventoAdverso(evento.id, 'resultadoEvento', 'Recuperado')}>Recuperado</CommandItem>
+                              <CommandItem value="Não recuperado" onSelect={() => atualizarEventoAdverso(evento.id, 'resultadoEvento', 'Não recuperado')}>Não recuperado</CommandItem>
+                              <CommandItem value="Não informado" onSelect={() => atualizarEventoAdverso(evento.id, 'resultadoEvento', 'Não informado')}>Não informado</CommandItem>
+                              <CommandItem value="Não se aplica" onSelect={() => atualizarEventoAdverso(evento.id, 'resultadoEvento', 'Não se aplica')}>Não se aplica</CommandItem>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    {/* Relação do medicamento */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Label className="font-medium text-gray-700 text-base">Relação do medicamento com o EA</Label>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Selecione a relação entre o evento adverso e o medicamento suspeito</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" role="combobox" className="w-full justify-between h-12 text-base">
+                            <span className="truncate">{evento.relacaoEventoMedicamento || 'Selecione'}</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                          <Command>
+                            <CommandGroup>
+                              <CommandItem value="Muito provável" onSelect={() => atualizarEventoAdverso(evento.id, 'relacaoEventoMedicamento', 'Muito provável')}>Muito provável</CommandItem>
+                              <CommandItem value="Provável" onSelect={() => atualizarEventoAdverso(evento.id, 'relacaoEventoMedicamento', 'Provável')}>Provável</CommandItem>
+                              <CommandItem value="Duvidosa" onSelect={() => atualizarEventoAdverso(evento.id, 'relacaoEventoMedicamento', 'Duvidosa')}>Duvidosa</CommandItem>
+                              <CommandItem value="Não se aplica" onSelect={() => atualizarEventoAdverso(evento.id, 'relacaoEventoMedicamento', 'Não se aplica')}>Não se aplica</CommandItem>
+                              <CommandItem value="Não informado" onSelect={() => atualizarEventoAdverso(evento.id, 'relacaoEventoMedicamento', 'Não informado')}>Não informado</CommandItem>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    {/* Sequelas (condicional) */}
+                    {evento.resultadoEvento === 'Recuperado' && (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <Label className="font-medium text-gray-700 text-base">Sequelas</Label>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <HelpCircle className="h-4 w-4 text-gray-400" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>O paciente apresentou sequelas após recuperação?</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" role="combobox" className="w-full justify-between h-12 text-base">
+                              <span className="truncate">{evento.sequelas || 'Selecione'}</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                            <Command>
+                              <CommandGroup>
+                                <CommandItem value="Sim" onSelect={() => atualizarEventoAdverso(evento.id, 'sequelas', 'Sim')}>Sim</CommandItem>
+                                <CommandItem value="Não" onSelect={() => atualizarEventoAdverso(evento.id, 'sequelas', 'Não')}>Não</CommandItem>
+                                <CommandItem value="Não informado" onSelect={() => atualizarEventoAdverso(evento.id, 'sequelas', 'Não informado')}>Não informado</CommandItem>
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Campos adicionais */}
+                  <div className="space-y-6">
+                    {/* Informou o médico */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Label className="font-medium text-gray-700 text-base">O paciente comunicou o evento adverso ao profissional prescritor?</Label>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>O paciente informou o médico sobre o evento adverso?</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" role="combobox" className="w-full justify-between h-12 text-base">
+                            <span>{evento.informouMedico || 'Selecione'}</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                          <Command>
+                            <CommandGroup>
+                              <CommandItem value="Sim" onSelect={() => atualizarEventoAdverso(evento.id, 'informouMedico', 'Sim')}>Sim</CommandItem>
+                              <CommandItem value="Não" onSelect={() => atualizarEventoAdverso(evento.id, 'informouMedico', 'Não')}>Não</CommandItem>
+                              <CommandItem value="Não informado" onSelect={() => atualizarEventoAdverso(evento.id, 'informouMedico', 'Não informado')}>Não informado</CommandItem>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      {evento.informouMedico === 'Sim' && (
+                        <div className="mt-4">
+                          <Label className="font-medium text-gray-700 text-base">Orientação médica</Label>
+                          <Input
+                            placeholder="Descreva a orientação médica recebida"
+                            value={evento.orientacaoMedica}
+                            onChange={e => atualizarEventoAdverso(evento.id, 'orientacaoMedica', e.target.value)}
+                            className="h-12 text-base mt-2"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Ação tomada */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Label className="font-medium text-gray-700 text-base">Conduta adotada em relação ao uso do medicamento após o evento adverso:</Label>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Selecione a ação tomada em relação ao medicamento</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" role="combobox" className="w-full justify-between h-12 text-base">
+                            <span>{evento.acaoTomada || 'Selecione'}</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                          <Command>
+                            <CommandGroup>
+                              <CommandItem value="Dose mantida" onSelect={() => atualizarEventoAdverso(evento.id, 'acaoTomada', 'Dose mantida')}>Dose mantida</CommandItem>
+                              <CommandItem value="Dose aumentada" onSelect={() => atualizarEventoAdverso(evento.id, 'acaoTomada', 'Dose aumentada')}>Dose aumentada</CommandItem>
+                              <CommandItem value="Interrupção do tratamento" onSelect={() => atualizarEventoAdverso(evento.id, 'acaoTomada', 'Interrupção do tratamento')}>Interrupção do tratamento</CommandItem>
+                              <CommandItem value="Não informado" onSelect={() => atualizarEventoAdverso(evento.id, 'acaoTomada', 'Não informado')}>Não informado</CommandItem>
+                              <CommandItem value="Não se aplica" onSelect={() => atualizarEventoAdverso(evento.id, 'acaoTomada', 'Não se aplica')}>Não se aplica</CommandItem>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      {evento.acaoTomada === 'Interrupção do tratamento' && (
+                        <div className="mt-4">
+                          <div className="flex items-center gap-2">
+                            <Label className="font-medium text-gray-700 text-base">O evento adverso melhorou após a descontinuação do medicamento?</Label>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-4 w-4 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Selecione se houve melhora após a retirada do medicamento</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button variant="outline" role="combobox" className="w-full justify-between h-12 text-base mt-2">
+                                <span>{evento.melhorouAposRetirada || 'Selecione'}</span>
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                              <Command>
+                                <CommandGroup>
+                                  <CommandItem value="Sim" onSelect={() => atualizarEventoAdverso(evento.id, 'melhorouAposRetirada', 'Sim')}>Sim</CommandItem>
+                                  <CommandItem value="Não" onSelect={() => atualizarEventoAdverso(evento.id, 'melhorouAposRetirada', 'Não')}>Não</CommandItem>
+                                  <CommandItem value="Não informado" onSelect={() => atualizarEventoAdverso(evento.id, 'melhorouAposRetirada', 'Não informado')}>Não informado</CommandItem>
+                                  <CommandItem value="Não se aplica" onSelect={() => atualizarEventoAdverso(evento.id, 'melhorouAposRetirada', 'Não se aplica')}>Não se aplica</CommandItem>
+                                </CommandGroup>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Voltou após retorno */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Label className="font-medium text-gray-700 text-base">O evento adverso retornou após a reintrodução do medicamento?</Label>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Selecione se o evento adverso voltou após o retorno do tratamento</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" role="combobox" className="w-full justify-between h-12 text-base">
+                            <span>{evento.voltouAposRetorno || 'Selecione'}</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                          <Command>
+                            <CommandGroup>
+                              <CommandItem value="Sim" onSelect={() => atualizarEventoAdverso(evento.id, 'voltouAposRetorno', 'Sim')}>Sim</CommandItem>
+                              <CommandItem value="Não" onSelect={() => atualizarEventoAdverso(evento.id, 'voltouAposRetorno', 'Não')}>Não</CommandItem>
+                              <CommandItem value="Não informado" onSelect={() => atualizarEventoAdverso(evento.id, 'voltouAposRetorno', 'Não informado')}>Não informado</CommandItem>
+                              <CommandItem value="Não se aplica" onSelect={() => atualizarEventoAdverso(evento.id, 'voltouAposRetorno', 'Não se aplica')}>Não se aplica</CommandItem>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    {/* Medicamento para tratamento */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Label className="font-medium text-gray-700 text-base">Foi utilizado medicamento para o tratamento do Evento Adverso?</Label>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Selecione se foi utilizado algum medicamento para tratar o evento adverso</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" role="combobox" className="w-full justify-between h-12 text-base">
+                            <span>{evento.usouMedicamentoTratamento || 'Selecione'}</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                          <Command>
+                            <CommandGroup>
+                              <CommandItem value="Sim" onSelect={() => atualizarEventoAdverso(evento.id, 'usouMedicamentoTratamento', 'Sim')}>Sim</CommandItem>
+                              <CommandItem value="Não" onSelect={() => atualizarEventoAdverso(evento.id, 'usouMedicamentoTratamento', 'Não')}>Não</CommandItem>
+                              <CommandItem value="Não informado" onSelect={() => atualizarEventoAdverso(evento.id, 'usouMedicamentoTratamento', 'Não informado')}>Não informado</CommandItem>
+                              <CommandItem value="Não se aplica" onSelect={() => atualizarEventoAdverso(evento.id, 'usouMedicamentoTratamento', 'Não se aplica')}>Não se aplica</CommandItem>
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      
+                      {/* Campos de medicamento para tratamento (condicionais) */}
+                      {evento.usouMedicamentoTratamento === 'Sim' && (
+                        <div className="mt-6 p-4 bg-blue-50/60 border border-blue-100 rounded-lg">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Pill className="h-5 w-5 text-blue-600" />
+                            <Label className="text-base font-semibold text-blue-900">Medicamento Utilizado para Tratamento</Label>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-sm font-medium text-gray-700">Produto</Label>
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <HelpCircle className="h-4 w-4 text-gray-400" />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Nome do medicamento utilizado para tratar o evento adverso</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                              <Input
+                                placeholder="Nome do produto"
+                                value={evento.medicamentoTratamento.produto}
+                                onChange={e => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', e.target.value, 'produto')}
+                                className="h-11"
+                              />
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-sm font-medium text-gray-700">EAN</Label>
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <HelpCircle className="h-4 w-4 text-gray-400" />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Código de barras EAN do produto</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                              <Input
+                                placeholder="Código EAN"
+                                value={evento.medicamentoTratamento.ean}
+                                onChange={e => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', e.target.value, 'ean')}
+                                className="h-11"
+                              />
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-sm font-medium text-gray-700">Lote</Label>
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <HelpCircle className="h-4 w-4 text-gray-400" />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Número do lote do medicamento</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                              <Input
+                                placeholder="Número do lote"
+                                value={evento.medicamentoTratamento.lote}
+                                onChange={e => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', e.target.value, 'lote')}
+                                className="h-11"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-sm font-medium text-gray-700">Dosagem</Label>
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <HelpCircle className="h-4 w-4 text-gray-400" />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Dose administrada do medicamento (ex: 500mg, 10ml)</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                              <Input
+                                placeholder="Ex: 500mg"
+                                value={evento.medicamentoTratamento.dosagem}
+                                onChange={e => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', e.target.value, 'dosagem')}
+                                className="h-11"
+                              />
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-sm font-medium text-gray-700">Via de Administração</Label>
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <HelpCircle className="h-4 w-4 text-gray-400" />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Via pela qual o medicamento foi administrado</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button variant="outline" role="combobox" className="w-full justify-between h-11">
+                                    <div className="flex items-center gap-2">
+                                      <Pill className="h-4 w-4 text-teal-600" />
+                                      <span>{evento.medicamentoTratamento.viaAdministracao || "Selecione a via de administração"}</span>
+                                    </div>
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                                  <Command>
+                                    <CommandInput placeholder="Buscar via de administração..." />
+                                    <CommandEmpty>Nenhuma via encontrada.</CommandEmpty>
+                                    <CommandGroup>
+                                      <CommandItem value="Oral" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Oral', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Oral
+                                      </CommandItem>
+                                      <CommandItem value="Intravenosa" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Intravenosa', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Intravenosa
+                                      </CommandItem>
+                                      <CommandItem value="Intramuscular" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Intramuscular', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Intramuscular
+                                      </CommandItem>
+                                      <CommandItem value="Subcutânea" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Subcutânea', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Subcutânea
+                                      </CommandItem>
+                                      <CommandItem value="Tópica" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Tópica', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Tópica
+                                      </CommandItem>
+                                      <CommandItem value="Inalatória" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Inalatória', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Inalatória
+                                      </CommandItem>
+                                      <CommandItem value="Retal" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Retal', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Retal
+                                      </CommandItem>
+                                      <CommandItem value="Vaginal" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Vaginal', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Vaginal
+                                      </CommandItem>
+                                      <CommandItem value="Oftálmica" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Oftálmica', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Oftálmica
+                                      </CommandItem>
+                                      <CommandItem value="Otológica" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Otológica', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Otológica
+                                      </CommandItem>
+                                      <CommandItem value="Nasal" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Nasal', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Nasal
+                                      </CommandItem>
+                                      <CommandItem value="Outra" onSelect={() => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', 'Outra', 'viaAdministracao')}>
+                                        <Pill className="mr-2 h-4 w-4" />Outra
+                                      </CommandItem>
+                                    </CommandGroup>
+                                  </Command>
+                                </PopoverContent>
+                              </Popover>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 mt-4">
+                            <div className="flex items-center gap-2">
+                              <Label className="text-sm font-medium text-gray-700">Indicação</Label>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <HelpCircle className="h-4 w-4 text-gray-400" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Indicação terapêutica para qual o medicamento foi utilizado</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
+                            <Input
+                              placeholder="Indicação terapêutica"
+                              value={evento.medicamentoTratamento.indicacao}
+                              onChange={e => atualizarEventoAdverso(evento.id, 'medicamentoTratamento', e.target.value, 'indicacao')}
+                              className="h-11"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-            {/* 5. Informou o médico sobre o Evento Adverso? */}
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2">
-                <Label>O paciente comunicou o evento adverso ao profissional prescritor?</Label>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>O paciente informou o médico sobre o evento adverso?</p>
-                  </TooltipContent>
-                </Tooltip>
+        {/* Medicamento Concomitante */}
+        <Card>
+          <CardHeader className="bg-gray-50 border-b">
+            <div className="flex items-center gap-2">
+              <Pill className="h-7 w-7 text-teal-600" />
+              <span className="text-xl font-bold">Medicamentos Concomitantes</span>
+            </div>
+          </CardHeader>
+          <CardContent className="p-8">
+            {/* Cabeçalho com botão Adicionar Medicamento */}
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800">Medicamentos Concomitantes</h3>
+                <p className="text-sm text-gray-500 mt-1">Adicione medicamentos utilizados concomitantemente</p>
               </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                    <span>{form.informouMedico || 'Selecione'}</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                  <Command>
-                    <CommandGroup>
-                      <CommandItem value="Sim" onSelect={() => setForm(f => ({ ...f, informouMedico: 'Sim', orientacaoMedica: '' }))}>Sim</CommandItem>
-                      <CommandItem value="Não" onSelect={() => setForm(f => ({ ...f, informouMedico: 'Não', orientacaoMedica: '' }))}>Não</CommandItem>
-                      <CommandItem value="Não informado" onSelect={() => setForm(f => ({ ...f, informouMedico: 'Não informado', orientacaoMedica: '' }))}>Não informado</CommandItem>
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              {form.informouMedico === 'Sim' && (
-                <div className="mt-2">
-                  <Label>Orientação médica</Label>
-                  <Input
-                    id="orientacao-medica"
-                    placeholder="Descreva a orientação médica recebida"
-                    value={form.orientacaoMedica}
-                    onChange={e => setForm(f => ({ ...f, orientacaoMedica: e.target.value }))}
-                    className="h-11"
-                  />
-                </div>
-              )}
+              <Button
+                type="button"
+                variant="outline"
+                className="flex items-center gap-2 text-teal-600 border-teal-300 hover:bg-teal-50"
+                onClick={adicionarMedicamentoConcomitante}
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar Medicamento
+              </Button>
             </div>
 
-            {/* 6. Ação tomada */}
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2">
-                <Label>Conduta adotada em relação ao uso do medicamento após o evento adverso:</Label>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Selecione a ação tomada em relação ao medicamento</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                    <span>{form.acaoTomada || 'Selecione'}</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                  <Command>
-                    <CommandGroup>
-                      <CommandItem value="Dose mantida" onSelect={() => setForm(f => ({ ...f, acaoTomada: 'Dose mantida', melhorouAposRetirada: '' }))}>Dose mantida</CommandItem>
-                      <CommandItem value="Dose aumentada" onSelect={() => setForm(f => ({ ...f, acaoTomada: 'Dose aumentada', melhorouAposRetirada: '' }))}>Dose aumentada</CommandItem>
-                      <CommandItem value="Interrupção do tratamento" onSelect={() => setForm(f => ({ ...f, acaoTomada: 'Interrupção do tratamento', melhorouAposRetirada: '' }))}>Interrupção do tratamento</CommandItem>
-                      <CommandItem value="Não informado" onSelect={() => setForm(f => ({ ...f, acaoTomada: 'Não informado', melhorouAposRetirada: '' }))}>Não informado</CommandItem>
-                      <CommandItem value="Não se aplica" onSelect={() => setForm(f => ({ ...f, acaoTomada: 'Não se aplica', melhorouAposRetirada: '' }))}>Não se aplica</CommandItem>
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              {form.acaoTomada === 'Interrupção do tratamento' && (
-                <div className="mt-2">
-                  <div className="flex items-center gap-2">
-                    <Label>O evento adverso melhorou após a descontinuação do medicamento?</Label>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <HelpCircle className="h-4 w-4 text-gray-400" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Selecione se houve melhora após a retirada do medicamento</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                        <span>{form.melhorouAposRetirada || 'Selecione'}</span>
+            {/* Lista de Medicamentos Concomitantes */}
+            <div className="space-y-8">
+              {medicamentosConcomitantes.map((medicamento, index) => (
+                <div key={medicamento.id} className="border border-gray-200 rounded-lg p-6 bg-gray-50/50">
+                  <div className="flex items-center justify-between mb-6">
+                    <h4 className="font-semibold text-gray-900 text-lg">Medicamento {index + 1}</h4>
+                    {medicamentosConcomitantes.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removerMedicamentoConcomitante(medicamento.id)}
+                      >
+                        <X className="h-4 w-4" />
                       </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                      <Command>
-                        <CommandGroup>
-                          <CommandItem value="Sim" onSelect={() => setForm(f => ({ ...f, melhorouAposRetirada: 'Sim' }))}>Sim</CommandItem>
-                          <CommandItem value="Não" onSelect={() => setForm(f => ({ ...f, melhorouAposRetirada: 'Não' }))}>Não</CommandItem>
-                          <CommandItem value="Não informado" onSelect={() => setForm(f => ({ ...f, melhorouAposRetirada: 'Não informado' }))}>Não informado</CommandItem>
-                          <CommandItem value="Não se aplica" onSelect={() => setForm(f => ({ ...f, melhorouAposRetirada: 'Não se aplica' }))}>Não se aplica</CommandItem>
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              )}
-            </div>
-
-            {/* 7. O evento adverso voltou após o retorno com o tratamento? */}
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2">
-                <Label>O evento adverso retornou após a reintrodução do medicamento?</Label>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Selecione se o evento adverso voltou após o retorno do tratamento</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                    <span>{form.voltouAposRetorno || 'Selecione'}</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                  <Command>
-                    <CommandGroup>
-                      <CommandItem value="Sim" onSelect={() => setForm(f => ({ ...f, voltouAposRetorno: 'Sim' }))}>Sim</CommandItem>
-                      <CommandItem value="Não" onSelect={() => setForm(f => ({ ...f, voltouAposRetorno: 'Não' }))}>Não</CommandItem>
-                      <CommandItem value="Não informado" onSelect={() => setForm(f => ({ ...f, voltouAposRetorno: 'Não informado' }))}>Não informado</CommandItem>
-                      <CommandItem value="Não se aplica" onSelect={() => setForm(f => ({ ...f, voltouAposRetorno: 'Não se aplica' }))}>Não se aplica</CommandItem>
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            {/* 8. Foi utilizado o medicamento para o tratamento? */}
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2">
-                <Label>Foi utilizado medicamento para o tratamento do Evento Adverso?</Label>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Selecione se foi utilizado algum medicamento para tratar o evento adverso</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                    <span>{form.usouMedicamentoTratamento || 'Selecione'}</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                  <Command>
-                    <CommandGroup>
-                      <CommandItem value="Sim" onSelect={() => setForm(f => ({ ...f, usouMedicamentoTratamento: 'Sim' }))}>Sim</CommandItem>
-                      <CommandItem value="Não" onSelect={() => setForm(f => ({ ...f, usouMedicamentoTratamento: 'Não' }))}>Não</CommandItem>
-                      <CommandItem value="Não informado" onSelect={() => setForm(f => ({ ...f, usouMedicamentoTratamento: 'Não informado' }))}>Não informado</CommandItem>
-                      <CommandItem value="Não se aplica" onSelect={() => setForm(f => ({ ...f, usouMedicamentoTratamento: 'Não se aplica' }))}>Não se aplica</CommandItem>
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              
-              {/* Campos de medicamento para tratamento (condicionais) */}
-              {form.usouMedicamentoTratamento === 'Sim' && (
-                <div className="mt-6 p-4 bg-blue-50/60 border border-blue-100 rounded-lg">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Pill className="h-5 w-5 text-blue-600" />
-                    <Label className="text-base font-semibold text-blue-900">Medicamento Utilizado para Tratamento</Label>
+                    )}
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="produto-tratamento">Produto</Label>
+                        <Label htmlFor={`produto-concomitante-${medicamento.id}`}>Produto</Label>
                         <Tooltip>
                           <TooltipTrigger>
                             <HelpCircle className="h-4 w-4 text-gray-400" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Nome do medicamento utilizado para tratar o evento adverso</p>
+                            <p>Nome do medicamento concomitante</p>
                           </TooltipContent>
                         </Tooltip>
                       </div>
                       <Input
-                        id="produto-tratamento"
+                        id={`produto-concomitante-${medicamento.id}`}
                         placeholder="Nome do produto"
-                        value={form.medicamentoTratamento.produto}
-                        onChange={e => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, produto: e.target.value } }))}
+                        value={medicamento.produto}
+                        onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'produto', e.target.value)}
                         className="h-11"
                       />
                     </div>
                     
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="ean-tratamento">EAN</Label>
+                        <Label htmlFor={`ean-concomitante-${medicamento.id}`}>EAN</Label>
                         <Tooltip>
                           <TooltipTrigger>
                             <HelpCircle className="h-4 w-4 text-gray-400" />
@@ -2556,17 +2647,17 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                         </Tooltip>
                       </div>
                       <Input
-                        id="ean-tratamento"
+                        id={`ean-concomitante-${medicamento.id}`}
                         placeholder="Código EAN"
-                        value={form.medicamentoTratamento.ean}
-                        onChange={e => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, ean: e.target.value } }))}
+                        value={medicamento.ean}
+                        onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'ean', e.target.value)}
                         className="h-11"
                       />
                     </div>
                     
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="lote-tratamento">Lote</Label>
+                        <Label htmlFor={`lote-concomitante-${medicamento.id}`}>Lote</Label>
                         <Tooltip>
                           <TooltipTrigger>
                             <HelpCircle className="h-4 w-4 text-gray-400" />
@@ -2577,10 +2668,10 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                         </Tooltip>
                       </div>
                       <Input
-                        id="lote-tratamento"
+                        id={`lote-concomitante-${medicamento.id}`}
                         placeholder="Número do lote"
-                        value={form.medicamentoTratamento.lote}
-                        onChange={e => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, lote: e.target.value } }))}
+                        value={medicamento.lote}
+                        onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'lote', e.target.value)}
                         className="h-11"
                       />
                     </div>
@@ -2589,7 +2680,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="dosagem-tratamento">Dosagem</Label>
+                        <Label htmlFor={`dosagem-concomitante-${medicamento.id}`}>Dosagem</Label>
                         <Tooltip>
                           <TooltipTrigger>
                             <HelpCircle className="h-4 w-4 text-gray-400" />
@@ -2600,17 +2691,17 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                         </Tooltip>
                       </div>
                       <Input
-                        id="dosagem-tratamento"
+                        id={`dosagem-concomitante-${medicamento.id}`}
                         placeholder="Ex: 500mg"
-                        value={form.medicamentoTratamento.dosagem}
-                        onChange={e => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, dosagem: e.target.value } }))}
+                        value={medicamento.dosagem}
+                        onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'dosagem', e.target.value)}
                         className="h-11"
                       />
                     </div>
                     
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="via-administracao-tratamento">Via de Administração</Label>
+                        <Label htmlFor={`via-administracao-concomitante-${medicamento.id}`}>Via de Administração</Label>
                         <Tooltip>
                           <TooltipTrigger>
                             <HelpCircle className="h-4 w-4 text-gray-400" />
@@ -2625,7 +2716,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                           <Button variant="outline" role="combobox" className="w-full justify-between h-11">
                             <div className="flex items-center gap-2">
                               <Pill className="h-4 w-4 text-teal-600" />
-                              <span>{form.medicamentoTratamento.viaAdministracao || "Selecione a via de administração"}</span>
+                              <span>{medicamento.viaAdministracao || "Selecione a via de administração"}</span>
                             </div>
                           </Button>
                         </PopoverTrigger>
@@ -2634,40 +2725,40 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                             <CommandInput placeholder="Buscar via de administração..." />
                             <CommandEmpty>Nenhuma via encontrada.</CommandEmpty>
                             <CommandGroup>
-                              <CommandItem value="Oral" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Oral" } }))}>
+                              <CommandItem value="Oral" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Oral')}>
                                 <Pill className="mr-2 h-4 w-4" />Oral
                               </CommandItem>
-                              <CommandItem value="Intravenosa" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Intravenosa" } }))}>
+                              <CommandItem value="Intravenosa" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Intravenosa')}>
                                 <Pill className="mr-2 h-4 w-4" />Intravenosa
                               </CommandItem>
-                              <CommandItem value="Intramuscular" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Intramuscular" } }))}>
+                              <CommandItem value="Intramuscular" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Intramuscular')}>
                                 <Pill className="mr-2 h-4 w-4" />Intramuscular
                               </CommandItem>
-                              <CommandItem value="Subcutânea" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Subcutânea" } }))}>
+                              <CommandItem value="Subcutânea" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Subcutânea')}>
                                 <Pill className="mr-2 h-4 w-4" />Subcutânea
                               </CommandItem>
-                              <CommandItem value="Tópica" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Tópica" } }))}>
+                              <CommandItem value="Tópica" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Tópica')}>
                                 <Pill className="mr-2 h-4 w-4" />Tópica
                               </CommandItem>
-                              <CommandItem value="Inalatória" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Inalatória" } }))}>
+                              <CommandItem value="Inalatória" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Inalatória')}>
                                 <Pill className="mr-2 h-4 w-4" />Inalatória
                               </CommandItem>
-                              <CommandItem value="Retal" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Retal" } }))}>
+                              <CommandItem value="Retal" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Retal')}>
                                 <Pill className="mr-2 h-4 w-4" />Retal
                               </CommandItem>
-                              <CommandItem value="Vaginal" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Vaginal" } }))}>
+                              <CommandItem value="Vaginal" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Vaginal')}>
                                 <Pill className="mr-2 h-4 w-4" />Vaginal
                               </CommandItem>
-                              <CommandItem value="Oftálmica" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Oftálmica" } }))}>
+                              <CommandItem value="Oftálmica" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Oftálmica')}>
                                 <Pill className="mr-2 h-4 w-4" />Oftálmica
                               </CommandItem>
-                              <CommandItem value="Otológica" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Otológica" } }))}>
+                              <CommandItem value="Otológica" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Otológica')}>
                                 <Pill className="mr-2 h-4 w-4" />Otológica
                               </CommandItem>
-                              <CommandItem value="Nasal" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Nasal" } }))}>
+                              <CommandItem value="Nasal" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Nasal')}>
                                 <Pill className="mr-2 h-4 w-4" />Nasal
                               </CommandItem>
-                              <CommandItem value="Outra" onSelect={() => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, viaAdministracao: "Outra" } }))}>
+                              <CommandItem value="Outra" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Outra')}>
                                 <Pill className="mr-2 h-4 w-4" />Outra
                               </CommandItem>
                             </CommandGroup>
@@ -2679,7 +2770,7 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
 
                   <div className="space-y-2 mt-4">
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="indicacao-tratamento">Indicação</Label>
+                      <Label htmlFor={`indicacao-concomitante-${medicamento.id}`}>Indicação</Label>
                       <Tooltip>
                         <TooltipTrigger>
                           <HelpCircle className="h-4 w-4 text-gray-400" />
@@ -2690,298 +2781,70 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
                       </Tooltip>
                     </div>
                     <Input
-                      id="indicacao-tratamento"
+                      id={`indicacao-concomitante-${medicamento.id}`}
                       placeholder="Indicação terapêutica"
-                      value={form.medicamentoTratamento.indicacao}
-                      onChange={e => setForm(f => ({ ...f, medicamentoTratamento: { ...f.medicamentoTratamento, indicacao: e.target.value } }))}
+                      value={medicamento.indicacao}
+                      onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'indicacao', e.target.value)}
                       className="h-11"
                     />
                   </div>
                 </div>
-              )}
-            </div>
-
-
-        </CardContent>
-      </Card>
-
-      {/* Medicamento Concomitante */}
-      <Card>
-        <CardHeader className="bg-gray-50 border-b">
-          <div className="flex items-center gap-2">
-            <Pill className="h-7 w-7 text-teal-600" />
-            <span className="text-xl font-bold">Medicamentos Concomitantes</span>
-          </div>
-        </CardHeader>
-        <CardContent className="p-8">
-          {/* Cabeçalho com botão Adicionar Medicamento */}
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-800">Medicamentos Concomitantes</h3>
-              <p className="text-sm text-gray-500 mt-1">Adicione medicamentos utilizados concomitantemente</p>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              className="flex items-center gap-2 text-teal-600 border-teal-300 hover:bg-teal-50"
-              onClick={adicionarMedicamentoConcomitante}
-            >
-              <Plus className="h-4 w-4" />
-              Adicionar Medicamento
-            </Button>
-          </div>
-
-          {/* Lista de Medicamentos Concomitantes */}
-          <div className="space-y-8">
-            {medicamentosConcomitantes.map((medicamento, index) => (
-              <div key={medicamento.id} className="border border-gray-200 rounded-lg p-6 bg-gray-50/50">
-                <div className="flex items-center justify-between mb-6">
-                  <h4 className="font-semibold text-gray-900 text-lg">Medicamento {index + 1}</h4>
-                  {medicamentosConcomitantes.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => removerMedicamentoConcomitante(medicamento.id)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor={`produto-concomitante-${medicamento.id}`}>Produto</Label>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-gray-400" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Nome do medicamento concomitante</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <Input
-                      id={`produto-concomitante-${medicamento.id}`}
-                      placeholder="Nome do produto"
-                      value={medicamento.produto}
-                      onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'produto', e.target.value)}
-                      className="h-11"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor={`ean-concomitante-${medicamento.id}`}>EAN</Label>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-gray-400" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Código de barras EAN do produto</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <Input
-                      id={`ean-concomitante-${medicamento.id}`}
-                      placeholder="Código EAN"
-                      value={medicamento.ean}
-                      onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'ean', e.target.value)}
-                      className="h-11"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor={`lote-concomitante-${medicamento.id}`}>Lote</Label>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-gray-400" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Número do lote do medicamento</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <Input
-                      id={`lote-concomitante-${medicamento.id}`}
-                      placeholder="Número do lote"
-                      value={medicamento.lote}
-                      onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'lote', e.target.value)}
-                      className="h-11"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor={`dosagem-concomitante-${medicamento.id}`}>Dosagem</Label>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-gray-400" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Dose administrada do medicamento (ex: 500mg, 10ml)</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <Input
-                      id={`dosagem-concomitante-${medicamento.id}`}
-                      placeholder="Ex: 500mg"
-                      value={medicamento.dosagem}
-                      onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'dosagem', e.target.value)}
-                      className="h-11"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor={`via-administracao-concomitante-${medicamento.id}`}>Via de Administração</Label>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-gray-400" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Via pela qual o medicamento foi administrado</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" role="combobox" className="w-full justify-between h-11">
-                          <div className="flex items-center gap-2">
-                            <Pill className="h-4 w-4 text-teal-600" />
-                            <span>{medicamento.viaAdministracao || "Selecione a via de administração"}</span>
-                          </div>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                        <Command>
-                          <CommandInput placeholder="Buscar via de administração..." />
-                          <CommandEmpty>Nenhuma via encontrada.</CommandEmpty>
-                          <CommandGroup>
-                            <CommandItem value="Oral" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Oral')}>
-                              <Pill className="mr-2 h-4 w-4" />Oral
-                            </CommandItem>
-                            <CommandItem value="Intravenosa" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Intravenosa')}>
-                              <Pill className="mr-2 h-4 w-4" />Intravenosa
-                            </CommandItem>
-                            <CommandItem value="Intramuscular" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Intramuscular')}>
-                              <Pill className="mr-2 h-4 w-4" />Intramuscular
-                            </CommandItem>
-                            <CommandItem value="Subcutânea" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Subcutânea')}>
-                              <Pill className="mr-2 h-4 w-4" />Subcutânea
-                            </CommandItem>
-                            <CommandItem value="Tópica" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Tópica')}>
-                              <Pill className="mr-2 h-4 w-4" />Tópica
-                            </CommandItem>
-                            <CommandItem value="Inalatória" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Inalatória')}>
-                              <Pill className="mr-2 h-4 w-4" />Inalatória
-                            </CommandItem>
-                            <CommandItem value="Retal" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Retal')}>
-                              <Pill className="mr-2 h-4 w-4" />Retal
-                            </CommandItem>
-                            <CommandItem value="Vaginal" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Vaginal')}>
-                              <Pill className="mr-2 h-4 w-4" />Vaginal
-                            </CommandItem>
-                            <CommandItem value="Oftálmica" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Oftálmica')}>
-                              <Pill className="mr-2 h-4 w-4" />Oftálmica
-                            </CommandItem>
-                            <CommandItem value="Otológica" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Otológica')}>
-                              <Pill className="mr-2 h-4 w-4" />Otológica
-                            </CommandItem>
-                            <CommandItem value="Nasal" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Nasal')}>
-                              <Pill className="mr-2 h-4 w-4" />Nasal
-                            </CommandItem>
-                            <CommandItem value="Outra" onSelect={() => atualizarMedicamentoConcomitante(medicamento.id, 'viaAdministracao', 'Outra')}>
-                              <Pill className="mr-2 h-4 w-4" />Outra
-                            </CommandItem>
-                          </CommandGroup>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </div>
-
-                <div className="space-y-2 mt-4">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor={`indicacao-concomitante-${medicamento.id}`}>Indicação</Label>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <HelpCircle className="h-4 w-4 text-gray-400" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Indicação terapêutica para qual o medicamento foi utilizado</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <Input
-                    id={`indicacao-concomitante-${medicamento.id}`}
-                    placeholder="Indicação terapêutica"
-                    value={medicamento.indicacao}
-                    onChange={e => atualizarMedicamentoConcomitante(medicamento.id, 'indicacao', e.target.value)}
-                    className="h-11"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Campos de farmacovigilância abaixo (mantidos) */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Dados de Farmacovigilância</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Data do recebimento */}
-          <div className="space-y-2">
-            <Label htmlFor="data-recebimento" className="font-medium">Data do recebimento</Label>
-            <div className="relative">
-              <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="data-recebimento"
-                type="date"
-                value={form.dataRecebimento}
-                onChange={e => setForm(f => ({ ...f, dataRecebimento: e.target.value }))}
-                className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
-              />
-            </div>
-          </div>
-          {/* Narrativa */}
-          <div className="space-y-2">
-            <Label className="font-medium">Narrativa</Label>
-            <Textarea
-              placeholder="Descreva detalhadamente a situação, fatos e contexto..."
-              value={form.narrativa}
-              onChange={e => setForm(f => ({ ...f, narrativa: e.target.value }))}
-              className="min-h-[120px]"
-            />
-          </div>
-          {/* Anexos */}
-          <div className="space-y-2">
-            <Label className="font-medium">Anexos</Label>
-            <input
-              type="file"
-              multiple
-              className="block"
-              onChange={handleFileChange}
-              accept=".png,.jpg,.jpeg,.pdf,.doc,.docx"
-            />
-            <div className="flex flex-wrap gap-2 mt-2">
-              {form.anexos.map((file, idx) => (
-                <span key={idx} className="px-2 py-1 bg-teal-50 border border-teal-200 rounded text-xs text-teal-900">
-                  {file.name}
-                </span>
               ))}
             </div>
-          </div>
-          {renderActionButtons()}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        {/* Campos de farmacovigilância abaixo (mantidos) */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Dados de Farmacovigilância</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Data do recebimento */}
+            <div className="space-y-2">
+              <Label htmlFor="data-recebimento" className="font-medium">Data do recebimento</Label>
+              <div className="relative">
+                <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="data-recebimento"
+                  type="date"
+                  value={form.dataRecebimento}
+                  onChange={e => setForm(f => ({ ...f, dataRecebimento: e.target.value }))}
+                  className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                />
+              </div>
+            </div>
+            {/* Narrativa */}
+            <div className="space-y-2">
+              <Label className="font-medium">Narrativa</Label>
+              <Textarea
+                placeholder="Descreva detalhadamente a situação, fatos e contexto..."
+                value={form.narrativa}
+                onChange={e => setForm(f => ({ ...f, narrativa: e.target.value }))}
+                className="min-h-[120px]"
+              />
+            </div>
+            {/* Anexos */}
+            <div className="space-y-2">
+              <Label className="font-medium">Anexos</Label>
+              <input
+                type="file"
+                multiple
+                className="block"
+                onChange={handleFileChange}
+                accept=".png,.jpg,.jpeg,.pdf,.doc,.docx"
+              />
+              <div className="flex flex-wrap gap-2 mt-2">
+                {form.anexos.map((file, idx) => (
+                  <span key={idx} className="px-2 py-1 bg-teal-50 border border-teal-200 rounded text-xs text-teal-900">
+                    {file.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+            {renderActionButtons()}
+          </CardContent>
+        </Card>
       </form>
     </TooltipProvider>
   );
