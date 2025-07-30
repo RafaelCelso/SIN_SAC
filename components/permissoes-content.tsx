@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -266,6 +267,7 @@ const categorias = [
 ]
 
 export function PermissoesContent() {
+  const router = useRouter()
   const [permissoes, setPermissoes] = useState<Permissao[]>(permissoesMock)
   const [perfis, setPerfis] = useState<Perfil[]>(perfisMock)
   const [searchTerm, setSearchTerm] = useState("")
@@ -379,15 +381,8 @@ export function PermissoesContent() {
   }
 
   const handleEditPerfil = (perfil: Perfil) => {
-    setEditingPerfil(perfil)
-    setPerfilForm({
-      nome: perfil.nome,
-      descricao: perfil.descricao,
-      cor: perfil.cor,
-      permissoes: perfil.permissoes,
-      ativo: perfil.ativo
-    })
-    setShowPerfilModal(true)
+    // Redirecionar para a página de edição ao invés de abrir modal
+    router.push(`/seguranca/perfis/editar/${perfil.id}`)
   }
 
   const handleDeleteItem = (id: string, type: 'permissao' | 'perfil', nome: string) => {
