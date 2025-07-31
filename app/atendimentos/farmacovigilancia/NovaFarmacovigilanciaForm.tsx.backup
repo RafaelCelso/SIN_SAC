@@ -77,6 +77,153 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
   const { toast } = useToast();
   const [status, setStatus] = useState<"Aberto" | "Revisão" | "Rejeitado" | "Retornado" | "Farmacovigilância" | "Concluído">("Aberto");
   const [activeTab, setActiveTab] = useState<"principal" | "fup-001">("principal");
+
+  // Função que renderiza o formulário completo (será usada nas duas abas)
+  const renderFormularioCompleto = (sufixoId: string = "") => (
+    <form className="space-y-6">
+      {/* Informações do Cliente */}
+      <Card>
+        <CardHeader className="bg-gray-50 border-b">
+          <div className="flex items-center gap-2">
+            <User className="h-7 w-7 text-teal-600" />
+            <span className="text-xl font-bold">Informações do Relator</span>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4">
+          <div className="space-y-2">
+            <Label htmlFor={`cliente${sufixoId}`}>Cliente <span className="text-red-500">*</span></Label>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                id={`cliente${sufixoId}`}
+                type="search"
+                placeholder="Buscar por nome ou documento"
+                className="pl-8 h-11"
+                value={clienteSearch}
+                onChange={e => {
+                  setClienteSearch(e.target.value);
+                  setShowResults(true);
+                }}
+                autoComplete="off"
+              />
+              {showResults && filteredClientes.length > 0 && (
+                <div className="absolute z-50 w-full left-0 mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
+                  {filteredClientes.map((cliente) => (
+                    <button
+                      key={cliente.id}
+                      className="w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b last:border-b-0"
+                      onClick={e => {
+                        e.preventDefault();
+                        setForm(f => ({ ...f, cliente, protocolo: null }));
+                        setClienteSearch("");
+                        setShowResults(false);
+                      }}
+                    >
+                      <div className="font-medium text-gray-900">{cliente.nome}</div>
+                      <div className="text-sm text-gray-500">{cliente.documento} • {cliente.telefone}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {form.cliente && (
+              <div className="mt-4">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between border border-teal-200 bg-[#F8FEFC] rounded-lg px-6 py-4 mb-2">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#E6FAF7] text-[#26B99D] font-bold text-xl">
+                      {form.cliente.nome.split(' ').map(n => n[0]).join('').slice(0,2)}
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="font-bold text-lg text-gray-900">{form.cliente.nome}</span>
+                      <div className="flex items-center gap-2 text-gray-700 text-sm">
+                        <svg width="18" height="18" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        <span>{form.cliente.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-700 text-sm">
+                        <svg width="18" height="18" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span>{form.cliente.documento}</span>
+                      </div>
+                        <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          <svg width="18" height="18" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><circle cx="12" cy="12" r="5"/></svg>
+                          <span>Tipo: <b>{form.cliente.documento && form.cliente.documento.length > 14 ? "Pessoa Jurídica" : "Pessoa Física"}</b></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 items-end mt-4 md:mt-0">
+                    <div className="flex items-center gap-2 text-gray-700 text-sm">
+                      <svg width="18" height="18" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                      <span>{form.cliente.telefone}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-700 text-sm">
+                      <svg width="18" height="18" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><circle cx="12" cy="12" r="5"/></svg>
+                      <span>{form.cliente.endereco}</span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => setForm(f => ({ ...f, cliente: null, protocolo: null }))}
+                    >
+                      Remover
+                    </Button>
+                  </div>
+                </div>
+                {/* Protocolos do cliente */}
+                {protocolos.length > 0 && (
+                  <div className="mt-6">
+                    <div className="font-semibold mb-2 text-gray-800 flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-[#26B99D]" />
+                      Protocolos
+                      <span className="text-xs text-gray-500 font-normal ml-2">Protocolos em andamento do cliente</span>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {protocolos.map((protocolo: ProtocoloMock) => (
+                        <div
+                          key={protocolo.id}
+                          className={`relative px-4 py-2 rounded-md border flex flex-col items-start min-w-[260px] shadow-sm transition-colors min-h-[80px] ${form.protocolo && form.protocolo.id === protocolo.id ? 'border-[#26B99D] bg-[#e6faf7]' : 'border-gray-200 bg-white hover:border-[#26B99D]'}`}
+                        >
+                          <span className="font-bold text-base text-[#26B99D] tracking-wide mb-1">{protocolo.id}</span>
+                          <span className="text-xs text-gray-500 mb-1 flex items-center gap-1"><svg width="16" height="16" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Aberto em {protocolo.data}</span>
+                          <span className="text-sm text-gray-900 mb-0.5 flex items-center gap-1"><FileText className="h-4 w-4 text-[#26B99D]" />Motivo: <b>{protocolo.motivo}</b></span>
+                          <span className="text-sm text-gray-900 mb-0.5 flex items-center gap-1"><Pill className="h-4 w-4 text-[#26B99D]" />Produto: <b>{protocolo.produto}</b></span>
+                            <span className="text-sm text-gray-900 mb-0.5 flex items-center gap-1"><svg width="16" height="16" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Autoriza retorno: <b>{protocolo.autorizaRetorno ? "Sim" : "Não"}</b></span>
+                          {form.protocolo && form.protocolo.id === protocolo.id ? (
+                            <>
+                              <button
+                                type="button"
+                                className="absolute top-2 right-2 p-1 rounded hover:bg-red-100 text-red-700"
+                                onClick={() => setForm(f => ({ ...f, protocolo: null }))}
+                                aria-label="Desvincular protocolo"
+                              >
+                                <X size={16} />
+                              </button>
+                              {protocolo.queixaTecnica && <QueixaTecnicaCard queixa={protocolo.queixaTecnica} />}
+                            </>
+                          ) : (
+                            <Button
+                              type="button"
+                              className="mt-2 px-3 py-1 rounded bg-[#26B99D] text-white text-xs font-semibold hover:bg-[#15937E] transition"
+                              onClick={() => setForm(f => ({ ...f, protocolo }))}
+                            >
+                              Vincular
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Resto do formulário será adicionado aqui */}
+      {renderActionButtons()}
+    </form>
+  );
   
   const [eventosAdversos, setEventosAdversos] = useState<Array<{
     id: string;
@@ -773,11 +920,40 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
             </TabsList>
             
             <TabsContent value="principal" className="mt-6">
-              <form className="space-y-6">
-      {/* Informações do Cliente */}
-      <Card>
-        <CardHeader className="bg-gray-50 border-b">
-          <div className="flex items-center gap-2">
+              {renderFormularioCompleto("")}
+            </TabsContent>
+            
+            <TabsContent value="fup-001" className="mt-6">
+              {renderFormularioCompleto("-fup")}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    </TooltipProvider>
+  );
+}
+
+// Componente auxiliar para QueixaTecnicaCard
+function QueixaTecnicaCard({ queixa }: { queixa: QueixaTecnica }) {
+  return (
+    <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg text-xs">
+      <div className="flex items-center gap-2 mb-2">
+        <svg width="16" height="16" fill="none" stroke="#ea580c" strokeWidth="2" viewBox="0 0 24 24">
+          <path d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+        </svg>
+        <span className="font-semibold text-orange-800">Queixa Técnica Associada</span>
+      </div>
+      <div className="space-y-1">
+        <div>
+          <span className="font-semibold text-gray-700">Tipo:</span> <span className="text-orange-900 font-bold">{queixa.tipo}</span>
+        </div>
+        <div>
+          <span className="font-semibold text-gray-700">Detalhe:</span> <span className="text-orange-900 font-bold">{queixa.detalhe}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
             <User className="h-7 w-7 text-teal-600" />
             <span className="text-xl font-bold">Informações do Relator</span>
           </div>
@@ -2859,118 +3035,713 @@ export function NovaFarmacovigilanciaForm({ onSubmit, onBack }: NovaFarmacovigil
             </TabsContent>
             
             <TabsContent value="fup-001" className="mt-6">
+              {/* Cópia idêntica do formulário principal para FUP-001 */}
               <form className="space-y-6">
-                {/* Todo o conteúdo do formulário principal será replicado aqui para FUP-001 */}
-                {/* Informações do Cliente */}
-                <Card>
-                  <CardHeader className="bg-gray-50 border-b">
-                    <div className="flex items-center gap-2">
-                      <User className="h-7 w-7 text-teal-600" />
-                      <span className="text-xl font-bold">Informações do Relator (FUP-001)</span>
+      {/* Informações do Cliente - FUP */}
+      <Card>
+        <CardHeader className="bg-gray-50 border-b">
+          <div className="flex items-center gap-2">
+            <User className="h-7 w-7 text-teal-600" />
+            <span className="text-xl font-bold">Informações do Relator</span>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4">
+          <div className="space-y-2">
+            <Label htmlFor="cliente-fup">Cliente <span className="text-red-500">*</span></Label>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="cliente-fup"
+                type="search"
+                placeholder="Buscar por nome ou documento"
+                className="pl-8 h-11"
+                value={clienteSearch}
+                onChange={e => {
+                  setClienteSearch(e.target.value);
+                  setShowResults(true);
+                }}
+                autoComplete="off"
+              />
+              {showResults && filteredClientes.length > 0 && (
+                <div className="absolute z-50 w-full left-0 mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
+                  {filteredClientes.map((cliente) => (
+                    <button
+                      key={cliente.id}
+                      className="w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b last:border-b-0"
+                      onClick={e => {
+                        e.preventDefault();
+                        setForm(f => ({ ...f, cliente, protocolo: null }));
+                        setClienteSearch("");
+                        setShowResults(false);
+                      }}
+                    >
+                      <div className="font-medium text-gray-900">{cliente.nome}</div>
+                      <div className="text-sm text-gray-500">{cliente.documento} • {cliente.telefone}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {form.cliente && (
+              <div className="mt-4">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between border border-teal-200 bg-[#F8FEFC] rounded-lg px-6 py-4 mb-2">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#E6FAF7] text-[#26B99D] font-bold text-xl">
+                      {form.cliente.nome.split(' ').map(n => n[0]).join('').slice(0,2)}
                     </div>
-                  </CardHeader>
-                  <CardContent className="p-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="cliente-fup">Cliente <span className="text-red-500">*</span></Label>
-                      <div className="relative">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="cliente-fup"
-                          type="search"
-                          placeholder="Buscar por nome ou documento (FUP)"
-                          className="pl-8 h-11"
-                          value={clienteSearch}
-                          onChange={e => {
-                            setClienteSearch(e.target.value);
-                            setShowResults(true);
-                          }}
-                          autoComplete="off"
-                        />
+                    <div className="flex flex-col gap-1">
+                      <span className="font-bold text-lg text-gray-900">{form.cliente.nome}</span>
+                      <div className="flex items-center gap-2 text-gray-700 text-sm">
+                        <svg width="18" height="18" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        <span>{form.cliente.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-700 text-sm">
+                        <svg width="18" height="18" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span>{form.cliente.documento}</span>
+                      </div>
+                        <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          <svg width="18" height="18" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><circle cx="12" cy="12" r="5"/></svg>
+                          <span>Tipo: <b>{form.cliente.documento && form.cliente.documento.length > 14 ? "Pessoa Jurídica" : "Pessoa Física"}</b></span>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-                
-                {/* Card de informações gerais para FUP */}
-                <Card>
-                  <CardHeader className="bg-gray-50 border-b">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-7 w-7 text-blue-600" />
-                      <span className="text-xl font-bold">Follow-up - FUP-001</span>
+                  </div>
+                  <div className="flex flex-col gap-2 items-end mt-4 md:mt-0">
+                    <div className="flex items-center gap-2 text-gray-700 text-sm">
+                      <svg width="18" height="18" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                      <span>{form.cliente.telefone}</span>
                     </div>
-                  </CardHeader>
-                  <CardContent className="p-4 space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="data-followup" className="font-medium">Data do Follow-up</Label>
-                      <div className="relative">
-                        <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="data-followup"
-                          type="date"
-                          className="pl-8 h-11"
-                        />
+                    <div className="flex items-center gap-2 text-gray-700 text-sm">
+                      <svg width="18" height="18" fill="none" stroke="#26B99D" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><circle cx="12" cy="12" r="5"/></svg>
+                      <span>{form.cliente.endereco}</span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => setForm(f => ({ ...f, cliente: null, protocolo: null }))}
+                    >
+                      Desvincular Cliente
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Seleção de Protocolo - FUP */}
+      {form.cliente && (
+        <Card>
+          <CardHeader className="bg-gray-50 border-b">
+            <div className="flex items-center gap-2">
+              <ClipboardList className="h-7 w-7 text-teal-600" />
+              <span className="text-xl font-bold">Vincular Protocolo</span>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="space-y-2">
+              <Label>Protocolo vinculado <span className="text-red-500">*</span></Label>
+              {form.protocolo ? (
+                <div className="mt-4">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between border border-teal-200 bg-[#F8FEFC] rounded-lg px-6 py-4 mb-2">
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#E6FAF7] text-[#26B99D] text-lg font-bold">
+                        #{form.protocolo.id.split('-')[1]}
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="font-bold text-lg text-gray-900">Protocolo {form.protocolo.id}</span>
+                        <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          <span>Data: <b>{form.protocolo.data}</b></span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          <span>Produto: <b>{form.protocolo.produto}</b></span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          <span>Motivo: <b>{form.protocolo.motivo}</b></span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          <span>Autoriza Retorno: <b>{form.protocolo.autorizaRetorno ? "Sim" : "Não"}</b></span>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="space-y-2">
-                      <Label className="font-medium">Evolução do Paciente</Label>
-                      <Textarea
-                        placeholder="Descreva a evolução do paciente desde o último registro..."
-                        className="min-h-[100px]"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label className="font-medium">Status Atual dos Eventos Adversos</Label>
-                      <Textarea
-                        placeholder="Status atual dos eventos adversos reportados anteriormente..."
-                        className="min-h-[100px]"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label className="font-medium">Observações Adicionais</Label>
-                      <Textarea
-                        placeholder="Observações adicionais sobre o follow-up..."
-                        className="min-h-[80px]"
-                      />
-                    </div>
-                    
-                    {/* Botões de ação para FUP */}
-                    <div className="flex gap-2 pt-4">
-                      <Button 
-                        type="button" 
-                        className="bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-2"
-                        onClick={() => {
-                          toast({
-                            title: "Follow-up salvo",
-                            description: "FUP-001 foi salvo com sucesso",
-                            duration: 3000,
-                          });
-                        }}
+                    <div className="flex flex-col gap-2 items-end mt-4 md:mt-0">
+                      <button
+                        type="button"
+                        className="px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 transition text-sm"
+                        onClick={() => setForm(f => ({ ...f, protocolo: null }))}
+                        aria-label="Desvincular protocolo"
                       >
-                        <Save className="h-4 w-4" />
-                        Salvar FUP
-                      </Button>
-                      
-                      <Button 
-                        type="button" 
-                        variant="outline"
-                        className="border-teal-600 text-teal-600 hover:bg-teal-50"
-                        onClick={() => {
-                          toast({
-                            title: "Follow-up enviado",
-                            description: "FUP-001 foi enviado para análise",
-                            duration: 3000,
-                          });
-                        }}
-                      >
-                        <Send className="h-4 w-4 mr-2" />
-                        Enviar FUP
-                      </Button>
+                        <X size={16} />
+                      </button>
+                      {form.protocolo.queixaTecnica && <QueixaTecnicaCard queixa={form.protocolo.queixaTecnica} />}
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
+              ) : (
+                <div className="max-h-[300px] overflow-y-auto">
+                  {protocolos.length > 0 ? (
+                    protocolos.map((protocolo) => (
+                      <div
+                        key={protocolo.id}
+                        className="flex flex-col md:flex-row md:items-center md:justify-between border border-gray-200 bg-white rounded-lg px-6 py-4 mb-2 hover:border-teal-300 hover:bg-teal-50 transition-colors"
+                      >
+                        <div className="flex items-center gap-4 flex-1">
+                          <div className="flex items-center justify-center w-14 h-14 rounded-full bg-gray-100 text-gray-600 text-lg font-bold">
+                            #{protocolo.id.split('-')[1]}
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <span className="font-bold text-lg text-gray-900">Protocolo {protocolo.id}</span>
+                            <div className="flex items-center gap-2 text-gray-700 text-sm">
+                              <span>Data: <b>{protocolo.data}</b></span>
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-700 text-sm">
+                              <span>Produto: <b>{protocolo.produto}</b></span>
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-700 text-sm">
+                              <span>Motivo: <b>{protocolo.motivo}</b></span>
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-700 text-sm">
+                              <span>Autoriza Retorno: <b>{protocolo.autorizaRetorno ? "Sim" : "Não"}</b></span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2 items-end mt-4 md:mt-0">
+                          {form.protocolo && form.protocolo.id === protocolo.id ? (
+                            <>
+                              <button
+                                type="button"
+                                className="px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 transition text-sm"
+                                onClick={() => setForm(f => ({ ...f, protocolo: null }))}
+                                aria-label="Desvincular protocolo"
+                              >
+                                <X size={16} />
+                              </button>
+                              {protocolo.queixaTecnica && <QueixaTecnicaCard queixa={protocolo.queixaTecnica} />}
+                            </>
+                          ) : (
+                            <Button
+                              type="button"
+                              className="mt-2 px-3 py-1 rounded bg-[#26B99D] text-white text-xs font-semibold hover:bg-[#15937E] transition"
+                              onClick={() => setForm(f => ({ ...f, protocolo }))}
+                            >
+                              Vincular
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-6 text-gray-500">Nenhum protocolo encontrado para este cliente.</div>
+                  )}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Informações do Produto - FUP */}
+      <Card>
+        <CardHeader className="bg-gray-50 border-b">
+          <div className="flex items-center gap-2">
+            <Pill className="h-7 w-7 text-teal-600" />
+            <span className="text-xl font-bold">Informações do Produto Suspeito</span>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="produto-fup" className="font-medium">Produto <span className="text-red-500">*</span></Label>
+              <Input
+                id="produto-fup"
+                placeholder="Nome do produto"
+                value={form.produtoSuspeito}
+                onChange={e => setForm(f => ({ ...f, produtoSuspeito: e.target.value }))}
+                className="h-11"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="ean-fup" className="font-medium">EAN/GTIN</Label>
+              <Input
+                id="ean-fup"
+                placeholder="Código EAN/GTIN"
+                value={form.eanSuspeito}
+                onChange={e => setForm(f => ({ ...f, eanSuspeito: e.target.value }))}
+                className="h-11"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="lote-fup" className="font-medium">Lote</Label>
+              <Input
+                id="lote-fup"
+                placeholder="Número do lote"
+                value={form.loteSuspeito}
+                onChange={e => setForm(f => ({ ...f, loteSuspeito: e.target.value }))}
+                className="h-11"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="validade-fup" className="font-medium">Data de Validade</Label>
+              <div className="relative">
+                <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="validade-fup"
+                  type="date"
+                  value=""
+                  onChange={() => {}}
+                  className="pl-8 h-11"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="fabricacao-fup" className="font-medium">Data de Fabricação</Label>
+              <div className="relative">
+                <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="fabricacao-fup"
+                  type="date"
+                  value=""
+                  onChange={() => {}}
+                  className="pl-8 h-11"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="dosagem-fup" className="font-medium">Concentração/Dosagem</Label>
+              <Input
+                id="dosagem-fup"
+                placeholder="Ex: 500mg, 10%"
+                value={form.dosagem}
+                onChange={e => setForm(f => ({ ...f, dosagem: e.target.value }))}
+                className="h-11"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="via-administracao-fup" className="font-medium">Via de Administração</Label>
+              <Input
+                id="via-administracao-fup"
+                placeholder="Ex: Oral, Tópica"
+                value={form.viaAdministracao}
+                onChange={e => setForm(f => ({ ...f, viaAdministracao: e.target.value }))}
+                className="h-11"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Eventos Adversos - FUP */}
+      <Card>
+        <CardHeader className="bg-gray-50 border-b">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Info className="h-7 w-7 text-teal-600" />
+              <span className="text-xl font-bold">Eventos Adversos</span>
+            </div>
+            <Button
+              type="button"
+              onClick={adicionarEventoAdverso}
+              className="bg-teal-600 hover:bg-teal-700 text-white"
+              size="sm"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar Evento
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4">
+          {eventosAdversos.map((evento, index) => (
+            <div key={evento.id} className="border border-gray-200 rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold text-gray-900">Evento Adverso {index + 1}</h4>
+                {eventosAdversos.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => removerEventoAdverso(evento.id)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="font-medium">Evento Adverso/Queixa <span className="text-red-500">*</span></Label>
+                  <Textarea
+                    placeholder="Descreva o evento adverso ou queixa"
+                    value={evento.eventoAdverso}
+                    onChange={e => atualizarEventoAdverso(evento.id, 'eventoAdverso', e.target.value)}
+                    className="min-h-[80px]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Label className="font-medium">Data Inicial do Evento</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id={`data-inicial-dia-fup-${evento.id}`}
+                          name={`data-inicial-fup-${evento.id}`}
+                          value="dia-mes-ano"
+                          checked={evento.tipoDataInicialEvento === "dia-mes-ano"}
+                          onChange={e => atualizarEventoAdverso(evento.id, 'tipoDataInicialEvento', e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor={`data-inicial-dia-fup-${evento.id}`} className="text-sm">Dia/Mês/Ano</Label>
+                        <input
+                          type="radio"
+                          id={`data-inicial-mes-fup-${evento.id}`}
+                          name={`data-inicial-fup-${evento.id}`}
+                          value="mes-ano"
+                          checked={evento.tipoDataInicialEvento === "mes-ano"}
+                          onChange={e => atualizarEventoAdverso(evento.id, 'tipoDataInicialEvento', e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor={`data-inicial-mes-fup-${evento.id}`} className="text-sm">Mês/Ano</Label>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type={evento.tipoDataInicialEvento === "mes-ano" ? "month" : "date"}
+                        value={evento.dataInicialEvento}
+                        onChange={e => atualizarEventoAdverso(evento.id, 'dataInicialEvento', e.target.value)}
+                        className="pl-8 h-11"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Label className="font-medium">Data Final do Evento</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id={`data-final-dia-fup-${evento.id}`}
+                          name={`data-final-fup-${evento.id}`}
+                          value="dia-mes-ano"
+                          checked={evento.tipoDataFinalEvento === "dia-mes-ano"}
+                          onChange={e => atualizarEventoAdverso(evento.id, 'tipoDataFinalEvento', e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor={`data-final-dia-fup-${evento.id}`} className="text-sm">Dia/Mês/Ano</Label>
+                        <input
+                          type="radio"
+                          id={`data-final-mes-fup-${evento.id}`}
+                          name={`data-final-fup-${evento.id}`}
+                          value="mes-ano"
+                          checked={evento.tipoDataFinalEvento === "mes-ano"}
+                          onChange={e => atualizarEventoAdverso(evento.id, 'tipoDataFinalEvento', e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor={`data-final-mes-fup-${evento.id}`} className="text-sm">Mês/Ano</Label>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type={evento.tipoDataFinalEvento === "mes-ano" ? "month" : "date"}
+                        value={evento.dataFinalEvento}
+                        onChange={e => atualizarEventoAdverso(evento.id, 'dataFinalEvento', e.target.value)}
+                        className="pl-8 h-11"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="font-medium">Resultado do Evento</Label>
+                    <select
+                      value={evento.resultadoEvento}
+                      onChange={e => atualizarEventoAdverso(evento.id, 'resultadoEvento', e.target.value)}
+                      className="w-full h-11 px-3 border border-gray-300 rounded-md"
+                    >
+                      <option value="">Selecione</option>
+                      <option value="recuperado">Recuperado/Resolvido</option>
+                      <option value="recuperando">Recuperando-se/Resolvendo-se</option>
+                      <option value="nao-recuperado">Não recuperado/Não resolvido</option>
+                      <option value="recuperado-sequelas">Recuperado/Resolvido com sequelas</option>
+                      <option value="fatal">Fatal</option>
+                      <option value="desconhecido">Desconhecido</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-medium">Sequelas</Label>
+                    <Textarea
+                      placeholder="Descreva as sequelas, se houver"
+                      value={evento.sequelas}
+                      onChange={e => atualizarEventoAdverso(evento.id, 'sequelas', e.target.value)}
+                      className="min-h-[44px]"
+                    />
+                  </div>
+                </div>
+
+                {/* Restante dos campos do evento adverso */}
+                <div className="space-y-2">
+                  <Label className="font-medium">Relação do evento com o medicamento</Label>
+                  <select
+                    value={evento.relacaoEventoMedicamento}
+                    onChange={e => atualizarEventoAdverso(evento.id, 'relacaoEventoMedicamento', e.target.value)}
+                    className="w-full h-11 px-3 border border-gray-300 rounded-md"
+                  >
+                    <option value="">Selecione</option>
+                    <option value="certa">Certa</option>
+                    <option value="provavel">Provável</option>
+                    <option value="possivel">Possível</option>
+                    <option value="improvavel">Improvável</option>
+                    <option value="condicional">Condicional/Não classificada</option>
+                    <option value="nao-avaliavel">Não avaliável/Inclassificável</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Histórico Médico Relevante - FUP */}
+      <Card>
+        <CardHeader className="bg-gray-50 border-b">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <FileText className="h-7 w-7 text-teal-600" />
+              <span className="text-xl font-bold">Histórico Médico Relevante</span>
+            </div>
+            <Button
+              type="button"
+              onClick={adicionarEventoAdverso}
+              className="bg-teal-600 hover:bg-teal-700 text-white"
+              size="sm"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar Condição
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4">
+          {historicoMedicoItems.map((item, index) => (
+            <div key={item.id} className="border border-gray-200 rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold text-gray-900">Condição {index + 1}</h4>
+                {historicoMedicoItems.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => removerEventoAdverso(item.id)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="font-medium">Descrição da condição médica</Label>
+                  <Textarea
+                    placeholder="Descreva a condição médica relevante"
+                    value={item.descricaoCondicao}
+                    onChange={e => atualizarHistoricoMedico(item.id, 'descricaoCondicao', e.target.value)}
+                    className="min-h-[80px]"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Exames Laboratoriais - FUP */}
+      <Card>
+        <CardHeader className="bg-gray-50 border-b">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="h-7 w-7 text-teal-600" />
+              <span className="text-xl font-bold">Exames Laboratoriais</span>
+            </div>
+            <Button
+              type="button"
+              onClick={adicionarEventoAdverso}
+              className="bg-teal-600 hover:bg-teal-700 text-white"
+              size="sm"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar Exame
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4">
+          {examesLaboratoriais.map((exame, index) => (
+            <div key={exame.id} className="border border-gray-200 rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold text-gray-900">Exame {index + 1}</h4>
+                {examesLaboratoriais.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => removerEventoAdverso(exame.id)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="font-medium">Nome do Exame</Label>
+                    <Input
+                      placeholder="Ex: Hemograma completo"
+                      value={exame.nomeExame}
+                      onChange={e => atualizarHistoricoMedico(exame.id, 'nomeExame', e.target.value)}
+                      className="h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-medium">Data do Exame</Label>
+                    <div className="relative">
+                      <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="date"
+                        value={exame.dataExame}
+                        onChange={e => atualizarHistoricoMedico(exame.id, 'dataExame', e.target.value)}
+                        className="pl-8 h-11"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Medicamentos Concomitantes - FUP */}
+      <Card>
+        <CardHeader className="bg-gray-50 border-b">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Pill className="h-7 w-7 text-teal-600" />
+              <span className="text-xl font-bold">Medicamentos Concomitantes</span>
+            </div>
+            <Button
+              type="button"
+              onClick={adicionarEventoAdverso}
+              className="bg-teal-600 hover:bg-teal-700 text-white"
+              size="sm"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar Medicamento
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4">
+          {medicamentosConcomitantes.map((medicamento, index) => (
+            <div key={medicamento.id} className="border border-gray-200 rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold text-gray-900">Medicamento {index + 1}</h4>
+                {medicamentosConcomitantes.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => removerEventoAdverso(medicamento.id)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="font-medium">Produto</Label>
+                    <Input
+                      placeholder="Nome do medicamento"
+                      value={medicamento.produto}
+                      onChange={e => atualizarHistoricoMedico(medicamento.id, 'produto', e.target.value)}
+                      className="h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-medium">EAN/GTIN</Label>
+                    <Input
+                      placeholder="Código EAN/GTIN"
+                      value={medicamento.ean}
+                      onChange={e => atualizarHistoricoMedico(medicamento.id, 'ean', e.target.value)}
+                      className="h-11"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Dados de Farmacovigilância - FUP */}
+      <Card>
+        <CardHeader className="bg-gray-50 border-b">
+          <CardTitle>Dados de Farmacovigilância</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Data do recebimento */}
+          <div className="space-y-2">
+            <Label htmlFor="data-recebimento-fup" className="font-medium">Data do recebimento</Label>
+            <div className="relative">
+              <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="data-recebimento-fup"
+                type="date"
+                value={form.dataRecebimento}
+                onChange={e => setForm(f => ({ ...f, dataRecebimento: e.target.value }))}
+                className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+              />
+            </div>
+          </div>
+          {/* Narrativa */}
+          <div className="space-y-2">
+            <Label className="font-medium">Narrativa</Label>
+            <Textarea
+              placeholder="Descreva detalhadamente a situação, fatos e contexto..."
+              value={form.narrativa}
+              onChange={e => setForm(f => ({ ...f, narrativa: e.target.value }))}
+              className="min-h-[120px]"
+            />
+          </div>
+          {/* Anexos */}
+          <div className="space-y-2">
+            <Label className="font-medium">Anexos</Label>
+            <input
+              type="file"
+              multiple
+              className="block"
+              onChange={handleFileChange}
+              accept=".png,.jpg,.jpeg,.pdf,.doc,.docx"
+            />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {form.anexos.map((file, idx) => (
+                <span key={idx} className="px-2 py-1 bg-teal-50 border border-teal-200 rounded text-xs text-teal-900">
+                  {file.name}
+                </span>
+              ))}
+            </div>
+          </div>
+          {renderActionButtons()}
+        </CardContent>
+      </Card>
               </form>
             </TabsContent>
           </Tabs>

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Filter, FileText, CheckCircle, Clock, AlertTriangle, Plus, CalendarIcon, Package, Barcode, ArrowLeft } from "lucide-react"
+import { Search, Filter, FileText, CheckCircle, Clock, AlertTriangle, Plus, CalendarIcon, Package, Barcode, ArrowLeft, Edit, Eye, Trash2, ClipboardPlus } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
@@ -43,6 +43,7 @@ const FARMACOVIGILANCIA_MOCK = [
     status: "Concluído",
     statusVariant: "completed" as const,
     protocoloId: "protocolo-1",
+    hasFup: true,
   },
   {
     id: "FV-2023-0002",
@@ -55,6 +56,7 @@ const FARMACOVIGILANCIA_MOCK = [
     status: "Em análise",
     statusVariant: "pending" as const,
     protocoloId: "protocolo-2",
+    hasFup: false,
   },
   {
     id: "FV-2023-0003",
@@ -67,6 +69,7 @@ const FARMACOVIGILANCIA_MOCK = [
     status: "Pendente",
     statusVariant: "pending" as const,
     protocoloId: "protocolo-3",
+    hasFup: true,
   },
   {
     id: "FV-2023-0004",
@@ -79,6 +82,7 @@ const FARMACOVIGILANCIA_MOCK = [
     status: "Concluído",
     statusVariant: "completed" as const,
     protocoloId: "protocolo-4",
+    hasFup: false,
   },
   {
     id: "FV-2023-0005",
@@ -91,6 +95,7 @@ const FARMACOVIGILANCIA_MOCK = [
     status: "Em análise",
     statusVariant: "pending" as const,
     protocoloId: "protocolo-5",
+    hasFup: true,
   },
 ]
 
@@ -309,7 +314,7 @@ export default function FarmacovigilanciaPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle>Lista de Farmacovigilância</CardTitle>
+            <CardTitle></CardTitle>
           </CardHeader>
           <CardContent>
             <div className={`space-y-4 ${showFilters ? "block" : "hidden"}`}>
@@ -413,7 +418,19 @@ export default function FarmacovigilanciaPage() {
                   {filteredNotificacoes.length > 0 ? (
                     filteredNotificacoes.map((notificacao) => (
                       <TableRow key={notificacao.id}>
-                        <TableCell className="font-medium">{notificacao.id}</TableCell>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <span>{notificacao.id}</span>
+                            {notificacao.hasFup && (
+                              <Badge 
+                                variant="secondary" 
+                                className="bg-blue-50 text-blue-700 border-blue-200 text-xs px-2 py-1"
+                              >
+                                FUP
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell>{notificacao.data}</TableCell>
                         <TableCell>
                           <Link href={`/clientes/${notificacao.clienteId}`} className="text-[#26B99D] hover:underline">
@@ -446,17 +463,61 @@ export default function FarmacovigilanciaPage() {
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
-                            asChild
-                          >
-                            <Link href={`/protocolos/${notificacao.protocoloId}?tab=farmacovigilancia`}>
-                              <FileText className="h-4 w-4 mr-2" />
-                              Ver detalhes
-                            </Link>
-                          </Button>
+                          <div className="flex items-center justify-end gap-1">
+                            {/* Botão de Criar FUP - sempre presente */}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
+                              title="Criar FUP"
+                            >
+                              <ClipboardPlus className="h-4 w-4" />
+                            </Button>
+                            
+                            {/* Botão de Editar/Visualizar - condicional baseado no status */}
+                            {notificacao.status === "Concluído" ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 w-8 p-0 hover:bg-[#E6F7F5] hover:text-[#26B99D] hover:border-[#26B99D]"
+                                title="Visualizar"
+                                asChild
+                              >
+                                <Link href={`/protocolos/${notificacao.protocoloId}?tab=farmacovigilancia`}>
+                                  <Eye className="h-4 w-4" />
+                                </Link>
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 w-8 p-0 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-300"
+                                title="Editar"
+                                asChild
+                              >
+                                <Link href={`/protocolos/${notificacao.protocoloId}?tab=farmacovigilancia&mode=edit`}>
+                                  <Edit className="h-4 w-4" />
+                                </Link>
+                              </Button>
+                            )}
+                            
+                            {/* Botão de Excluir - sempre presente */}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                              title="Excluir"
+                              onClick={() => {
+                                toast({
+                                  title: "Confirmar exclusão",
+                                  description: `Deseja realmente excluir o registro ${notificacao.id}?`,
+                                  duration: 3000,
+                                })
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
