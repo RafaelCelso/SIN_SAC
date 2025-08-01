@@ -1,15 +1,13 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState } from "react"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Filter, FileText, CheckCircle, Clock, AlertTriangle, Plus, CalendarIcon, Package, Barcode, ArrowLeft, Edit, Eye, Trash2, ClipboardPlus } from "lucide-react"
+import { Search, Filter, FileText, CheckCircle, Clock, AlertTriangle, Plus, CalendarIcon, Package, Barcode, ArrowLeft, Edit, Eye, Trash2, ClipboardPlus, ChevronDown, ChevronRight, ExternalLink } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
@@ -44,6 +42,10 @@ const FARMACOVIGILANCIA_MOCK = [
     statusVariant: "completed" as const,
     protocoloId: "protocolo-1",
     hasFup: true,
+    followUps: [
+      { id: "FUP-001", data: "20/06/2023" },
+      { id: "FUP-002", data: "25/06/2023" }
+    ],
   },
   {
     id: "FV-2023-0002",
@@ -70,6 +72,9 @@ const FARMACOVIGILANCIA_MOCK = [
     statusVariant: "pending" as const,
     protocoloId: "protocolo-3",
     hasFup: true,
+    followUps: [
+      { id: "FUP-003", data: "22/06/2023" }
+    ],
   },
   {
     id: "FV-2023-0004",
@@ -96,6 +101,11 @@ const FARMACOVIGILANCIA_MOCK = [
     statusVariant: "pending" as const,
     protocoloId: "protocolo-5",
     hasFup: true,
+    followUps: [
+      { id: "FUP-004", data: "24/06/2023" },
+      { id: "FUP-005", data: "29/06/2023" },
+      { id: "FUP-006", data: "04/07/2023" }
+    ],
   },
 ]
 
@@ -143,6 +153,10 @@ export default function FarmacovigilanciaPage() {
   const [showFilters, setShowFilters] = useState(false)
   const [isNovoRegistroDialogOpen, setIsNovoRegistroDialogOpen] = useState(false)
   const [showNovaFarmacovigilancia, setShowNovaFarmacovigilancia] = useState(false)
+  const [expandedRow, setExpandedRow] = useState<string | null>(null)
+  const [hoveredFollowUp, setHoveredFollowUp] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 5
 
   // Estado para o formulário de novo registro
   const [formData, setFormData] = useState({
@@ -160,7 +174,7 @@ export default function FarmacovigilanciaPage() {
   })
 
   // Filtrar notificações com base nos filtros
-  const filteredNotificacoes = FARMACOVIGILANCIA_MOCK.filter((notificacao) => {
+  const allFilteredNotificacoes = FARMACOVIGILANCIA_MOCK.filter((notificacao) => {
     // Filtro de texto (busca)
     const matchesSearch =
       searchQuery === "" ||
@@ -181,8 +195,31 @@ export default function FarmacovigilanciaPage() {
     // Filtro de status
     const matchesStatus = !statusFiltro || notificacao.status === statusFiltro
 
-    return matchesSearch && matchesDataInicio && matchesDataFim && matchesGravidade && matchesStatus
+    return matchesSearch && matchesGravidade && matchesStatus && matchesDataInicio && matchesDataFim
   })
+
+  // Calcular paginação
+  const totalPages = Math.ceil(allFilteredNotificacoes.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const filteredNotificacoes = allFilteredNotificacoes.slice(startIndex, endIndex)
+
+  // Funções de navegação
+  const goToPage = (page: number) => {
+    setCurrentPage(page)
+  }
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+    }
+  }
 
   const resetFilters = () => {
     setSearchQuery("")
@@ -417,20 +454,29 @@ export default function FarmacovigilanciaPage() {
                 <TableBody>
                   {filteredNotificacoes.length > 0 ? (
                     filteredNotificacoes.map((notificacao) => (
-                      <TableRow key={notificacao.id}>
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            <span>{notificacao.id}</span>
-                            {notificacao.hasFup && (
-                              <Badge 
-                                variant="secondary" 
-                                className="bg-blue-50 text-blue-700 border-blue-200 text-xs px-2 py-1"
-                              >
-                                FUP
-                              </Badge>
-                            )}
-                          </div>
-                        </TableCell>
+                      <React.Fragment key={notificacao.id}>
+                        <TableRow>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              <span>{notificacao.id}</span>
+                              {notificacao.hasFup && (
+                                <Badge 
+                                  variant="secondary" 
+                                  className="bg-blue-50 text-blue-700 border-blue-200 text-xs px-2 py-1 cursor-pointer hover:bg-blue-100 transition-colors"
+                                  onClick={() => setExpandedRow(expandedRow === notificacao.id ? null : notificacao.id)}
+                                >
+                                  <div className="flex items-center gap-1">
+                                    {expandedRow === notificacao.id ? (
+                                      <ChevronDown className="h-3 w-3" />
+                                    ) : (
+                                      <ChevronRight className="h-3 w-3" />
+                                    )}
+                                    Ver Follow-ups
+                                  </div>
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
                         <TableCell>{notificacao.data}</TableCell>
                         <TableCell>
                           <Link href={`/clientes/${notificacao.clienteId}`} className="text-[#26B99D] hover:underline">
@@ -464,12 +510,12 @@ export default function FarmacovigilanciaPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            {/* Botão de Criar FUP - sempre presente */}
+                            {/* Botão de Criar Follow Up - sempre presente */}
                             <Button
                               variant="outline"
                               size="sm"
                               className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
-                              title="Criar FUP"
+                              title="Criar Follow Up"
                             >
                               <ClipboardPlus className="h-4 w-4" />
                             </Button>
@@ -520,6 +566,64 @@ export default function FarmacovigilanciaPage() {
                           </div>
                         </TableCell>
                       </TableRow>
+                      
+                      {/* Linha do acordeon com follow-ups */}
+                      {expandedRow === notificacao.id && notificacao.hasFup && notificacao.followUps && (
+                        <TableRow>
+                          <TableCell colSpan={7} className="bg-gradient-to-br from-gray-50 to-slate-50 p-6 border-l-4 border-green-400">
+                            <div className="space-y-4">
+                              <div className="flex items-center gap-2 mb-4">
+                                <div className="p-2 bg-green-100 rounded-lg">
+                                  <FileText className="h-5 w-5 text-green-600" />
+                                </div>
+                                <h4 className="font-semibold text-gray-800 text-lg">Follow-ups Registrados</h4>
+                                <Badge variant="secondary" className="ml-auto bg-green-100 text-green-700">
+                                  {notificacao.followUps.length} {notificacao.followUps.length === 1 ? 'registro' : 'registros'}
+                                </Badge>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {notificacao.followUps.map((followUp, index) => (
+                                  <div
+                                    key={followUp.id}
+                                    className="group relative bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg hover:border-gray-300 transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+                                    onMouseEnter={() => setHoveredFollowUp(followUp.id)}
+                                    onMouseLeave={() => setHoveredFollowUp(null)}
+                                  >
+                                    <div className="flex items-start justify-between">
+                                      <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-2">
+                                          <div className="p-1.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg">
+                                            <ClipboardPlus className="h-4 w-4 text-white" />
+                                          </div>
+                                          <span className="font-semibold text-gray-900 text-sm">{followUp.id}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                                          <CalendarIcon className="h-4 w-4 text-gray-400" />
+                                          <span>{followUp.data}</span>
+                                        </div>
+
+                                      </div>
+                                      {hoveredFollowUp === followUp.id && (
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="h-8 px-3 text-xs bg-white hover:bg-gray-50 hover:text-gray-600 hover:border-gray-400 border-gray-300 shadow-sm transition-all duration-200"
+                                          title="Ver detalhes do follow-up"
+                                        >
+                                          <ExternalLink className="h-3 w-3 mr-1" />
+                                          Ver detalhes
+                                        </Button>
+                                      )}
+                                    </div>
+                                    <div className="absolute inset-0 bg-gradient-to-r from-gray-500/5 to-slate-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      </React.Fragment>
                     ))
                   ) : (
                     <TableRow>
@@ -534,13 +638,37 @@ export default function FarmacovigilanciaPage() {
           </CardContent>
           <CardFooter className="flex justify-between">
             <div className="text-sm text-muted-foreground">
-              Mostrando {filteredNotificacoes.length} de {FARMACOVIGILANCIA_MOCK.length} notificações
+              Mostrando {startIndex + 1}-{Math.min(endIndex, allFilteredNotificacoes.length)} de {allFilteredNotificacoes.length} notificações
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" disabled>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+              >
                 Anterior
               </Button>
-              <Button variant="outline" size="sm">
+              
+              {/* Números das páginas */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => goToPage(page)}
+                  className={`w-8 h-8 p-0 ${currentPage === page ? 'bg-primary text-primary-foreground' : ''}`}
+                >
+                  {page}
+                </Button>
+              ))}
+              
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+              >
                 Próximo
               </Button>
             </div>

@@ -475,7 +475,7 @@ export function NovaFarmacovigilanciaForm({
       email: string;
     };
   }>({
-    cliente: CLIENTES_MOCK[0], // Aba FUP-001 com cliente pré-selecionado
+    cliente: CLIENTES_MOCK[0], // Aba Follow Up-001 com cliente pré-selecionado
     protocolo: PROTOCOLOS_MOCK[CLIENTES_MOCK[0].id] ? PROTOCOLOS_MOCK[CLIENTES_MOCK[0].id][0] : null, // Protocolo pré-selecionado
     dataRecebimento: "",
     narrativa: "",
@@ -1071,7 +1071,7 @@ export function NovaFarmacovigilanciaForm({
           >
             <TabsList className="grid w-full max-w-[400px] grid-cols-2">
               <TabsTrigger value="principal">Principal</TabsTrigger>
-              <TabsTrigger value="fup-001">FUP-001</TabsTrigger>
+              <TabsTrigger value="fup-001">Follow Up-001</TabsTrigger>
             </TabsList>
 
             <TabsContent value="principal" className="mt-6">
@@ -5039,7 +5039,7 @@ export function NovaFarmacovigilanciaForm({
 
             <TabsContent value="fup-001" className="mt-6">
               <form className="space-y-6">
-                {/* Informações do Cliente - FUP-001 */}
+                {/* Informações do Cliente - Follow Up-001 */}
                 <Card>
                   <CardHeader className="bg-gray-50 border-b">
                     <div className="flex items-center gap-2">
@@ -5328,7 +5328,7 @@ export function NovaFarmacovigilanciaForm({
                   </CardContent>
                 </Card>
 
-                {/* Dados do Relator - FUP-001 */}
+                {/* Dados do Relator - Follow Up-001 */}
                 <Card>
                   <CardHeader className="bg-gray-50 border-b">
                     <div className="flex items-center gap-2">
