@@ -604,15 +604,34 @@ export default function FarmacovigilanciaPage() {
 
                                       </div>
                                       {hoveredFollowUp === followUp.id && (
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          className="h-8 px-3 text-xs bg-white hover:bg-gray-50 hover:text-gray-600 hover:border-gray-400 border-gray-300 shadow-sm transition-all duration-200"
-                                          title="Ver detalhes do follow-up"
-                                        >
-                                          <ExternalLink className="h-3 w-3 mr-1" />
-                                          Ver detalhes
-                                        </Button>
+                                        <div className="flex items-center gap-2">
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-8 px-3 text-xs bg-white hover:bg-gray-50 hover:text-gray-600 hover:border-gray-400 border-gray-300 shadow-sm transition-all duration-200"
+                                            title="Ver detalhes do follow-up"
+                                          >
+                                            <ExternalLink className="h-3 w-3 mr-1" />
+                                            Ver detalhes
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-400 border-gray-300 shadow-sm transition-all duration-200"
+                                            title="Excluir follow-up"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              // Aqui você pode adicionar a lógica de exclusão
+                                              toast({
+                                                title: "Follow-up excluído",
+                                                description: `O follow-up ${followUp.id} foi excluído com sucesso.`,
+                                                duration: 3000,
+                                              });
+                                            }}
+                                          >
+                                            <Trash2 className="h-3 w-3" />
+                                          </Button>
+                                        </div>
                                       )}
                                     </div>
                                     <div className="absolute inset-0 bg-gradient-to-r from-gray-500/5 to-slate-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
