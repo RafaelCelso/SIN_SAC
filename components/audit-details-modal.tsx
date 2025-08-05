@@ -204,17 +204,17 @@ export function AuditDetailsModal({ isOpen, onClose, record }: AuditDetailsModal
           {record.action === 'Criação' && (
             <>
               <Separator />
-              <Card className="border-0 bg-gradient-to-br from-blue-50 to-cyan-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <CardHeader className="pb-3 border-b border-blue-100">
+              <Card className="border-0 bg-gradient-to-br from-green-50 to-emerald-100 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardHeader className="pb-3 border-b border-green-100">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-blue-200 rounded-lg">
-                      <Plus className="h-4 w-4 text-blue-600" />
+                    <div className="p-2 bg-green-200 rounded-lg">
+                      <Plus className="h-4 w-4 text-green-600" />
                     </div>
-                    <CardTitle className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Dados Criados</CardTitle>
+                    <CardTitle className="text-sm font-semibold text-green-700 uppercase tracking-wide">Dados Criados</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-4">
-                  <div className="space-y-2 max-h-48 overflow-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50">
+                  <div className="space-y-2 max-h-48 overflow-auto scrollbar-thin scrollbar-thumb-green-200 scrollbar-track-green-50">
                     {formatDataForDisplay(record.afterData)}
                   </div>
                 </CardContent>
