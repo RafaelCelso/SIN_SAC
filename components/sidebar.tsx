@@ -323,8 +323,8 @@ export function Sidebar() {
             <SidebarItem
               icon={<FileText size={16} />}
               label="Audit Trail"
-              href="/seguranca/audit-trail"
-              active={pathname.includes("/seguranca/audit-trail")}
+              href="/audit-trail"
+              active={pathname.includes("/audit-trail")}
             />
             <SidebarItem
               icon={<Users size={16} />}
