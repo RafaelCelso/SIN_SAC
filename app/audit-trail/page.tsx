@@ -742,20 +742,16 @@ export default function AuditTrailPage() {
                   setDate={setEndDate}
                   placeholder="Data final"
                 />
+                <Button onClick={clearFilters} variant="outline" className="gap-2">
+                  <FilterXIcon className="h-4 w-4" />
+                  Limpar Filtros
+                </Button>
+                <Button onClick={exportData} className="gap-2">
+                  <DownloadIcon className="h-4 w-4" />
+                  Exportar
+                </Button>
               </div>
             </div>
-          </div>
-
-          {/* Botões de Ação */}
-          <div className="flex gap-2 pt-4">
-            <Button onClick={clearFilters} variant="outline" className="gap-2">
-              <FilterXIcon className="h-4 w-4" />
-              Limpar Filtros
-            </Button>
-            <Button onClick={exportData} className="gap-2">
-              <DownloadIcon className="h-4 w-4" />
-              Exportar
-            </Button>
           </div>
         </CardContent>
       </Card>
