@@ -41,16 +41,7 @@ export function ParametrizacaoContent() {
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
 
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      [data-state="active"] {
-        --tab-bg: #26B99D !important;
-      }
-    `;
-    document.head.appendChild(style);
-    return () => document.head.removeChild(style);
-  }, []);
+  // Removido o CSS inline antigo - agora usando classes Tailwind modernas
 
   const checkScrollButtons = () => {
     if (scrollContainerRef.current) {
@@ -102,10 +93,10 @@ export function ParametrizacaoContent() {
             <Button
               variant="outline"
               size="sm"
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 p-0 bg-white shadow-md"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-10 w-10 p-0 bg-gradient-to-r from-white to-gray-50 shadow-lg border-gray-200 hover:shadow-xl hover:scale-105 transition-all duration-300 rounded-full"
               onClick={scrollLeft}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4 text-[#26B99D]" />
             </Button>
             
             {/* Container das abas com scroll */}
@@ -113,79 +104,133 @@ export function ParametrizacaoContent() {
                 ref={scrollContainerRef}
                 className="overflow-x-auto scrollbar-hide px-8"
               >
-              <TabsList className="flex w-max min-w-full bg-gray-100">
-                <TabsTrigger value="dashboard" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <LayoutDashboard size={16} />
-                    Dashboard
-                  </TabsTrigger>
-                  <TabsTrigger value="buscar-clientes" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <Search size={16} />
-                    Buscar Clientes
-                  </TabsTrigger>
-                  <TabsTrigger value="novo-cliente" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <UserPlus size={16} />
-                    Novo Cliente
-                  </TabsTrigger>
-                  <TabsTrigger value="protocolos" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <Clipboard size={16} />
-                    Protocolos
-                  </TabsTrigger>
-                  <TabsTrigger value="queixas-tecnicas" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <ClipboardList size={16} />
-                    Queixas Técnicas
-                  </TabsTrigger>
-                  <TabsTrigger value="farmacovigilancia" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <Pill size={16} />
-                    Farmacovigilância
-                  </TabsTrigger>
-                  <TabsTrigger value="ressarcimento" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <DollarSign size={16} />
-                    Ressarcimento
-                  </TabsTrigger>
-                  <TabsTrigger value="agenda" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <Calendar size={16} />
-                    Agenda
-                  </TabsTrigger>
-                  <TabsTrigger value="faq" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <BookOpen size={16} />
-                    FAQ
-                  </TabsTrigger>
-                  <TabsTrigger value="relatorios" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <BarChart3 size={16} />
-                    Relatórios
-                  </TabsTrigger>
-                  <TabsTrigger value="produtos" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-               <Pill size={16} />
-               Produtos
-             </TabsTrigger>
-             <TabsTrigger value="motivos" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-               <ClipboardList size={16} />
-               Motivos
-             </TabsTrigger>
-                  <TabsTrigger value="evento-adverso" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <AlertTriangle size={16} />
-                    Evento Adverso
-                  </TabsTrigger>
-                  <TabsTrigger value="via-administracao" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <Syringe size={16} />
-                    Via de Administração
-                  </TabsTrigger>
-                  <TabsTrigger value="formularios" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <FileEdit size={16} />
-                    Formulários
-                  </TabsTrigger>
-                  <TabsTrigger value="audit-trail" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <FileText size={16} />
-                    Audit Trail
-                  </TabsTrigger>
-                  <TabsTrigger value="usuarios" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <Users size={16} />
-                    Usuários
-                  </TabsTrigger>
-                  <TabsTrigger value="permissoes" className="text-sm flex items-center gap-2 data-[state=active]:text-white" style={{backgroundColor: 'var(--tab-bg, transparent)'}}>
-                    <KeyRound size={16} />
-                    Permissões
-                  </TabsTrigger>
+              <TabsList className="flex w-max min-w-full bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 shadow-lg rounded-xl p-2">
+                <TabsTrigger 
+                  value="dashboard" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <LayoutDashboard size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Dashboard
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="buscar-clientes" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <Search size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Buscar Clientes
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="novo-cliente" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <UserPlus size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Novo Cliente
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="protocolos" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <Clipboard size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Protocolos
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="queixas-tecnicas" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <ClipboardList size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Queixas Técnicas
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="farmacovigilancia" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <Pill size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Farmacovigilância
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="ressarcimento" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <DollarSign size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Ressarcimento
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="agenda" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <Calendar size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Agenda
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="faq" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <BookOpen size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  FAQ
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="relatorios" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <BarChart3 size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Relatórios
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="produtos" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <Pill size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Produtos
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="motivos" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <ClipboardList size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Motivos
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="evento-adverso" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <AlertTriangle size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Evento Adverso
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="via-administracao" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <Syringe size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Via de Administração
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="formularios" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <FileEdit size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Formulários
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="audit-trail" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <FileText size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Audit Trail
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="usuarios" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <Users size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Usuários
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="permissoes" 
+                  className="text-sm flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 hover:bg-white/80 hover:shadow-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#26B99D] data-[state=active]:to-[#20a085] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 font-medium group"
+                >
+                  <KeyRound size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                  Permissões
+                </TabsTrigger>
               </TabsList>
             </div>
             
@@ -193,10 +238,10 @@ export function ParametrizacaoContent() {
             <Button
               variant="outline"
               size="sm"
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 p-0 bg-white shadow-md"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-10 w-10 p-0 bg-gradient-to-r from-white to-gray-50 shadow-lg border-gray-200 hover:shadow-xl hover:scale-105 transition-all duration-300 rounded-full"
               onClick={scrollRight}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4 text-[#26B99D]" />
             </Button>
           </div>
 
