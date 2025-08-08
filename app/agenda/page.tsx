@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { CalendarIcon, Plus, Clock, Users, Save, X, Edit, Trash2, ChevronLeft, ChevronRight, Search } from "lucide-react"
+import { CalendarIcon, Plus, Clock, Users, Save, X, Edit, Trash2, ChevronLeft, ChevronRight, Search, Bell } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import {
   format,
@@ -74,6 +74,10 @@ interface Evento {
   participantes: string[]
   comentarios: string
   tipo: "reuniao" | "tarefa" | "lembrete" | "retorno" | "outro"
+  lembrete?: {
+    ativo: boolean
+    antecedencia: number // em minutos
+  }
 }
 
 // Dados iniciais de eventos
@@ -87,6 +91,10 @@ const EVENTOS_INICIAIS: Evento[] = [
     participantes: ["Ana Silva", "Carlos Mendes", "Juliana Costa"],
     comentarios: "Discutir novos procedimentos para registro de eventos adversos.",
     tipo: "reuniao",
+    lembrete: {
+      ativo: true,
+      antecedencia: 15
+    }
   },
   {
     id: "2",
@@ -97,6 +105,10 @@ const EVENTOS_INICIAIS: Evento[] = [
     participantes: ["Toda a equipe"],
     comentarios: "Treinamento sobre as novas funcionalidades do sistema de atendimento.",
     tipo: "reuniao",
+    lembrete: {
+      ativo: true,
+      antecedencia: 30
+    }
   },
   {
     id: "3",
@@ -107,6 +119,10 @@ const EVENTOS_INICIAIS: Evento[] = [
     participantes: ["Ana Silva"],
     comentarios: "Entregar relatório mensal de atendimentos.",
     tipo: "tarefa",
+    lembrete: {
+      ativo: true,
+      antecedencia: 60
+    }
   },
   {
     id: "4",
@@ -135,6 +151,10 @@ export default function AgendaPage() {
     participantes: [],
     comentarios: "",
     tipo: "reuniao",
+    lembrete: {
+      ativo: false,
+      antecedencia: 15
+    }
   })
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingEvento, setEditingEvento] = useState<Evento | null>(null)
@@ -192,6 +212,10 @@ export default function AgendaPage() {
       participantes: [],
       comentarios: "",
       tipo: "reuniao",
+      lembrete: {
+         ativo: false,
+         antecedencia: 15
+       }
     })
     setIsDialogOpen(false)
 
@@ -579,6 +603,63 @@ export default function AgendaPage() {
                       onChange={(e) => setNovoEvento({ ...novoEvento, comentarios: e.target.value })}
                     />
                   </div>
+
+                  {/* Seção de Lembrete */}
+                  <div className="space-y-4 border-t pt-4">
+                    <div className="flex items-center space-x-2">
+                      <Bell className="h-4 w-4 text-blue-600" />
+                      <Label className="text-sm font-medium">Configurar Lembrete</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="lembrete-ativo"
+                        checked={novoEvento.lembrete?.ativo || false}
+                        onChange={(e) => setNovoEvento({
+                          ...novoEvento,
+                          lembrete: {
+                            ativo: e.target.checked,
+                            antecedencia: novoEvento.lembrete?.antecedencia || 15
+                          }
+                        })}
+                        className="rounded border-gray-300"
+                      />
+                      <Label htmlFor="lembrete-ativo" className="text-sm">Ativar lembrete para este evento</Label>
+                    </div>
+
+                    {novoEvento.lembrete?.ativo && (
+                      <div className="space-y-3 ml-6">
+                        <div>
+                          <Label className="text-sm font-medium">Antecedência</Label>
+                          <Select
+                            value={novoEvento.lembrete.antecedencia.toString()}
+                            onValueChange={(value) => setNovoEvento({
+                              ...novoEvento,
+                              lembrete: {
+                                ...novoEvento.lembrete!,
+                                antecedencia: parseInt(value)
+                              }
+                            })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="5">5 minutos antes</SelectItem>
+                              <SelectItem value="15">15 minutos antes</SelectItem>
+                              <SelectItem value="30">30 minutos antes</SelectItem>
+                              <SelectItem value="60">1 hora antes</SelectItem>
+                              <SelectItem value="120">2 horas antes</SelectItem>
+                              <SelectItem value="1440">1 dia antes</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -760,6 +841,63 @@ export default function AgendaPage() {
                         value={editingEvento.comentarios}
                         onChange={(e) => setEditingEvento({ ...editingEvento, comentarios: e.target.value })}
                       />
+                    </div>
+
+                    {/* Seção de Lembrete */}
+                    <div className="space-y-4 border-t pt-4">
+                      <div className="flex items-center space-x-2">
+                        <Bell className="h-4 w-4 text-blue-600" />
+                        <Label className="text-sm font-medium">Configurar Lembrete</Label>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                         <input
+                           type="checkbox"
+                           id="lembrete-ativo-edit"
+                           checked={eventoEditando?.lembrete?.ativo || false}
+                            onChange={(e) => setEventoEditando(eventoEditando ? {
+                              ...eventoEditando,
+                              lembrete: {
+                                ativo: e.target.checked,
+                                antecedencia: eventoEditando.lembrete?.antecedencia || 15
+                              }
+                            } : null)}
+                           className="rounded border-gray-300"
+                         />
+                         <Label htmlFor="lembrete-ativo-edit" className="text-sm">Ativar lembrete para este evento</Label>
+                       </div>
+
+                       {eventoEditando?.lembrete?.ativo && (
+                          <div className="space-y-3 ml-6">
+                            <div>
+                              <Label className="text-sm font-medium">Antecedência</Label>
+                              <Select
+                                value={eventoEditando.lembrete.antecedencia.toString()}
+                                onValueChange={(value) => setEventoEditando(eventoEditando ? {
+                                  ...eventoEditando,
+                                  lembrete: {
+                                    ...eventoEditando.lembrete!,
+                                    antecedencia: parseInt(value)
+                                  }
+                                } : null)}
+                             >
+                               <SelectTrigger>
+                                 <SelectValue />
+                               </SelectTrigger>
+                               <SelectContent>
+                                 <SelectItem value="5">5 minutos antes</SelectItem>
+                                 <SelectItem value="15">15 minutos antes</SelectItem>
+                                 <SelectItem value="30">30 minutos antes</SelectItem>
+                                 <SelectItem value="60">1 hora antes</SelectItem>
+                                 <SelectItem value="120">2 horas antes</SelectItem>
+                                 <SelectItem value="1440">1 dia antes</SelectItem>
+                               </SelectContent>
+                             </Select>
+                           </div>
+
+
+                         </div>
+                       )}
                     </div>
                   </div>
                   <DialogFooter>

@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { User, Phone, Mail, Calendar, Clock } from "lucide-react"
+import { User, Phone, Mail, Calendar, Clock, Bell } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
@@ -30,6 +30,8 @@ export function NovoContatoModal({ open, onOpenChange, cliente }: NovoContatoMod
   const [dataRetorno, setDataRetorno] = useState<string>("")
   const [horaRetorno, setHoraRetorno] = useState<string>("")
   const [descricao, setDescricao] = useState<string>("")
+  const [lembreteAtivo, setLembreteAtivo] = useState<boolean>(false)
+  const [lembreteAntecedencia, setLembreteAntecedencia] = useState<number>(15)
 
   const resetForm = () => {
     setTipoContato("telefone")
@@ -37,6 +39,8 @@ export function NovoContatoModal({ open, onOpenChange, cliente }: NovoContatoMod
     setDataRetorno("")
     setHoraRetorno("")
     setDescricao("")
+    setLembreteAtivo(false)
+    setLembreteAntecedencia(15)
   }
 
   const handleSalvar = () => {
@@ -176,6 +180,49 @@ export function NovoContatoModal({ open, onOpenChange, cliente }: NovoContatoMod
                           />
                         </div>
                       </div>
+
+                      {/* Seção de Lembrete */}
+                      <div className="space-y-4 border-t pt-4">
+                        <div className="flex items-center space-x-2">
+                          <Bell className="h-4 w-4 text-blue-600" />
+                          <Label className="text-sm font-medium">Configurar Lembrete</Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="lembrete-ativo-contato"
+                            checked={lembreteAtivo}
+                            onChange={(e) => setLembreteAtivo(e.target.checked)}
+                            className="rounded border-gray-300"
+                          />
+                          <Label htmlFor="lembrete-ativo-contato" className="text-sm">Ativar lembrete para este retorno</Label>
+                        </div>
+
+                        {lembreteAtivo && (
+                          <div className="space-y-3 ml-6">
+                            <div>
+                              <Label className="text-sm font-medium">Antecedência</Label>
+                              <Select
+                                value={lembreteAntecedencia.toString()}
+                                onValueChange={(value) => setLembreteAntecedencia(parseInt(value))}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="5">5 minutos antes</SelectItem>
+                                  <SelectItem value="15">15 minutos antes</SelectItem>
+                                  <SelectItem value="30">30 minutos antes</SelectItem>
+                                  <SelectItem value="60">1 hora antes</SelectItem>
+                                  <SelectItem value="120">2 horas antes</SelectItem>
+                                  <SelectItem value="1440">1 dia antes</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
 
@@ -221,4 +268,4 @@ export function NovoContatoModal({ open, onOpenChange, cliente }: NovoContatoMod
       </DialogContent>
     </Dialog>
   )
-} 
+}

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar, Mail, Clock, Pencil, UserX, MessageSquare, PhoneIncoming } from "lucide-react"
+import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar, Mail, Clock, Pencil, UserX, MessageSquare, PhoneIncoming, Bell } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -125,6 +125,8 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     horaRetorno: "",
     lote: "",
     documento: "",
+    lembreteAtivo: false,
+    lembreteAntecedencia: 15,
   })
 
   // Campos para cliente sem registro
@@ -267,6 +269,8 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       horaRetorno: "",
       lote: "",
       documento: "",
+      lembreteAtivo: false,
+      lembreteAntecedencia: 15,
     })
   }
 
@@ -1867,6 +1871,50 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                             </div>
                           </div>
                         </div>
+
+                        {/* Seção de Lembrete */}
+                        <div className="space-y-4 border-t pt-4">
+                          <div className="flex items-center space-x-2">
+                            <Bell className="h-4 w-4 text-teal-600" />
+                            <Label className="text-sm font-medium">Configurar Lembrete</Label>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="lembrete-ativo-iniciar"
+                              checked={formData.lembreteAtivo}
+                              onChange={(e) => setFormData(prev => ({ ...prev, lembreteAtivo: e.target.checked }))}
+                              className="rounded border-gray-300"
+                            />
+                            <Label htmlFor="lembrete-ativo-iniciar" className="text-sm">Ativar lembrete para este retorno</Label>
+                          </div>
+
+                          {formData.lembreteAtivo && (
+                            <div className="space-y-3 ml-6">
+                              <div>
+                                <Label className="text-sm font-medium">Antecedência</Label>
+                                <Select
+                                  value={formData.lembreteAntecedencia.toString()}
+                                  onValueChange={(value) => setFormData(prev => ({ ...prev, lembreteAntecedencia: parseInt(value) }))}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="5">5 minutos antes</SelectItem>
+                                    <SelectItem value="15">15 minutos antes</SelectItem>
+                                    <SelectItem value="30">30 minutos antes</SelectItem>
+                                    <SelectItem value="60">1 hora antes</SelectItem>
+                                    <SelectItem value="120">2 horas antes</SelectItem>
+                                    <SelectItem value="1440">1 dia antes</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
                         <p className="text-sm text-gray-500">
                           O retorno do contato irá criar um novo evento na sua agenda para o dia e horário selecionados acima
                         </p>

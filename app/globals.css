@@ -53,15 +53,18 @@
   * {
     @apply border-border;
   }
-  html,
   body {
     @apply bg-background text-foreground;
-    height: 100%;
-    overflow: hidden;
   }
-  
-  #__next {
-    height: 100%;
-  }
+}
+
+/* Esconder barras de rolagem */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 

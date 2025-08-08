@@ -1,11 +1,12 @@
 "use client"
 
-import { Menu, Bell, Sun, Moon, Search, Globe, ChevronDown, User, LogOut, MessageSquare, Plus, List } from "lucide-react"
+import { Menu, Bell, Sun, Moon, Search, Globe, ChevronDown, User, LogOut, MessageSquare, Plus, List, X, CheckCheck, Trash2, AlertTriangle, Info, FileText, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Sidebar } from "@/components/sidebar"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,9 +23,17 @@ const translations = {
   pt: {
     search: "Pesquisar...",
     notifications: "Notificações",
+    pending: "Pendências",
     viewAll: "Ver todas as notificações",
+    markAllRead: "Marcar todas como lidas",
+    clearAll: "Limpar todas",
     newComplaint: "Nova queixa técnica registrada",
     complaintWaiting: "Queixa técnica foi registrada e aguarda análise.",
+    pendingTask: "Tarefa pendente de análise",
+    pendingReview: "Aguardando revisão do supervisor",
+    systemAlert: "Alerta do sistema",
+    appointmentReminder: "Lembrete de agendamento",
+    documentUpdate: "Documento atualizado",
     minutes: "minutos",
     account: "Minha Conta",
     profile: "Perfil",
@@ -38,9 +47,17 @@ const translations = {
   en: {
     search: "Search...",
     notifications: "Notifications",
+    pending: "Pending",
     viewAll: "View all notifications",
+    markAllRead: "Mark all as read",
+    clearAll: "Clear all",
     newComplaint: "New technical complaint registered",
     complaintWaiting: "Technical complaint was registered and awaits analysis.",
+    pendingTask: "Pending task for analysis",
+    pendingReview: "Awaiting supervisor review",
+    systemAlert: "System alert",
+    appointmentReminder: "Appointment reminder",
+    documentUpdate: "Document updated",
     minutes: "minutes",
     account: "My Account",
     profile: "Profile",
@@ -54,9 +71,17 @@ const translations = {
   es: {
     search: "Buscar...",
     notifications: "Notificaciones",
+    pending: "Pendientes",
     viewAll: "Ver todas las notificaciones",
+    markAllRead: "Marcar todas como leídas",
+    clearAll: "Limpiar todas",
     newComplaint: "Nueva queja técnica registrada",
     complaintWaiting: "La queja técnica fue registrada y espera análisis.",
+    pendingTask: "Tarea pendiente de análisis",
+    pendingReview: "Esperando revisión del supervisor",
+    systemAlert: "Alerta del sistema",
+    appointmentReminder: "Recordatorio de cita",
+    documentUpdate: "Documento actualizado",
     minutes: "minutos",
     account: "Mi Cuenta",
     profile: "Perfil",
@@ -83,10 +108,120 @@ const MENSAGENS_NAO_LIDAS = [
   },
 ]
 
+// Tipos de notificação
+const NOTIFICATION_TYPES = {
+  COMPLAINT: 'complaint',
+  ALERT: 'alert',
+  INFO: 'info',
+  DOCUMENT: 'document',
+  APPOINTMENT: 'appointment'
+}
+
+// Ícones para cada tipo de notificação
+const getNotificationIcon = (type: string) => {
+  switch (type) {
+    case NOTIFICATION_TYPES.COMPLAINT:
+      return Bell
+    case NOTIFICATION_TYPES.ALERT:
+      return AlertTriangle
+    case NOTIFICATION_TYPES.INFO:
+      return Info
+    case NOTIFICATION_TYPES.DOCUMENT:
+      return FileText
+    case NOTIFICATION_TYPES.APPOINTMENT:
+      return Calendar
+    default:
+      return Bell
+  }
+}
+
+// Cores para cada tipo de notificação
+const getNotificationColors = (type: string) => {
+  switch (type) {
+    case NOTIFICATION_TYPES.COMPLAINT:
+      return { bg: 'bg-blue-100', text: 'text-blue-600' }
+    case NOTIFICATION_TYPES.ALERT:
+      return { bg: 'bg-red-100', text: 'text-red-600' }
+    case NOTIFICATION_TYPES.INFO:
+      return { bg: 'bg-green-100', text: 'text-green-600' }
+    case NOTIFICATION_TYPES.DOCUMENT:
+      return { bg: 'bg-purple-100', text: 'text-purple-600' }
+    case NOTIFICATION_TYPES.APPOINTMENT:
+      return { bg: 'bg-orange-100', text: 'text-orange-600' }
+    default:
+      return { bg: 'bg-gray-100', text: 'text-gray-600' }
+  }
+}
+
 export function Header() {
   const { setTheme, theme } = useTheme()
   const [language, setLanguage] = useState<"pt" | "en" | "es">("pt")
   const t = translations[language]
+  
+  // Estado das notificações
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      type: NOTIFICATION_TYPES.COMPLAINT,
+      title: "Nova queixa técnica registrada",
+      message: "Queixa técnica foi registrada e aguarda análise.",
+      time: "10 minutos",
+      read: false
+    },
+    {
+      id: 2,
+      type: NOTIFICATION_TYPES.ALERT,
+      title: "Alerta do sistema",
+      message: "Sistema será atualizado em 30 minutos.",
+      time: "15 minutos",
+      read: false
+    },
+    {
+      id: 3,
+      type: NOTIFICATION_TYPES.DOCUMENT,
+      title: "Documento atualizado",
+      message: "Protocolo #2024-001 foi atualizado.",
+      time: "20 minutos",
+      read: true
+    },
+    {
+      id: 4,
+      type: NOTIFICATION_TYPES.APPOINTMENT,
+      title: "Lembrete de agendamento",
+      message: "Reunião agendada para hoje às 14:00.",
+      time: "25 minutos",
+      read: false
+    },
+    {
+      id: 5,
+      type: NOTIFICATION_TYPES.INFO,
+      title: "Informação importante",
+      message: "Nova funcionalidade disponível no sistema.",
+      time: "30 minutos",
+      read: false
+    }
+  ])
+  
+  // Funções para gerenciar notificações
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(notif => ({ ...notif, read: true })))
+  }
+  
+  const clearAllNotifications = () => {
+    setNotifications([])
+  }
+  
+  const deleteNotification = (id: number) => {
+    setNotifications(prev => prev.filter(notif => notif.id !== id))
+  }
+  
+  const markAsRead = (id: number) => {
+    setNotifications(prev => prev.map(notif => 
+      notif.id === id ? { ...notif, read: true } : notif
+    ))
+  }
+  
+  const unreadCount = notifications.filter(notif => !notif.read).length
 
   // Controle manual do Drawer/Sheet do menu lateral
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -158,36 +293,109 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center">3</Badge>
+                  {unreadCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center">
+                      {unreadCount}
+                    </Badge>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuLabel>{t.notifications}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <div className="max-h-80 overflow-auto">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <DropdownMenuItem key={i} className="cursor-pointer p-4">
-                      <div className="flex items-start gap-2">
-                        <div className="rounded-full bg-blue-100 p-2 text-blue-600">
-                          <Bell className="h-4 w-4" />
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium">{t.newComplaint}</p>
-                          <p className="text-xs text-muted-foreground">{t.complaintWaiting}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {t.minutes} {10 + i * 5}
-                          </p>
-                        </div>
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
+              <DropdownMenuContent align="end" className="w-96 p-0">
+                <div className="px-4 pt-4 pb-2">
+                  <div className="space-y-3">
+                    <h4 className="text-base font-bold text-center">{t.notifications}</h4>
+                    <div className="flex gap-2 justify-center">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={markAllAsRead}
+                        className="text-xs h-7 px-3 flex-1 bg-green-50 hover:bg-green-100 border-green-200 text-green-700"
+                        disabled={unreadCount === 0}
+                      >
+                        <CheckCheck className="h-3 w-3 mr-1" />
+                        {t.markAllRead}
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={clearAllNotifications}
+                        className="text-xs h-7 px-3 flex-1 bg-red-50 hover:bg-red-100 border-red-200 text-red-700"
+                        disabled={notifications.length === 0}
+                      >
+                        <Trash2 className="h-3 w-3 mr-1" />
+                        {t.clearAll}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer justify-center">
-                  <Button variant="ghost" size="sm" className="w-full">
-                    {t.viewAll}
-                  </Button>
-                </DropdownMenuItem>
+                <div className="max-h-80 overflow-auto">
+                  {notifications.length === 0 ? (
+                    <div className="p-8 text-center text-muted-foreground">
+                      <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Nenhuma notificação</p>
+                    </div>
+                  ) : (
+                    notifications.map((notification) => {
+                      const IconComponent = getNotificationIcon(notification.type)
+                      const colors = getNotificationColors(notification.type)
+                      
+                      return (
+                        <DropdownMenuItem 
+                          key={notification.id} 
+                          className={`cursor-pointer p-4 mx-2 my-1 rounded relative group ${
+                            notification.read ? 'bg-gray-50 opacity-75' : 'bg-white'
+                          }`}
+                          onClick={() => !notification.read && markAsRead(notification.id)}
+                        >
+                          <div className="flex items-start gap-3 w-full">
+                            <div className={`rounded-full p-2 ${colors.bg} ${colors.text} flex-shrink-0`}>
+                              <IconComponent className="h-4 w-4" />
+                            </div>
+                            <div className="space-y-1 flex-1 min-w-0">
+                              <p className={`text-sm font-medium ${
+                                notification.read ? 'text-gray-500' : 'text-gray-900'
+                              }`}>
+                                {notification.title}
+                              </p>
+                              <p className={`text-xs ${
+                                notification.read ? 'text-gray-400' : 'text-muted-foreground'
+                              } line-clamp-2`}>
+                                {notification.message}
+                              </p>
+                              <p className={`text-xs ${
+                                notification.read ? 'text-gray-400' : 'text-muted-foreground'
+                              }`}>
+                                {notification.time} atrás
+                              </p>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                deleteNotification(notification.id)
+                              }}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0 text-gray-400 hover:text-red-600 flex-shrink-0"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                           </div>
+                         </DropdownMenuItem>
+                      )
+                    })
+                  )}
+                </div>
+                {notifications.length > 0 && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <div className="p-2">
+                      <Button variant="ghost" size="sm" className="w-full">
+                        {t.viewAll}
+                      </Button>
+                    </div>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
 

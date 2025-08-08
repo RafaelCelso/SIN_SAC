@@ -32,6 +32,7 @@ import {
   DollarSign,
   AlertTriangle,
   Syringe,
+  MonitorCog,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -297,9 +298,15 @@ export function Sidebar() {
             />
             <SidebarItem
               icon={<FileEdit size={16} />}
-              label="Construtor de Formulários"
+              label="Formulários"
               href="/preferencias/construtor-formularios"
               active={pathname.includes("/preferencias/construtor-formularios")}
+            />
+            <SidebarItem
+              icon={<MonitorCog size={16} />}
+              label="Parametrização"
+              href="/preferencias/parametrizacao"
+              active={pathname.includes("/preferencias/parametrizacao")}
             />
           </div>
         </div>
