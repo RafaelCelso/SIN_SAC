@@ -327,7 +327,7 @@ export function ParametrizacaoContent() {
                           <CardHeader className="bg-gradient-to-r from-[#26B99D]/5 to-gray-100/50 rounded-t-xl border-b border-gray-100">
                             <CardTitle className="text-gray-800 flex items-center gap-2">
                               <UserPlus className="h-5 w-5 text-[#26B99D]" />
-                              Personalizar por Usuário
+                              Personalizar por Perfil
                             </CardTitle>
                           </CardHeader>
                           <CardContent className="p-6">
@@ -342,28 +342,71 @@ export function ParametrizacaoContent() {
                                   </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="px-5 pb-5 bg-gradient-to-b from-white to-gray-50">
-                                  <div className="space-y-4 pt-4">
-                                    <div className="relative">
-                                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                                      <Input
-                                        placeholder="Buscar usuário..."
-                                        className="pl-10"
-                                      />
-                                    </div>
-                                    <div className="space-y-3">
-                                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                                        <div>
-                                          <p className="font-medium">João Silva</p>
-                                          <p className="text-sm text-muted-foreground">joao.silva@empresa.com</p>
+                                  <div className="space-y-6 pt-4">
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Perfis que receberão notificações:</h4>
+                                      <div className="space-y-3">
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Admin</p>
+                                            <p className="text-sm text-muted-foreground">Perfil de administrador do sistema</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
                                         </div>
-                                        <Switch />
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Atendimento</p>
+                                            <p className="text-sm text-muted-foreground">Perfil de atendimento ao cliente</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Supervisor</p>
+                                            <p className="text-sm text-muted-foreground">Perfil de supervisão e gestão</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Qualidade</p>
+                                            <p className="text-sm text-muted-foreground">Perfil de controle de qualidade</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
+                                        </div>
                                       </div>
-                                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                                        <div>
-                                          <p className="font-medium">Maria Santos</p>
-                                          <p className="text-sm text-muted-foreground">maria.santos@empresa.com</p>
+                                    </div>
+                                    
+                                    <div className="border-t pt-6">
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-3">E-mails que NÃO devem receber notificações:</h4>
+                                      <div className="space-y-3">
+                                        <div className="flex gap-2">
+                                          <Input
+                                            placeholder="Digite o e-mail para excluir..."
+                                            className="flex-1"
+                                          />
+                                          <Button 
+                                            size="sm" 
+                                            className="bg-[#26B99D] hover:bg-[#20a085] text-white px-4"
+                                          >
+                                            Adicionar
+                                          </Button>
                                         </div>
-                                        <Switch />
+                                        <div className="space-y-2">
+                                          <div className="flex items-center justify-between p-3 border rounded-lg bg-red-50 border-red-200">
+                                            <div>
+                                              <p className="font-medium text-gray-800">usuario.excluido@empresa.com</p>
+                                              <p className="text-sm text-red-600">Excluído das notificações</p>
+                                            </div>
+                                            <Button 
+                                              size="sm" 
+                                              variant="outline" 
+                                              className="text-red-600 border-red-300 hover:bg-red-50"
+                                            >
+                                              Remover
+                                            </Button>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -425,7 +468,7 @@ export function ParametrizacaoContent() {
                           <CardHeader className="bg-gradient-to-r from-[#26B99D]/5 to-gray-100/50 rounded-t-xl border-b border-gray-100">
                             <CardTitle className="text-gray-800 flex items-center gap-2">
                               <UserPlus className="h-5 w-5 text-[#26B99D]" />
-                              Personalizar por Usuário
+                              Personalizar por Perfil
                             </CardTitle>
                           </CardHeader>
                           <CardContent className="p-6">
@@ -440,28 +483,71 @@ export function ParametrizacaoContent() {
                                   </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="px-5 pb-5 bg-gradient-to-b from-white to-gray-50">
-                                  <div className="space-y-4 pt-4">
-                                    <div className="relative">
-                                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                                      <Input
-                                        placeholder="Buscar usuário..."
-                                        className="pl-10"
-                                      />
-                                    </div>
-                                    <div className="space-y-3">
-                                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                                        <div>
-                                          <p className="font-medium">João Silva</p>
-                                          <p className="text-sm text-muted-foreground">joao.silva@empresa.com</p>
+                                  <div className="space-y-6 pt-4">
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Perfis que receberão notificações:</h4>
+                                      <div className="space-y-3">
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Admin</p>
+                                            <p className="text-sm text-muted-foreground">Perfil de administrador do sistema</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
                                         </div>
-                                        <Switch />
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Atendimento</p>
+                                            <p className="text-sm text-muted-foreground">Perfil de atendimento ao cliente</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Supervisor</p>
+                                            <p className="text-sm text-muted-foreground">Perfil de supervisão e gestão</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Farmacovigilância</p>
+                                            <p className="text-sm text-muted-foreground">Perfil especializado em farmacovigilância</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
+                                        </div>
                                       </div>
-                                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                                        <div>
-                                          <p className="font-medium">Maria Santos</p>
-                                          <p className="text-sm text-muted-foreground">maria.santos@empresa.com</p>
+                                    </div>
+                                    
+                                    <div className="border-t pt-6">
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-3">E-mails que NÃO devem receber notificações:</h4>
+                                      <div className="space-y-3">
+                                        <div className="flex gap-2">
+                                          <Input
+                                            placeholder="Digite o e-mail para excluir..."
+                                            className="flex-1"
+                                          />
+                                          <Button 
+                                            size="sm" 
+                                            className="bg-[#26B99D] hover:bg-[#20a085] text-white px-4"
+                                          >
+                                            Adicionar
+                                          </Button>
                                         </div>
-                                        <Switch />
+                                        <div className="space-y-2">
+                                          <div className="flex items-center justify-between p-3 border rounded-lg bg-red-50 border-red-200">
+                                            <div>
+                                              <p className="font-medium text-gray-800">usuario.excluido@empresa.com</p>
+                                              <p className="text-sm text-red-600">Excluído das notificações</p>
+                                            </div>
+                                            <Button 
+                                              size="sm" 
+                                              variant="outline" 
+                                              className="text-red-600 border-red-300 hover:bg-red-50"
+                                            >
+                                              Remover
+                                            </Button>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -523,7 +609,7 @@ export function ParametrizacaoContent() {
                           <CardHeader className="bg-gradient-to-r from-[#26B99D]/5 to-gray-100/50 rounded-t-xl border-b border-gray-100">
                             <CardTitle className="text-gray-800 flex items-center gap-2">
                               <UserPlus className="h-5 w-5 text-[#26B99D]" />
-                              Personalizar por Usuário
+                              Personalizar por Perfil
                             </CardTitle>
                           </CardHeader>
                           <CardContent className="p-6">
@@ -538,28 +624,67 @@ export function ParametrizacaoContent() {
                                   </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="px-5 pb-5 bg-gradient-to-b from-white to-gray-50">
-                                  <div className="space-y-4 pt-4">
-                                    <div className="relative">
-                                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                                      <Input
-                                        placeholder="Buscar usuário..."
-                                        className="pl-10"
-                                      />
-                                    </div>
-                                    <div className="space-y-3">
-                                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                                        <div>
-                                          <p className="font-medium">João Silva</p>
-                                          <p className="text-sm text-muted-foreground">joao.silva@empresa.com</p>
+                                  <div className="space-y-6 pt-4">
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Perfis que receberão notificações:</h4>
+                                      <div className="space-y-3">
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Admin</p>
+                                            <p className="text-sm text-muted-foreground">Perfil de administrador do sistema</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
                                         </div>
-                                        <Switch />
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Atendimento</p>
+                                            <p className="text-sm text-muted-foreground">Perfil de atendimento ao cliente</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Supervisor</p>
+                                            <p className="text-sm text-muted-foreground">Perfil de supervisão e gestão</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                          <div>
+                                            <p className="font-medium text-gray-800">Qualidade</p>
+                                            <p className="text-sm text-muted-foreground">Perfil de controle de qualidade</p>
+                                          </div>
+                                          <Switch className="data-[state=checked]:bg-[#26B99D]" defaultChecked />
+                                        </div>
                                       </div>
-                                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                                        <div>
-                                          <p className="font-medium">Maria Santos</p>
-                                          <p className="text-sm text-muted-foreground">maria.santos@empresa.com</p>
+                                    </div>
+                                    
+                                    <div className="border-t pt-6">
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-3">E-mails que NÃO devem receber notificações:</h4>
+                                      <div className="space-y-3">
+                                        <div className="flex gap-2">
+                                          <Input
+                                            placeholder="Digite o e-mail para excluir..."
+                                            className="flex-1"
+                                          />
+                                          <Button 
+                                            size="sm" 
+                                            className="bg-[#26B99D] hover:bg-[#20a085] text-white px-4"
+                                          >
+                                            Adicionar
+                                          </Button>
                                         </div>
-                                        <Switch />
+                                        <div className="space-y-2">
+                                          <div className="flex items-center justify-between p-3 border rounded-lg bg-red-50 border-red-200">
+                                            <div>
+                                              <p className="font-medium text-gray-800">usuario.excluido@empresa.com</p>
+                                              <p className="text-sm text-red-600">Excluído das notificações</p>
+                                            </div>
+                                            <Button size="sm" variant="ghost" className="text-red-600 border-red-300 hover:bg-red-50">
+                                              Remover
+                                            </Button>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -619,9 +744,9 @@ export function ParametrizacaoContent() {
                       <TabsContent value="personalizar" className="mt-4">
                         <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 rounded-xl">
                           <CardHeader className="bg-gradient-to-r from-[#26B99D]/5 to-gray-100/50 rounded-t-xl border-b border-gray-100">
-                            <CardTitle className="text-gray-800 flex items-center gap-2">
+                            <CardTitle className="text-2xl font-semibold leading-none tracking-tight text-gray-800 flex items-center gap-2">
                               <UserPlus className="h-5 w-5 text-[#26B99D]" />
-                              Personalizar por Usuário
+                              Personalizar por Perfil
                             </CardTitle>
                           </CardHeader>
                           <CardContent className="p-6">
@@ -636,29 +761,73 @@ export function ParametrizacaoContent() {
                                   </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="px-5 pb-5 bg-gradient-to-b from-white to-gray-50">
-                                  <div className="space-y-4 pt-4">
-                                    <div className="relative">
-                                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                                      <Input
-                                        placeholder="Buscar usuário..."
-                                        className="pl-10 bg-white border-gray-200 focus:border-[#26B99D] focus:ring-[#26B99D]/20 rounded-lg shadow-sm"
-                                      />
-                                    </div>
-                                    <div className="space-y-3 max-h-48 overflow-y-auto">
-                                      {[
-                                        { nome: "João Silva", email: "joao.silva@empresa.com" },
-                                        { nome: "Maria Santos", email: "maria.santos@empresa.com" },
-                                        { nome: "Pedro Costa", email: "pedro.costa@empresa.com" },
-                                        { nome: "Ana Oliveira", email: "ana.oliveira@empresa.com" }
-                                      ].map((usuario) => (
-                                        <div key={usuario.nome} className="flex items-center justify-between p-3 bg-gradient-to-r from-white to-gray-50 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
-                                          <div>
-                                            <p className="text-sm font-medium text-gray-700">{usuario.nome}</p>
-                                            <p className="text-xs text-gray-500">{usuario.email}</p>
+                                  <div className="pb-4 pt-0">
+                                    <div className="space-y-6 pt-4">
+                                      <div>
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-3">Perfis que receberão notificações:</h4>
+                                        <div className="space-y-3">
+                                          <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                            <div>
+                                              <p className="font-medium text-gray-800">Admin</p>
+                                              <p className="text-sm text-muted-foreground">Perfil de administrador do sistema</p>
+                                            </div>
+                                            <Switch defaultChecked className="data-[state=checked]:bg-[#26B99D]" />
                                           </div>
-                                          <Switch className="data-[state=checked]:bg-[#26B99D]" />
+                                          <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                            <div>
+                                              <p className="font-medium text-gray-800">Atendimento</p>
+                                              <p className="text-sm text-muted-foreground">Perfil de atendimento ao cliente</p>
+                                            </div>
+                                            <Switch defaultChecked className="data-[state=checked]:bg-[#26B99D]" />
+                                          </div>
+                                          <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                            <div>
+                                              <p className="font-medium text-gray-800">Supervisor</p>
+                                              <p className="text-sm text-muted-foreground">Perfil de supervisão e gestão</p>
+                                            </div>
+                                            <Switch defaultChecked className="data-[state=checked]:bg-[#26B99D]" />
+                                          </div>
+                                          <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                            <div>
+                                              <p className="font-medium text-gray-800">Farmacovigilância</p>
+                                              <p className="text-sm text-muted-foreground">Perfil de farmacovigilância</p>
+                                            </div>
+                                            <Switch defaultChecked className="data-[state=checked]:bg-[#26B99D]" />
+                                          </div>
+                                          <div className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                                            <div>
+                                              <p className="font-medium text-gray-800">Qualidade</p>
+                                              <p className="text-sm text-muted-foreground">Perfil de controle de qualidade</p>
+                                            </div>
+                                            <Switch defaultChecked className="data-[state=checked]:bg-[#26B99D]" />
+                                          </div>
                                         </div>
-                                      ))}
+                                      </div>
+                                      <div className="border-t pt-6">
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-3">E-mails que NÃO devem receber notificações:</h4>
+                                        <div className="space-y-3">
+                                          <div className="flex gap-2">
+                                            <Input
+                                              placeholder="Digite o e-mail para excluir..."
+                                              className="flex-1"
+                                            />
+                                            <Button className="bg-[#26B99D] hover:bg-[#20a085] text-white">
+                                              Adicionar
+                                            </Button>
+                                          </div>
+                                          <div className="space-y-2">
+                                            <div className="flex items-center justify-between p-3 border rounded-lg bg-red-50 border-red-200">
+                                              <div>
+                                                <p className="font-medium text-gray-800">usuario.excluido@empresa.com</p>
+                                                <p className="text-sm text-red-600">Excluído das notificações</p>
+                                              </div>
+                                              <Button variant="ghost" className="text-red-600 border-red-300 hover:bg-red-50">
+                                                Remover
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </AccordionContent>
