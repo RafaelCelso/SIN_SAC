@@ -32,6 +32,9 @@ export function NovoContatoModal({ open, onOpenChange, cliente }: NovoContatoMod
   const [descricao, setDescricao] = useState<string>("")
   const [lembreteAtivo, setLembreteAtivo] = useState<boolean>(false)
   const [lembreteAntecedencia, setLembreteAntecedencia] = useState<number>(15)
+  const [resolucao, setResolucao] = useState<string>("")
+  const [motivo, setMotivo] = useState<string>("")
+  const [detalhe, setDetalhe] = useState<string>("")
 
   const resetForm = () => {
     setTipoContato("telefone")
@@ -41,6 +44,9 @@ export function NovoContatoModal({ open, onOpenChange, cliente }: NovoContatoMod
     setDescricao("")
     setLembreteAtivo(false)
     setLembreteAntecedencia(15)
+    setResolucao("")
+    setMotivo("")
+    setDetalhe("")
   }
 
   const handleSalvar = () => {
@@ -49,6 +55,33 @@ export function NovoContatoModal({ open, onOpenChange, cliente }: NovoContatoMod
       toast({
         title: "Erro",
         description: "A descrição do contato é obrigatória",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!resolucao) {
+      toast({
+        title: "Erro",
+        description: "A resolução é obrigatória",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (resolucao === "pendente" && !motivo) {
+      toast({
+        title: "Erro",
+        description: "O motivo é obrigatório quando a resolução for pendente",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (resolucao === "pendente" && motivo && !detalhe) {
+      toast({
+        title: "Erro",
+        description: "O detalhe é obrigatório quando há motivo selecionado",
         variant: "destructive",
       })
       return
@@ -244,6 +277,75 @@ export function NovoContatoModal({ open, onOpenChange, cliente }: NovoContatoMod
                       }}
                     />
                   </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="resolucao">
+                      Resolução <span className="text-red-500">*</span>
+                    </Label>
+                    <Select value={resolucao} onValueChange={(value) => {
+                      setResolucao(value)
+                      setMotivo("")
+                      setDetalhe("")
+                    }}>
+                      <SelectTrigger id="resolucao" className="h-11">
+                        <SelectValue placeholder="Selecione a resolução" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="concluido">Concluído</SelectItem>
+                        <SelectItem value="pendente">Pendente</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {resolucao === "pendente" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="motivo">
+                        Motivo <span className="text-red-500">*</span>
+                      </Label>
+                      <Select value={motivo} onValueChange={(value) => {
+                        setMotivo(value)
+                        setDetalhe("")
+                      }}>
+                        <SelectTrigger id="motivo" className="h-11">
+                          <SelectValue placeholder="Selecione o motivo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cliente">Cliente</SelectItem>
+                          <SelectItem value="interno">Interno</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {resolucao === "pendente" && motivo && (
+                    <div className="space-y-2">
+                      <Label htmlFor="detalhe">
+                        Detalhe <span className="text-red-500">*</span>
+                      </Label>
+                      <Select value={detalhe} onValueChange={setDetalhe}>
+                        <SelectTrigger id="detalhe" className="h-11">
+                          <SelectValue placeholder="Selecione o detalhe" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {motivo === "cliente" && (
+                            <>
+                              <SelectItem value="nao-tinha-tempo">Não tinha tempo suficiente para continuar a chamada</SelectItem>
+                              <SelectItem value="nao-tinha-informacoes">Não tinha informações suficiente</SelectItem>
+                              <SelectItem value="recusou-solucao">Recusou a solução oferecida</SelectItem>
+                            </>
+                          )}
+                          {motivo === "interno" && (
+                            <>
+                              <SelectItem value="aguardando-laboratorio">Aguardando resposta do laboratório</SelectItem>
+                              <SelectItem value="queixa-tecnica">Queixa Técnica em andamento</SelectItem>
+                              <SelectItem value="farmacovigilancia">Farmacovigilância em andamento</SelectItem>
+                              <SelectItem value="ressarcimento">Ressarcimento em andamento</SelectItem>
+                            </>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

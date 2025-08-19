@@ -121,12 +121,16 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     email: "",
     telefone: "",
     autorizaRetorno: "sim",
+    dataAgendamentoDefinida: "nao",
     dataRetorno: "",
     horaRetorno: "",
     lote: "",
     documento: "",
     lembreteAtivo: false,
     lembreteAntecedencia: 15,
+    resolucao: "",
+    motivoResolucao: "",
+    detalhe: "",
   })
 
   // Campos para cliente sem registro
@@ -265,12 +269,16 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       email: "",
       telefone: "",
       autorizaRetorno: "sim",
+      dataAgendamentoDefinida: "nao",
       dataRetorno: "",
       horaRetorno: "",
       lote: "",
       documento: "",
       lembreteAtivo: false,
       lembreteAntecedencia: 15,
+      resolucao: "",
+      motivoResolucao: "",
+      detalhe: "",
     })
   }
 
@@ -341,12 +349,52 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       return
     }
 
-    // Validar campos de retorno se autorizado
-    if (formData.autorizaRetorno === "sim") {
+    // Validar descrição
+    if (!formData.descricao.trim()) {
+      toast({
+        title: "Erro",
+        description: "A descrição do contato é obrigatória",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validar resolução
+    if (!formData.resolucao) {
+      toast({
+        title: "Erro",
+        description: "A resolução é obrigatória",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validar motivo se resolução for pendente
+    if (formData.resolucao === "pendente" && !formData.motivoResolucao) {
+      toast({
+        title: "Erro",
+        description: "O motivo é obrigatório quando a resolução for pendente",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validar detalhe se motivo foi selecionado
+    if (formData.resolucao === "pendente" && formData.motivoResolucao && !formData.detalhe) {
+      toast({
+        title: "Erro",
+        description: "O detalhe é obrigatório quando há motivo selecionado",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validar campos de retorno se autorizado e data definida
+    if (formData.autorizaRetorno === "sim" && formData.dataAgendamentoDefinida === "sim") {
       if (!formData.dataRetorno || !formData.horaRetorno) {
         toast({
           title: "Erro",
-          description: "Data e horário do retorno são obrigatórios quando autorizado",
+          description: "Data e horário do retorno são obrigatórios quando data de agendamento for definida",
           variant: "destructive",
         })
         return
@@ -361,8 +409,8 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       .padStart(4, "0")
     const novoProtocolo = `AT-${ano}-${numeroAleatorio}`
 
-    // Se autorizado retorno, criar evento na agenda
-    if (formData.autorizaRetorno === "sim" && formData.dataRetorno && formData.horaRetorno) {
+    // Se autorizado retorno e data definida, criar evento na agenda
+    if (formData.autorizaRetorno === "sim" && formData.dataAgendamentoDefinida === "sim" && formData.dataRetorno && formData.horaRetorno) {
       const nomeCliente = selectedCliente?.nome || nomeSemRegistro || "Cliente"
       const dataRetorno = new Date(formData.dataRetorno + "T" + formData.horaRetorno)
       
@@ -390,7 +438,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     })
 
     // Se houver retorno agendado, mostrar toast adicional
-    if (formData.autorizaRetorno === "sim") {
+    if (formData.autorizaRetorno === "sim" && formData.dataAgendamentoDefinida === "sim") {
       toast({
         title: "Retorno agendado",
         description: `Retorno agendado para ${new Date(formData.dataRetorno).toLocaleDateString()} às ${formData.horaRetorno}`,
@@ -1811,7 +1859,13 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                     <Label className="font-medium">Autoriza retorno de contato <span className="text-red-500">*</span></Label>
                     <RadioGroup
                       value={formData.autorizaRetorno}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, autorizaRetorno: value }))}
+                      onValueChange={(value) => {
+                        setFormData(prev => ({ 
+                          ...prev, 
+                          autorizaRetorno: value,
+                          dataAgendamentoDefinida: value === "nao" ? "nao" : prev.dataAgendamentoDefinida
+                        }))
+                      }}
                       className="flex gap-4"
                     >
                       <div className="flex items-center space-x-2">
@@ -1825,8 +1879,29 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                     </RadioGroup>
                   </div>
 
-                  {/* Data e Hora do Retorno */}
+                  {/* Data de Agendamento Definida */}
                   {formData.autorizaRetorno === "sim" && (
+                    <div className="space-y-2">
+                      <Label className="font-medium">Data de Agendamento definida? <span className="text-red-500">*</span></Label>
+                      <RadioGroup
+                        value={formData.dataAgendamentoDefinida}
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, dataAgendamentoDefinida: value }))}
+                        className="flex gap-4"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="sim" id="agendamento-sim" />
+                          <Label htmlFor="agendamento-sim">Sim</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="nao" id="agendamento-nao" />
+                          <Label htmlFor="agendamento-nao">Não</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  )}
+
+                  {/* Data e Hora do Retorno */}
+                  {formData.autorizaRetorno === "sim" && formData.dataAgendamentoDefinida === "sim" && (
                     <div className="relative overflow-hidden rounded-xl border border-teal-100 bg-gradient-to-br from-teal-50 via-teal-50/80 to-white p-6">
                       <div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-teal-100/50 blur-2xl" />
                       <div className="absolute left-0 bottom-0 h-32 w-32 translate-y-1/2 -translate-x-1/2 rounded-full bg-teal-100/30 blur-2xl" />
@@ -1941,6 +2016,93 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                       }}
                     />
                   </div>
+
+                  {/* Resolução */}
+                  <div className="space-y-2">
+                    <Label className="font-medium">
+                      Resolução <span className="text-red-500">*</span>
+                    </Label>
+                    <Select
+                      value={formData.resolucao}
+                      onValueChange={(value) => {
+                        setFormData(prev => ({ 
+                          ...prev, 
+                          resolucao: value,
+                          motivoResolucao: "",
+                          detalhe: ""
+                        }))
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a resolução" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="concluido">Concluído</SelectItem>
+                        <SelectItem value="pendente">Pendente</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Motivo - aparece apenas se Resolução for Pendente */}
+                  {formData.resolucao === "pendente" && (
+                    <div className="space-y-2">
+                      <Label className="font-medium">
+                        Motivo <span className="text-red-500">*</span>
+                      </Label>
+                      <Select
+                        value={formData.motivoResolucao}
+                        onValueChange={(value) => {
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            motivoResolucao: value,
+                            detalhe: ""
+                          }))
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o motivo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cliente">Cliente</SelectItem>
+                          <SelectItem value="interno">Interno</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {/* Detalhe - aparece apenas se Motivo for selecionado */}
+                  {formData.resolucao === "pendente" && formData.motivoResolucao && (
+                    <div className="space-y-2">
+                      <Label className="font-medium">
+                        Detalhe <span className="text-red-500">*</span>
+                      </Label>
+                      <Select
+                        value={formData.detalhe}
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, detalhe: value }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o detalhe" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {formData.motivoResolucao === "cliente" ? (
+                            <>
+                              <SelectItem value="nao-atende">Não atende</SelectItem>
+                              <SelectItem value="sem-interesse">Sem interesse</SelectItem>
+                              <SelectItem value="reagendar">Reagendar</SelectItem>
+                              <SelectItem value="informacoes-incompletas">Informações incompletas</SelectItem>
+                            </>
+                          ) : (
+                            <>
+                              <SelectItem value="aguardando-aprovacao">Aguardando aprovação</SelectItem>
+                              <SelectItem value="em-analise">Em análise</SelectItem>
+                              <SelectItem value="pendencia-documentacao">Pendência de documentação</SelectItem>
+                              <SelectItem value="aguardando-terceiros">Aguardando terceiros</SelectItem>
+                            </>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
