@@ -41,12 +41,14 @@ import {
   Pill,
   ChevronRight,
   DollarSign,
+  Merge,
 } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
 import { NovoProtocoloModal } from "@/components/novo-protocolo-modal"
 import { DetalhesRegistroModal } from "@/components/detalhes-registro-modal"
 import { NovoRegistroModal } from "@/components/novo-registro-modal"
+import { UnificarCadastroModal } from "@/components/unificar-cadastro-modal"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
@@ -307,6 +309,7 @@ export default function ClientePage() {
   const [produto, setProduto] = useState<string[]>([])
   const [lote, setLote] = useState<string[]>([])
   const [showLogsContatosModal, setShowLogsContatosModal] = useState(false)
+  const [showUnificarModal, setShowUnificarModal] = useState(false)
 
   // Carregar dados do cliente
   useEffect(() => {
@@ -403,17 +406,25 @@ export default function ClientePage() {
             <h1 className="text-2xl font-bold">Cadastro do Cliente</h1>
           </div>
 
-          {!isEditing ? (
-            <Button onClick={() => setIsEditing(true)}>
-              <Edit className="mr-2 h-4 w-4" />
-              Editar Cadastro
-            </Button>
-          ) : (
-            <Button onClick={handleSave} className="bg-teal-600 hover:bg-teal-700">
-              <Save className="mr-2 h-4 w-4" />
-              Salvar Alterações
-            </Button>
-          )}
+          <div className="flex gap-2">
+            {!isEditing ? (
+              <>
+                <Button onClick={() => setIsEditing(true)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Editar Cadastro
+                </Button>
+                <Button variant="outline" onClick={() => setShowUnificarModal(true)}>
+                  <Merge className="mr-2 h-4 w-4" />
+                  Unificar cadastro
+                </Button>
+              </>
+            ) : (
+              <Button onClick={handleSave} className="bg-teal-600 hover:bg-teal-700">
+                <Save className="mr-2 h-4 w-4" />
+                Salvar Alterações
+              </Button>
+            )}
+          </div>
         </div>
 
         {isNovoProtocolo && (
@@ -2112,6 +2123,12 @@ export default function ClientePage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        <UnificarCadastroModal
+          open={showUnificarModal}
+          onOpenChange={setShowUnificarModal}
+          clienteAtual={cliente}
+        />
       </div>
     </DashboardLayout>
   )
