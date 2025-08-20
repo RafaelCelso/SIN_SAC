@@ -12,7 +12,7 @@ import {
   Clock,
   CheckCircle,
   AlertTriangle,
-  CalendarIcon,
+  Calendar as CalendarIcon,
   ChevronDown,
   ChevronUp,
   Users,
@@ -25,11 +25,19 @@ import {
   ShieldCheck,
   HelpCircle,
   Pill,
+  Contact,
+  DollarSign,
+  Phone,
+  MessageSquare,
+  Mail,
+  MessageCircle,
+  ClipboardList,
+  Eye,
 } from "lucide-react"
 import { IniciarAtendimentoModal } from "@/components/iniciar-atendimento-modal"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import Link from "next/link"
@@ -149,6 +157,335 @@ const ESTATISTICAS = {
   chamadasEmEspera: 5,
 }
 
+// Dados mockados para pendências
+const PENDENCIAS_SUPERVISAO = [
+  {
+    id: 1,
+    titulo: "Revisão de Protocolo QT-2023-0045",
+    descricao: "Protocolo de queixa técnica aguarda revisão da supervisão",
+    prioridade: "alta",
+    prazo: "Hoje",
+    responsavel: "Maria Silva"
+  },
+  {
+    id: 2,
+    titulo: "Aprovação de Relatório Mensal",
+    descricao: "Relatório de atendimentos do mês aguarda aprovação",
+    prioridade: "media",
+    prazo: "Amanhã",
+    responsavel: "João Santos"
+  },
+  {
+    id: 3,
+    titulo: "Análise de Indicadores",
+    descricao: "Indicadores de qualidade precisam de análise detalhada",
+    prioridade: "baixa",
+    prazo: "Esta semana",
+    responsavel: "Ana Costa"
+  },
+  {
+    id: 4,
+    titulo: "Validação de Processo",
+    descricao: "Novo processo de atendimento precisa de validação",
+    prioridade: "media",
+    prazo: "Próxima semana",
+    responsavel: "Carlos Oliveira"
+  }
+]
+
+const PENDENCIAS_QUALIDADE = [
+  {
+    id: 1,
+    titulo: "Auditoria Interna - Setor A",
+    descricao: "Auditoria interna do setor A aguarda execução",
+    prioridade: "alta",
+    prazo: "Hoje",
+    responsavel: "Carlos Lima"
+  },
+  {
+    id: 2,
+    titulo: "Não Conformidade NC-2023-008",
+    descricao: "Não conformidade identificada precisa de plano de ação",
+    prioridade: "alta",
+    prazo: "Amanhã",
+    responsavel: "Fernanda Rocha"
+  },
+  {
+    id: 3,
+    titulo: "Revisão de Procedimento",
+    descricao: "Procedimento PQ-001 precisa de revisão anual",
+    prioridade: "media",
+    prazo: "Esta semana",
+    responsavel: "Roberto Silva"
+  },
+  {
+    id: 4,
+    titulo: "Ação Corretiva AC-2023-015",
+    descricao: "Ação corretiva aguarda implementação e verificação",
+    prioridade: "alta",
+    prazo: "Amanhã",
+    responsavel: "Mariana Costa"
+  }
+]
+
+const PENDENCIAS_FARMACOVIGILANCIA = [
+  {
+    id: 1,
+    titulo: "Evento Adverso Grave - EA-2023-012",
+    descricao: "Evento adverso grave aguarda investigação detalhada",
+    prioridade: "alta",
+    prazo: "Hoje",
+    responsavel: "Dra. Patricia Mendes"
+  },
+  {
+    id: 2,
+    titulo: "Relatório ANVISA - Trimestral",
+    descricao: "Relatório trimestral para ANVISA aguarda finalização",
+    prioridade: "alta",
+    prazo: "Amanhã",
+    responsavel: "Dr. Ricardo Alves"
+  },
+  {
+    id: 3,
+    titulo: "Análise de Sinal de Segurança",
+    descricao: "Sinal de segurança identificado precisa de análise",
+    prioridade: "media",
+    prazo: "Esta semana",
+    responsavel: "Dra. Lucia Santos"
+  },
+  {
+    id: 4,
+    titulo: "PSUR - Relatório Periódico",
+    descricao: "Relatório periódico de segurança aguarda elaboração",
+    prioridade: "media",
+    prazo: "Próxima semana",
+    responsavel: "Dr. Fernando Lima"
+  }
+]
+
+const PENDENCIAS_ATENDIMENTO = [
+  {
+    id: 1,
+    titulo: "Retorno para Cliente - ID 1234",
+    descricao: "Cliente aguarda retorno sobre consulta médica",
+    prioridade: "alta",
+    prazo: "Hoje",
+    responsavel: "Atendente Maria"
+  },
+  {
+    id: 2,
+    titulo: "Protocolo IM-2023-0089 - Pendente",
+    descricao: "Informação médica aguarda resposta do especialista",
+    prioridade: "media",
+    prazo: "Amanhã",
+    responsavel: "Dr. José Silva"
+  },
+  {
+    id: 3,
+    titulo: "Chamada Não Atendida - Reagendar",
+    descricao: "Cliente não atendeu chamada, reagendar contato",
+    prioridade: "baixa",
+    prazo: "Esta semana",
+    responsavel: "Atendente João"
+  },
+  {
+    id: 4,
+    titulo: "Protocolo QT-2023-0156 - Análise",
+    descricao: "Queixa técnica aguarda análise do departamento",
+    prioridade: "media",
+    prazo: "Amanhã",
+    responsavel: "Analista Pedro"
+  }
+]
+
+// Dados para Contatos
+const CONTATOS_DATA = [
+  {
+    id: 2,
+    nome: "João Carlos Oliveira",
+    clienteId: "01",
+    telefone: "(11) 88888-5678",
+    email: "joao.oliveira@email.com",
+    empresa: "Drogaria São Paulo",
+    protocolo: "CT-2023-0002",
+    dataHora: "14/12/2023 16:45",
+    statusResolucao: "Pendente",
+    usuarioRegistro: "Rafael Silva"
+  },
+  {
+    id: 5,
+    nome: "Fernanda Rocha Silva",
+    clienteId: "02",
+    telefone: "(11) 55555-7890",
+    email: "fernanda.rocha@email.com",
+    empresa: "Drogaria Bem Estar",
+    protocolo: "CT-2023-0005",
+    dataHora: "11/12/2023 15:50",
+    statusResolucao: "Pendente",
+    usuarioRegistro: "Mariana Santos"
+  },
+  {
+    id: 6,
+    nome: "Pedro Almeida",
+    clienteId: "03",
+    telefone: "(11) 44444-1234",
+    email: "pedro.almeida@email.com",
+    empresa: "Farmácia Popular",
+    protocolo: "CT-2023-0006",
+    dataHora: "19/12/2023 08:30",
+    statusResolucao: "Pendente",
+    usuarioRegistro: "João Costa"
+  }
+]
+
+// Dados para Queixas Técnicas
+const QUEIXAS_TECNICAS_DATA = [
+  {
+    id: 1,
+    protocolo: "QT-2023-0045",
+    produto: "Medicamento A - 500mg",
+    cliente: "Maria Silva",
+    clienteId: "01",
+    descricao: "Comprimido com coloração alterada",
+    dataAbertura: "15/12/2023",
+    criadoPor: "Rafael Silva",
+    status: "Revisão"
+  },
+  {
+    id: 2,
+    protocolo: "QT-2023-0046",
+    produto: "Medicamento B - 250mg",
+    cliente: "João Santos",
+    clienteId: "02",
+    descricao: "Embalagem danificada no transporte",
+    dataAbertura: "14/12/2023",
+    criadoPor: "Ana Costa",
+    status: "Aberto"
+  },
+  {
+    id: 3,
+    protocolo: "QT-2023-0047",
+    produto: "Medicamento C - 100mg",
+    cliente: "Ana Costa",
+    clienteId: "03",
+    descricao: "Sabor alterado do medicamento",
+    dataAbertura: "13/12/2023",
+    criadoPor: "João Santos",
+    status: "Retornado"
+  }
+]
+
+// Dados para Farmacovigilância
+const FARMACOVIGILANCIA_DATA = [
+  {
+    id: 1,
+    protocolo: "FV-2023-0012",
+    eventoAdverso: "Reação alérgica cutânea",
+    medicamento: "Medicamento A",
+    paciente: "Maria Silva",
+    gravidade: "Moderado",
+    dataOcorrencia: "12/12/2023",
+    status: "Aberto",
+    clienteId: "01",
+    criadoPor: "Ana Silva"
+  },
+  {
+    id: 2,
+    protocolo: "FV-2023-0013",
+    eventoAdverso: "Náusea e vômito",
+    medicamento: "Medicamento B",
+    paciente: "João Santos",
+    gravidade: "Leve",
+    dataOcorrencia: "11/12/2023",
+    status: "Revisão",
+    clienteId: "02",
+    criadoPor: "Carlos Mendes"
+  },
+  {
+    id: 3,
+    protocolo: "FV-2023-0014",
+    eventoAdverso: "Tontura e cefaleia",
+    medicamento: "Medicamento C",
+    paciente: "Ana Costa",
+    gravidade: "Leve",
+    dataOcorrencia: "10/12/2023",
+    status: "Retornado",
+    clienteId: "03",
+    criadoPor: "João Santos"
+  }
+]
+
+// Dados para Ressarcimento
+const RESSARCIMENTO_DATA = [
+  {
+    id: 1,
+    protocolo: "RS-2023-0008",
+    cliente: "Farmácia Central",
+    clienteId: "01",
+    produto: "Medicamento A - Lote ABC123",
+    valor: "R$ 1.250,00",
+    motivo: "Produto vencido",
+    dataAbertura: "10/12/2023",
+    criadoPor: "Ana Silva",
+    status: "Aprovado"
+  },
+  {
+    id: 2,
+    protocolo: "RS-2023-0009",
+    cliente: "Drogaria São Paulo",
+    clienteId: "02",
+    produto: "Medicamento B - Lote DEF456",
+    valor: "R$ 850,00",
+    motivo: "Embalagem danificada",
+    dataAbertura: "08/12/2023",
+    criadoPor: "Carlos Mendes",
+    status: "Em análise"
+  },
+  {
+    id: 3,
+    protocolo: "RS-2023-0010",
+    cliente: "Farmácia Popular",
+    clienteId: "03",
+    produto: "Medicamento C - Lote GHI789",
+    valor: "R$ 650,00",
+    motivo: "Defeito de fabricação",
+    dataAbertura: "05/12/2023",
+    criadoPor: "João Santos",
+    status: "Pendente"
+  }
+]
+
+// Dados para Agenda
+const AGENDA_DATA = [
+  {
+    id: 1,
+    titulo: "Reunião de Supervisão",
+    descricao: "Reunião semanal da equipe de supervisão",
+    data: "18/12/2023",
+    horario: "09:00",
+    participantes: "Equipe Supervisão",
+    local: "Sala de Reuniões A"
+  },
+  {
+    id: 2,
+    titulo: "Auditoria Interna",
+    descricao: "Auditoria do processo de atendimento",
+    data: "19/12/2023",
+    horario: "14:00",
+    participantes: "Auditores Internos",
+    local: "Departamento de Qualidade"
+  },
+  {
+    id: 3,
+    titulo: "Treinamento Farmacovigilância",
+    descricao: "Treinamento sobre novos procedimentos",
+    data: "20/12/2023",
+    horario: "10:00",
+    participantes: "Equipe Farmacovigilância",
+    local: "Auditório Principal"
+  }
+]
+
 // Dados para o gráfico de atendimentos por motivo
 const ATENDIMENTOS_POR_MOTIVO = [
   { motivo: "Queixa Técnica", quantidade: 45, percentual: 35 },
@@ -219,6 +556,10 @@ export default function Home() {
   const [statusFiltro, setStatusFiltro] = useState<string>("")
   const [showFilters, setShowFilters] = useState(false)
   const [isAtendimentosExpanded, setIsAtendimentosExpanded] = useState(false)
+  const [supervisaoSecaoAtiva, setSupervisaoSecaoAtiva] = useState("contatos")
+  const [qualidadeSecaoAtiva, setQualidadeSecaoAtiva] = useState("auditorias")
+  const [farmacovigilanciaSecaoAtiva, setFarmacovigilanciaSecaoAtiva] = useState("eventos")
+  const [atendimentoSecaoAtiva, setAtendimentoSecaoAtiva] = useState("protocolos")
 
   // Filtrar atendimentos com base em todos os filtros
   const filteredAtendimentos = ATENDIMENTOS_MOCK.filter((atendimento) => {
@@ -268,397 +609,987 @@ export default function Home() {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="p-4 rounded-lg flex-1">
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-sm text-gray-600 mt-1">Visão geral do sistema</p>
+            <h1 className="text-2xl font-bold text-gray-900">Home</h1>
+            <p className="text-sm text-gray-600 mt-1">Verifique suas pendências e outras informações</p>
           </div>
         </div>
 
-        {/* Cards de estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Atendimentos Hoje</CardTitle>
-              <PhoneCall className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{ESTATISTICAS.atendimentosHoje}</div>
-              <p className="text-xs text-muted-foreground">
-                +{ESTATISTICAS.atendimentosHoje - 8} em relação a ontem
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Atendimentos Pendentes</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-amber-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{ESTATISTICAS.atendimentosPendentes}</div>
-              <p className="text-xs text-muted-foreground">
-                {Math.round((ESTATISTICAS.atendimentosPendentes / ESTATISTICAS.atendimentosMes) * 100)}% do total mensal
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tempo Médio de Atendimento</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{ESTATISTICAS.tempoMedioAtendimento}</div>
-              <p className="text-xs text-muted-foreground">
-                -2 min em relação à média semanal
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Satisfação dos Clientes</CardTitle>
-              <TrendingUp className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{ESTATISTICAS.satisfacaoClientes}%</div>
-              <p className="text-xs text-muted-foreground">
-                +3% em relação ao mês anterior
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Sistema de Abas */}
+        <Tabs defaultValue="supervisao" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="supervisao">Supervisão</TabsTrigger>
+            <TabsTrigger value="qualidade">Qualidade</TabsTrigger>
+            <TabsTrigger value="farmacovigilancia">Farmacovigilância</TabsTrigger>
+            <TabsTrigger value="atendimento">Atendimento</TabsTrigger>
+          </TabsList>
 
-        {/* Gráficos e informações adicionais */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Gráfico de atendimentos por motivo */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Atendimentos por Motivo</CardTitle>
-              <CardDescription>Distribuição dos atendimentos por tipo de motivo</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {ATENDIMENTOS_POR_MOTIVO.map((item) => (
-                  <div key={item.motivo} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {item.motivo === "Queixa Técnica" && <FileText className="h-4 w-4 text-blue-500" />}
-                        {item.motivo === "Informação Médica" && <HelpCircle className="h-4 w-4 text-purple-500" />}
-                        {item.motivo === "Farmacovigilância" && <Pill className="h-4 w-4 text-red-500" />}
-                        {item.motivo === "Evento Adverso" && <AlertTriangle className="h-4 w-4 text-amber-500" />}
-                        {item.motivo === "Contato para retorno" && <PhoneCall className="h-4 w-4 text-green-500" />}
-                        <span className="text-sm font-medium">{item.motivo}</span>
-                      </div>
-                      <span className="text-sm text-muted-foreground">{item.quantidade} ({item.percentual}%)</span>
-                    </div>
-                    <Progress value={item.percentual} className="h-2" />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Notificações */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Notificações</CardTitle>
-              <CardDescription>Atualizações importantes do sistema</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {NOTIFICACOES.map((notificacao) => (
-                  <div key={notificacao.id} className="flex items-start gap-3 p-2 rounded-md hover:bg-gray-50">
-                    <div className="mt-1">
-                      {notificacao.tipo === "farmacovigilancia" && <Pill className="h-4 w-4 text-red-500" />}
-                      {notificacao.tipo === "evento-adverso" && <AlertTriangle className="h-4 w-4 text-amber-500" />}
-                      {notificacao.tipo === "retorno" && <PhoneCall className="h-4 w-4 text-green-500" />}
-                      {notificacao.tipo === "produto" && <ShieldCheck className="h-4 w-4 text-blue-500" />}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{notificacao.titulo}</p>
-                      <p className="text-xs text-muted-foreground">{notificacao.descricao}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{notificacao.data}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" className="w-full">Ver todas as notificações</Button>
-            </CardFooter>
-          </Card>
-        </div>
-
-        {/* Gráfico de tendência e atendimentos por produto */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Gráfico de tendência */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Tendência de Atendimentos</CardTitle>
-              <CardDescription>Atendimentos realizados nos últimos 7 dias</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[200px] flex items-end justify-between gap-1">
-                {TENDENCIA_ATENDIMENTOS.map((item) => (
-                  <div key={item.dia} className="flex flex-col items-center gap-1">
-                    <div 
-                      className="w-8 bg-[#26B99D] rounded-t-sm" 
-                      style={{ height: `${(item.quantidade / 25) * 100}%` }}
-                    ></div>
-                    <span className="text-xs">{item.dia}</span>
-                    <span className="text-xs font-medium">{item.quantidade}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Atendimentos por produto */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Atendimentos por Produto</CardTitle>
-              <CardDescription>Distribuição dos atendimentos por produto</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {ATENDIMENTOS_POR_PRODUTO.map((item) => (
-                  <div key={item.produto} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{item.produto}</span>
-                      <span className="text-sm text-muted-foreground">{item.quantidade} ({item.percentual}%)</span>
-                    </div>
-                    <Progress value={item.percentual} className="h-2" />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Lista de atendimentos */}
-        <div className="border rounded-md shadow-sm">
-          <Collapsible open={isAtendimentosExpanded} onOpenChange={setIsAtendimentosExpanded}>
-            {/* Cabeçalho clicável */}
-            <div
-              className="flex items-center justify-between p-4 border-b cursor-pointer hover:bg-gray-50"
-              onClick={toggleCollapsible}
-            >
-              <h2 className="text-lg font-medium">Últimos Atendimentos</h2>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation() // Impede que o clique propague para o cabeçalho
-                    setShowFilters(!showFilters)
-                  }}
-                  className={showFilters ? "bg-muted" : ""}
-                >
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filtros
-                </Button>
-                <div>
-                  {isAtendimentosExpanded ? (
-                    <ChevronUp className="h-5 w-5 text-gray-500" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-gray-500" />
-                  )}
+          <TabsContent value="supervisao" className="space-y-6">
+            {/* Layout com Sidebar */}
+            <div className="flex gap-6">
+              {/* Sidebar */}
+              <div className="w-64 space-y-2 bg-gray-50 p-4 rounded-lg border">
+                  <div className="space-y-1">
+                  <Button
+                    variant={supervisaoSecaoAtiva === "contatos" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setSupervisaoSecaoAtiva("contatos")}
+                  >
+                    <Contact className="h-4 w-4 mr-2" />
+                    Contatos
+                  </Button>
+                  <Button
+                    variant={supervisaoSecaoAtiva === "queixas" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setSupervisaoSecaoAtiva("queixas")}
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Queixas Técnicas
+                  </Button>
+                  <Button
+                    variant={supervisaoSecaoAtiva === "farmacovigilancia" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setSupervisaoSecaoAtiva("farmacovigilancia")}
+                  >
+                    <Pill className="h-4 w-4 mr-2" />
+                    Farmacovigilância
+                  </Button>
+                  <Button
+                    variant={supervisaoSecaoAtiva === "ressarcimento" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setSupervisaoSecaoAtiva("ressarcimento")}
+                  >
+                    <DollarSign className="h-4 w-4 mr-2" />
+                    Ressarcimento
+                  </Button>
+                  <Button
+                    variant={supervisaoSecaoAtiva === "agenda" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setSupervisaoSecaoAtiva("agenda")}
+                  >
+                    <CalendarIcon className="h-4 w-4 mr-2" />
+                    Agenda
+                  </Button>
                 </div>
+              </div>
+
+              {/* Conteúdo Principal */}
+              <div className="flex-1">
+                {/* Seção Contatos */}
+                {supervisaoSecaoAtiva === "contatos" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Contatos Pendentes</h2>
+                    </div>
+                    <div className="grid gap-4">
+                      {CONTATOS_DATA.map((contato) => (
+                        <Card key={contato.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-3">
+                                  <Badge variant="outline" className="text-xs">
+                                    ID: {contato.clienteId}
+                                  </Badge>
+                                  <h3 className="font-medium">{contato.nome}</h3>
+                                  <Badge variant="destructive">
+                                    {contato.statusResolucao}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div className="flex items-center gap-2">
+                                    <FileText className="h-4 w-4" />
+                                    <span><strong>Protocolo:</strong> {contato.protocolo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <CalendarIcon className="h-4 w-4" />
+                                    <span><strong>Data/Hora:</strong> {contato.dataHora}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Registrado por:</strong> {contato.usuarioRegistro}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção Queixas Técnicas */}
+                {supervisaoSecaoAtiva === "queixas" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Queixas Técnicas</h2>
+                    </div>
+                    <div className="grid gap-4">
+                      {QUEIXAS_TECNICAS_DATA.map((queixa) => (
+                        <Card key={queixa.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{queixa.protocolo}</h3>
+                                  <Badge variant={queixa.status === "Retornado" ? "destructive" : queixa.status === "Revisão" ? "secondary" : "outline"}>
+                                    {queixa.status}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div className="flex items-center gap-2">
+                                    <span><strong>Cliente:</strong></span>
+                                    <Badge variant="outline" className="text-xs">
+                                      ID: {queixa.clienteId}
+                                    </Badge>
+                                    <span>{queixa.cliente}</span>
+                                  </div>
+                                  <div><strong>Criado em:</strong> {queixa.dataAbertura}</div>
+                                  <div><strong>Criado por:</strong> {queixa.criadoPor}</div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção Farmacovigilância */}
+                {supervisaoSecaoAtiva === "farmacovigilancia" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Farmacovigilância</h2>
+                    </div>
+                    <div className="grid gap-4">
+                      {FARMACOVIGILANCIA_DATA.map((evento) => (
+                        <Card key={evento.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{evento.protocolo}</h3>
+                                  <Badge variant={evento.gravidade === "Moderado" ? "destructive" : "secondary"}>
+                                    {evento.gravidade}
+                                  </Badge>
+                                  <Badge variant={evento.status === "Aberto" ? "default" : evento.status === "Revisão" ? "secondary" : "outline"}>
+                                    {evento.status}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Paciente:</strong> <Badge variant="outline" size="xs">ID: {evento.clienteId}</Badge> {evento.paciente}</div>
+                                  <div><strong>Criado em:</strong> {evento.dataOcorrencia}</div>
+                                  <div><strong>Criado por:</strong> {evento.criadoPor}</div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção Ressarcimento */}
+                {supervisaoSecaoAtiva === "ressarcimento" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Ressarcimento</h2>
+                    </div>
+                    <div className="grid gap-4">
+                      {RESSARCIMENTO_DATA.map((ressarcimento) => (
+                        <Card key={ressarcimento.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{ressarcimento.protocolo}</h3>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div className="flex items-center gap-2">
+                                    <strong>Cliente:</strong>
+                                    <Badge variant="outline" size="xs">ID: {ressarcimento.clienteId}</Badge>
+                                    <span>{ressarcimento.cliente}</span>
+                                  </div>
+                                  <div><strong>Criado em:</strong> {ressarcimento.dataAbertura}</div>
+                                  <div><strong>Criado por:</strong> {ressarcimento.criadoPor}</div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção Agenda */}
+                {supervisaoSecaoAtiva === "agenda" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Agenda</h2>
+                    </div>
+                    <div className="grid gap-4">
+                      {AGENDA_DATA.map((evento) => (
+                        <Card key={evento.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <h3 className="font-medium">{evento.titulo}</h3>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {evento.descricao}</div>
+                                  <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-1">
+                                      <CalendarIcon className="h-4 w-4" />
+                                      <span>{evento.data}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <Clock className="h-4 w-4" />
+                                      <span>{evento.horario}</span>
+                                    </div>
+                                  </div>
+                                  <div><strong>Participantes:</strong> {evento.participantes}</div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
+          </TabsContent>
 
-            <CollapsibleContent>
-              <div className="px-4 pb-4">
-                <div className={`space-y-4 ${showFilters ? "block" : "hidden"}`}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Data Início</label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant={"outline"} className="w-full justify-start text-left font-normal">
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {dataInicio ? (
-                              format(dataInicio, "dd/MM/yyyy", { locale: ptBR })
-                            ) : (
-                              <span>Selecione a data</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={dataInicio}
-                            onSelect={setDataInicio}
-                            initialFocus
-                            locale={ptBR}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Data Fim</label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant={"outline"} className="w-full justify-start text-left font-normal">
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {dataFim ? format(dataFim, "dd/MM/yyyy", { locale: ptBR }) : <span>Selecione a data</span>}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar mode="single" selected={dataFim} onSelect={setDataFim} initialFocus locale={ptBR} />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Motivo</label>
-                      <Select value={motivoFiltro} onValueChange={setMotivoFiltro}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Todos os motivos" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">Todos os motivos</SelectItem>
-                          {MOTIVOS.map((motivo) => (
-                            <SelectItem key={motivo} value={motivo}>
-                              {motivo}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Produto</label>
-                      <Select value={produtoFiltro} onValueChange={setProdutoFiltro}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Todos os produtos" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">Todos os produtos</SelectItem>
-                          {PRODUTOS.map((produto) => (
-                            <SelectItem key={produto} value={produto}>
-                              {produto}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Status</label>
-                      <Select value={statusFiltro} onValueChange={setStatusFiltro}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Todos os status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">Todos os status</SelectItem>
-                          {STATUS.map((status) => (
-                            <SelectItem key={status} value={status}>
-                              {status}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Busca</label>
-                      <div className="relative">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          type="search"
-                          placeholder="Buscar por protocolo, nome, motivo..."
-                          className="pl-8"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-end">
-                      <Button variant="outline" size="sm" onClick={resetFilters} className="h-10">
-                        Limpar Filtros
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Protocolo</TableHead>
-                        <TableHead>Data</TableHead>
-                        <TableHead>Nome</TableHead>
-                        <TableHead>Motivo</TableHead>
-                        <TableHead>Produto</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Ação</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredAtendimentos.length > 0 ? (
-                        filteredAtendimentos.map((atendimento) => (
-                          <TableRow key={atendimento.protocolo}>
-                            <TableCell className="font-medium">{atendimento.protocolo}</TableCell>
-                            <TableCell>{atendimento.data}</TableCell>
-                            <TableCell>
-                              <Link
-                                href={`/clientes/${atendimento.clienteId}`}
-                                className="text-primary hover:underline"
-                              >
-                                {atendimento.nome}
-                              </Link>
-                            </TableCell>
-                            <TableCell>{atendimento.motivo}</TableCell>
-                            <TableCell>{atendimento.produto}</TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                {atendimento.statusVariant === "completed" ? (
-                                  <>
-                                    <CheckCircle className="h-4 w-4 text-teal-500" />
-                                    <span>{atendimento.status}</span>
-                                  </>
-                                ) : atendimento.status === "Em análise" ? (
-                                  <>
-                                    <Clock className="h-4 w-4 text-amber-500" />
-                                    <span>{atendimento.status}</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <AlertTriangle className="h-4 w-4 text-amber-500" />
-                                    <span>{atendimento.status}</span>
-                                  </>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200"
-                                asChild
-                              >
-                                <Link href={`/protocolos/${atendimento.protocolo}`}>
-                                  <FileText className="h-4 w-4 mr-2" />
-                                  Ver detalhes
-                                </Link>
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={7} className="text-center py-6">
-                            Nenhum atendimento encontrado com os critérios de busca.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
+          <TabsContent value="qualidade" className="space-y-6">
+            {/* Layout com Sidebar */}
+            <div className="flex gap-6">
+              {/* Sidebar */}
+              <div className="w-64 space-y-2 bg-gray-50 p-4 rounded-lg border">
+                <div className="space-y-1">
+                  <Button
+                    variant={qualidadeSecaoAtiva === "auditorias" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setQualidadeSecaoAtiva("auditorias")}
+                  >
+                    <ShieldCheck className="h-4 w-4 mr-2" />
+                    Auditorias
+                  </Button>
+                  <Button
+                    variant={qualidadeSecaoAtiva === "nao-conformidades" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setQualidadeSecaoAtiva("nao-conformidades")}
+                  >
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    Não Conformidades
+                  </Button>
+                  <Button
+                    variant={qualidadeSecaoAtiva === "acoes-corretivas" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setQualidadeSecaoAtiva("acoes-corretivas")}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Ações Corretivas
+                  </Button>
+                  <Button
+                    variant={qualidadeSecaoAtiva === "procedimentos" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setQualidadeSecaoAtiva("procedimentos")}
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Procedimentos
+                  </Button>
                 </div>
               </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </div>
+
+              {/* Conteúdo Principal */}
+              <div className="flex-1">
+                {/* Seção Auditorias */}
+                {qualidadeSecaoAtiva === "auditorias" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Auditorias</h2>
+                      <Button size="sm">
+                        <ShieldCheck className="h-4 w-4 mr-2" />
+                        Nova Auditoria
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_QUALIDADE.filter(p => p.titulo.includes("Auditoria")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção Não Conformidades */}
+                {qualidadeSecaoAtiva === "nao-conformidades" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Não Conformidades</h2>
+                      <Button size="sm">
+                        <AlertTriangle className="h-4 w-4 mr-2" />
+                        Nova NC
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_QUALIDADE.filter(p => p.titulo.includes("Não Conformidade")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção Ações Corretivas */}
+                {qualidadeSecaoAtiva === "acoes-corretivas" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Ações Corretivas</h2>
+                      <Button size="sm">
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Nova Ação
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_QUALIDADE.filter(p => p.titulo.includes("Ação Corretiva")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção Procedimentos */}
+                {qualidadeSecaoAtiva === "procedimentos" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Procedimentos</h2>
+                      <Button size="sm">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Novo Procedimento
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_QUALIDADE.filter(p => p.titulo.includes("Procedimento")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="farmacovigilancia" className="space-y-6">
+            {/* Layout com Sidebar */}
+            <div className="flex gap-6">
+              {/* Sidebar */}
+              <div className="w-64 space-y-2 bg-gray-50 p-4 rounded-lg border">
+                <div className="space-y-1">
+                  <Button
+                    variant={farmacovigilanciaSecaoAtiva === "eventos" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setFarmacovigilanciaSecaoAtiva("eventos")}
+                  >
+                    <Pill className="h-4 w-4 mr-2" />
+                    Eventos Adversos
+                  </Button>
+                  <Button
+                    variant={farmacovigilanciaSecaoAtiva === "relatorios" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setFarmacovigilanciaSecaoAtiva("relatorios")}
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Relatórios ANVISA
+                  </Button>
+                  <Button
+                    variant={farmacovigilanciaSecaoAtiva === "sinais" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setFarmacovigilanciaSecaoAtiva("sinais")}
+                  >
+                    <Activity className="h-4 w-4 mr-2" />
+                    Sinais de Segurança
+                  </Button>
+                  <Button
+                    variant={farmacovigilanciaSecaoAtiva === "psur" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setFarmacovigilanciaSecaoAtiva("psur")}
+                  >
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    PSUR
+                  </Button>
+                </div>
+              </div>
+
+              {/* Conteúdo Principal */}
+              <div className="flex-1">
+                {/* Seção Eventos Adversos */}
+                {farmacovigilanciaSecaoAtiva === "eventos" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Eventos Adversos</h2>
+                      <Button size="sm">
+                        <Pill className="h-4 w-4 mr-2" />
+                        Novo Evento
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_FARMACOVIGILANCIA.filter(p => p.titulo.includes("Evento Adverso")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção Relatórios ANVISA */}
+                {farmacovigilanciaSecaoAtiva === "relatorios" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Relatórios ANVISA</h2>
+                      <Button size="sm">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Novo Relatório
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_FARMACOVIGILANCIA.filter(p => p.titulo.includes("Relatório ANVISA")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção Sinais de Segurança */}
+                {farmacovigilanciaSecaoAtiva === "sinais" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Sinais de Segurança</h2>
+                      <Button size="sm">
+                        <Activity className="h-4 w-4 mr-2" />
+                        Novo Sinal
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_FARMACOVIGILANCIA.filter(p => p.titulo.includes("Sinal de Segurança")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção PSUR */}
+                {farmacovigilanciaSecaoAtiva === "psur" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">PSUR - Relatórios Periódicos</h2>
+                      <Button size="sm">
+                        <BarChart3 className="h-4 w-4 mr-2" />
+                        Novo PSUR
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_FARMACOVIGILANCIA.filter(p => p.titulo.includes("PSUR")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="atendimento" className="space-y-6">
+            {/* Layout com Sidebar */}
+            <div className="flex gap-6">
+              {/* Sidebar */}
+              <div className="w-64 space-y-2 bg-gray-50 p-4 rounded-lg border">
+                <div className="space-y-1">
+                  <Button
+                    variant={atendimentoSecaoAtiva === "chamados" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setAtendimentoSecaoAtiva("chamados")}
+                  >
+                    <Phone className="h-4 w-4 mr-2" />
+                    Chamados
+                  </Button>
+                  <Button
+                    variant={atendimentoSecaoAtiva === "chat" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setAtendimentoSecaoAtiva("chat")}
+                  >
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Chat Online
+                  </Button>
+                  <Button
+                    variant={atendimentoSecaoAtiva === "email" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setAtendimentoSecaoAtiva("email")}
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    E-mail
+                  </Button>
+                  <Button
+                    variant={atendimentoSecaoAtiva === "whatsapp" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setAtendimentoSecaoAtiva("whatsapp")}
+                  >
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    WhatsApp
+                  </Button>
+                </div>
+              </div>
+
+              {/* Conteúdo Principal */}
+              <div className="flex-1">
+                {/* Seção Chamados */}
+                {atendimentoSecaoAtiva === "chamados" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Chamados Telefônicos</h2>
+                      <Button size="sm">
+                        <Phone className="h-4 w-4 mr-2" />
+                        Novo Chamado
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_ATENDIMENTO.filter(p => p.titulo.includes("Chamado")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção Chat Online */}
+                {atendimentoSecaoAtiva === "chat" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Chat Online</h2>
+                      <Button size="sm">
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Nova Conversa
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_ATENDIMENTO.filter(p => p.titulo.includes("Chat")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção E-mail */}
+                {atendimentoSecaoAtiva === "email" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Atendimento por E-mail</h2>
+                      <Button size="sm">
+                        <Mail className="h-4 w-4 mr-2" />
+                        Novo E-mail
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_ATENDIMENTO.filter(p => p.titulo.includes("E-mail")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção WhatsApp */}
+                {atendimentoSecaoAtiva === "whatsapp" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Atendimento WhatsApp</h2>
+                      <Button size="sm">
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        Nova Conversa
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      {PENDENCIAS_ATENDIMENTO.filter(p => p.titulo.includes("WhatsApp")).map((pendencia) => (
+                        <Card key={pendencia.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{pendencia.titulo}</h3>
+                                  <Badge variant={pendencia.prioridade === "alta" ? "destructive" : pendencia.prioridade === "media" ? "default" : "secondary"}>
+                                    {pendencia.prioridade === "alta" ? "Alta" : pendencia.prioridade === "media" ? "Média" : "Baixa"}
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div><strong>Descrição:</strong> {pendencia.descricao}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span><strong>Prazo:</strong> {pendencia.prazo}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Responsável:</strong> {pendencia.responsavel}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       <IniciarAtendimentoModal open={showAtendimentoModal} onOpenChange={setShowAtendimentoModal} />
