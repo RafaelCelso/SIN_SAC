@@ -299,7 +299,7 @@ const PENDENCIAS_ATENDIMENTO = [
 ]
 
 // Dados para Contatos
-const CONTATOS_DATA = [
+const CONTATOS_CLIENTE_DATA = [
   {
     id: 2,
     nome: "João Carlos Oliveira",
@@ -309,6 +309,7 @@ const CONTATOS_DATA = [
     empresa: "Drogaria São Paulo",
     protocolo: "CT-2023-0002",
     dataHora: "14/12/2023 16:45",
+    motivo: "Não tinha tempo suficiente",
     statusResolucao: "Pendente",
     usuarioRegistro: "Rafael Silva"
   },
@@ -321,6 +322,7 @@ const CONTATOS_DATA = [
     empresa: "Drogaria Bem Estar",
     protocolo: "CT-2023-0005",
     dataHora: "11/12/2023 15:50",
+    motivo: "Sem interesse",
     statusResolucao: "Pendente",
     usuarioRegistro: "Mariana Santos"
   },
@@ -333,8 +335,119 @@ const CONTATOS_DATA = [
     empresa: "Farmácia Popular",
     protocolo: "CT-2023-0006",
     dataHora: "19/12/2023 08:30",
+    motivo: "Reagendar",
     statusResolucao: "Pendente",
     usuarioRegistro: "João Costa"
+  },
+  {
+    id: 11,
+    nome: "Carlos Mendes",
+    clienteId: "04",
+    telefone: "(11) 77777-9999",
+    email: "carlos.mendes@email.com",
+    empresa: "Farmácia Central",
+    protocolo: "CT-2023-0011",
+    dataHora: "18/12/2023 11:15",
+    motivo: "Não tinha informações suficientes",
+    statusResolucao: "Pendente",
+    usuarioRegistro: "Ana Silva"
+  }
+]
+
+const CONTATOS_INTERNO_DATA = [
+  {
+    id: 7,
+    departamento: "Qualidade",
+    responsavel: "Ana Silva",
+    setor: "Controle de Qualidade",
+    telefone: "(11) 3333-4567",
+    email: "ana.silva@empresa.com",
+    protocolo: "CI-2023-0007",
+    dataHora: "15/12/2023 14:20",
+    motivo: "Aguardando resposta do laboratório",
+    statusResolucao: "Pendente",
+    usuarioRegistro: "Carlos Lima"
+  },
+  {
+    id: 8,
+    departamento: "Farmacovigilância",
+    responsavel: "Dr. Ricardo Alves",
+    setor: "Segurança de Medicamentos",
+    telefone: "(11) 2222-3456",
+    email: "ricardo.alves@empresa.com",
+    protocolo: "CI-2023-0008",
+    dataHora: "13/12/2023 09:15",
+    motivo: "Confirmação",
+    statusResolucao: "Pendente",
+    usuarioRegistro: "Patricia Mendes"
+  },
+  {
+    id: 9,
+    departamento: "Regulatório",
+    responsavel: "Mariana Costa",
+    setor: "Assuntos Regulatórios",
+    telefone: "(11) 1111-2345",
+    email: "mariana.costa@empresa.com",
+    protocolo: "CI-2023-0009",
+    dataHora: "12/12/2023 16:30",
+    motivo: "Pendência de documentação",
+    statusResolucao: "Pendente",
+    usuarioRegistro: "Roberto Silva"
+  },
+  {
+    id: 10,
+    departamento: "Produção",
+    responsavel: "Pedro Lima",
+    setor: "Controle de Produção",
+    telefone: "(11) 4444-5678",
+    email: "pedro.lima@empresa.com",
+    protocolo: "CI-2023-0010",
+    dataHora: "11/12/2023 10:45",
+    motivo: "Em análise",
+    statusResolucao: "Pendente",
+    usuarioRegistro: "Ana Silva"
+  }
+]
+
+const CONTATOS_REVIS_DATA = [
+  {
+    id: 12,
+    departamento: "Supervisão",
+    responsavel: "Carlos Mendes",
+    setor: "Revisão de Protocolos",
+    telefone: "(11) 5555-1234",
+    email: "carlos.mendes@empresa.com",
+    protocolo: "CR-2023-0012",
+    dataHora: "16/12/2023 10:30",
+    motivo: "Revisão pendente",
+    statusResolucao: "Pendente",
+    usuarioRegistro: "Ana Silva"
+  },
+  {
+    id: 13,
+    departamento: "Qualidade",
+    responsavel: "Fernanda Santos",
+    setor: "Auditoria Interna",
+    telefone: "(11) 6666-5678",
+    email: "fernanda.santos@empresa.com",
+    protocolo: "CR-2023-0013",
+    dataHora: "14/12/2023 14:15",
+    motivo: "Aguardando aprovação",
+    statusResolucao: "Pendente",
+    usuarioRegistro: "Roberto Silva"
+  },
+  {
+    id: 14,
+    departamento: "Regulatório",
+    responsavel: "João Costa",
+    setor: "Compliance",
+    telefone: "(11) 7777-9012",
+    email: "joao.costa@empresa.com",
+    protocolo: "CR-2023-0014",
+    dataHora: "13/12/2023 16:45",
+    motivo: "Correção necessária",
+    statusResolucao: "Pendente",
+    usuarioRegistro: "Patricia Mendes"
   }
 ]
 
@@ -556,10 +669,24 @@ export default function Home() {
   const [statusFiltro, setStatusFiltro] = useState<string>("")
   const [showFilters, setShowFilters] = useState(false)
   const [isAtendimentosExpanded, setIsAtendimentosExpanded] = useState(false)
-  const [supervisaoSecaoAtiva, setSupervisaoSecaoAtiva] = useState("contatos")
+  const [supervisaoSecaoAtiva, setSupervisaoSecaoAtiva] = useState("contatos-cliente")
+  const [contatosExpandido, setContatosExpandido] = useState(true)
+  const [queixasExpandido, setQueixasExpandido] = useState(false)
+  const [farmacovigilanciaExpandido, setFarmacovigilanciaExpandido] = useState(false)
   const [qualidadeSecaoAtiva, setQualidadeSecaoAtiva] = useState("auditorias")
   const [farmacovigilanciaSecaoAtiva, setFarmacovigilanciaSecaoAtiva] = useState("eventos")
   const [atendimentoSecaoAtiva, setAtendimentoSecaoAtiva] = useState("protocolos")
+
+  // Funções para calcular contagens de pendências
+  const getContatosClienteCount = () => CONTATOS_CLIENTE_DATA.filter(c => c.statusResolucao === "Pendente").length
+  const getContatosInternoCount = () => CONTATOS_INTERNO_DATA.filter(c => c.statusResolucao === "Pendente").length
+  const getQueixasRevisaoCount = () => QUEIXAS_TECNICAS_DATA.filter(q => q.status === "Revisão").length
+  const getQueixasRetornadoCount = () => QUEIXAS_TECNICAS_DATA.filter(q => q.status === "Retornado").length
+  const getFarmacovigilanciaRevisaoCount = () => FARMACOVIGILANCIA_DATA.filter(f => f.status === "Revisão").length
+  const getFarmacovigilanciaRetornadoCount = () => FARMACOVIGILANCIA_DATA.filter(f => f.status === "Retornado").length
+  const getTotalContatosCount = () => getContatosClienteCount() + getContatosInternoCount()
+  const getTotalQueixasCount = () => getQueixasRevisaoCount() + getQueixasRetornadoCount()
+  const getTotalFarmacovigilanciaCount = () => getFarmacovigilanciaRevisaoCount() + getFarmacovigilanciaRetornadoCount()
 
   // Filtrar atendimentos com base em todos os filtros
   const filteredAtendimentos = ATENDIMENTOS_MOCK.filter((atendimento) => {
@@ -628,87 +755,235 @@ export default function Home() {
             <div className="flex gap-6">
               {/* Sidebar */}
               <div className="w-64 space-y-2 bg-gray-50 p-4 rounded-lg border">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Pendências</h3>
+                </div>
                   <div className="space-y-1">
-                  <Button
-                    variant={supervisaoSecaoAtiva === "contatos" ? "default" : "ghost"}
-                    className="w-full justify-start"
-                    onClick={() => setSupervisaoSecaoAtiva("contatos")}
-                  >
-                    <Contact className="h-4 w-4 mr-2" />
-                    Contatos
-                  </Button>
-                  <Button
-                    variant={supervisaoSecaoAtiva === "queixas" ? "default" : "ghost"}
-                    className="w-full justify-start"
-                    onClick={() => setSupervisaoSecaoAtiva("queixas")}
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Queixas Técnicas
-                  </Button>
-                  <Button
-                    variant={supervisaoSecaoAtiva === "farmacovigilancia" ? "default" : "ghost"}
-                    className="w-full justify-start"
-                    onClick={() => setSupervisaoSecaoAtiva("farmacovigilancia")}
-                  >
-                    <Pill className="h-4 w-4 mr-2" />
-                    Farmacovigilância
-                  </Button>
-                  <Button
-                    variant={supervisaoSecaoAtiva === "ressarcimento" ? "default" : "ghost"}
-                    className="w-full justify-start"
-                    onClick={() => setSupervisaoSecaoAtiva("ressarcimento")}
-                  >
-                    <DollarSign className="h-4 w-4 mr-2" />
-                    Ressarcimento
-                  </Button>
-                  <Button
-                    variant={supervisaoSecaoAtiva === "agenda" ? "default" : "ghost"}
-                    className="w-full justify-start"
-                    onClick={() => setSupervisaoSecaoAtiva("agenda")}
-                  >
-                    <CalendarIcon className="h-4 w-4 mr-2" />
-                    Agenda
-                  </Button>
+                  <Collapsible open={contatosExpandido} onOpenChange={setContatosExpandido}>
+                    <Button
+                      variant={supervisaoSecaoAtiva.startsWith("contatos") ? "default" : "ghost"}
+                      className="w-full justify-between"
+                      onClick={() => setContatosExpandido(!contatosExpandido)}
+                    >
+                      <div className="flex items-center">
+                        <Contact className="h-4 w-4 mr-2" />
+                        Contatos
+                        {getTotalContatosCount() > 0 && (
+                          <Badge variant="destructive" className="ml-2 text-xs">
+                            {getTotalContatosCount()}
+                          </Badge>
+                        )}
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${contatosExpandido ? 'rotate-180' : ''}`} />
+                    </Button>
+                    <CollapsibleContent className="ml-6 mt-1 space-y-1">
+                      <Button
+                        variant={supervisaoSecaoAtiva === "contatos-cliente" ? "default" : "ghost"}
+                        className="w-full justify-between text-sm"
+                        onClick={() => setSupervisaoSecaoAtiva("contatos-cliente")}
+                      >
+                        <span>Cliente</span>
+                        {getContatosClienteCount() > 0 && (
+                          <Badge variant="destructive" className="text-xs">
+                            {getContatosClienteCount()}
+                          </Badge>
+                        )}
+                      </Button>
+                      <Button
+                        variant={supervisaoSecaoAtiva === "contatos-interno" ? "default" : "ghost"}
+                        className="w-full justify-between text-sm"
+                        onClick={() => setSupervisaoSecaoAtiva("contatos-interno")}
+                      >
+                        <span>Interno</span>
+                        {getContatosInternoCount() > 0 && (
+                          <Badge variant="destructive" className="text-xs">
+                            {getContatosInternoCount()}
+                          </Badge>
+                        )}
+                      </Button>
+                    </CollapsibleContent>
+                  </Collapsible>
+                  <Collapsible open={queixasExpandido} onOpenChange={setQueixasExpandido}>
+                    <Button
+                      variant={supervisaoSecaoAtiva.startsWith("queixas") ? "default" : "ghost"}
+                      className="w-full justify-between"
+                      onClick={() => setQueixasExpandido(!queixasExpandido)}
+                    >
+                      <div className="flex items-center">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Queixas Técnicas
+                        {getTotalQueixasCount() > 0 && (
+                          <Badge variant="destructive" className="ml-2 text-xs">
+                            {getTotalQueixasCount()}
+                          </Badge>
+                        )}
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${queixasExpandido ? 'rotate-180' : ''}`} />
+                    </Button>
+                    <CollapsibleContent className="ml-6 mt-1 space-y-1">
+                      <Button
+                        variant={supervisaoSecaoAtiva === "queixas-revisao" ? "default" : "ghost"}
+                        className="w-full justify-between text-sm"
+                        onClick={() => setSupervisaoSecaoAtiva("queixas-revisao")}
+                      >
+                        <span>Revisão</span>
+                        {getQueixasRevisaoCount() > 0 && (
+                          <Badge variant="destructive" className="text-xs">
+                            {getQueixasRevisaoCount()}
+                          </Badge>
+                        )}
+                      </Button>
+                      <Button
+                        variant={supervisaoSecaoAtiva === "queixas-retornado" ? "default" : "ghost"}
+                        className="w-full justify-between text-sm"
+                        onClick={() => setSupervisaoSecaoAtiva("queixas-retornado")}
+                      >
+                        <span>Retornado</span>
+                        {getQueixasRetornadoCount() > 0 && (
+                          <Badge variant="destructive" className="text-xs">
+                            {getQueixasRetornadoCount()}
+                          </Badge>
+                        )}
+                      </Button>
+                    </CollapsibleContent>
+                  </Collapsible>
+                  <Collapsible open={farmacovigilanciaExpandido} onOpenChange={setFarmacovigilanciaExpandido}>
+                    <Button
+                      variant={supervisaoSecaoAtiva.startsWith("farmacovigilancia") ? "default" : "ghost"}
+                      className="w-full justify-between"
+                      onClick={() => setFarmacovigilanciaExpandido(!farmacovigilanciaExpandido)}
+                    >
+                      <div className="flex items-center">
+                        <Pill className="h-4 w-4 mr-2" />
+                        Farmacovigilância
+                        {getTotalFarmacovigilanciaCount() > 0 && (
+                          <Badge variant="destructive" className="ml-2 text-xs">
+                            {getTotalFarmacovigilanciaCount()}
+                          </Badge>
+                        )}
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${farmacovigilanciaExpandido ? 'rotate-180' : ''}`} />
+                    </Button>
+                    <CollapsibleContent className="ml-6 mt-1 space-y-1">
+                      <Button
+                        variant={supervisaoSecaoAtiva === "farmacovigilancia-revisao" ? "default" : "ghost"}
+                        className="w-full justify-between text-sm"
+                        onClick={() => setSupervisaoSecaoAtiva("farmacovigilancia-revisao")}
+                      >
+                        <span>Revisão</span>
+                        {getFarmacovigilanciaRevisaoCount() > 0 && (
+                          <Badge variant="destructive" className="text-xs">
+                            {getFarmacovigilanciaRevisaoCount()}
+                          </Badge>
+                        )}
+                      </Button>
+                      <Button
+                        variant={supervisaoSecaoAtiva === "farmacovigilancia-retornado" ? "default" : "ghost"}
+                        className="w-full justify-between text-sm"
+                        onClick={() => setSupervisaoSecaoAtiva("farmacovigilancia-retornado")}
+                      >
+                        <span>Retornado</span>
+                        {getFarmacovigilanciaRetornadoCount() > 0 && (
+                          <Badge variant="destructive" className="text-xs">
+                            {getFarmacovigilanciaRetornadoCount()}
+                          </Badge>
+                        )}
+                      </Button>
+                    </CollapsibleContent>
+                  </Collapsible>
+
                 </div>
               </div>
 
               {/* Conteúdo Principal */}
               <div className="flex-1">
                 {/* Seção Contatos */}
-                {supervisaoSecaoAtiva === "contatos" && (
+                {(supervisaoSecaoAtiva === "contatos" || supervisaoSecaoAtiva === "contatos-cliente" || supervisaoSecaoAtiva === "contatos-interno") && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold">Contatos Pendentes</h2>
-                    </div>
+                       <div>
+                         <h2 className="text-xl font-semibold">Contatos pendentes de resolução</h2>
+                         <p className="text-sm text-gray-600 mt-1">
+                           {supervisaoSecaoAtiva === "contatos-interno" 
+                             ? "Contatos não resolvidos por motivos internos"
+                             : "Contatos não resolvidos por motivos relacionados ao cliente"
+                           }
+                         </p>
+                       </div>
+                     </div>
                     <div className="grid gap-4">
-                      {CONTATOS_DATA.map((contato) => (
+                      {(supervisaoSecaoAtiva === "contatos-interno" ? CONTATOS_INTERNO_DATA : CONTATOS_CLIENTE_DATA).map((contato) => (
                         <Card key={contato.id} className="hover:shadow-md transition-shadow">
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between">
                               <div className="space-y-2">
-                                <div className="flex items-center gap-3">
-                                  <Badge variant="outline" className="text-xs">
-                                    ID: {contato.clienteId}
-                                  </Badge>
-                                  <h3 className="font-medium">{contato.nome}</h3>
-                                  <Badge variant="destructive">
-                                    {contato.statusResolucao}
-                                  </Badge>
-                                </div>
-                                <div className="space-y-1 text-sm text-muted-foreground">
-                                  <div className="flex items-center gap-2">
-                                    <FileText className="h-4 w-4" />
-                                    <span><strong>Protocolo:</strong> {contato.protocolo}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <CalendarIcon className="h-4 w-4" />
-                                    <span><strong>Data/Hora:</strong> {contato.dataHora}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Users className="h-4 w-4" />
-                                    <span><strong>Registrado por:</strong> {contato.usuarioRegistro}</span>
-                                  </div>
-                                </div>
+                                {supervisaoSecaoAtiva === "contatos-interno" ? (
+                                  // Layout para contatos internos
+                                  <>
+                                    <div className="flex items-center gap-3">
+                                        <Badge variant="outline" className="text-xs">
+                                          ID: {contato.id}
+                                        </Badge>
+                                        <h3 className="font-medium">{contato.responsavel}</h3>
+                                        <Badge variant={contato.motivo === "Aguardando resposta do laboratório" ? "destructive" : contato.motivo === "Em análise" ? "secondary" : "outline"}>
+                                          {contato.motivo}
+                                        </Badge>
+                                      </div>
+                                     <div className="space-y-1 text-sm text-muted-foreground">
+                                       <div className="flex items-center gap-2">
+                                         <FileText className="h-4 w-4" />
+                                         <span><strong>Protocolo:</strong> {contato.protocolo}</span>
+                                       </div>
+                                       <div className="flex items-center gap-2">
+                                         <CalendarIcon className="h-4 w-4" />
+                                         <span><strong>Criado em:</strong> {contato.dataHora}</span>
+                                       </div>
+                                       <div className="flex items-center gap-2">
+                                         <Users className="h-4 w-4" />
+                                         <span><strong>Criado por:</strong> {contato.usuarioRegistro}</span>
+                                       </div>
+                                     </div>
+                                  </>
+                                ) : (
+                                  // Layout para contatos de clientes
+                                  <>
+                                    <div className="flex items-center gap-3">
+                                      <Badge variant="outline" className="text-xs">
+                                        ID: {contato.clienteId}
+                                      </Badge>
+                                      <h3 className="font-medium">{contato.nome}</h3>
+                                      <Badge variant={
+                                        contato.motivo === "Não tinha tempo suficiente" ? "destructive" :
+                                        contato.motivo === "Sem interesse" ? "secondary" :
+                                        contato.motivo === "Reagendar" ? "outline" :
+                                        contato.motivo === "Não tinha informações suficientes" ? "default" :
+                                        "outline"
+                                      } className={
+                                        contato.motivo === "Não tinha tempo suficiente" ? "bg-red-50 text-red-700 border-red-200" :
+                                        contato.motivo === "Sem interesse" ? "bg-gray-50 text-gray-700 border-gray-200" :
+                                        contato.motivo === "Reagendar" ? "bg-blue-50 text-blue-700 border-blue-200" :
+                                        contato.motivo === "Não tinha informações suficientes" ? "bg-amber-50 text-amber-700 border-amber-200" :
+                                        "bg-gray-50 text-gray-700 border-gray-200"
+                                      }>
+                                        {contato.motivo}
+                                      </Badge>
+                                    </div>
+                                    <div className="space-y-1 text-sm text-muted-foreground">
+                                      <div className="flex items-center gap-2">
+                                        <FileText className="h-4 w-4" />
+                                        <span><strong>Protocolo:</strong> {contato.protocolo}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <CalendarIcon className="h-4 w-4" />
+                                        <span><strong>Criado em:</strong> {contato.dataHora}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <Users className="h-4 w-4" />
+                                        <span><strong>Criado por:</strong> {contato.usuarioRegistro}</span>
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
                               </div>
                               <div className="flex flex-col items-end gap-2">
                                 <Button size="sm" variant="outline">
@@ -723,34 +998,58 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Seção Queixas Técnicas */}
-                {supervisaoSecaoAtiva === "queixas" && (
+                {/* Seção Queixas Técnicas - Revisão */}
+                {supervisaoSecaoAtiva === "queixas-revisao" && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold">Queixas Técnicas</h2>
+                      <h2 className="text-xl font-semibold">Queixas Técnicas - Revisão</h2>
                     </div>
                     <div className="grid gap-4">
-                      {QUEIXAS_TECNICAS_DATA.map((queixa) => (
+                      {QUEIXAS_TECNICAS_DATA.filter(queixa => queixa.status === "Revisão").map((queixa) => (
                         <Card key={queixa.id} className="hover:shadow-md transition-shadow">
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between">
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                   <h3 className="font-medium">{queixa.protocolo}</h3>
-                                  <Badge variant={queixa.status === "Retornado" ? "destructive" : queixa.status === "Revisão" ? "secondary" : "outline"}>
+                                  <Badge variant="secondary">
                                     {queixa.status}
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center gap-2 mt-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    Motivo
+                                  </Badge>
+                                  <ChevronDown className="h-3 w-3 rotate-[-90deg]" />
+                                  <Badge variant="secondary" className="text-xs">
+                                    Subcategoria
+                                  </Badge>
+                                  <ChevronDown className="h-3 w-3 rotate-[-90deg]" />
+                                  <Badge variant="secondary" className="text-xs">
+                                    Detalhe
                                   </Badge>
                                 </div>
                                 <div className="space-y-1 text-sm text-muted-foreground">
                                   <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
                                     <span><strong>Cliente:</strong></span>
                                     <Badge variant="outline" className="text-xs">
                                       ID: {queixa.clienteId}
                                     </Badge>
                                     <span>{queixa.cliente}</span>
                                   </div>
-                                  <div><strong>Criado em:</strong> {queixa.dataAbertura}</div>
-                                  <div><strong>Criado por:</strong> {queixa.criadoPor}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Pill className="h-4 w-4" />
+                                    <span><strong>Produto:</strong> {queixa.produto}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <CalendarIcon className="h-4 w-4" />
+                                    <span><strong>Criado em:</strong> {queixa.dataAbertura}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Criado por:</strong> {queixa.criadoPor}</span>
+                                  </div>
                                 </div>
                               </div>
                               <div className="flex flex-col items-end gap-2">
@@ -766,14 +1065,81 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Seção Farmacovigilância */}
-                {supervisaoSecaoAtiva === "farmacovigilancia" && (
+                {/* Seção Queixas Técnicas - Retornado */}
+                {supervisaoSecaoAtiva === "queixas-retornado" && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold">Farmacovigilância</h2>
+                      <h2 className="text-xl font-semibold">Queixas Técnicas - Retornado</h2>
                     </div>
                     <div className="grid gap-4">
-                      {FARMACOVIGILANCIA_DATA.map((evento) => (
+                      {QUEIXAS_TECNICAS_DATA.filter(queixa => queixa.status === "Retornado").map((queixa) => (
+                        <Card key={queixa.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-medium">{queixa.protocolo}</h3>
+                                  <Badge variant="destructive">
+                                    {queixa.status}
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center gap-2 mt-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    Motivo
+                                  </Badge>
+                                  <ChevronDown className="h-3 w-3 rotate-[-90deg]" />
+                                  <Badge variant="secondary" className="text-xs">
+                                    Subcategoria
+                                  </Badge>
+                                  <ChevronDown className="h-3 w-3 rotate-[-90deg]" />
+                                  <Badge variant="secondary" className="text-xs">
+                                    Detalhe
+                                  </Badge>
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Cliente:</strong></span>
+                                    <Badge variant="outline" className="text-xs">
+                                      ID: {queixa.clienteId}
+                                    </Badge>
+                                    <span>{queixa.cliente}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Pill className="h-4 w-4" />
+                                    <span><strong>Produto:</strong> {queixa.produto}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <CalendarIcon className="h-4 w-4" />
+                                    <span><strong>Criado em:</strong> {queixa.dataAbertura}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Criado por:</strong> {queixa.criadoPor}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <Button size="sm" variant="outline">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seção Farmacovigilância - Revisão */}
+                {supervisaoSecaoAtiva === "farmacovigilancia-revisao" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">Farmacovigilância - Revisão</h2>
+                    </div>
+                    <div className="grid gap-4">
+                      {FARMACOVIGILANCIA_DATA.filter(evento => evento.status === "Revisão").map((evento) => (
                         <Card key={evento.id} className="hover:shadow-md transition-shadow">
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between">
@@ -783,14 +1149,43 @@ export default function Home() {
                                   <Badge variant={evento.gravidade === "Moderado" ? "destructive" : "secondary"}>
                                     {evento.gravidade}
                                   </Badge>
-                                  <Badge variant={evento.status === "Aberto" ? "default" : evento.status === "Revisão" ? "secondary" : "outline"}>
+                                  <Badge variant="secondary">
                                     {evento.status}
                                   </Badge>
                                 </div>
+                                <div className="flex items-center gap-2 mt-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    Motivo
+                                  </Badge>
+                                  <ChevronDown className="h-3 w-3 rotate-[-90deg]" />
+                                  <Badge variant="secondary" className="text-xs">
+                                    Subcategoria
+                                  </Badge>
+                                  <ChevronDown className="h-3 w-3 rotate-[-90deg]" />
+                                  <Badge variant="secondary" className="text-xs">
+                                    Detalhe
+                                  </Badge>
+                                </div>
                                 <div className="space-y-1 text-sm text-muted-foreground">
-                                  <div><strong>Paciente:</strong> <Badge variant="outline" size="xs">ID: {evento.clienteId}</Badge> {evento.paciente}</div>
-                                  <div><strong>Criado em:</strong> {evento.dataOcorrencia}</div>
-                                  <div><strong>Criado por:</strong> {evento.criadoPor}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Paciente:</strong></span>
+                                    <Badge variant="outline" className="text-xs">ID: {evento.clienteId}</Badge>
+                                    <span>{evento.paciente}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Pill className="h-4 w-4" />
+                                    <span><strong>Medicamento:</strong> {evento.medicamento}</span>
+                                  </div>
+
+                                  <div className="flex items-center gap-2">
+                                    <CalendarIcon className="h-4 w-4" />
+                                    <span><strong>Criado em:</strong> {evento.dataOcorrencia}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Criado por:</strong> {evento.criadoPor}</span>
+                                  </div>
                                 </div>
                               </div>
                               <div className="flex flex-col items-end gap-2">
@@ -806,35 +1201,65 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Seção Ressarcimento */}
-                {supervisaoSecaoAtiva === "ressarcimento" && (
+                {/* Seção Farmacovigilância - Retornado */}
+                {supervisaoSecaoAtiva === "farmacovigilancia-retornado" && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold">Ressarcimento</h2>
+                      <h2 className="text-xl font-semibold">Farmacovigilância - Retornado</h2>
                     </div>
                     <div className="grid gap-4">
-                      {RESSARCIMENTO_DATA.map((ressarcimento) => (
-                        <Card key={ressarcimento.id} className="hover:shadow-md transition-shadow">
+                      {FARMACOVIGILANCIA_DATA.filter(evento => evento.status === "Retornado").map((evento) => (
+                        <Card key={evento.id} className="hover:shadow-md transition-shadow">
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between">
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2">
-                                  <h3 className="font-medium">{ressarcimento.protocolo}</h3>
+                                  <h3 className="font-medium">{evento.protocolo}</h3>
+                                  <Badge variant={evento.gravidade === "Moderado" ? "destructive" : "secondary"}>
+                                    {evento.gravidade}
+                                  </Badge>
+                                  <Badge variant="destructive">
+                                    {evento.status}
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center gap-2 mt-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    Motivo
+                                  </Badge>
+                                  <ChevronDown className="h-3 w-3 rotate-[-90deg]" />
+                                  <Badge variant="secondary" className="text-xs">
+                                    Subcategoria
+                                  </Badge>
+                                  <ChevronDown className="h-3 w-3 rotate-[-90deg]" />
+                                  <Badge variant="secondary" className="text-xs">
+                                    Detalhe
+                                  </Badge>
                                 </div>
                                 <div className="space-y-1 text-sm text-muted-foreground">
                                   <div className="flex items-center gap-2">
-                                    <strong>Cliente:</strong>
-                                    <Badge variant="outline" size="xs">ID: {ressarcimento.clienteId}</Badge>
-                                    <span>{ressarcimento.cliente}</span>
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Paciente:</strong></span>
+                                    <Badge variant="outline" className="text-xs">ID: {evento.clienteId}</Badge>
+                                    <span>{evento.paciente}</span>
                                   </div>
-                                  <div><strong>Criado em:</strong> {ressarcimento.dataAbertura}</div>
-                                  <div><strong>Criado por:</strong> {ressarcimento.criadoPor}</div>
+                                  <div className="flex items-center gap-2">
+                                    <Pill className="h-4 w-4" />
+                                    <span><strong>Medicamento:</strong> {evento.medicamento}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <CalendarIcon className="h-4 w-4" />
+                                    <span><strong>Criado em:</strong> {evento.dataOcorrencia}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4" />
+                                    <span><strong>Criado por:</strong> {evento.criadoPor}</span>
+                                  </div>
                                 </div>
                               </div>
                               <div className="flex flex-col items-end gap-2">
                                 <Button size="sm" variant="outline">
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                              <Eye className="h-4 w-4" />
+                            </Button>
                               </div>
                             </div>
                           </CardContent>
@@ -844,46 +1269,7 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Seção Agenda */}
-                {supervisaoSecaoAtiva === "agenda" && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold">Agenda</h2>
-                    </div>
-                    <div className="grid gap-4">
-                      {AGENDA_DATA.map((evento) => (
-                        <Card key={evento.id} className="hover:shadow-md transition-shadow">
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between">
-                              <div className="space-y-2">
-                                <h3 className="font-medium">{evento.titulo}</h3>
-                                <div className="space-y-1 text-sm text-muted-foreground">
-                                  <div><strong>Descrição:</strong> {evento.descricao}</div>
-                                  <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-1">
-                                      <CalendarIcon className="h-4 w-4" />
-                                      <span>{evento.data}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                      <Clock className="h-4 w-4" />
-                                      <span>{evento.horario}</span>
-                                    </div>
-                                  </div>
-                                  <div><strong>Participantes:</strong> {evento.participantes}</div>
-                                </div>
-                              </div>
-                              <div className="flex flex-col items-end gap-2">
-                                <Button size="sm" variant="outline">
-                                    <Eye className="h-4 w-4" />
-                                  </Button>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
+
               </div>
             </div>
           </TabsContent>
