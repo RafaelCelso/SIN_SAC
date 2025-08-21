@@ -734,12 +734,7 @@ export default function Home() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="p-4 rounded-lg flex-1">
-            <h1 className="text-2xl font-bold text-gray-900">Home</h1>
-            <p className="text-sm text-gray-600 mt-1">Verifique suas pendências e outras informações</p>
-          </div>
-        </div>
+
 
         {/* Sistema de Abas */}
         <Tabs defaultValue="supervisao" className="w-full">
@@ -753,150 +748,9 @@ export default function Home() {
           <TabsContent value="supervisao" className="space-y-6">
             {/* Layout com Sidebar */}
             <div className="flex gap-6">
-              {/* Sidebar */}
-              <div className="w-64 space-y-2 bg-gray-50 p-4 rounded-lg border">
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Pendências</h3>
-                </div>
-                  <div className="space-y-1">
-                  <Collapsible open={contatosExpandido} onOpenChange={setContatosExpandido}>
-                    <Button
-                      variant={supervisaoSecaoAtiva.startsWith("contatos") ? "default" : "ghost"}
-                      className="w-full justify-between"
-                      onClick={() => setContatosExpandido(!contatosExpandido)}
-                    >
-                      <div className="flex items-center">
-                        <Contact className="h-4 w-4 mr-2" />
-                        Contatos
-                        {getTotalContatosCount() > 0 && (
-                          <Badge variant="destructive" className="ml-2 text-xs">
-                            {getTotalContatosCount()}
-                          </Badge>
-                        )}
-                      </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${contatosExpandido ? 'rotate-180' : ''}`} />
-                    </Button>
-                    <CollapsibleContent className="ml-6 mt-1 space-y-1">
-                      <Button
-                        variant={supervisaoSecaoAtiva === "contatos-cliente" ? "default" : "ghost"}
-                        className="w-full justify-between text-sm"
-                        onClick={() => setSupervisaoSecaoAtiva("contatos-cliente")}
-                      >
-                        <span>Cliente</span>
-                        {getContatosClienteCount() > 0 && (
-                          <Badge variant="destructive" className="text-xs">
-                            {getContatosClienteCount()}
-                          </Badge>
-                        )}
-                      </Button>
-                      <Button
-                        variant={supervisaoSecaoAtiva === "contatos-interno" ? "default" : "ghost"}
-                        className="w-full justify-between text-sm"
-                        onClick={() => setSupervisaoSecaoAtiva("contatos-interno")}
-                      >
-                        <span>Interno</span>
-                        {getContatosInternoCount() > 0 && (
-                          <Badge variant="destructive" className="text-xs">
-                            {getContatosInternoCount()}
-                          </Badge>
-                        )}
-                      </Button>
-                    </CollapsibleContent>
-                  </Collapsible>
-                  <Collapsible open={queixasExpandido} onOpenChange={setQueixasExpandido}>
-                    <Button
-                      variant={supervisaoSecaoAtiva.startsWith("queixas") ? "default" : "ghost"}
-                      className="w-full justify-between"
-                      onClick={() => setQueixasExpandido(!queixasExpandido)}
-                    >
-                      <div className="flex items-center">
-                        <FileText className="h-4 w-4 mr-2" />
-                        Queixas Técnicas
-                        {getTotalQueixasCount() > 0 && (
-                          <Badge variant="destructive" className="ml-2 text-xs">
-                            {getTotalQueixasCount()}
-                          </Badge>
-                        )}
-                      </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${queixasExpandido ? 'rotate-180' : ''}`} />
-                    </Button>
-                    <CollapsibleContent className="ml-6 mt-1 space-y-1">
-                      <Button
-                        variant={supervisaoSecaoAtiva === "queixas-revisao" ? "default" : "ghost"}
-                        className="w-full justify-between text-sm"
-                        onClick={() => setSupervisaoSecaoAtiva("queixas-revisao")}
-                      >
-                        <span>Revisão</span>
-                        {getQueixasRevisaoCount() > 0 && (
-                          <Badge variant="destructive" className="text-xs">
-                            {getQueixasRevisaoCount()}
-                          </Badge>
-                        )}
-                      </Button>
-                      <Button
-                        variant={supervisaoSecaoAtiva === "queixas-retornado" ? "default" : "ghost"}
-                        className="w-full justify-between text-sm"
-                        onClick={() => setSupervisaoSecaoAtiva("queixas-retornado")}
-                      >
-                        <span>Retornado</span>
-                        {getQueixasRetornadoCount() > 0 && (
-                          <Badge variant="destructive" className="text-xs">
-                            {getQueixasRetornadoCount()}
-                          </Badge>
-                        )}
-                      </Button>
-                    </CollapsibleContent>
-                  </Collapsible>
-                  <Collapsible open={farmacovigilanciaExpandido} onOpenChange={setFarmacovigilanciaExpandido}>
-                    <Button
-                      variant={supervisaoSecaoAtiva.startsWith("farmacovigilancia") ? "default" : "ghost"}
-                      className="w-full justify-between"
-                      onClick={() => setFarmacovigilanciaExpandido(!farmacovigilanciaExpandido)}
-                    >
-                      <div className="flex items-center">
-                        <Pill className="h-4 w-4 mr-2" />
-                        Farmacovigilância
-                        {getTotalFarmacovigilanciaCount() > 0 && (
-                          <Badge variant="destructive" className="ml-2 text-xs">
-                            {getTotalFarmacovigilanciaCount()}
-                          </Badge>
-                        )}
-                      </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${farmacovigilanciaExpandido ? 'rotate-180' : ''}`} />
-                    </Button>
-                    <CollapsibleContent className="ml-6 mt-1 space-y-1">
-                      <Button
-                        variant={supervisaoSecaoAtiva === "farmacovigilancia-revisao" ? "default" : "ghost"}
-                        className="w-full justify-between text-sm"
-                        onClick={() => setSupervisaoSecaoAtiva("farmacovigilancia-revisao")}
-                      >
-                        <span>Revisão</span>
-                        {getFarmacovigilanciaRevisaoCount() > 0 && (
-                          <Badge variant="destructive" className="text-xs">
-                            {getFarmacovigilanciaRevisaoCount()}
-                          </Badge>
-                        )}
-                      </Button>
-                      <Button
-                        variant={supervisaoSecaoAtiva === "farmacovigilancia-retornado" ? "default" : "ghost"}
-                        className="w-full justify-between text-sm"
-                        onClick={() => setSupervisaoSecaoAtiva("farmacovigilancia-retornado")}
-                      >
-                        <span>Retornado</span>
-                        {getFarmacovigilanciaRetornadoCount() > 0 && (
-                          <Badge variant="destructive" className="text-xs">
-                            {getFarmacovigilanciaRetornadoCount()}
-                          </Badge>
-                        )}
-                      </Button>
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                </div>
-              </div>
-
               {/* Conteúdo Principal */}
               <div className="flex-1">
+                {/* Seção Contatos */}
                 {/* Seção Contatos */}
                 {(supervisaoSecaoAtiva === "contatos" || supervisaoSecaoAtiva === "contatos-cliente" || supervisaoSecaoAtiva === "contatos-interno") && (
                   <div className="space-y-4">
@@ -1270,6 +1124,203 @@ export default function Home() {
                 )}
 
 
+              </div>
+              
+              {/* Sidebar de Pendências - Lado Direito */}
+              <div className="w-80 space-y-3 bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl border border-gray-200 shadow-lg mt-16">
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="w-2 h-8 bg-gradient-to-b from-[#3BC0A8] to-[#2da085] rounded-full"></div>
+                  <h3 className="text-xl font-bold text-gray-800">Pendências</h3>
+                </div>
+                
+                {/* Contatos */}
+                <Collapsible open={contatosExpandido} onOpenChange={setContatosExpandido}>
+                  <div 
+                    className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group ${
+                      (supervisaoSecaoAtiva === "contatos" || supervisaoSecaoAtiva === "contatos-cliente" || supervisaoSecaoAtiva === "contatos-interno")
+                        ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30 shadow-sm'
+                        : 'hover:bg-[#3BC0A8]/5 border-transparent hover:border-[#3BC0A8]/20'
+                    }`}
+                    onClick={() => setContatosExpandido(!contatosExpandido)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <Contact className="h-5 w-5 text-[#3BC0A8]" />
+                      </div>
+                      <span className="font-semibold text-gray-700">Contatos</span>
+                      {getTotalContatosCount() > 0 && (
+                        <Badge variant="destructive" className="ml-2">
+                          {getTotalContatosCount()}
+                        </Badge>
+                      )}
+                    </div>
+                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+                      contatosExpandido ? 'rotate-180' : ''
+                    }`} />
+                  </div>
+                  <CollapsibleContent className="space-y-2 ml-6 mt-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`w-full justify-start text-sm transition-colors ${
+                        supervisaoSecaoAtiva === "contatos-cliente"
+                          ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                          : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                      }`}
+                      onClick={() => setSupervisaoSecaoAtiva("contatos-cliente")}
+                    >
+                      <span>Cliente</span>
+                      {getContatosClienteCount() > 0 && (
+                        <Badge variant="secondary" className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">
+                          {getContatosClienteCount()}
+                        </Badge>
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`w-full justify-start text-sm transition-colors ${
+                        supervisaoSecaoAtiva === "contatos-interno"
+                          ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                          : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                      }`}
+                      onClick={() => setSupervisaoSecaoAtiva("contatos-interno")}
+                    >
+                      <span>Interno</span>
+                      {getContatosInternoCount() > 0 && (
+                        <Badge variant="secondary" className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">
+                          {getContatosInternoCount()}
+                        </Badge>
+                      )}
+                    </Button>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                {/* Queixas Técnicas */}
+                <Collapsible open={queixasExpandido} onOpenChange={setQueixasExpandido}>
+                  <div 
+                    className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group ${
+                      (supervisaoSecaoAtiva === "queixas" || supervisaoSecaoAtiva === "queixas-revisao" || supervisaoSecaoAtiva === "queixas-retornado")
+                        ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30 shadow-sm'
+                        : 'hover:bg-[#3BC0A8]/5 border-transparent hover:border-[#3BC0A8]/20'
+                    }`}
+                    onClick={() => setQueixasExpandido(!queixasExpandido)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <AlertTriangle className="h-5 w-5 text-[#3BC0A8]" />
+                      </div>
+                      <span className="font-semibold text-gray-700">Queixas Técnicas</span>
+                      {getTotalQueixasCount() > 0 && (
+                        <Badge variant="destructive" className="ml-2">
+                          {getTotalQueixasCount()}
+                        </Badge>
+                      )}
+                    </div>
+                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+                      queixasExpandido ? 'rotate-180' : ''
+                    }`} />
+                  </div>
+                  <CollapsibleContent className="space-y-2 ml-6 mt-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`w-full justify-start text-sm transition-colors ${
+                        supervisaoSecaoAtiva === "queixas-revisao"
+                          ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                          : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                      }`}
+                      onClick={() => setSupervisaoSecaoAtiva("queixas-revisao")}
+                    >
+                      <span>Revisão</span>
+                      {getQueixasRevisaoCount() > 0 && (
+                        <Badge variant="secondary" className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">
+                          {getQueixasRevisaoCount()}
+                        </Badge>
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`w-full justify-start text-sm transition-colors ${
+                        supervisaoSecaoAtiva === "queixas-retornado"
+                          ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                          : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                      }`}
+                      onClick={() => setSupervisaoSecaoAtiva("queixas-retornado")}
+                    >
+                      <span>Retornado</span>
+                      {getQueixasRetornadoCount() > 0 && (
+                        <Badge variant="secondary" className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">
+                          {getQueixasRetornadoCount()}
+                        </Badge>
+                      )}
+                    </Button>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                {/* Farmacovigilância */}
+                <Collapsible open={farmacovigilanciaExpandido} onOpenChange={setFarmacovigilanciaExpandido}>
+                  <div 
+                    className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group ${
+                      (supervisaoSecaoAtiva === "farmacovigilancia" || supervisaoSecaoAtiva === "farmacovigilancia-revisao" || supervisaoSecaoAtiva === "farmacovigilancia-retornado")
+                        ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30 shadow-sm'
+                        : 'hover:bg-[#3BC0A8]/5 border-transparent hover:border-[#3BC0A8]/20'
+                    }`}
+                    onClick={() => setFarmacovigilanciaExpandido(!farmacovigilanciaExpandido)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <Pill className="h-5 w-5 text-[#3BC0A8]" />
+                      </div>
+                      <span className="font-semibold text-gray-700">Farmacovigilância</span>
+                      {getTotalFarmacovigilanciaCount() > 0 && (
+                        <Badge variant="destructive" className="ml-2">
+                          {getTotalFarmacovigilanciaCount()}
+                        </Badge>
+                      )}
+                    </div>
+                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+                      farmacovigilanciaExpandido ? 'rotate-180' : ''
+                    }`} />
+                  </div>
+                  <CollapsibleContent className="space-y-2 ml-6 mt-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`w-full justify-start text-sm transition-colors ${
+                        supervisaoSecaoAtiva === "farmacovigilancia-revisao"
+                          ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                          : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                      }`}
+                      onClick={() => setSupervisaoSecaoAtiva("farmacovigilancia-revisao")}
+                    >
+                      <span>Revisão</span>
+                      {getFarmacovigilanciaRevisaoCount() > 0 && (
+                        <Badge variant="secondary" className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">
+                          {getFarmacovigilanciaRevisaoCount()}
+                        </Badge>
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`w-full justify-start text-sm transition-colors ${
+                        supervisaoSecaoAtiva === "farmacovigilancia-retornado"
+                          ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                          : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                      }`}
+                      onClick={() => setSupervisaoSecaoAtiva("farmacovigilancia-retornado")}
+                    >
+                      <span>Retornado</span>
+                      {getFarmacovigilanciaRetornadoCount() > 0 && (
+                        <Badge variant="secondary" className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">
+                          {getFarmacovigilanciaRetornadoCount()}
+                        </Badge>
+                      )}
+                    </Button>
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
             </div>
           </TabsContent>
