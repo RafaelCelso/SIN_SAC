@@ -538,7 +538,7 @@ export default function CasosPendentes() {
     
     switch (status) {
       case 'passado':
-        return 'text-gray-500 line-through'
+        return 'text-gray-500'
       case 'proximo':
         return 'text-orange-700 font-medium'
       case 'futuro':
@@ -555,6 +555,9 @@ export default function CasosPendentes() {
   // Estados para controlar filtros ativos
   const [filtroAtivo, setFiltroAtivo] = useState<string | null>(null)
   const [tipoFiltro, setTipoFiltro] = useState<string | null>(null)
+  
+  // Estado para controlar status dos eventos
+  const [eventosStatus, setEventosStatus] = useState<{[key: string]: 'pendente' | 'concluido' | 'cancelado'}>({})
   
   // Estado para controlar qual aba de perfil está ativa
   const [abaAtiva, setAbaAtiva] = useState('supervisor')
@@ -594,6 +597,38 @@ export default function CasosPendentes() {
      // Reset da paginação
      setPaginaAtual(1)
    }
+
+  // Função para marcar evento como concluído ou cancelado
+  const handleEventoAction = (eventoId: string, action: 'concluido' | 'cancelado') => {
+    setEventosStatus(prev => ({
+      ...prev,
+      [eventoId]: action
+    }))
+  }
+
+  // Função para obter classes CSS baseadas no status do evento
+  const getEventoStatusClass = (eventoId: string, horario: string) => {
+    const status = eventosStatus[eventoId]
+    if (status === 'concluido') {
+      return 'border-l-4 border-green-500 pl-3 py-2 bg-green-50 opacity-80'
+    }
+    if (status === 'cancelado') {
+      return 'border-l-4 border-red-500 pl-3 py-2 bg-red-50 opacity-60'
+    }
+    return getEventoClasses(horario)
+  }
+
+  // Função para obter classes de texto baseadas no status do evento
+  const getEventoStatusText = (eventoId: string, horario: string) => {
+    const status = eventosStatus[eventoId]
+    if (status === 'concluido') {
+      return 'text-green-600 line-through'
+    }
+    if (status === 'cancelado') {
+      return 'text-red-500'
+    }
+    return getEventoTextClasses(horario)
+  }
 
   const getPrioridadeColor = (prioridade: string) => {
     switch (prioridade.toLowerCase()) {
@@ -953,20 +988,85 @@ export default function CasosPendentes() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {EVENTOS_HOJE.map((evento) => (
-                  <div key={evento.id} className={getEventoClasses(evento.horario)}>
+                  <div key={evento.id} className={`${getEventoStatusClass(`supervisor-${evento.id}`, evento.horario)} group`}>
                     <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <h4 className={`font-medium text-sm ${getEventoTextClasses(evento.horario)}`}>{evento.titulo}</h4>
-                        <p className={`text-xs ${getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
+                      <div className="space-y-1 flex-1">
+                        <h4 className={`font-medium text-sm ${getEventoStatusText(`supervisor-${evento.id}`, evento.horario)}`}>{evento.titulo}</h4>
+                        <p className={`text-xs ${eventosStatus[`supervisor-${evento.id}`] ? 'text-gray-400' : getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right flex flex-col items-end gap-2">
                         <div className={`flex items-center gap-1 text-xs ${
+                          eventosStatus[`supervisor-${evento.id}`] ? 'text-gray-400' :
                           getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' :
                           getEventoStatus(evento.horario) === 'proximo' ? 'text-orange-600' :
                           'text-gray-500'
                         }`}>
                           <Clock className="h-3 w-3" />
                           {evento.horario}
+                        </div>
+                        <div className={`flex gap-1 ${
+                          eventosStatus[`supervisor-${evento.id}`] ? 'opacity-0 group-hover:opacity-100' : ''
+                        } transition-opacity duration-200`}>
+                          {eventosStatus[`supervisor-${evento.id}`] === 'concluido' ? (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                onClick={() => setEventosStatus(prev => ({ ...prev, [`supervisor-${evento.id}`]: undefined }))}
+                                title="Marcar como pendente"
+                              >
+                                ↺
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'cancelado')}
+                              >
+                                ✕
+                              </Button>
+                            </>
+                          ) : eventosStatus[`supervisor-${evento.id}`] === 'cancelado' ? (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'concluido')}
+                              >
+                                ✓
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                onClick={() => setEventosStatus(prev => ({ ...prev, [`supervisor-${evento.id}`]: undefined }))}
+                                title="Marcar como pendente"
+                              >
+                                ↺
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'concluido')}
+                              >
+                                ✓
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'cancelado')}
+                              >
+                                ✕
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1115,20 +1215,85 @@ export default function CasosPendentes() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {EVENTOS_ATENDIMENTO.map((evento) => (
-                    <div key={evento.id} className={getEventoClasses(evento.horario)}>
+                    <div key={evento.id} className={`${getEventoStatusClass(`atendimento-${evento.id}`, evento.horario)} group`}>
                       <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <h4 className={`font-medium text-sm ${getEventoTextClasses(evento.horario)}`}>{evento.titulo}</h4>
-                          <p className={`text-xs ${getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
+                        <div className="space-y-1 flex-1">
+                          <h4 className={`font-medium text-sm ${getEventoStatusText(`atendimento-${evento.id}`, evento.horario)}`}>{evento.titulo}</h4>
+                          <p className={`text-xs ${eventosStatus[`atendimento-${evento.id}`] ? 'text-gray-400' : getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right flex flex-col items-end gap-2">
                           <div className={`flex items-center gap-1 text-xs ${
+                            eventosStatus[`atendimento-${evento.id}`] ? 'text-gray-400' :
                             getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' :
                             getEventoStatus(evento.horario) === 'proximo' ? 'text-orange-600' :
                             'text-gray-500'
                           }`}>
                             <Clock className="h-3 w-3" />
                             {evento.horario}
+                          </div>
+                          <div className={`flex gap-1 ${
+                            eventosStatus[`atendimento-${evento.id}`] ? 'opacity-0 group-hover:opacity-100' : ''
+                          } transition-opacity duration-200`}>
+                            {eventosStatus[`atendimento-${evento.id}`] === 'concluido' ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  onClick={() => setEventosStatus(prev => ({ ...prev, [`atendimento-${evento.id}`]: undefined }))}
+                                  title="Marcar como pendente"
+                                >
+                                  ↺
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  onClick={() => handleEventoAction(`atendimento-${evento.id}`, 'cancelado')}
+                                >
+                                  ✕
+                                </Button>
+                              </>
+                            ) : eventosStatus[`atendimento-${evento.id}`] === 'cancelado' ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  onClick={() => handleEventoAction(`atendimento-${evento.id}`, 'concluido')}
+                                >
+                                  ✓
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  onClick={() => setEventosStatus(prev => ({ ...prev, [`atendimento-${evento.id}`]: undefined }))}
+                                  title="Marcar como pendente"
+                                >
+                                  ↺
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  onClick={() => handleEventoAction(`atendimento-${evento.id}`, 'concluido')}
+                                >
+                                  ✓
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  onClick={() => handleEventoAction(`atendimento-${evento.id}`, 'cancelado')}
+                                >
+                                  ✕
+                                </Button>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1271,20 +1436,85 @@ export default function CasosPendentes() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {EVENTOS_QUALIDADE.map((evento) => (
-                    <div key={evento.id} className={getEventoClasses(evento.horario)}>
+                    <div key={evento.id} className={`${getEventoStatusClass(`qualidade-${evento.id}`, evento.horario)} group`}>
                       <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <h4 className={`font-medium text-sm ${getEventoTextClasses(evento.horario)}`}>{evento.titulo}</h4>
-                          <p className={`text-xs ${getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
+                        <div className="space-y-1 flex-1">
+                          <h4 className={`font-medium text-sm ${getEventoStatusText(`qualidade-${evento.id}`, evento.horario)}`}>{evento.titulo}</h4>
+                          <p className={`text-xs ${eventosStatus[`qualidade-${evento.id}`] ? 'text-gray-400' : getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right flex flex-col items-end gap-2">
                           <div className={`flex items-center gap-1 text-xs ${
+                            eventosStatus[`qualidade-${evento.id}`] ? 'text-gray-400' :
                             getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' :
                             getEventoStatus(evento.horario) === 'proximo' ? 'text-orange-600' :
                             'text-gray-500'
                           }`}>
                             <Clock className="h-3 w-3" />
                             {evento.horario}
+                          </div>
+                          <div className={`flex gap-1 ${
+                            eventosStatus[`qualidade-${evento.id}`] ? 'opacity-0 group-hover:opacity-100' : ''
+                          } transition-opacity duration-200`}>
+                            {eventosStatus[`qualidade-${evento.id}`] === 'concluido' ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  onClick={() => setEventosStatus(prev => ({ ...prev, [`qualidade-${evento.id}`]: undefined }))}
+                                  title="Marcar como pendente"
+                                >
+                                  ↺
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  onClick={() => handleEventoAction(`qualidade-${evento.id}`, 'cancelado')}
+                                >
+                                  ✕
+                                </Button>
+                              </>
+                            ) : eventosStatus[`qualidade-${evento.id}`] === 'cancelado' ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  onClick={() => handleEventoAction(`qualidade-${evento.id}`, 'concluido')}
+                                >
+                                  ✓
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  onClick={() => setEventosStatus(prev => ({ ...prev, [`qualidade-${evento.id}`]: undefined }))}
+                                  title="Marcar como pendente"
+                                >
+                                  ↺
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  onClick={() => handleEventoAction(`qualidade-${evento.id}`, 'concluido')}
+                                >
+                                  ✓
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  onClick={() => handleEventoAction(`qualidade-${evento.id}`, 'cancelado')}
+                                >
+                                  ✕
+                                </Button>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1433,20 +1663,85 @@ export default function CasosPendentes() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {EVENTOS_FARMACOVIGILANCIA.map((evento) => (
-                    <div key={evento.id} className={getEventoClasses(evento.horario)}>
+                    <div key={evento.id} className={`${getEventoStatusClass(`farmacovigilancia-${evento.id}`, evento.horario)} group`}>
                       <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <h4 className={`font-medium text-sm ${getEventoTextClasses(evento.horario)}`}>{evento.titulo}</h4>
-                          <p className={`text-xs ${getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
+                        <div className="space-y-1 flex-1">
+                          <h4 className={`font-medium text-sm ${getEventoStatusText(`farmacovigilancia-${evento.id}`, evento.horario)}`}>{evento.titulo}</h4>
+                          <p className={`text-xs ${eventosStatus[`farmacovigilancia-${evento.id}`] ? 'text-gray-400' : getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right flex flex-col items-end gap-2">
                           <div className={`flex items-center gap-1 text-xs ${
+                            eventosStatus[`farmacovigilancia-${evento.id}`] ? 'text-gray-400' :
                             getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' :
                             getEventoStatus(evento.horario) === 'proximo' ? 'text-orange-600' :
                             'text-gray-500'
                           }`}>
                             <Clock className="h-3 w-3" />
                             {evento.horario}
+                          </div>
+                          <div className={`flex gap-1 ${
+                            eventosStatus[`farmacovigilancia-${evento.id}`] ? 'opacity-0 group-hover:opacity-100' : ''
+                          } transition-opacity duration-200`}>
+                            {eventosStatus[`farmacovigilancia-${evento.id}`] === 'concluido' ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  onClick={() => setEventosStatus(prev => ({ ...prev, [`farmacovigilancia-${evento.id}`]: undefined }))}
+                                  title="Marcar como pendente"
+                                >
+                                  ↺
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  onClick={() => handleEventoAction(`farmacovigilancia-${evento.id}`, 'cancelado')}
+                                >
+                                  ✕
+                                </Button>
+                              </>
+                            ) : eventosStatus[`farmacovigilancia-${evento.id}`] === 'cancelado' ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  onClick={() => handleEventoAction(`farmacovigilancia-${evento.id}`, 'concluido')}
+                                >
+                                  ✓
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  onClick={() => setEventosStatus(prev => ({ ...prev, [`farmacovigilancia-${evento.id}`]: undefined }))}
+                                  title="Marcar como pendente"
+                                >
+                                  ↺
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  onClick={() => handleEventoAction(`farmacovigilancia-${evento.id}`, 'concluido')}
+                                >
+                                  ✓
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  onClick={() => handleEventoAction(`farmacovigilancia-${evento.id}`, 'cancelado')}
+                                >
+                                  ✕
+                                </Button>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
