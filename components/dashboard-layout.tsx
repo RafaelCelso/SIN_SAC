@@ -14,15 +14,22 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [isClient, setIsClient] = useState(false)
   const isMobile = useMobile()
 
   useEffect(() => {
-    if (isMobile) {
-      setSidebarOpen(false)
-    } else {
-      setSidebarOpen(true)
+    setIsClient(true)
+  }, [])
+
+  useEffect(() => {
+    if (isClient) {
+      if (isMobile) {
+        setSidebarOpen(false)
+      } else {
+        setSidebarOpen(true)
+      }
     }
-  }, [isMobile])
+  }, [isMobile, isClient])
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">

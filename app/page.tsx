@@ -21,14 +21,14 @@ import {
   TriangleAlert,
   Pill,
   ChevronDown,
-  ChevronUp,
-  Hand
+  ChevronUp
 } from "lucide-react"
 import Link from "next/link"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 // Dados dos casos pendentes baseados na imagem
 const CASOS_PENDENTES = [
+  // Casos para Contatos - Motivo do Cliente
   {
     id: "01",
     nome: "João Carlos Oliveira",
@@ -38,9 +38,11 @@ const CASOS_PENDENTES = [
     responsavel: "Rafael Silva",
     tipo: "Aguardando Resposta",
     status: "Leve",
-    motivoPrincipal: "Evento Adverso",
-    subcategoria: "Reação Alérgica",
-    detalhe: "Urticária"
+    motivoPrincipal: "Contato",
+    subcategoria: "Cliente Indisponível",
+    detalhe: "Não atende chamadas",
+    categoria: "contatos",
+    submenu: "motivo-cliente"
   },
   {
     id: "02", 
@@ -51,9 +53,11 @@ const CASOS_PENDENTES = [
     responsavel: "Mariana Santos",
     tipo: "Aguardando Resposta",
     status: "Leve",
-    motivoPrincipal: "Qualidade",
-    subcategoria: "Embalagem",
-    detalhe: "Defeito no lacre"
+    motivoPrincipal: "Contato",
+    subcategoria: "Não Atende",
+    detalhe: "Múltiplas tentativas",
+    categoria: "contatos",
+    submenu: "motivo-cliente"
   },
   {
     id: "03",
@@ -64,9 +68,11 @@ const CASOS_PENDENTES = [
     responsavel: "João Costa",
     tipo: "Documentação Pendente",
     status: "Moderado",
-    motivoPrincipal: "Eficácia",
-    subcategoria: "Falta de Efeito",
-    detalhe: "Não houve melhora"
+    motivoPrincipal: "Contato",
+    subcategoria: "Telefone Inválido",
+    detalhe: "Número inexistente",
+    categoria: "contatos",
+    submenu: "motivo-cliente"
   },
   {
     id: "04",
@@ -77,10 +83,13 @@ const CASOS_PENDENTES = [
     responsavel: "Ana Silva",
     tipo: "Contato Urgente",
     status: "Grave",
-    motivoPrincipal: "Evento Adverso",
-    subcategoria: "Reação Grave",
-    detalhe: "Hospitalização"
+    motivoPrincipal: "Contato",
+    subcategoria: "Recusa Contato",
+    detalhe: "Cliente se recusa",
+    categoria: "contatos",
+    submenu: "motivo-cliente"
   },
+  // Casos para Contatos - Motivo Interno
   {
     id: "05",
     nome: "Ana Paula Santos",
@@ -90,27 +99,131 @@ const CASOS_PENDENTES = [
     responsavel: "Carlos Silva",
     tipo: "Revisão Necessária",
     status: "Leve",
+    motivoPrincipal: "Interno",
+    subcategoria: "Horário",
+    detalhe: "Fora do expediente",
+    categoria: "contatos",
+    submenu: "motivo-interno"
+  },
+  // Casos para Queixas - Revisão
+  {
+    id: "06",
+    nome: "Maria Silva Costa",
+    prioridade: "Revisão Pendente",
+    protocolo: "QX-2023-0015",
+    dataHora: "21/12/2023 10:15",
+    responsavel: "Lucas Oliveira",
+    tipo: "Revisão Necessária",
+    status: "Moderado",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Embalagem",
+    detalhe: "Defeito no lacre",
+    categoria: "queixas",
+    submenu: "revisao"
+  },
+  {
+    id: "07",
+    nome: "Roberto Santos",
+    prioridade: "Análise Técnica",
+    protocolo: "QX-2023-0018",
+    dataHora: "22/12/2023 14:20",
+    responsavel: "Patricia Lima",
+    tipo: "Revisão Necessária",
+    status: "Grave",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Produto Alterado",
+    detalhe: "Cor diferente",
+    categoria: "queixas",
+    submenu: "revisao"
+  },
+  // Casos para Queixas - Retornado
+  {
+    id: "08",
+    nome: "Juliana Ferreira",
+    prioridade: "Retorno Pendente",
+    protocolo: "QX-2023-0020",
+    dataHora: "23/12/2023 11:30",
+    responsavel: "André Costa",
+    tipo: "Aguardando Resposta",
+    status: "Leve",
     motivoPrincipal: "Informação",
     subcategoria: "Dúvida Técnica",
-    detalhe: "Posologia"
+    detalhe: "Posologia",
+    categoria: "queixas",
+    submenu: "retornado"
+  },
+  {
+    id: "09",
+    nome: "Eduardo Martins",
+    prioridade: "Documentação Retornada",
+    protocolo: "QX-2023-0022",
+    dataHora: "24/12/2023 16:45",
+    responsavel: "Camila Souza",
+    tipo: "Aguardando Resposta",
+    status: "Moderado",
+    motivoPrincipal: "Documentação",
+    subcategoria: "Comprovante",
+    detalhe: "Nota fiscal",
+    categoria: "queixas",
+    submenu: "retornado"
+  },
+  // Casos para Farmacovigilância - Revisão
+  {
+    id: "10",
+    nome: "Sandra Oliveira",
+    prioridade: "Evento Adverso",
+    protocolo: "FV-2023-0025",
+    dataHora: "25/12/2023 09:15",
+    responsavel: "Dr. Ricardo Alves",
+    tipo: "Revisão Necessária",
+    status: "Grave",
+    motivoPrincipal: "Evento Adverso",
+    subcategoria: "Reação Grave",
+    detalhe: "Hospitalização",
+    categoria: "farmacovigilancia",
+    submenu: "revisao"
+  },
+  {
+    id: "11",
+    nome: "Marcos Pereira",
+    prioridade: "Reação Adversa",
+    protocolo: "FV-2023-0027",
+    dataHora: "26/12/2023 13:20",
+    responsavel: "Dra. Ana Beatriz",
+    tipo: "Revisão Necessária",
+    status: "Moderado",
+    motivoPrincipal: "Evento Adverso",
+    subcategoria: "Reação Alérgica",
+    detalhe: "Urticária",
+    categoria: "farmacovigilancia",
+    submenu: "revisao"
+  },
+  // Casos para Farmacovigilância - Retornado
+  {
+    id: "12",
+    nome: "Beatriz Lima",
+    prioridade: "Eficácia Questionada",
+    protocolo: "FV-2023-0030",
+    dataHora: "27/12/2023 10:45",
+    responsavel: "Dr. Felipe Santos",
+    tipo: "Aguardando Resposta",
+    status: "Leve",
+    motivoPrincipal: "Eficácia",
+    subcategoria: "Falta de Efeito",
+    detalhe: "Não houve melhora",
+    categoria: "farmacovigilancia",
+    submenu: "retornado"
   }
 ]
 
 // Dados dos eventos do dia para a sidebar
 const EVENTOS_HOJE = [
   {
-    id: 1,
-    titulo: "Reunião de Supervisores",
-    horario: "14:00",
-    tipo: "Reunião",
-    participantes: "Equipe Supervisão"
-  },
-  {
-    id: 2,
-    titulo: "Retorno para o Cliente",
-    horario: "16:00",
-    tipo: "Contato",
-    participantes: "Equipe Atendimento"
+    id: 4,
+    titulo: "Treinamento Farmacovigi...",
+    horario: "09:00",
+    tipo: "Treinamento",
+    participantes: "Nova Colaboradora"
   },
   {
     id: 3,
@@ -120,11 +233,11 @@ const EVENTOS_HOJE = [
     participantes: "Equipe Técnica"
   },
   {
-    id: 4,
-    titulo: "Treinamento Farmacovigi...",
-    horario: "09:00",
-    tipo: "Treinamento",
-    participantes: "Nova Colaboradora"
+    id: 1,
+    titulo: "Reunião de Supervisores",
+    horario: "14:00",
+    tipo: "Reunião",
+    participantes: "Equipe Supervisão"
   },
   {
     id: 5,
@@ -132,12 +245,65 @@ const EVENTOS_HOJE = [
     horario: "15:30",
     tipo: "Revisão",
     participantes: "Ana Costa"
+  },
+  {
+    id: 2,
+    titulo: "Retorno para o Cliente",
+    horario: "16:00",
+    tipo: "Contato",
+    participantes: "Equipe Atendimento"
   }
 ]
 
 export default function CasosPendentes() {
   const [paginaAtual, setPaginaAtual] = useState(1)
   const itensPorPagina = 5
+  
+  // Função para verificar se o evento já passou
+  const getEventoStatus = (horario: string) => {
+    const agora = new Date()
+    const horaAtual = agora.getHours() * 60 + agora.getMinutes() // minutos desde meia-noite
+    const [hora, minuto] = horario.split(':').map(Number)
+    const horarioEvento = hora * 60 + minuto
+    
+    if (horarioEvento < horaAtual) {
+      return 'passado'
+    } else if (horarioEvento <= horaAtual + 30) { // próximos 30 minutos
+      return 'proximo'
+    } else {
+      return 'futuro'
+    }
+  }
+  
+  // Função para obter as classes CSS baseadas no status do evento
+  const getEventoClasses = (horario: string) => {
+    const status = getEventoStatus(horario)
+    
+    switch (status) {
+      case 'passado':
+        return 'border-l-4 border-gray-400 pl-3 py-2 bg-gray-50 opacity-60'
+      case 'proximo':
+        return 'border-l-4 border-orange-400 pl-3 py-2 bg-orange-50'
+      case 'futuro':
+      default:
+        return 'border-l-4 border-[#5AC8B3] pl-3 py-2'
+    }
+  }
+  
+  // Função para obter as classes do texto baseadas no status do evento
+  const getEventoTextClasses = (horario: string) => {
+    const status = getEventoStatus(horario)
+    
+    switch (status) {
+      case 'passado':
+        return 'text-gray-500 line-through'
+      case 'proximo':
+        return 'text-orange-700 font-medium'
+      case 'futuro':
+      default:
+        return 'text-gray-900'
+    }
+  }
   
   // Estados para controlar expansão das seções
   const [isContatosExpanded, setIsContatosExpanded] = useState(true)
@@ -153,41 +319,10 @@ export default function CasosPendentes() {
     let casosFiltrados = CASOS_PENDENTES
     
     if (filtroAtivo && tipoFiltro) {
-      switch (tipoFiltro) {
-        case 'contatos':
-          if (filtroAtivo === 'motivo-cliente') {
-            casosFiltrados = CASOS_PENDENTES.filter(caso => 
-              ['Cliente Indisponível', 'Não Atende Ligações', 'Telefone Inválido', 'Recusa Contato'].includes(caso.prioridade)
-            )
-          } else if (filtroAtivo === 'motivo-interno') {
-            casosFiltrados = CASOS_PENDENTES.filter(caso => 
-              caso.prioridade === 'Horário Incompatível'
-            )
-          }
-          break
-        case 'queixas':
-          if (filtroAtivo === 'revisao') {
-            casosFiltrados = CASOS_PENDENTES.filter(caso => 
-              caso.tipo.includes('Revisão')
-            )
-          } else if (filtroAtivo === 'retornado') {
-            casosFiltrados = CASOS_PENDENTES.filter(caso => 
-              caso.tipo.includes('Aguardando')
-            )
-          }
-          break
-        case 'farmacovigilancia':
-          if (filtroAtivo === 'revisao') {
-            casosFiltrados = CASOS_PENDENTES.filter(caso => 
-              caso.motivoPrincipal === 'Evento Adverso'
-            )
-          } else if (filtroAtivo === 'retornado') {
-            casosFiltrados = CASOS_PENDENTES.filter(caso => 
-              caso.motivoPrincipal === 'Eficácia'
-            )
-          }
-          break
-      }
+      // Filtra baseado na categoria e submenu específicos
+      casosFiltrados = CASOS_PENDENTES.filter(caso => 
+        caso.categoria === tipoFiltro && caso.submenu === filtroAtivo
+      )
     }
     
     return casosFiltrados
@@ -218,17 +353,30 @@ export default function CasosPendentes() {
   const getPrioridadeColor = (prioridade: string) => {
     switch (prioridade.toLowerCase()) {
       case 'cliente indisponível':
-        return 'bg-orange-100 text-orange-800 border-orange-200'
+      return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
       case 'não atende ligações':
-        return 'bg-red-100 text-red-800 border-red-200'
-      case 'telefone inválido':
-         return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'recusa contato':
-        return 'bg-purple-100 text-purple-800 border-purple-200'
-      case 'horário incompatível':
-        return 'bg-blue-100 text-blue-800 border-blue-200'
+      return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
+    case 'telefone inválido':
+      return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
+    case 'recusa contato':
+      return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
+    case 'horário incompatível':
+      return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200'
+    }
+  }
+
+  const getGravidadeColor = (status: string) => {
+    switch (status) {
+      case "Grave":
+        return "bg-red-100 text-red-800 border-red-300"
+      case "Moderado":
+        return "bg-yellow-100 text-yellow-800 border-yellow-300"
+      case "Leve":
+        return "bg-green-100 text-green-800 border-green-300"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-300"
     }
   }
 
@@ -244,12 +392,20 @@ export default function CasosPendentes() {
       <div className="space-y-6">
         {/* Cabeçalho */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
-            <Hand className="h-5 w-5 text-white" />
+          <div className="w-8 h-8 rounded-full flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 810 809.999993" className="h-8 w-8 text-white">
+            <g>
+              <path fill="#ef9645" d="M 119.671875 198.632812 C 140.082031 184.367188 170.855469 187.101562 189.183594 202.238281 L 168.160156 171.683594 C 151.246094 147.558594 157.304688 121.457031 181.453125 104.519531 C 205.601562 87.644531 238.910156 93.464844 255.851562 117.65625 L 447.578125 390.882812 L 449.097656 390.210938 L 274.027344 133.007812 C 256.957031 108.644531 260.148438 77.765625 284.515625 60.675781 C 308.878906 43.648438 342.496094 49.535156 359.566406 73.941406 L 585.84375 393.597656 C 602.933594 417.984375 594.550781 451.386719 570.1875 468.453125 C 566.039062 471.363281 561.566406 473.363281 557.003906 474.945312 L 557.003906 673.191406 L 339.847656 673.191406 L 339.847656 605.589844 C 336.675781 602.789062 318.847656 589.019531 316.328125 585.414062 L 106.402344 274.164062 C 89.179688 249.644531 95.132812 215.832031 119.671875 198.632812 Z M 119.671875 198.632812" />
+              <path fill="#ffdc5d" d="M 72.632812 376.464844 C 72.632812 376.464844 48.050781 340.632812 83.90625 316.074219 C 119.714844 291.511719 144.273438 327.324219 144.273438 327.324219 L 258.304688 493.621094 C 262.234375 487.0625 266.535156 480.59375 271.332031 474.207031 L 113.070312 243.433594 C 113.070312 243.433594 88.507812 207.625 124.339844 183.0625 C 160.148438 158.503906 184.710938 194.3125 184.710938 194.3125 L 333.570312 411.40625 C 339.109375 406.890625 344.777344 402.351562 350.617188 397.898438 L 178.042969 146.191406 C 178.042969 146.191406 153.480469 110.382812 189.3125 85.820312 C 225.121094 61.261719 249.683594 97.070312 249.683594 97.070312 L 422.257812 348.734375 C 428.601562 344.847656 434.875 341.480469 441.171875 337.917969 L 279.867188 102.695312 C 279.867188 102.695312 255.308594 66.882812 291.117188 42.324219 C 326.925781 17.761719 351.488281 53.574219 351.488281 53.574219 L 522.042969 302.304688 L 535.703125 322.21875 L 547.972656 340.136719 C 440.523438 413.839844 430.292969 552.492188 491.683594 642.027344 C 503.953125 659.945312 521.871094 647.675781 521.871094 647.675781 C 448.1875 540.203125 470.683594 419.441406 578.15625 345.757812 L 546.472656 187.191406 C 546.472656 187.191406 534.636719 145.410156 576.398438 133.550781 C 618.179688 121.71875 630.035156 163.5 630.035156 163.5 L 666.625 272.164062 C 681.132812 315.25 696.574219 358.179688 717.007812 398.789062 C 774.707031 513.449219 740.242188 655.949219 631.445312 730.585938 C 512.769531 811.953125 350.53125 781.703125 269.140625 663.050781 C 264.839844 656.75 261.234375 650.605469 257.804688 644.480469 L 256.847656 645.132812 Z M 72.632812 376.464844" />
+              <path fill="#5ac8b3" d="M 274.699219 695.816406 C 187.835938 695.816406 100.0625 608.042969 100.0625 521.179688 C 100.0625 509.171875 91.265625 499.464844 79.257812 499.464844 C 67.25 499.464844 56.628906 509.171875 56.628906 521.179688 C 56.628906 651.472656 144.40625 739.25 274.699219 739.25 C 286.707031 739.25 296.414062 728.628906 296.414062 716.621094 C 296.414062 704.613281 286.707031 695.816406 274.699219 695.816406 Z M 274.699219 695.816406" />
+              <path fill="#5ac8b3" d="M 166.121094 738.335938 C 100.972656 738.335938 57.542969 694.90625 57.542969 629.757812 C 57.542969 617.75 47.835938 608.042969 35.824219 608.042969 C 23.816406 608.042969 14.109375 617.75 14.109375 629.757812 C 14.109375 716.621094 79.257812 781.769531 166.121094 781.769531 C 178.128906 781.769531 187.835938 772.0625 187.835938 760.054688 C 187.835938 748.042969 178.128906 738.335938 166.121094 738.335938 Z M 535.289062 43.433594 C 523.300781 43.433594 513.574219 53.160156 513.574219 65.148438 C 513.574219 77.132812 523.300781 86.863281 535.289062 86.863281 C 622.152344 86.863281 709.015625 164.800781 709.015625 260.589844 C 709.015625 272.578125 718.746094 282.304688 730.730469 282.304688 C 742.71875 282.304688 752.449219 272.578125 752.449219 260.589844 C 752.449219 140.847656 665.585938 43.433594 535.289062 43.433594 Z M 535.289062 43.433594" />
+              <path fill="#5ac8b3" d="M 643.867188 0.910156 C 631.882812 0.910156 622.152344 9.730469 622.152344 21.714844 C 622.152344 33.703125 631.882812 44.34375 643.867188 44.34375 C 709.015625 44.34375 751.535156 92.660156 751.535156 152.011719 C 751.535156 163.996094 762.15625 173.726562 774.164062 173.726562 C 786.171875 173.726562 794.96875 163.996094 794.96875 152.011719 C 794.96875 68.6875 730.730469 0.910156 643.867188 0.910156 Z M 643.867188 0.910156" />
+            </g>
+          </svg>
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Bem-vindo, aqui estão os casos que exigem sua atenção hoje
+              Bem-vindo!
             </h1>
             <p className="text-gray-600 mt-1">
               Acompanhe os casos que possuem pendência e precisam de atenção
@@ -271,7 +427,7 @@ export default function CasosPendentes() {
                       <Contact className="h-5 w-5 text-[#3BC0A8]" />
                     </div>
                     <span className="font-semibold text-gray-700">Contatos sem resolução</span>
-                    <Badge variant="destructive" className="ml-2">8</Badge>
+                    <Badge variant="destructive" className="ml-2">5</Badge>
                   </div>
                   {isContatosExpanded ? (
                     <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
@@ -317,7 +473,7 @@ export default function CasosPendentes() {
                       <TriangleAlert className="h-5 w-5 text-[#3BC0A8]" />
                     </div>
                     <span className="font-semibold text-gray-700">Queixas Técnicas</span>
-                    <Badge variant="destructive" className="ml-2">2</Badge>
+                    <Badge variant="destructive" className="ml-2">4</Badge>
                   </div>
                   {isQueixasExpanded ? (
                     <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
@@ -337,7 +493,7 @@ export default function CasosPendentes() {
                   onClick={() => handleSubmenuClick('revisao', 'queixas')}
                 >
                   <span>Revisão</span>
-                  <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
+                  <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
                 </Button>
                 <Button 
                   variant="ghost" 
@@ -349,7 +505,7 @@ export default function CasosPendentes() {
                   onClick={() => handleSubmenuClick('retornado', 'queixas')}
                 >
                   <span>Retornado</span>
-                  <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
+                  <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
                 </Button>
               </CollapsibleContent>
             </Collapsible>
@@ -363,7 +519,7 @@ export default function CasosPendentes() {
                       <Pill className="h-5 w-5 text-[#3BC0A8]" />
                     </div>
                     <span className="font-semibold text-gray-700">Farmacovigilância</span>
-                    <Badge variant="destructive" className="ml-2">2</Badge>
+                    <Badge variant="destructive" className="ml-2">3</Badge>
                   </div>
                   {isFarmacovigilanciaExpanded ? (
                      <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
@@ -383,7 +539,7 @@ export default function CasosPendentes() {
                   onClick={() => handleSubmenuClick('revisao', 'farmacovigilancia')}
                 >
                   <span>Revisão</span>
-                  <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
+                  <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
                 </Button>
                 <Button 
                   variant="ghost" 
@@ -414,9 +570,18 @@ export default function CasosPendentes() {
                           ID: {caso.id}
                         </Badge>
                         <h3 className="font-semibold text-lg">{caso.nome}</h3>
-                        <Badge className={getPrioridadeColor(caso.prioridade)}>
-                          {caso.prioridade}
-                        </Badge>
+                        {/* Exibir tag de prioridade apenas para submenus 'Motivo do Cliente' e 'Motivo Interno' */}
+                        {(filtroAtivo === 'motivo-cliente' || filtroAtivo === 'motivo-interno') && (
+                          <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                            {caso.prioridade}
+                          </Badge>
+                        )}
+                        {/* Exibir tag de gravidade apenas para submenus específicos de Farmacovigilância */}
+                        {tipoFiltro === 'farmacovigilancia' && (filtroAtivo === 'revisao' || filtroAtivo === 'retornado') && (
+                          <Badge className={getGravidadeColor(caso.status)}>
+                            {caso.status}
+                          </Badge>
+                        )}
                       </div>
 
                       {/* Linha 2: Motivo Principal, Subcategoria e Detalhe */}
@@ -506,14 +671,18 @@ export default function CasosPendentes() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {EVENTOS_HOJE.map((evento) => (
-                  <div key={evento.id} className="border-l-4 border-blue-500 pl-3 py-2">
+                  <div key={evento.id} className={getEventoClasses(evento.horario)}>
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
-                        <h4 className="font-medium text-sm">{evento.titulo}</h4>
-                        <p className="text-xs text-gray-600">{evento.participantes}</p>
+                        <h4 className={`font-medium text-sm ${getEventoTextClasses(evento.horario)}`}>{evento.titulo}</h4>
+                        <p className={`text-xs ${getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
                       </div>
                       <div className="text-right">
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <div className={`flex items-center gap-1 text-xs ${
+                          getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' :
+                          getEventoStatus(evento.horario) === 'proximo' ? 'text-orange-600' :
+                          'text-gray-500'
+                        }`}>
                           <Clock className="h-3 w-3" />
                           {evento.horario}
                         </div>
