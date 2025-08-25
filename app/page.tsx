@@ -870,6 +870,18 @@ export default function CasosPendentes() {
                   <span>Retornado</span>
                   <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
                 </Button>
+                <Button 
+                  variant="ghost" 
+                  className={`w-full justify-start text-sm transition-colors h-12 items-start pt-2 ${
+                    filtroAtivo === 'followup-pendente' && tipoFiltro === 'farmacovigilancia'
+                      ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                      : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                  }`}
+                  onClick={() => handleSubmenuClick('followup-pendente', 'farmacovigilancia')}
+                >
+                   <span className="text-left leading-tight">Follow-up pendente<br />de aprovação</span>
+                   <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50 mt-1">3</Badge>
+                 </Button>
               </CollapsibleContent>
             </Collapsible>
           </div>
@@ -1083,20 +1095,20 @@ export default function CasosPendentes() {
           <div className="flex gap-6">
             {/* Sidebar de Pendências - Atendimento */}
             <div className="w-80 space-y-3 bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl border border-gray-200 shadow-lg">
-              {/* Seção Contatos */}
+              {/* Seção Contatos sem resolução */}
               <Collapsible open={isContatosExpanded} onOpenChange={setIsContatosExpanded}>
                 <CollapsibleTrigger asChild>
-                  <div className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group hover:bg-[#3BC0A8]/5 ${
-                    (tipoFiltro === 'contatos' && isContatosExpanded) 
-                      ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30' 
-                      : 'border-transparent hover:border-[#3BC0A8]/20'
+                  <div className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group ${
+                    tipoFiltro === 'contatos'
+                      ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30 shadow-sm'
+                      : 'hover:bg-[#3BC0A8]/5 border-transparent hover:border-[#3BC0A8]/20'
                   }`}>
                     <div className="flex items-center gap-3">
                       <div>
                         <Contact className="h-5 w-5 text-[#3BC0A8]" />
                       </div>
-                      <span className="font-semibold text-gray-700">Contatos Atendimento</span>
-                      <Badge variant="destructive" className="ml-2">3</Badge>
+                      <span className="font-semibold text-gray-700">Contatos sem resolução</span>
+                      <Badge variant="destructive" className="ml-2">5</Badge>
                     </div>
                     {isContatosExpanded ? (
                       <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
@@ -1115,8 +1127,8 @@ export default function CasosPendentes() {
                     }`}
                     onClick={() => handleSubmenuClick('motivo-cliente', 'contatos')}
                   >
-                    <span>Primeira Ligação</span>
-                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
+                    <span>Motivo do Cliente</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">4</Badge>
                   </Button>
                   <Button 
                     variant="ghost" 
@@ -1127,11 +1139,113 @@ export default function CasosPendentes() {
                     }`}
                     onClick={() => handleSubmenuClick('motivo-interno', 'contatos')}
                   >
-                    <span>Reagendamento</span>
+                    <span>Motivo Interno</span>
                     <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
                   </Button>
                 </CollapsibleContent>
               </Collapsible>
+
+              {/* Seção Queixas Técnicas */}
+              <Collapsible open={isQueixasExpanded} onOpenChange={setIsQueixasExpanded}>
+                <CollapsibleTrigger asChild>
+                  <div className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group ${
+                    tipoFiltro === 'queixas'
+                      ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30 shadow-sm'
+                      : 'hover:bg-[#3BC0A8]/5 border-transparent hover:border-[#3BC0A8]/20'
+                  }`}>
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <TriangleAlert className="h-5 w-5 text-[#3BC0A8]" />
+                      </div>
+                      <span className="font-semibold text-gray-700">Queixas Técnicas</span>
+                      <Badge variant="destructive" className="ml-2">4</Badge>
+                    </div>
+                    {isQueixasExpanded ? (
+                      <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-gray-500 transition-transform duration-200" />
+                    )}
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 ml-6 mt-2">
+                  <Button 
+                    variant="ghost" 
+                    className={`w-full justify-start text-sm transition-colors ${
+                      filtroAtivo === 'aberto' && tipoFiltro === 'queixas'
+                        ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                        : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                    }`}
+                    onClick={() => handleSubmenuClick('aberto', 'queixas')}
+                  >
+                    <span>Aberto</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className={`w-full justify-start text-sm transition-colors ${
+                      filtroAtivo === 'rejeitado' && tipoFiltro === 'queixas'
+                        ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                        : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                    }`}
+                    onClick={() => handleSubmenuClick('rejeitado', 'queixas')}
+                  >
+                    <span>Rejeitado</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
+                  </Button>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* Seção Farmacovigilância */}
+              <Collapsible open={isFarmacovigilanciaExpanded} onOpenChange={setIsFarmacovigilanciaExpanded}>
+                <CollapsibleTrigger asChild>
+                  <div className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group ${
+                    tipoFiltro === 'farmacovigilancia'
+                      ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30 shadow-sm'
+                      : 'hover:bg-[#3BC0A8]/5 border-transparent hover:border-[#3BC0A8]/20'
+                  }`}>
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <Pill className="h-5 w-5 text-[#3BC0A8]" />
+                      </div>
+                      <span className="font-semibold text-gray-700">Farmacovigilância</span>
+                      <Badge variant="destructive" className="ml-2">3</Badge>
+                    </div>
+                    {isFarmacovigilanciaExpanded ? (
+                      <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-gray-500 transition-transform duration-200" />
+                    )}
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 ml-6 mt-2">
+                  <Button 
+                    variant="ghost" 
+                    className={`w-full justify-start text-sm transition-colors ${
+                      filtroAtivo === 'aberto' && tipoFiltro === 'farmacovigilancia'
+                        ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                        : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                    }`}
+                    onClick={() => handleSubmenuClick('aberto', 'farmacovigilancia')}
+                  >
+                    <span>Aberto</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className={`w-full justify-start text-sm transition-colors ${
+                      filtroAtivo === 'rejeitado' && tipoFiltro === 'farmacovigilancia'
+                        ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                        : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                    }`}
+                    onClick={() => handleSubmenuClick('rejeitado', 'farmacovigilancia')}
+                  >
+                    <span>Rejeitado</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
+                  </Button>
+                </CollapsibleContent>
+              </Collapsible>
+
+
             </div>
 
             {/* Conteúdo Principal - Lista de Casos Atendimento */}
@@ -1322,7 +1436,7 @@ export default function CasosPendentes() {
                       <div>
                         <TriangleAlert className="h-5 w-5 text-[#3BC0A8]" />
                       </div>
-                      <span className="font-semibold text-gray-700">Controle Qualidade</span>
+                      <span className="font-semibold text-gray-700">Queixas Técnicas</span>
                       <Badge variant="destructive" className="ml-2">3</Badge>
                     </div>
                     {isQueixasExpanded ? (
@@ -1342,7 +1456,7 @@ export default function CasosPendentes() {
                     }`}
                     onClick={() => handleSubmenuClick('revisao', 'queixas')}
                   >
-                    <span>Análise Produto</span>
+                    <span>Qualidade</span>
                     <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
                   </Button>
                   <Button 
@@ -1354,7 +1468,7 @@ export default function CasosPendentes() {
                     }`}
                     onClick={() => handleSubmenuClick('retornado', 'queixas')}
                   >
-                    <span>Retorno Análise</span>
+                    <span>Em análise</span>
                     <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
                   </Button>
                 </CollapsibleContent>
@@ -1543,7 +1657,7 @@ export default function CasosPendentes() {
                       <div>
                         <Pill className="h-5 w-5 text-[#3BC0A8]" />
                       </div>
-                      <span className="font-semibold text-gray-700">Eventos Adversos</span>
+                      <span className="font-semibold text-gray-700">Farmacovigilância</span>
                       <Badge variant="destructive" className="ml-2">3</Badge>
                     </div>
                     {isFarmacovigilanciaExpanded ? (
@@ -1563,21 +1677,22 @@ export default function CasosPendentes() {
                     }`}
                     onClick={() => handleSubmenuClick('revisao', 'farmacovigilancia')}
                   >
-                    <span>Eventos Graves</span>
+                    <span>Farmacovigilância</span>
                     <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
                   </Button>
                   <Button 
                     variant="ghost" 
                     className={`w-full justify-start text-sm transition-colors ${
-                      filtroAtivo === 'retornado' && tipoFiltro === 'farmacovigilancia'
+                      filtroAtivo === 'followup' && tipoFiltro === 'farmacovigilancia'
                         ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
                         : 'hover:bg-[#3BC0A8]/10 text-gray-600'
                     }`}
-                    onClick={() => handleSubmenuClick('retornado', 'farmacovigilancia')}
+                    onClick={() => handleSubmenuClick('followup', 'farmacovigilancia')}
                   >
-                    <span>Falta Eficácia</span>
+                    <span>Follow-up</span>
                     <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
                   </Button>
+
                 </CollapsibleContent>
               </Collapsible>
             </div>
