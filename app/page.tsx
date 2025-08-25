@@ -26,7 +26,7 @@ import {
 import Link from "next/link"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
-// Dados dos casos pendentes baseados na imagem
+// Dados dos casos pendentes para Supervisor (todos os casos)
 const CASOS_PENDENTES = [
   // Casos para Contatos - Motivo do Cliente
   {
@@ -216,7 +216,249 @@ const CASOS_PENDENTES = [
   }
 ]
 
-// Dados dos eventos do dia para a sidebar
+// Dados específicos para cada perfil
+const CASOS_ATENDIMENTO = [
+  {
+    id: "AT01",
+    nome: "Maria Santos Silva",
+    prioridade: "Cliente Indisponível",
+    protocolo: "AT-2023-0001",
+    dataHora: "28/12/2023 09:15",
+    responsavel: "Carlos Atendimento",
+    tipo: "Aguardando Resposta",
+    status: "Leve",
+    motivoPrincipal: "Atendimento",
+    subcategoria: "Primeira Ligação",
+    detalhe: "Contato inicial",
+    categoria: "contatos",
+    submenu: "motivo-cliente"
+  },
+  {
+    id: "AT02",
+    nome: "José Silva Costa",
+    prioridade: "Reagendamento",
+    protocolo: "AT-2023-0002",
+    dataHora: "28/12/2023 10:30",
+    responsavel: "Ana Atendimento",
+    tipo: "Reagendamento",
+    status: "Moderado",
+    motivoPrincipal: "Atendimento",
+    subcategoria: "Horário",
+    detalhe: "Conflito agenda",
+    categoria: "contatos",
+    submenu: "motivo-interno"
+  },
+  {
+    id: "AT03",
+    nome: "Fernanda Lima",
+    prioridade: "Informações Gerais",
+    protocolo: "AT-2023-0003",
+    dataHora: "28/12/2023 11:45",
+    responsavel: "Pedro Atendimento",
+    tipo: "Informação",
+    status: "Leve",
+    motivoPrincipal: "Informação",
+    subcategoria: "Dúvida Geral",
+    detalhe: "Horário funcionamento",
+    categoria: "contatos",
+    submenu: "motivo-cliente"
+  }
+]
+
+const CASOS_QUALIDADE = [
+  {
+    id: "QL01",
+    nome: "Roberto Qualidade Silva",
+    prioridade: "Análise Produto",
+    protocolo: "QL-2023-0001",
+    dataHora: "28/12/2023 08:30",
+    responsavel: "Dra. Maria Qualidade",
+    tipo: "Revisão Necessária",
+    status: "Grave",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Defeito Produto",
+    detalhe: "Embalagem danificada",
+    categoria: "queixas",
+    submenu: "revisao"
+  },
+  {
+    id: "QL02",
+    nome: "Sandra Controle Silva",
+    prioridade: "Lote Suspeito",
+    protocolo: "QL-2023-0002",
+    dataHora: "28/12/2023 09:45",
+    responsavel: "Dr. João Qualidade",
+    tipo: "Revisão Necessária",
+    status: "Moderado",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Lote",
+    detalhe: "Verificação necessária",
+    categoria: "queixas",
+    submenu: "revisao"
+  },
+  {
+    id: "QL03",
+    nome: "Carlos Inspeção Costa",
+    prioridade: "Retorno Análise",
+    protocolo: "QL-2023-0003",
+    dataHora: "28/12/2023 14:20",
+    responsavel: "Ana Qualidade",
+    tipo: "Aguardando Resposta",
+    status: "Leve",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Resultado",
+    detalhe: "Laudo pendente",
+    categoria: "queixas",
+    submenu: "retornado"
+  }
+]
+
+const CASOS_FARMACOVIGILANCIA = [
+  {
+    id: "FV01",
+    nome: "Ana Reação Silva",
+    prioridade: "Evento Adverso Grave",
+    protocolo: "FV-2023-0001",
+    dataHora: "28/12/2023 07:15",
+    responsavel: "Dr. Ricardo Farmaco",
+    tipo: "Revisão Necessária",
+    status: "Grave",
+    motivoPrincipal: "Evento Adverso",
+    subcategoria: "Reação Grave",
+    detalhe: "Internação hospitalar",
+    categoria: "farmacovigilancia",
+    submenu: "revisao"
+  },
+  {
+    id: "FV02",
+    nome: "Pedro Alergia Costa",
+    prioridade: "Reação Alérgica",
+    protocolo: "FV-2023-0002",
+    dataHora: "28/12/2023 08:30",
+    responsavel: "Dra. Beatriz Farmaco",
+    tipo: "Revisão Necessária",
+    status: "Moderado",
+    motivoPrincipal: "Evento Adverso",
+    subcategoria: "Alergia",
+    detalhe: "Erupção cutânea",
+    categoria: "farmacovigilancia",
+    submenu: "revisao"
+  },
+  {
+    id: "FV03",
+    nome: "Lucia Eficácia Lima",
+    prioridade: "Falta de Eficácia",
+    protocolo: "FV-2023-0003",
+    dataHora: "28/12/2023 10:45",
+    responsavel: "Dr. Carlos Farmaco",
+    tipo: "Aguardando Resposta",
+    status: "Leve",
+    motivoPrincipal: "Eficácia",
+    subcategoria: "Sem Efeito",
+    detalhe: "Medicamento ineficaz",
+    categoria: "farmacovigilancia",
+    submenu: "retornado"
+  }
+]
+
+// Eventos específicos para cada perfil
+const EVENTOS_SUPERVISOR = [
+  {
+    id: 1,
+    titulo: "Reunião de Supervisores",
+    horario: "09:00",
+    tipo: "Reunião",
+    participantes: "Equipe Supervisão"
+  },
+  {
+    id: 2,
+    titulo: "Análise de Indicadores",
+    horario: "14:00",
+    tipo: "Análise",
+    participantes: "Gerência"
+  },
+  {
+    id: 3,
+    titulo: "Revisão de Processos",
+    horario: "16:00",
+    tipo: "Revisão",
+    participantes: "Coordenadores"
+  }
+]
+
+const EVENTOS_ATENDIMENTO = [
+  {
+    id: 1,
+    titulo: "Treinamento Atendimento",
+    horario: "08:30",
+    tipo: "Treinamento",
+    participantes: "Equipe Atendimento"
+  },
+  {
+    id: 2,
+    titulo: "Reunião de Equipe",
+    horario: "13:00",
+    tipo: "Reunião",
+    participantes: "Atendentes"
+  },
+  {
+    id: 3,
+    titulo: "Feedback Clientes",
+    horario: "15:30",
+    tipo: "Análise",
+    participantes: "Supervisores"
+  }
+]
+
+const EVENTOS_QUALIDADE = [
+  {
+    id: 1,
+    titulo: "Auditoria Interna",
+    horario: "09:00",
+    tipo: "Auditoria",
+    participantes: "Equipe Qualidade"
+  },
+  {
+    id: 2,
+    titulo: "Análise de Desvios",
+    horario: "11:00",
+    tipo: "Análise",
+    participantes: "Analistas"
+  },
+  {
+    id: 3,
+    titulo: "Revisão de Procedimentos",
+    horario: "14:30",
+    tipo: "Revisão",
+    participantes: "Coordenação"
+  }
+]
+
+const EVENTOS_FARMACOVIGILANCIA = [
+  {
+    id: 1,
+    titulo: "Análise de Casos Graves",
+    horario: "08:00",
+    tipo: "Análise",
+    participantes: "Médicos"
+  },
+  {
+    id: 2,
+    titulo: "Reunião Científica",
+    horario: "10:30",
+    tipo: "Reunião",
+    participantes: "Equipe Médica"
+  },
+  {
+    id: 3,
+    titulo: "Relatório ANVISA",
+    horario: "15:00",
+    tipo: "Relatório",
+    participantes: "Responsável Técnico"
+  }
+]
+
+// Dados dos eventos do dia para a sidebar (mantido para compatibilidade)
 const EVENTOS_HOJE = [
   {
     id: 4,
@@ -314,6 +556,9 @@ export default function CasosPendentes() {
   const [filtroAtivo, setFiltroAtivo] = useState<string | null>(null)
   const [tipoFiltro, setTipoFiltro] = useState<string | null>(null)
   
+  // Estado para controlar qual aba de perfil está ativa
+  const [abaAtiva, setAbaAtiva] = useState('supervisor')
+  
   // Função para filtrar casos baseado no submenu selecionado
   const filtrarCasos = () => {
     let casosFiltrados = CASOS_PENDENTES
@@ -353,15 +598,15 @@ export default function CasosPendentes() {
   const getPrioridadeColor = (prioridade: string) => {
     switch (prioridade.toLowerCase()) {
       case 'cliente indisponível':
-      return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
+        return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
       case 'não atende ligações':
-      return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
-    case 'telefone inválido':
-      return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
-    case 'recusa contato':
-      return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
-    case 'horário incompatível':
-      return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
+        return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
+      case 'telefone inválido':
+        return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
+      case 'recusa contato':
+        return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
+      case 'horário incompatível':
+        return 'bg-[#E8F7F4] text-[#26B99D] border-[#26B99D]'
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200'
     }
@@ -413,15 +658,44 @@ export default function CasosPendentes() {
           </div>
         </div>
 
-        {/* Layout Principal */}
-        <div className="flex gap-6">
+        {/* Abas de Perfis */}
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8">
+            {[
+              { id: 'supervisor', label: 'Supervisor' },
+              { id: 'atendimento', label: 'Atendimento' },
+              { id: 'qualidade', label: 'Qualidade' },
+              { id: 'farmacovigilancia', label: 'Farmacovigilância' }
+            ].map((aba) => (
+              <button
+                key={aba.id}
+                onClick={() => setAbaAtiva(aba.id)}
+                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  abaAtiva === aba.id
+                    ? 'border-[#3BC0A8] text-[#3BC0A8]'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {aba.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Conteúdo das Abas */}
+        {abaAtiva === 'supervisor' && (
+          <div className="flex gap-6">
           {/* Sidebar de Pendências */}
           <div className="w-80 space-y-3 bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl border border-gray-200 shadow-lg">
 
             {/* Seção Contatos */}
             <Collapsible open={isContatosExpanded} onOpenChange={setIsContatosExpanded}>
               <CollapsibleTrigger asChild>
-                <div className="flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group bg-[#3BC0A8]/10 border-[#3BC0A8]/30 shadow-sm">
+                <div className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group ${
+                  tipoFiltro === 'contatos'
+                    ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30 shadow-sm'
+                    : 'hover:bg-[#3BC0A8]/5 border-transparent hover:border-[#3BC0A8]/20'
+                }`}>
                   <div className="flex items-center gap-3">
                     <div>
                       <Contact className="h-5 w-5 text-[#3BC0A8]" />
@@ -467,7 +741,11 @@ export default function CasosPendentes() {
             {/* Seção Queixas Técnicas */}
             <Collapsible open={isQueixasExpanded} onOpenChange={setIsQueixasExpanded}>
               <CollapsibleTrigger asChild>
-                <div className="flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group hover:bg-[#3BC0A8]/5 border-transparent hover:border-[#3BC0A8]/20">
+                <div className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group ${
+                  tipoFiltro === 'queixas'
+                    ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30 shadow-sm'
+                    : 'hover:bg-[#3BC0A8]/5 border-transparent hover:border-[#3BC0A8]/20'
+                }`}>
                   <div className="flex items-center gap-3">
                     <div>
                       <TriangleAlert className="h-5 w-5 text-[#3BC0A8]" />
@@ -513,7 +791,11 @@ export default function CasosPendentes() {
             {/* Seção Farmacovigilância */}
             <Collapsible open={isFarmacovigilanciaExpanded} onOpenChange={setIsFarmacovigilanciaExpanded}>
               <CollapsibleTrigger asChild>
-                <div className="flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group hover:bg-[#3BC0A8]/5 border-transparent hover:border-[#3BC0A8]/20">
+                <div className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group ${
+                  tipoFiltro === 'farmacovigilancia'
+                    ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30 shadow-sm'
+                    : 'hover:bg-[#3BC0A8]/5 border-transparent hover:border-[#3BC0A8]/20'
+                }`}>
                   <div className="flex items-center gap-3">
                     <div>
                       <Pill className="h-5 w-5 text-[#3BC0A8]" />
@@ -694,6 +976,487 @@ export default function CasosPendentes() {
             </Card>
           </div>
         </div>
+        )}
+
+        {/* Aba Atendimento */}
+        {abaAtiva === 'atendimento' && (
+          <div className="flex gap-6">
+            {/* Sidebar de Pendências - Atendimento */}
+            <div className="w-80 space-y-3 bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl border border-gray-200 shadow-lg">
+              {/* Seção Contatos */}
+              <Collapsible open={isContatosExpanded} onOpenChange={setIsContatosExpanded}>
+                <CollapsibleTrigger asChild>
+                  <div className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group hover:bg-[#3BC0A8]/5 ${
+                    (tipoFiltro === 'contatos' && isContatosExpanded) 
+                      ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30' 
+                      : 'border-transparent hover:border-[#3BC0A8]/20'
+                  }`}>
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <Contact className="h-5 w-5 text-[#3BC0A8]" />
+                      </div>
+                      <span className="font-semibold text-gray-700">Contatos Atendimento</span>
+                      <Badge variant="destructive" className="ml-2">3</Badge>
+                    </div>
+                    {isContatosExpanded ? (
+                      <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-gray-500 transition-transform duration-200" />
+                    )}
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 ml-6 mt-2">
+                  <Button 
+                    variant="ghost" 
+                    className={`w-full justify-start text-sm transition-colors ${
+                      filtroAtivo === 'motivo-cliente' && tipoFiltro === 'contatos'
+                        ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                        : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                    }`}
+                    onClick={() => handleSubmenuClick('motivo-cliente', 'contatos')}
+                  >
+                    <span>Primeira Ligação</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className={`w-full justify-start text-sm transition-colors ${
+                      filtroAtivo === 'motivo-interno' && tipoFiltro === 'contatos'
+                        ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                        : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                    }`}
+                    onClick={() => handleSubmenuClick('motivo-interno', 'contatos')}
+                  >
+                    <span>Reagendamento</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
+                  </Button>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+
+            {/* Conteúdo Principal - Lista de Casos Atendimento */}
+            <div className="flex-1 space-y-4">
+              {CASOS_ATENDIMENTO.map((caso) => (
+                <Card key={caso.id} className={`hover:shadow-md transition-shadow ${
+                  filtroAtivo === 'primeira' && tipoFiltro === 'contatos' 
+                    ? 'border-l-4 border-l-blue-500 bg-blue-50/30' 
+                    : filtroAtivo === 'reagendamento' && tipoFiltro === 'contatos'
+                    ? 'border-l-4 border-l-green-500 bg-green-50/30'
+                    : ''
+                }`}>
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-3 flex-1">
+                        {/* Linha 1: ID e Nome */}
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline" className="text-xs font-mono">
+                            ID: {caso.id.replace(/[^0-9]/g, '')}
+                          </Badge>
+                          <h3 className="font-semibold text-lg">{caso.nome}</h3>
+                          <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                            {caso.prioridade}
+                          </Badge>
+                        </div>
+
+                        {/* Linha 2: Motivo Principal, Subcategoria e Detalhe */}
+                        <div className="flex items-center gap-2 text-sm">
+                          <Badge variant="secondary" className="text-xs">
+                            {caso.motivoPrincipal}
+                          </Badge>
+                          <ChevronRight className="h-3 w-3 text-gray-400" />
+                          <Badge variant="secondary" className="text-xs">
+                            {caso.subcategoria}
+                          </Badge>
+                          <ChevronRight className="h-3 w-3 text-gray-400" />
+                          <Badge variant="secondary" className="text-xs">
+                            {caso.detalhe}
+                          </Badge>
+                        </div>
+
+                        {/* Linha 3: Protocolo, Data e Responsável */}
+                        <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4" />
+                            <span>{caso.protocolo}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CalendarIcon className="h-4 w-4" />
+                            <span>{caso.dataHora}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4" />
+                            <span>{caso.responsavel}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Botão de Ação */}
+                      <div className="ml-4">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/casos-pendentes/${caso.id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Sidebar - Eventos de Hoje Atendimento */}
+            <div className="w-80 space-y-3">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <CalendarIcon className="h-5 w-5" />
+                    Eventos de Hoje
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {EVENTOS_ATENDIMENTO.map((evento) => (
+                    <div key={evento.id} className={getEventoClasses(evento.horario)}>
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <h4 className={`font-medium text-sm ${getEventoTextClasses(evento.horario)}`}>{evento.titulo}</h4>
+                          <p className={`text-xs ${getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className={`flex items-center gap-1 text-xs ${
+                            getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' :
+                            getEventoStatus(evento.horario) === 'proximo' ? 'text-orange-600' :
+                            'text-gray-500'
+                          }`}>
+                            <Clock className="h-3 w-3" />
+                            {evento.horario}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* Aba Qualidade */}
+        {abaAtiva === 'qualidade' && (
+          <div className="flex gap-6">
+            {/* Sidebar de Pendências - Qualidade */}
+            <div className="w-80 space-y-3 bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl border border-gray-200 shadow-lg">
+              {/* Seção Controle Qualidade */}
+              <Collapsible open={isQueixasExpanded} onOpenChange={setIsQueixasExpanded}>
+                <CollapsibleTrigger asChild>
+                  <div className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group hover:bg-[#3BC0A8]/5 ${
+                    (tipoFiltro === 'queixas' && isQueixasExpanded) 
+                      ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30' 
+                      : 'border-transparent hover:border-[#3BC0A8]/20'
+                  }`}>
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <TriangleAlert className="h-5 w-5 text-[#3BC0A8]" />
+                      </div>
+                      <span className="font-semibold text-gray-700">Controle Qualidade</span>
+                      <Badge variant="destructive" className="ml-2">3</Badge>
+                    </div>
+                    {isQueixasExpanded ? (
+                      <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-gray-500 transition-transform duration-200" />
+                    )}
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 ml-6 mt-2">
+                  <Button 
+                    variant="ghost" 
+                    className={`w-full justify-start text-sm transition-colors ${
+                      filtroAtivo === 'revisao' && tipoFiltro === 'queixas'
+                        ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                        : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                    }`}
+                    onClick={() => handleSubmenuClick('revisao', 'queixas')}
+                  >
+                    <span>Análise Produto</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className={`w-full justify-start text-sm transition-colors ${
+                      filtroAtivo === 'retornado' && tipoFiltro === 'queixas'
+                        ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                        : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                    }`}
+                    onClick={() => handleSubmenuClick('retornado', 'queixas')}
+                  >
+                    <span>Retorno Análise</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
+                  </Button>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+
+            {/* Conteúdo Principal - Lista de Casos Qualidade */}
+            <div className="flex-1 space-y-4">
+              {CASOS_QUALIDADE.map((caso) => (
+                <Card key={caso.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-3 flex-1">
+                        {/* Linha 1: ID e Nome */}
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline" className="text-xs font-mono">
+                            ID: {caso.id.replace(/[^0-9]/g, '')}
+                          </Badge>
+                          <h3 className="font-semibold text-lg">{caso.nome}</h3>
+                          <Badge className={getGravidadeColor(caso.status)}>
+                            {caso.status}
+                          </Badge>
+                        </div>
+
+                        {/* Linha 2: Motivo Principal, Subcategoria e Detalhe */}
+                        <div className="flex items-center gap-2 text-sm">
+                          <Badge variant="secondary" className="text-xs">
+                            {caso.motivoPrincipal}
+                          </Badge>
+                          <ChevronRight className="h-3 w-3 text-gray-400" />
+                          <Badge variant="secondary" className="text-xs">
+                            {caso.subcategoria}
+                          </Badge>
+                          <ChevronRight className="h-3 w-3 text-gray-400" />
+                          <Badge variant="secondary" className="text-xs">
+                            {caso.detalhe}
+                          </Badge>
+                        </div>
+
+                        {/* Linha 3: Protocolo, Data e Responsável */}
+                        <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4" />
+                            <span>{caso.protocolo}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CalendarIcon className="h-4 w-4" />
+                            <span>{caso.dataHora}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4" />
+                            <span>{caso.responsavel}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Botão de Ação */}
+                      <div className="ml-4">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/casos-pendentes/${caso.id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Sidebar - Eventos de Hoje Qualidade */}
+            <div className="w-80 space-y-3">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <CalendarIcon className="h-5 w-5" />
+                    Eventos de Hoje
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {EVENTOS_QUALIDADE.map((evento) => (
+                    <div key={evento.id} className={getEventoClasses(evento.horario)}>
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <h4 className={`font-medium text-sm ${getEventoTextClasses(evento.horario)}`}>{evento.titulo}</h4>
+                          <p className={`text-xs ${getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className={`flex items-center gap-1 text-xs ${
+                            getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' :
+                            getEventoStatus(evento.horario) === 'proximo' ? 'text-orange-600' :
+                            'text-gray-500'
+                          }`}>
+                            <Clock className="h-3 w-3" />
+                            {evento.horario}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* Aba Farmacovigilância */}
+        {abaAtiva === 'farmacovigilancia' && (
+          <div className="flex gap-6">
+            {/* Sidebar de Pendências - Farmacovigilância */}
+            <div className="w-80 space-y-3 bg-gradient-to-br from-white to-gray-50 p-6 rounded-xl border border-gray-200 shadow-lg">
+              {/* Seção Eventos Adversos */}
+              <Collapsible open={isFarmacovigilanciaExpanded} onOpenChange={setIsFarmacovigilanciaExpanded}>
+                <CollapsibleTrigger asChild>
+                  <div className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 border group hover:bg-[#3BC0A8]/5 ${
+                    (tipoFiltro === 'farmacovigilancia' && isFarmacovigilanciaExpanded) 
+                      ? 'bg-[#3BC0A8]/10 border-[#3BC0A8]/30' 
+                      : 'border-transparent hover:border-[#3BC0A8]/20'
+                  }`}>
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <Pill className="h-5 w-5 text-[#3BC0A8]" />
+                      </div>
+                      <span className="font-semibold text-gray-700">Eventos Adversos</span>
+                      <Badge variant="destructive" className="ml-2">3</Badge>
+                    </div>
+                    {isFarmacovigilanciaExpanded ? (
+                       <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
+                     ) : (
+                       <ChevronDown className="h-4 w-4 text-gray-500 transition-transform duration-200" />
+                     )}
+                   </div>
+                 </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 ml-6 mt-2">
+                  <Button 
+                    variant="ghost" 
+                    className={`w-full justify-start text-sm transition-colors ${
+                      filtroAtivo === 'revisao' && tipoFiltro === 'farmacovigilancia'
+                        ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                        : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                    }`}
+                    onClick={() => handleSubmenuClick('revisao', 'farmacovigilancia')}
+                  >
+                    <span>Eventos Graves</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className={`w-full justify-start text-sm transition-colors ${
+                      filtroAtivo === 'retornado' && tipoFiltro === 'farmacovigilancia'
+                        ? 'bg-[#3BC0A8]/15 text-gray-700 font-medium border border-[#3BC0A8]/30'
+                        : 'hover:bg-[#3BC0A8]/10 text-gray-600'
+                    }`}
+                    onClick={() => handleSubmenuClick('retornado', 'farmacovigilancia')}
+                  >
+                    <span>Falta Eficácia</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
+                  </Button>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+
+            {/* Conteúdo Principal - Lista de Casos Farmacovigilância */}
+            <div className="flex-1 space-y-4">
+              {CASOS_FARMACOVIGILANCIA.map((caso) => (
+                <Card key={caso.id} className={`hover:shadow-md transition-shadow ${
+                  filtroAtivo === 'graves' && tipoFiltro === 'eventos' 
+                    ? 'border-l-4 border-l-red-500 bg-red-50/30' 
+                    : filtroAtivo === 'eficacia' && tipoFiltro === 'eventos'
+                    ? 'border-l-4 border-l-yellow-500 bg-yellow-50/30'
+                    : ''
+                }`}>
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-3 flex-1">
+                        {/* Linha 1: ID e Nome */}
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline" className="text-xs font-mono">
+                            ID: {caso.id.replace(/[^0-9]/g, '')}
+                          </Badge>
+                          <h3 className="font-semibold text-lg">{caso.nome}</h3>
+                          <Badge className={getGravidadeColor(caso.status)}>
+                            {caso.status}
+                          </Badge>
+                        </div>
+
+                        {/* Linha 2: Motivo Principal, Subcategoria e Detalhe */}
+                        <div className="flex items-center gap-2 text-sm">
+                          <Badge variant="secondary" className="text-xs">
+                            {caso.motivoPrincipal}
+                          </Badge>
+                          <ChevronRight className="h-3 w-3 text-gray-400" />
+                          <Badge variant="secondary" className="text-xs">
+                            {caso.subcategoria}
+                          </Badge>
+                          <ChevronRight className="h-3 w-3 text-gray-400" />
+                          <Badge variant="secondary" className="text-xs">
+                            {caso.detalhe}
+                          </Badge>
+                        </div>
+
+                        {/* Linha 3: Protocolo, Data e Responsável */}
+                        <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4" />
+                            <span>{caso.protocolo}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CalendarIcon className="h-4 w-4" />
+                            <span>{caso.dataHora}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4" />
+                            <span>{caso.responsavel}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Botão de Ação */}
+                      <div className="ml-4">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/casos-pendentes/${caso.id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Sidebar - Eventos de Hoje Farmacovigilância */}
+            <div className="w-80 space-y-3">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <CalendarIcon className="h-5 w-5" />
+                    Eventos de Hoje
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {EVENTOS_FARMACOVIGILANCIA.map((evento) => (
+                    <div key={evento.id} className={getEventoClasses(evento.horario)}>
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <h4 className={`font-medium text-sm ${getEventoTextClasses(evento.horario)}`}>{evento.titulo}</h4>
+                          <p className={`text-xs ${getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className={`flex items-center gap-1 text-xs ${
+                            getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' :
+                            getEventoStatus(evento.horario) === 'proximo' ? 'text-orange-600' :
+                            'text-gray-500'
+                          }`}>
+                            <Clock className="h-3 w-3" />
+                            {evento.horario}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   )
