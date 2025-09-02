@@ -21,10 +21,13 @@ import {
   TriangleAlert,
   Pill,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Check,
+  Plus
 } from "lucide-react"
 import Link from "next/link"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { AdicionarMotivoModal } from "@/components/adicionar-motivo-modal"
 
 // Dados dos casos pendentes para Supervisor (todos os casos)
 const CASOS_PENDENTES = [
@@ -218,6 +221,7 @@ const CASOS_PENDENTES = [
 
 // Dados específicos para cada perfil
 const CASOS_ATENDIMENTO = [
+  // Casos para Contatos
   {
     id: "AT01",
     nome: "Maria Santos Silva",
@@ -262,10 +266,165 @@ const CASOS_ATENDIMENTO = [
     detalhe: "Horário funcionamento",
     categoria: "contatos",
     submenu: "motivo-cliente"
+  },
+  // Casos para Queixas Técnicas - Aberto
+  {
+    id: "AT04",
+    nome: "Roberto Silva Santos",
+    prioridade: "Produto Defeituoso",
+    protocolo: "QT-2023-0001",
+    dataHora: "28/12/2023 08:20",
+    responsavel: "Dra. Carla Qualidade",
+    tipo: "Análise Pendente",
+    status: "Grave",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Defeito Produto",
+    detalhe: "Embalagem violada",
+    categoria: "queixas",
+    submenu: "aberto"
+  },
+  {
+    id: "AT05",
+    nome: "Sandra Costa Lima",
+    prioridade: "Lote Contaminado",
+    protocolo: "QT-2023-0002",
+    dataHora: "28/12/2023 09:35",
+    responsavel: "Dr. Paulo Qualidade",
+    tipo: "Investigação",
+    status: "Grave",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Contaminação",
+    detalhe: "Suspeita contaminação",
+    categoria: "queixas",
+    submenu: "aberto"
+  },
+  {
+    id: "AT06",
+    nome: "Carlos Pereira",
+    prioridade: "Cor Alterada",
+    protocolo: "QT-2023-0003",
+    dataHora: "28/12/2023 11:10",
+    responsavel: "Ana Qualidade",
+    tipo: "Verificação",
+    status: "Moderado",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Aparência",
+    detalhe: "Mudança coloração",
+    categoria: "queixas",
+    submenu: "aberto"
+  },
+  // Casos para Queixas Técnicas - Rejeitado
+  {
+    id: "AT07",
+    nome: "Lucia Martins",
+    prioridade: "Queixa Improcedente",
+    protocolo: "QT-2023-0004",
+    dataHora: "27/12/2023 15:45",
+    responsavel: "Dr. Ricardo Qualidade",
+    tipo: "Rejeitado",
+    status: "Leve",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Uso Incorreto",
+    detalhe: "Mau uso produto",
+    categoria: "queixas",
+    submenu: "rejeitado"
+  },
+  {
+    id: "AT08",
+    nome: "Fernando Oliveira",
+    prioridade: "Informação Insuficiente",
+    protocolo: "QT-2023-0005",
+    dataHora: "27/12/2023 16:20",
+    responsavel: "Dra. Beatriz Qualidade",
+    tipo: "Rejeitado",
+    status: "Leve",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Dados Incompletos",
+    detalhe: "Falta informações",
+    categoria: "queixas",
+    submenu: "rejeitado"
+  },
+  // Casos para Farmacovigilância - Aberto
+  {
+    id: "AT09",
+    nome: "Patricia Alves",
+    prioridade: "Reação Adversa Grave",
+    protocolo: "FV-2023-0010",
+    dataHora: "28/12/2023 07:30",
+    responsavel: "Dr. Eduardo Farmaco",
+    tipo: "Investigação",
+    status: "Grave",
+    motivoPrincipal: "Evento Adverso",
+    subcategoria: "Reação Sistêmica",
+    detalhe: "Choque anafilático",
+    categoria: "farmacovigilancia",
+    submenu: "aberto"
+  },
+  {
+    id: "AT10",
+    nome: "Marcos Rodrigues",
+    prioridade: "Interação Medicamentosa",
+    protocolo: "FV-2023-0011",
+    dataHora: "28/12/2023 08:45",
+    responsavel: "Dra. Fernanda Farmaco",
+    tipo: "Análise",
+    status: "Moderado",
+    motivoPrincipal: "Interação",
+    subcategoria: "Medicamentos",
+    detalhe: "Interação perigosa",
+    categoria: "farmacovigilancia",
+    submenu: "aberto"
+  },
+  {
+    id: "AT11",
+    nome: "Julia Santos",
+    prioridade: "Efeito Inesperado",
+    protocolo: "FV-2023-0012",
+    dataHora: "28/12/2023 10:15",
+    responsavel: "Dr. Gabriel Farmaco",
+    tipo: "Avaliação",
+    status: "Moderado",
+    motivoPrincipal: "Evento Adverso",
+    subcategoria: "Efeito Não Listado",
+    detalhe: "Reação não descrita",
+    categoria: "farmacovigilancia",
+    submenu: "aberto"
+  },
+  // Casos para Farmacovigilância - Rejeitado
+  {
+    id: "AT12",
+    nome: "Antonio Silva",
+    prioridade: "Relato Inconsistente",
+    protocolo: "FV-2023-0013",
+    dataHora: "27/12/2023 14:30",
+    responsavel: "Dra. Camila Farmaco",
+    tipo: "Rejeitado",
+    status: "Leve",
+    motivoPrincipal: "Relato",
+    subcategoria: "Inconsistência",
+    detalhe: "Dados contraditórios",
+    categoria: "farmacovigilancia",
+    submenu: "rejeitado"
+  },
+  {
+    id: "AT13",
+    nome: "Renata Costa",
+    prioridade: "Não Relacionado",
+    protocolo: "FV-2023-0014",
+    dataHora: "27/12/2023 15:50",
+    responsavel: "Dr. Henrique Farmaco",
+    tipo: "Rejeitado",
+    status: "Leve",
+    motivoPrincipal: "Avaliação",
+    subcategoria: "Sem Relação",
+    detalhe: "Não relacionado ao medicamento",
+    categoria: "farmacovigilancia",
+    submenu: "rejeitado"
   }
 ]
 
 const CASOS_QUALIDADE = [
+  // Submenu: Qualidade (revisao)
   {
     id: "QL01",
     nome: "Roberto Qualidade Silva",
@@ -297,6 +456,52 @@ const CASOS_QUALIDADE = [
     submenu: "revisao"
   },
   {
+    id: "QL04",
+    nome: "Fernanda Teste Lima",
+    prioridade: "Controle Qualidade",
+    protocolo: "QL-2023-0004",
+    dataHora: "29/12/2023 10:15",
+    responsavel: "Dr. Pedro Qualidade",
+    tipo: "Revisão Necessária",
+    status: "Grave",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Teste Falhou",
+    detalhe: "Parâmetros fora do padrão",
+    categoria: "queixas",
+    submenu: "revisao"
+  },
+  {
+    id: "QL05",
+    nome: "Marcos Validação Santos",
+    prioridade: "Processo Validação",
+    protocolo: "QL-2023-0005",
+    dataHora: "29/12/2023 11:30",
+    responsavel: "Dra. Carla Qualidade",
+    tipo: "Revisão Necessária",
+    status: "Moderado",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Validação",
+    detalhe: "Documentação incompleta",
+    categoria: "queixas",
+    submenu: "revisao"
+  },
+  {
+    id: "QL06",
+    nome: "Julia Especificação Costa",
+    prioridade: "Fora Especificação",
+    protocolo: "QL-2023-0006",
+    dataHora: "29/12/2023 13:45",
+    responsavel: "Dr. Rafael Qualidade",
+    tipo: "Revisão Necessária",
+    status: "Leve",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Especificação",
+    detalhe: "Cor alterada",
+    categoria: "queixas",
+    submenu: "revisao"
+  },
+  // Submenu: Em análise (retornado)
+  {
     id: "QL03",
     nome: "Carlos Inspeção Costa",
     prioridade: "Retorno Análise",
@@ -308,6 +513,51 @@ const CASOS_QUALIDADE = [
     motivoPrincipal: "Qualidade",
     subcategoria: "Resultado",
     detalhe: "Laudo pendente",
+    categoria: "queixas",
+    submenu: "retornado"
+  },
+  {
+    id: "QL07",
+    nome: "Patricia Laboratório Silva",
+    prioridade: "Análise Laboratorial",
+    protocolo: "QL-2023-0007",
+    dataHora: "29/12/2023 15:00",
+    responsavel: "Dr. Lucas Qualidade",
+    tipo: "Aguardando Resposta",
+    status: "Moderado",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Laboratório",
+    detalhe: "Aguardando resultado",
+    categoria: "queixas",
+    submenu: "retornado"
+  },
+  {
+    id: "QL08",
+    nome: "Ricardo Microbiologia Lima",
+    prioridade: "Teste Microbiológico",
+    protocolo: "QL-2023-0008",
+    dataHora: "29/12/2023 16:30",
+    responsavel: "Dra. Amanda Qualidade",
+    tipo: "Aguardando Resposta",
+    status: "Grave",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Microbiologia",
+    detalhe: "Contaminação suspeita",
+    categoria: "queixas",
+    submenu: "retornado"
+  },
+  {
+    id: "QL09",
+    nome: "Beatriz Estabilidade Santos",
+    prioridade: "Estudo Estabilidade",
+    protocolo: "QL-2023-0009",
+    dataHora: "30/12/2023 08:00",
+    responsavel: "Dr. Felipe Qualidade",
+    tipo: "Aguardando Resposta",
+    status: "Leve",
+    motivoPrincipal: "Qualidade",
+    subcategoria: "Estabilidade",
+    detalhe: "Prazo vencimento",
     categoria: "queixas",
     submenu: "retornado"
   }
@@ -358,6 +608,52 @@ const CASOS_FARMACOVIGILANCIA = [
     detalhe: "Medicamento ineficaz",
     categoria: "farmacovigilancia",
     submenu: "retornado"
+  },
+  // Casos para Follow-up pendente de aprovação
+  {
+    id: "FV04",
+    nome: "Maria Follow-up Santos",
+    prioridade: "Follow-up Pendente",
+    protocolo: "FV-2023-0004",
+    dataHora: "29/12/2023 09:30",
+    responsavel: "Dr. João Farmaco",
+    tipo: "Follow-up Pendente",
+    status: "Grave",
+    motivoPrincipal: "Follow-up",
+    subcategoria: "Aprovação Pendente",
+    detalhe: "Aguardando aprovação médica",
+    categoria: "farmacovigilancia",
+    submenu: "followup-pendente"
+  },
+  {
+    id: "FV05",
+    nome: "Roberto Acompanhamento Lima",
+    prioridade: "Acompanhamento Médico",
+    protocolo: "FV-2023-0005",
+    dataHora: "29/12/2023 11:15",
+    responsavel: "Dra. Patricia Farmaco",
+    tipo: "Follow-up Pendente",
+    status: "Moderado",
+    motivoPrincipal: "Follow-up",
+    subcategoria: "Acompanhamento",
+    detalhe: "Necessita avaliação adicional",
+    categoria: "farmacovigilancia",
+    submenu: "followup-pendente"
+  },
+  {
+    id: "FV06",
+    nome: "Carla Monitoramento Costa",
+    prioridade: "Monitoramento Contínuo",
+    protocolo: "FV-2023-0006",
+    dataHora: "29/12/2023 14:20",
+    responsavel: "Dr. Fernando Farmaco",
+    tipo: "Follow-up Pendente",
+    status: "Leve",
+    motivoPrincipal: "Follow-up",
+    subcategoria: "Monitoramento",
+    detalhe: "Acompanhamento de evolução",
+    categoria: "farmacovigilancia",
+    submenu: "followup-pendente"
   }
 ]
 
@@ -500,6 +796,9 @@ const EVENTOS_HOJE = [
 export default function CasosPendentes() {
   const [paginaAtual, setPaginaAtual] = useState(1)
   const itensPorPagina = 5
+  const [isModalMotivoOpen, setIsModalMotivoOpen] = useState(false)
+  const [casoSelecionado, setCasoSelecionado] = useState<any>(null)
+  const [casosComMotivo, setCasosComMotivo] = useState<{[key: string]: {tipo: string, motivo: string}}>({})
   
   // Função para verificar se o evento já passou
   const getEventoStatus = (horario: string) => {
@@ -546,6 +845,30 @@ export default function CasosPendentes() {
         return 'text-gray-900'
     }
   }
+
+  // Função para abrir modal de adicionar motivo
+  const handleOpenModalMotivo = (caso: any) => {
+    setCasoSelecionado(caso)
+    setIsModalMotivoOpen(true)
+  }
+
+  // Função para lidar com envio do motivo
+  const handleSubmitMotivo = (tipoMotivo: string, motivoSelecionado: string) => {
+    console.log('Motivo adicionado para caso:', casoSelecionado?.id)
+    console.log('Tipo:', tipoMotivo, 'Motivo:', motivoSelecionado)
+    
+    // Atualizar o estado local para mostrar a tag do motivo
+    setCasosComMotivo(prev => ({
+      ...prev,
+      [casoSelecionado?.id]: {
+        tipo: tipoMotivo,
+        motivo: motivoSelecionado
+      }
+    }))
+    
+    // Aqui você pode implementar a lógica para salvar os motivos
+    // Por exemplo, fazer uma chamada para API
+  }
   
   // Estados para controlar expansão das seções
   const [isContatosExpanded, setIsContatosExpanded] = useState(true)
@@ -564,11 +887,29 @@ export default function CasosPendentes() {
   
   // Função para filtrar casos baseado no submenu selecionado
   const filtrarCasos = () => {
-    let casosFiltrados = CASOS_PENDENTES
+    let casosFiltrados = []
+    
+    // Seleciona o array de dados baseado na aba ativa
+    switch (abaAtiva) {
+      case 'supervisor':
+        casosFiltrados = CASOS_PENDENTES
+        break
+      case 'atendimento':
+        casosFiltrados = CASOS_ATENDIMENTO
+        break
+      case 'qualidade':
+        casosFiltrados = CASOS_QUALIDADE
+        break
+      case 'farmacovigilancia':
+        casosFiltrados = CASOS_FARMACOVIGILANCIA
+        break
+      default:
+        casosFiltrados = CASOS_PENDENTES
+    }
     
     if (filtroAtivo && tipoFiltro) {
       // Filtra baseado na categoria e submenu específicos
-      casosFiltrados = CASOS_PENDENTES.filter(caso => 
+      casosFiltrados = casosFiltrados.filter(caso => 
         caso.categoria === tipoFiltro && caso.submenu === filtroAtivo
       )
     }
@@ -667,6 +1008,20 @@ export default function CasosPendentes() {
     return <Clock className="h-4 w-4" />
   }
 
+  // Função para obter tag de gravidade
+  const getGravidadeTag = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'grave':
+        return 'Grave'
+      case 'moderado':
+        return 'Moderada'
+      case 'leve':
+        return 'Baixa'
+      default:
+        return status
+    }
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -735,7 +1090,7 @@ export default function CasosPendentes() {
                     <div>
                       <Contact className="h-5 w-5 text-[#3BC0A8]" />
                     </div>
-                    <span className="font-semibold text-gray-700">Contatos sem resolução</span>
+                    <span className="font-semibold text-gray-700">Protocolos</span>
                     <Badge variant="destructive" className="ml-2">5</Badge>
                   </div>
                   {isContatosExpanded ? (
@@ -755,7 +1110,7 @@ export default function CasosPendentes() {
                   }`}
                   onClick={() => handleSubmenuClick('motivo-cliente', 'contatos')}
                 >
-                  <span>Motivo do Cliente</span>
+                  <span>Aberto</span>
                   <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">4</Badge>
                 </Button>
                 <Button 
@@ -767,7 +1122,7 @@ export default function CasosPendentes() {
                   }`}
                   onClick={() => handleSubmenuClick('motivo-interno', 'contatos')}
                 >
-                  <span>Motivo Interno</span>
+                  <span>Em andamento</span>
                   <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
                 </Button>
               </CollapsibleContent>
@@ -893,22 +1248,22 @@ export default function CasosPendentes() {
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="space-y-3 flex-1">
-                      {/* Linha 1: ID e Nome */}
+                      {/* Linha 1: Protocolo */}
                       <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="text-xs font-mono">
-                          ID: {caso.id}
-                        </Badge>
-                        <h3 className="font-semibold text-lg">{caso.nome}</h3>
-                        {/* Exibir tag de prioridade apenas para submenus 'Motivo do Cliente' e 'Motivo Interno' */}
-                        {(filtroAtivo === 'motivo-cliente' || filtroAtivo === 'motivo-interno') && (
-                          <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
-                            {caso.prioridade}
-                          </Badge>
-                        )}
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-gray-600" />
+                          <span className="font-semibold text-lg">{caso.protocolo}</span>
+                        </div>
                         {/* Exibir tag de gravidade apenas para submenus específicos de Farmacovigilância */}
                         {tipoFiltro === 'farmacovigilancia' && (filtroAtivo === 'revisao' || filtroAtivo === 'retornado') && (
                           <Badge className={getGravidadeColor(caso.status)}>
                             {caso.status}
+                          </Badge>
+                        )}
+                        {/* Exibir tag do motivo adicionado */}
+                        {casosComMotivo[caso.id] && (
+                          <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                            {casosComMotivo[caso.id].tipo}: {casosComMotivo[caso.id].motivo}
                           </Badge>
                         )}
                       </div>
@@ -928,11 +1283,13 @@ export default function CasosPendentes() {
                         </Badge>
                       </div>
 
-                      {/* Linha 3: Protocolo, Data e Responsável */}
+                      {/* Linha 3: ID, Nome, Data e Responsável */}
                       <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-4 w-4" />
-                          <span>{caso.protocolo}</span>
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline" className="text-xs font-mono">
+                            ID: {caso.id}
+                          </Badge>
+                          <span className="font-medium">{caso.nome}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <CalendarIcon className="h-4 w-4" />
@@ -945,8 +1302,20 @@ export default function CasosPendentes() {
                       </div>
                     </div>
 
-                    {/* Botão de Ação */}
-                    <div className="ml-4">
+                    {/* Botões de Ação */}
+                    <div className="ml-4 flex items-center gap-2">
+                      <Button variant="outline" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50" title="Concluir protocolo">
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50" 
+                        title="Adicionar motivo"
+                        onClick={() => handleOpenModalMotivo(caso)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
                       <Button variant="outline" size="sm" asChild>
                         <Link href={`/casos-pendentes/${caso.id}`}>
                           <Eye className="h-4 w-4" />
@@ -1107,8 +1476,8 @@ export default function CasosPendentes() {
                       <div>
                         <Contact className="h-5 w-5 text-[#3BC0A8]" />
                       </div>
-                      <span className="font-semibold text-gray-700">Contatos sem resolução</span>
-                      <Badge variant="destructive" className="ml-2">5</Badge>
+                      <span className="font-semibold text-gray-700">Protocolos</span>
+                      <Badge variant="destructive" className="ml-2">3</Badge>
                     </div>
                     {isContatosExpanded ? (
                       <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
@@ -1127,8 +1496,8 @@ export default function CasosPendentes() {
                     }`}
                     onClick={() => handleSubmenuClick('motivo-cliente', 'contatos')}
                   >
-                    <span>Motivo do Cliente</span>
-                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">4</Badge>
+                    <span>Aberto</span>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
                   </Button>
                   <Button 
                     variant="ghost" 
@@ -1139,7 +1508,7 @@ export default function CasosPendentes() {
                     }`}
                     onClick={() => handleSubmenuClick('motivo-interno', 'contatos')}
                   >
-                    <span>Motivo Interno</span>
+                    <span>Em andamento</span>
                     <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
                   </Button>
                 </CollapsibleContent>
@@ -1158,7 +1527,7 @@ export default function CasosPendentes() {
                         <TriangleAlert className="h-5 w-5 text-[#3BC0A8]" />
                       </div>
                       <span className="font-semibold text-gray-700">Queixas Técnicas</span>
-                      <Badge variant="destructive" className="ml-2">4</Badge>
+                      <Badge variant="destructive" className="ml-2">5</Badge>
                     </div>
                     {isQueixasExpanded ? (
                       <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
@@ -1178,7 +1547,7 @@ export default function CasosPendentes() {
                     onClick={() => handleSubmenuClick('aberto', 'queixas')}
                   >
                     <span>Aberto</span>
-                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">3</Badge>
                   </Button>
                   <Button 
                     variant="ghost" 
@@ -1208,7 +1577,7 @@ export default function CasosPendentes() {
                         <Pill className="h-5 w-5 text-[#3BC0A8]" />
                       </div>
                       <span className="font-semibold text-gray-700">Farmacovigilância</span>
-                      <Badge variant="destructive" className="ml-2">3</Badge>
+                      <Badge variant="destructive" className="ml-2">5</Badge>
                     </div>
                     {isFarmacovigilanciaExpanded ? (
                       <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
@@ -1250,7 +1619,7 @@ export default function CasosPendentes() {
 
             {/* Conteúdo Principal - Lista de Casos Atendimento */}
             <div className="flex-1 space-y-4">
-              {CASOS_ATENDIMENTO.map((caso) => (
+              {casosExibidos.map((caso) => (
                 <Card key={caso.id} className={`hover:shadow-md transition-shadow ${
                   filtroAtivo === 'primeira' && tipoFiltro === 'contatos' 
                     ? 'border-l-4 border-l-blue-500 bg-blue-50/30' 
@@ -1261,15 +1630,24 @@ export default function CasosPendentes() {
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="space-y-3 flex-1">
-                        {/* Linha 1: ID e Nome */}
+                        {/* Linha 1: Protocolo */}
                         <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="text-xs font-mono">
-                            ID: {caso.id.replace(/[^0-9]/g, '')}
-                          </Badge>
-                          <h3 className="font-semibold text-lg">{caso.nome}</h3>
-                          <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
-                            {caso.prioridade}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-gray-600" />
+                            <span className="font-semibold text-lg">{caso.protocolo}</span>
+                          </div>
+                          {/* Tag de Gravidade apenas para Farmacovigilância */}
+                          {caso.categoria === 'farmacovigilancia' && (
+                            <Badge className={`text-xs ${getGravidadeColor(caso.status)}`}>
+                              {getGravidadeTag(caso.status)}
+                            </Badge>
+                          )}
+                          {/* Exibir tag do motivo adicionado */}
+                          {casosComMotivo[caso.id] && (
+                            <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                              {casosComMotivo[caso.id].tipo}: {casosComMotivo[caso.id].motivo}
+                            </Badge>
+                          )}
                         </div>
 
                         {/* Linha 2: Motivo Principal, Subcategoria e Detalhe */}
@@ -1287,11 +1665,13 @@ export default function CasosPendentes() {
                           </Badge>
                         </div>
 
-                        {/* Linha 3: Protocolo, Data e Responsável */}
+                        {/* Linha 3: ID, Nome, Data e Responsável */}
                         <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4" />
-                            <span>{caso.protocolo}</span>
+                          <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="text-xs font-mono">
+                              ID: {caso.id.replace(/[^0-9]/g, '')}
+                            </Badge>
+                            <span className="font-medium">{caso.nome}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <CalendarIcon className="h-4 w-4" />
@@ -1304,8 +1684,20 @@ export default function CasosPendentes() {
                         </div>
                       </div>
 
-                      {/* Botão de Ação */}
-                      <div className="ml-4">
+                      {/* Botões de Ação */}
+                      <div className="ml-4 flex items-center gap-2">
+                        <Button variant="outline" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50" title="Concluir protocolo">
+                          <Check className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50" 
+                          title="Adicionar motivo"
+                          onClick={() => handleOpenModalMotivo(caso)}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
                         <Button variant="outline" size="sm" asChild>
                           <Link href={`/casos-pendentes/${caso.id}`}>
                             <Eye className="h-4 w-4" />
@@ -1316,6 +1708,36 @@ export default function CasosPendentes() {
                   </CardContent>
                 </Card>
               ))}
+
+              {/* Paginação */}
+              <div className="flex items-center justify-between mt-6">
+                <p className="text-sm text-gray-600">
+                  Mostrando {(paginaAtual - 1) * itensPorPagina + 1}-{Math.min(paginaAtual * itensPorPagina, casosExibidos.length)} de {casosExibidos.length} casos
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setPaginaAtual(Math.max(1, paginaAtual - 1))}
+                    disabled={paginaAtual === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Anterior
+                  </Button>
+                  <span className="text-sm">
+                    Página {paginaAtual} de {totalPaginasFiltradas}
+                  </span>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setPaginaAtual(Math.min(totalPaginasFiltradas, paginaAtual + 1))}
+                    disabled={paginaAtual === totalPaginasFiltradas}
+                  >
+                    Próximo
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
             </div>
 
             {/* Sidebar - Eventos de Hoje Atendimento */}
@@ -1437,7 +1859,7 @@ export default function CasosPendentes() {
                         <TriangleAlert className="h-5 w-5 text-[#3BC0A8]" />
                       </div>
                       <span className="font-semibold text-gray-700">Queixas Técnicas</span>
-                      <Badge variant="destructive" className="ml-2">3</Badge>
+                      <Badge variant="destructive" className="ml-2">{CASOS_QUALIDADE.length}</Badge>
                     </div>
                     {isQueixasExpanded ? (
                       <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
@@ -1457,7 +1879,9 @@ export default function CasosPendentes() {
                     onClick={() => handleSubmenuClick('revisao', 'queixas')}
                   >
                     <span>Qualidade</span>
-                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">2</Badge>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">
+                      {CASOS_QUALIDADE.filter(caso => caso.submenu === 'revisao').length}
+                    </Badge>
                   </Button>
                   <Button 
                     variant="ghost" 
@@ -1469,7 +1893,9 @@ export default function CasosPendentes() {
                     onClick={() => handleSubmenuClick('retornado', 'queixas')}
                   >
                     <span>Em análise</span>
-                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">
+                      {CASOS_QUALIDADE.filter(caso => caso.submenu === 'retornado').length}
+                    </Badge>
                   </Button>
                 </CollapsibleContent>
               </Collapsible>
@@ -1477,66 +1903,99 @@ export default function CasosPendentes() {
 
             {/* Conteúdo Principal - Lista de Casos Qualidade */}
             <div className="flex-1 space-y-4">
-              {CASOS_QUALIDADE.map((caso) => (
-                <Card key={caso.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-3 flex-1">
-                        {/* Linha 1: ID e Nome */}
-                        <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="text-xs font-mono">
-                            ID: {caso.id.replace(/[^0-9]/g, '')}
-                          </Badge>
-                          <h3 className="font-semibold text-lg">{caso.nome}</h3>
-                          <Badge className={getGravidadeColor(caso.status)}>
-                            {caso.status}
-                          </Badge>
+              {casosExibidos.length > 0 ? (
+                casosExibidos.map((caso) => (
+                  <Card key={caso.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-3 flex-1">
+                          {/* Linha 1: ID e Nome */}
+                          <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="text-xs font-mono">
+                              ID: {caso.id.replace(/[^0-9]/g, '')}
+                            </Badge>
+                            <h3 className="font-semibold text-lg">{caso.nome}</h3>
+                          </div>
+
+                          {/* Linha 2: Motivo Principal, Subcategoria e Detalhe */}
+                          <div className="flex items-center gap-2 text-sm">
+                            <Badge variant="secondary" className="text-xs">
+                              {caso.motivoPrincipal}
+                            </Badge>
+                            <ChevronRight className="h-3 w-3 text-gray-400" />
+                            <Badge variant="secondary" className="text-xs">
+                              {caso.subcategoria}
+                            </Badge>
+                            <ChevronRight className="h-3 w-3 text-gray-400" />
+                            <Badge variant="secondary" className="text-xs">
+                              {caso.detalhe}
+                            </Badge>
+                          </div>
+
+                          {/* Linha 3: Protocolo, Data e Responsável */}
+                          <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-4 w-4" />
+                              <span>{caso.protocolo}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CalendarIcon className="h-4 w-4" />
+                              <span>{caso.dataHora}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4" />
+                              <span>{caso.responsavel}</span>
+                            </div>
+                          </div>
                         </div>
 
-                        {/* Linha 2: Motivo Principal, Subcategoria e Detalhe */}
-                        <div className="flex items-center gap-2 text-sm">
-                          <Badge variant="secondary" className="text-xs">
-                            {caso.motivoPrincipal}
-                          </Badge>
-                          <ChevronRight className="h-3 w-3 text-gray-400" />
-                          <Badge variant="secondary" className="text-xs">
-                            {caso.subcategoria}
-                          </Badge>
-                          <ChevronRight className="h-3 w-3 text-gray-400" />
-                          <Badge variant="secondary" className="text-xs">
-                            {caso.detalhe}
-                          </Badge>
-                        </div>
-
-                        {/* Linha 3: Protocolo, Data e Responsável */}
-                        <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4" />
-                            <span>{caso.protocolo}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <CalendarIcon className="h-4 w-4" />
-                            <span>{caso.dataHora}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4" />
-                            <span>{caso.responsavel}</span>
-                          </div>
+                        {/* Botão de Ação */}
+                        <div className="ml-4">
+                          <Button variant="outline" size="sm" asChild>
+                            <Link href={`/casos-pendentes/${caso.id}`}>
+                              <Eye className="h-4 w-4" />
+                            </Link>
+                          </Button>
                         </div>
                       </div>
-
-                      {/* Botão de Ação */}
-                      <div className="ml-4">
-                        <Button variant="outline" size="sm" asChild>
-                          <Link href={`/casos-pendentes/${caso.id}`}>
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">Nenhum caso encontrado para o filtro selecionado.</p>
+                </div>
+              )}
+              
+              {/* Paginação */}
+              <div className="flex items-center justify-between mt-6">
+                <p className="text-sm text-gray-600">
+                  Mostrando {Math.min((paginaAtual - 1) * itensPorPagina + 1, casosExibidos.length)}-{Math.min(paginaAtual * itensPorPagina, casosExibidos.length)} de {casosExibidos.length} casos
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPaginaAtual(prev => Math.max(prev - 1, 1))}
+                    disabled={paginaAtual === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Anterior
+                  </Button>
+                  <span className="text-sm">
+                    Página {paginaAtual} de {Math.max(1, Math.ceil(casosExibidos.length / itensPorPagina))}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPaginaAtual(prev => Math.min(prev + 1, Math.ceil(casosExibidos.length / itensPorPagina)))}
+                    disabled={paginaAtual >= Math.ceil(casosExibidos.length / itensPorPagina)}
+                  >
+                    Próximo
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
             </div>
 
             {/* Sidebar - Eventos de Hoje Qualidade */}
@@ -1765,6 +2224,36 @@ export default function CasosPendentes() {
                   </CardContent>
                 </Card>
               ))}
+              
+              {/* Paginação */}
+              <div className="flex items-center justify-between mt-6">
+                <p className="text-sm text-gray-600">
+                  Mostrando 1-{Math.min(itensPorPagina, CASOS_FARMACOVIGILANCIA.length)} de {CASOS_FARMACOVIGILANCIA.length} casos
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPaginaAtual(Math.max(1, paginaAtual - 1))}
+                    disabled={paginaAtual === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Anterior
+                  </Button>
+                  <span className="text-sm">
+                    Página {paginaAtual} de {Math.max(1, Math.ceil(CASOS_FARMACOVIGILANCIA.length / itensPorPagina))}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPaginaAtual(Math.min(Math.ceil(CASOS_FARMACOVIGILANCIA.length / itensPorPagina), paginaAtual + 1))}
+                    disabled={paginaAtual >= Math.ceil(CASOS_FARMACOVIGILANCIA.length / itensPorPagina)}
+                  >
+                    Próximo
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
             </div>
 
             {/* Sidebar - Eventos de Hoje Farmacovigilância */}
@@ -1868,6 +2357,13 @@ export default function CasosPendentes() {
           </div>
         )}
       </div>
+
+      {/* Modal para Adicionar Motivo */}
+      <AdicionarMotivoModal
+        isOpen={isModalMotivoOpen}
+        onClose={() => setIsModalMotivoOpen(false)}
+        onSubmit={handleSubmitMotivo}
+      />
     </DashboardLayout>
   )
 }
