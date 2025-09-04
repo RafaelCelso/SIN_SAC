@@ -1299,7 +1299,7 @@ export default function CasosPendentes() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Bem-vindo!
+              Bem-vindo, Rafael Moraes!
             </h1>
             <p className="text-gray-600 mt-1">
               Acompanhe os casos que possuem pendência e precisam de atenção
