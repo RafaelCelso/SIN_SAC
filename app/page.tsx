@@ -654,6 +654,112 @@ const CASOS_FARMACOVIGILANCIA = [
     detalhe: "Acompanhamento de evolução",
     categoria: "farmacovigilancia",
     submenu: "followup-pendente"
+  },
+  {
+    id: "FV07",
+    nome: "Antonio Reação Severa",
+    prioridade: "Reação Adversa Grave",
+    protocolo: "FV-2023-0007",
+    dataHora: "30/12/2023 08:45",
+    responsavel: "Dra. Ana Farmaco",
+    tipo: "Follow-up Pendente",
+    status: "Grave",
+    motivoPrincipal: "Follow-up",
+    subcategoria: "Aprovação Pendente",
+    detalhe: "Aguardando parecer médico especialista",
+    categoria: "farmacovigilancia",
+    submenu: "followup-pendente"
+  },
+  {
+    id: "FV08",
+    nome: "Silvia Eficácia Duvidosa",
+    prioridade: "Eficácia Questionável",
+    protocolo: "FV-2023-0008",
+    dataHora: "30/12/2023 11:30",
+    responsavel: "Dr. Marcos Farmaco",
+    tipo: "Follow-up Pendente",
+    status: "Moderado",
+    motivoPrincipal: "Follow-up",
+    subcategoria: "Acompanhamento",
+    detalhe: "Necessita reavaliação clínica",
+    categoria: "farmacovigilancia",
+    submenu: "followup-pendente"
+  },
+  {
+    id: "FV09",
+    nome: "Ricardo Interação Medicamentosa",
+    prioridade: "Interação Medicamentosa",
+    protocolo: "FV-2023-0009",
+    dataHora: "30/12/2023 15:15",
+    responsavel: "Dra. Juliana Farmaco",
+    tipo: "Follow-up Pendente",
+    status: "Grave",
+    motivoPrincipal: "Follow-up",
+    subcategoria: "Monitoramento",
+    detalhe: "Acompanhamento de interação com outros medicamentos",
+    categoria: "farmacovigilancia",
+    submenu: "followup-pendente"
+  },
+  {
+    id: "FV10",
+    nome: "Patricia Tolerabilidade",
+    prioridade: "Problema de Tolerabilidade",
+    protocolo: "FV-2023-0010",
+    dataHora: "31/12/2023 09:20",
+    responsavel: "Dr. Roberto Farmaco",
+    tipo: "Follow-up Pendente",
+    status: "Leve",
+    motivoPrincipal: "Follow-up",
+    subcategoria: "Aprovação Pendente",
+    detalhe: "Aguardando aprovação para continuidade do tratamento",
+    categoria: "farmacovigilancia",
+    submenu: "followup-pendente"
+  },
+  // Casos para Follow-up
+  {
+    id: "FV11",
+    nome: "Carlos Acompanhamento Silva",
+    prioridade: "Acompanhamento Ativo",
+    protocolo: "FV-2023-0011",
+    dataHora: "01/01/2024 08:30",
+    responsavel: "Dra. Ana Farmaco",
+    tipo: "Follow-up Ativo",
+    status: "Grave",
+    motivoPrincipal: "Follow-up",
+    subcategoria: "Monitoramento Contínuo",
+    detalhe: "Acompanhamento de reação adversa grave",
+    categoria: "farmacovigilancia",
+    submenu: "followup"
+  },
+  {
+    id: "FV12",
+    nome: "Mariana Eficácia Costa",
+    prioridade: "Avaliação de Eficácia",
+    protocolo: "FV-2023-0012",
+    dataHora: "01/01/2024 10:15",
+    responsavel: "Dr. Pedro Farmaco",
+    tipo: "Follow-up Ativo",
+    status: "Moderado",
+    motivoPrincipal: "Follow-up",
+    subcategoria: "Eficácia",
+    detalhe: "Avaliação de resposta ao tratamento",
+    categoria: "farmacovigilancia",
+    submenu: "followup"
+  },
+  {
+    id: "FV13",
+    nome: "Roberto Tolerabilidade Lima",
+    prioridade: "Monitoramento de Tolerabilidade",
+    protocolo: "FV-2023-0013",
+    dataHora: "01/01/2024 14:45",
+    responsavel: "Dra. Lucia Farmaco",
+    tipo: "Follow-up Ativo",
+    status: "Leve",
+    motivoPrincipal: "Follow-up",
+    subcategoria: "Tolerabilidade",
+    detalhe: "Monitoramento de efeitos colaterais",
+    categoria: "farmacovigilancia",
+    submenu: "followup"
   }
 ]
 
@@ -793,6 +899,111 @@ const EVENTOS_HOJE = [
   }
 ]
 
+// Eventos dos próximos e anteriores dias
+const EVENTOS_POR_DIA = {
+  ontem: [
+    {
+      id: 1,
+      titulo: "Reunião de Planejamento",
+      horario: "09:00",
+      tipo: "Reunião",
+      participantes: "Equipe de Supervisão"
+    },
+    {
+      id: 2,
+      titulo: "Treinamento de Qualidade",
+      horario: "14:00",
+      tipo: "Treinamento",
+      participantes: "Equipe de Qualidade"
+    }
+  ],
+  hoje: [
+    {
+      id: 4,
+      titulo: "Treinamento Farmacovigi...",
+      horario: "09:00",
+      tipo: "Treinamento",
+      participantes: "Nova Colaboradora"
+    },
+    {
+      id: 3,
+      titulo: "Análise de Casos Pend.",
+      horario: "10:30",
+      tipo: "Análise",
+      participantes: "Equipe Técnica"
+    },
+    {
+      id: 1,
+      titulo: "Reunião de Supervisores",
+      horario: "14:00",
+      tipo: "Reunião",
+      participantes: "Equipe Supervisão"
+    },
+    {
+      id: 5,
+      titulo: "Revisão de Protocolos",
+      horario: "15:30",
+      tipo: "Revisão",
+      participantes: "Ana Costa"
+    },
+    {
+      id: 2,
+      titulo: "Retorno para o Cliente",
+      horario: "16:00",
+      tipo: "Contato",
+      participantes: "Equipe Atendimento"
+    }
+  ],
+  amanha: [
+    {
+      id: 1,
+      titulo: "Auditoria Externa",
+      horario: "08:30",
+      tipo: "Auditoria",
+      participantes: "Auditores Externos"
+    },
+    {
+      id: 2,
+      titulo: "Reunião de Farmacovigilância",
+      horario: "15:00",
+      tipo: "Reunião",
+      participantes: "Equipe Farmacovigilância"
+    }
+  ],
+  depois_amanha: [
+    {
+      id: 1,
+      titulo: "Workshop de Atendimento",
+      horario: "10:00",
+      tipo: "Workshop",
+      participantes: "Equipe de Atendimento"
+    },
+    {
+      id: 2,
+      titulo: "Análise de Casos",
+      horario: "16:00",
+      tipo: "Análise",
+      participantes: "Supervisores"
+    }
+  ],
+  dia_3: [
+    {
+      id: 1,
+      titulo: "Reunião de Coordenação",
+      horario: "09:30",
+      tipo: "Reunião",
+      participantes: "Coordenadores"
+    },
+    {
+      id: 2,
+      titulo: "Treinamento de Processos",
+      horario: "13:30",
+      tipo: "Treinamento",
+      participantes: "Toda a Equipe"
+    }
+  ]
+}
+
 export default function CasosPendentes() {
   const [paginaAtual, setPaginaAtual] = useState(1)
   const itensPorPagina = 5
@@ -822,7 +1033,7 @@ export default function CasosPendentes() {
     
     switch (status) {
       case 'passado':
-        return 'border-l-4 border-gray-400 pl-3 py-2 bg-gray-50 opacity-60'
+        return 'border-l-4 border-gray-400 pl-3 py-2 bg-gray-50'
       case 'proximo':
         return 'border-l-4 border-orange-400 pl-3 py-2 bg-orange-50'
       case 'futuro':
@@ -885,6 +1096,49 @@ export default function CasosPendentes() {
   // Estado para controlar qual aba de perfil está ativa
   const [abaAtiva, setAbaAtiva] = useState('supervisor')
   
+  // Estado para controlar qual dia está sendo exibido nos eventos
+  const [diaAtual, setDiaAtual] = useState('hoje')
+  
+  // Função para navegar para o dia anterior
+  const irParaDiaAnterior = () => {
+    const dias = ['ontem', 'hoje', 'amanha', 'depois_amanha', 'dia_3']
+    const indiceAtual = dias.indexOf(diaAtual)
+    if (indiceAtual > 0) {
+      setDiaAtual(dias[indiceAtual - 1])
+    }
+  }
+  
+  // Função para navegar para o próximo dia
+  const irParaProximoDia = () => {
+    const dias = ['ontem', 'hoje', 'amanha', 'depois_amanha', 'dia_3']
+    const indiceAtual = dias.indexOf(diaAtual)
+    if (indiceAtual < dias.length - 1) {
+      setDiaAtual(dias[indiceAtual + 1])
+    }
+  }
+  
+  // Função para obter o nome do dia
+  const getNomeDia = (dia: string) => {
+    const nomes = {
+      ontem: 'Ontem',
+      hoje: 'Hoje',
+      amanha: 'Amanhã',
+      depois_amanha: 'Em 2 dias',
+      dia_3: 'Em 3 dias'
+    }
+    return nomes[dia as keyof typeof nomes] || dia
+  }
+
+  // Função para obter o título completo dos eventos
+  const getTituloEventos = (dia: string) => {
+    const nomeDia = getNomeDia(dia)
+    // Para "Em 2 dias" e "Em 3 dias", não usar "de"
+    if (dia === 'depois_amanha' || dia === 'dia_3') {
+      return `Eventos ${nomeDia}`
+    }
+    return `Eventos de ${nomeDia}`
+  }
+  
   // Função para filtrar casos baseado no submenu selecionado
   const filtrarCasos = () => {
     let casosFiltrados = []
@@ -892,7 +1146,12 @@ export default function CasosPendentes() {
     // Seleciona o array de dados baseado na aba ativa
     switch (abaAtiva) {
       case 'supervisor':
-        casosFiltrados = CASOS_PENDENTES
+        // Para supervisor, inclui casos pendentes e casos de farmacovigilância
+        if (tipoFiltro === 'farmacovigilancia') {
+          casosFiltrados = CASOS_FARMACOVIGILANCIA
+        } else {
+          casosFiltrados = CASOS_PENDENTES
+        }
         break
       case 'atendimento':
         casosFiltrados = CASOS_ATENDIMENTO
@@ -951,10 +1210,10 @@ export default function CasosPendentes() {
   const getEventoStatusClass = (eventoId: string, horario: string) => {
     const status = eventosStatus[eventoId]
     if (status === 'concluido') {
-      return 'border-l-4 border-green-500 pl-3 py-2 bg-green-50 opacity-80'
+      return 'border-l-4 border-green-500 pl-3 py-2 bg-green-50'
     }
     if (status === 'cancelado') {
-      return 'border-l-4 border-red-500 pl-3 py-2 bg-red-50 opacity-60'
+      return 'border-l-4 border-red-500 pl-3 py-2 bg-red-50'
     }
     return getEventoClasses(horario)
   }
@@ -1191,7 +1450,7 @@ export default function CasosPendentes() {
                       <Pill className="h-5 w-5 text-[#3BC0A8]" />
                     </div>
                     <span className="font-semibold text-gray-700">Farmacovigilância</span>
-                    <Badge variant="destructive" className="ml-2">3</Badge>
+                    <Badge variant="destructive" className="ml-2">11</Badge>
                   </div>
                   {isFarmacovigilanciaExpanded ? (
                      <ChevronUp className="h-4 w-4 text-gray-500 transition-transform duration-200" />
@@ -1235,7 +1494,7 @@ export default function CasosPendentes() {
                   onClick={() => handleSubmenuClick('followup-pendente', 'farmacovigilancia')}
                 >
                    <span className="text-left leading-tight">Follow-up pendente<br />de aprovação</span>
-                   <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50 mt-1">3</Badge>
+                   <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50 mt-1">8</Badge>
                  </Button>
               </CollapsibleContent>
             </Collapsible>
@@ -1255,7 +1514,7 @@ export default function CasosPendentes() {
                           <span className="font-semibold text-lg">{caso.protocolo}</span>
                         </div>
                         {/* Exibir tag de gravidade apenas para submenus específicos de Farmacovigilância */}
-                        {tipoFiltro === 'farmacovigilancia' && (filtroAtivo === 'revisao' || filtroAtivo === 'retornado') && (
+                        {tipoFiltro === 'farmacovigilancia' && (filtroAtivo === 'revisao' || filtroAtivo === 'retornado' || filtroAtivo === 'followup-pendente') && (
                           <Badge className={getGravidadeColor(caso.status)}>
                             {caso.status}
                           </Badge>
@@ -1304,18 +1563,23 @@ export default function CasosPendentes() {
 
                     {/* Botões de Ação */}
                     <div className="ml-4 flex items-center gap-2">
-                      <Button variant="outline" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50" title="Concluir protocolo">
-                        <Check className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50" 
-                        title="Adicionar motivo"
-                        onClick={() => handleOpenModalMotivo(caso)}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
+                      {/* Ocultar botões para filtros de Queixas Técnicas e Farmacovigilância */}
+                      {!(tipoFiltro === 'queixas' || tipoFiltro === 'farmacovigilancia') && (
+                        <>
+                          <Button variant="outline" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50" title="Concluir protocolo">
+                            <Check className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50" 
+                            title="Adicionar motivo"
+                            onClick={() => handleOpenModalMotivo(caso)}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
                       <Button variant="outline" size="sm" asChild>
                         <Link href={`/casos-pendentes/${caso.id}`}>
                           <Eye className="h-4 w-4" />
@@ -1358,101 +1622,131 @@ export default function CasosPendentes() {
             </div>
           </div>
 
-          {/* Sidebar - Eventos de Hoje */}
-          <div className="w-80 space-y-3">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <CalendarIcon className="h-5 w-5" />
-                  Eventos de Hoje
-                </CardTitle>
-              </CardHeader>
+                      {/* Sidebar - Eventos de Hoje */}
+            <div className="w-80 space-y-3">
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <CalendarIcon className="h-5 w-5" />
+                      {getTituloEventos(diaAtual)}
+                    </CardTitle>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={irParaDiaAnterior}
+                        disabled={diaAtual === 'ontem'}
+                        className="h-8 w-8 p-0"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={irParaProximoDia}
+                        disabled={diaAtual === 'dia_3'}
+                        className="h-8 w-8 p-0"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
               <CardContent className="space-y-3">
-                {EVENTOS_HOJE.map((evento) => (
-                  <div key={evento.id} className={`${getEventoStatusClass(`supervisor-${evento.id}`, evento.horario)} group`}>
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1 flex-1">
-                        <h4 className={`font-medium text-sm ${getEventoStatusText(`supervisor-${evento.id}`, evento.horario)}`}>{evento.titulo}</h4>
-                        <p className={`text-xs ${eventosStatus[`supervisor-${evento.id}`] ? 'text-gray-400' : getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' : 'text-gray-600'}`}>{evento.participantes}</p>
-                      </div>
-                      <div className="text-right flex flex-col items-end gap-2">
-                        <div className={`flex items-center gap-1 text-xs ${
-                          eventosStatus[`supervisor-${evento.id}`] ? 'text-gray-400' :
-                          getEventoStatus(evento.horario) === 'passado' ? 'text-gray-400' :
-                          getEventoStatus(evento.horario) === 'proximo' ? 'text-orange-600' :
-                          'text-gray-500'
-                        }`}>
-                          <Clock className="h-3 w-3" />
-                          {evento.horario}
+                {EVENTOS_POR_DIA[diaAtual as keyof typeof EVENTOS_POR_DIA]?.map((evento) => {
+                  // Para eventos futuros (amanhã, em 2 dias, em 3 dias), não aplicar aparência acinzentada
+                  const isEventoFuturo = ['amanha', 'depois_amanha', 'dia_3'].includes(diaAtual)
+                  const isEventoPassado = diaAtual === 'ontem' || (diaAtual === 'hoje' && getEventoStatus(evento.horario) === 'passado')
+                  
+                  return (
+                    <div key={evento.id} className={`${getEventoStatusClass(`supervisor-${evento.id}`, evento.horario)} group`}>
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1 flex-1">
+                          <h4 className={`font-medium text-sm ${getEventoStatusText(`supervisor-${evento.id}`, evento.horario)}`}>{evento.titulo}</h4>
+                          <p className={`text-xs ${
+                            eventosStatus[`supervisor-${evento.id}`] ? 'text-gray-400' : 
+                            isEventoPassado ? 'text-gray-400' : 
+                            'text-gray-600'
+                          }`}>{evento.participantes}</p>
                         </div>
-                        <div className={`flex gap-1 ${
-                          eventosStatus[`supervisor-${evento.id}`] ? 'opacity-0 group-hover:opacity-100' : ''
-                        } transition-opacity duration-200`}>
-                          {eventosStatus[`supervisor-${evento.id}`] === 'concluido' ? (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
-                                onClick={() => setEventosStatus(prev => ({ ...prev, [`supervisor-${evento.id}`]: undefined }))}
-                                title="Marcar como pendente"
-                              >
-                                ↺
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
-                                onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'cancelado')}
-                              >
-                                ✕
-                              </Button>
-                            </>
-                          ) : eventosStatus[`supervisor-${evento.id}`] === 'cancelado' ? (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
-                                onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'concluido')}
-                              >
-                                ✓
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
-                                onClick={() => setEventosStatus(prev => ({ ...prev, [`supervisor-${evento.id}`]: undefined }))}
-                                title="Marcar como pendente"
-                              >
-                                ↺
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
-                                onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'concluido')}
-                              >
-                                ✓
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
-                                onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'cancelado')}
-                              >
-                                ✕
-                              </Button>
-                            </>
-                          )}
+                        <div className="text-right flex flex-col items-end gap-2">
+                          <div className={`flex items-center gap-1 text-xs ${
+                            eventosStatus[`supervisor-${evento.id}`] ? 'text-gray-400' :
+                            isEventoPassado ? 'text-gray-400' :
+                            getEventoStatus(evento.horario) === 'proximo' ? 'text-orange-600' :
+                            'text-gray-500'
+                          }`}>
+                            <Clock className="h-3 w-3" />
+                            {evento.horario}
+                          </div>
+                          <div className="flex gap-1">
+                            {eventosStatus[`supervisor-${evento.id}`] === 'concluido' ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs font-semibold bg-yellow-100 border-2 border-yellow-300 text-yellow-800 hover:bg-yellow-200 hover:border-yellow-400 shadow-sm transition-all duration-200"
+                                  onClick={() => setEventosStatus(prev => ({ ...prev, [`supervisor-${evento.id}`]: undefined }))}
+                                  title="Marcar como pendente"
+                                >
+                                  ↺
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs font-semibold bg-red-100 border-2 border-red-300 text-red-800 hover:bg-red-200 hover:border-red-400 shadow-sm transition-all duration-200"
+                                  onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'cancelado')}
+                                >
+                                  ✕
+                                </Button>
+                              </>
+                            ) : eventosStatus[`supervisor-${evento.id}`] === 'cancelado' ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs font-semibold bg-green-100 border-2 border-green-300 text-green-800 hover:bg-green-200 hover:border-green-400 shadow-sm transition-all duration-200"
+                                  onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'concluido')}
+                                >
+                                  ✓
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs font-semibold bg-yellow-100 border-2 border-yellow-300 text-yellow-800 hover:bg-yellow-200 hover:border-yellow-400 shadow-sm transition-all duration-200"
+                                  onClick={() => setEventosStatus(prev => ({ ...prev, [`supervisor-${evento.id}`]: undefined }))}
+                                  title="Marcar como pendente"
+                                >
+                                  ↺
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs font-semibold bg-green-100 border-2 border-green-300 text-green-800 hover:bg-green-200 hover:border-green-400 shadow-sm transition-all duration-200"
+                                  onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'concluido')}
+                                >
+                                  ✓
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs font-semibold bg-red-100 border-2 border-red-300 text-red-800 hover:bg-red-200 hover:border-red-400 shadow-sm transition-all duration-200"
+                                  onClick={() => handleEventoAction(`supervisor-${evento.id}`, 'cancelado')}
+                                >
+                                  ✕
+                                </Button>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </CardContent>
             </Card>
           </div>
@@ -1686,18 +1980,23 @@ export default function CasosPendentes() {
 
                       {/* Botões de Ação */}
                       <div className="ml-4 flex items-center gap-2">
-                        <Button variant="outline" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50" title="Concluir protocolo">
-                          <Check className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50" 
-                          title="Adicionar motivo"
-                          onClick={() => handleOpenModalMotivo(caso)}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
+                        {/* Ocultar botões para filtros de Queixas Técnicas e Farmacovigilância */}
+                        {!(tipoFiltro === 'queixas' || tipoFiltro === 'farmacovigilancia') && (
+                          <>
+                            <Button variant="outline" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50" title="Concluir protocolo">
+                              <Check className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50" 
+                              title="Adicionar motivo"
+                              onClick={() => handleOpenModalMotivo(caso)}
+                            >
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
                         <Button variant="outline" size="sm" asChild>
                           <Link href={`/casos-pendentes/${caso.id}`}>
                             <Eye className="h-4 w-4" />
@@ -1775,7 +2074,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-yellow-100 border-2 border-yellow-300 text-yellow-800 hover:bg-yellow-200 hover:border-yellow-400 shadow-sm transition-all duration-200"
                                   onClick={() => setEventosStatus(prev => ({ ...prev, [`atendimento-${evento.id}`]: undefined }))}
                                   title="Marcar como pendente"
                                 >
@@ -1784,7 +2083,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-red-100 border-2 border-red-300 text-red-800 hover:bg-red-200 hover:border-red-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`atendimento-${evento.id}`, 'cancelado')}
                                 >
                                   ✕
@@ -1795,7 +2094,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-green-100 border-2 border-green-300 text-green-800 hover:bg-green-200 hover:border-green-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`atendimento-${evento.id}`, 'concluido')}
                                 >
                                   ✓
@@ -1803,7 +2102,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-yellow-100 border-2 border-yellow-300 text-yellow-800 hover:bg-yellow-200 hover:border-yellow-400 shadow-sm transition-all duration-200"
                                   onClick={() => setEventosStatus(prev => ({ ...prev, [`atendimento-${evento.id}`]: undefined }))}
                                   title="Marcar como pendente"
                                 >
@@ -1815,7 +2114,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-green-100 border-2 border-green-300 text-green-800 hover:bg-green-200 hover:border-green-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`atendimento-${evento.id}`, 'concluido')}
                                 >
                                   ✓
@@ -1823,7 +2122,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-red-100 border-2 border-red-300 text-red-800 hover:bg-red-200 hover:border-red-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`atendimento-${evento.id}`, 'cancelado')}
                                 >
                                   ✕
@@ -1909,12 +2208,12 @@ export default function CasosPendentes() {
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="space-y-3 flex-1">
-                          {/* Linha 1: ID e Nome */}
+                          {/* Linha 1: Protocolo */}
                           <div className="flex items-center gap-3">
-                            <Badge variant="outline" className="text-xs font-mono">
-                              ID: {caso.id.replace(/[^0-9]/g, '')}
-                            </Badge>
-                            <h3 className="font-semibold text-lg">{caso.nome}</h3>
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-5 w-5 text-gray-600" />
+                              <h3 className="font-semibold text-lg">{caso.protocolo}</h3>
+                            </div>
                           </div>
 
                           {/* Linha 2: Motivo Principal, Subcategoria e Detalhe */}
@@ -1932,12 +2231,8 @@ export default function CasosPendentes() {
                             </Badge>
                           </div>
 
-                          {/* Linha 3: Protocolo, Data e Responsável */}
-                          <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
-                            <div className="flex items-center gap-2">
-                              <FileText className="h-4 w-4" />
-                              <span>{caso.protocolo}</span>
-                            </div>
+                          {/* Linha 3: Data e Responsável */}
+                          <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
                             <div className="flex items-center gap-2">
                               <CalendarIcon className="h-4 w-4" />
                               <span>{caso.dataHora}</span>
@@ -2033,7 +2328,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-yellow-100 border-2 border-yellow-300 text-yellow-800 hover:bg-yellow-200 hover:border-yellow-400 shadow-sm transition-all duration-200"
                                   onClick={() => setEventosStatus(prev => ({ ...prev, [`qualidade-${evento.id}`]: undefined }))}
                                   title="Marcar como pendente"
                                 >
@@ -2042,7 +2337,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-red-100 border-2 border-red-300 text-red-800 hover:bg-red-200 hover:border-red-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`qualidade-${evento.id}`, 'cancelado')}
                                 >
                                   ✕
@@ -2053,7 +2348,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-green-100 border-2 border-green-300 text-green-800 hover:bg-green-200 hover:border-green-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`qualidade-${evento.id}`, 'concluido')}
                                 >
                                   ✓
@@ -2061,7 +2356,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-yellow-100 border-2 border-yellow-300 text-yellow-800 hover:bg-yellow-200 hover:border-yellow-400 shadow-sm transition-all duration-200"
                                   onClick={() => setEventosStatus(prev => ({ ...prev, [`qualidade-${evento.id}`]: undefined }))}
                                   title="Marcar como pendente"
                                 >
@@ -2073,7 +2368,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-green-100 border-2 border-green-300 text-green-800 hover:bg-green-200 hover:border-green-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`qualidade-${evento.id}`, 'concluido')}
                                 >
                                   ✓
@@ -2081,7 +2376,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-red-100 border-2 border-red-300 text-red-800 hover:bg-red-200 hover:border-red-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`qualidade-${evento.id}`, 'cancelado')}
                                 >
                                   ✕
@@ -2149,7 +2444,7 @@ export default function CasosPendentes() {
                     onClick={() => handleSubmenuClick('followup', 'farmacovigilancia')}
                   >
                     <span>Follow-up</span>
-                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">1</Badge>
+                    <Badge className="ml-auto bg-red-50 text-red-700 border-red-200 hover:bg-red-50">3</Badge>
                   </Button>
 
                 </CollapsibleContent>
@@ -2158,7 +2453,16 @@ export default function CasosPendentes() {
 
             {/* Conteúdo Principal - Lista de Casos Farmacovigilância */}
             <div className="flex-1 space-y-4">
-              {CASOS_FARMACOVIGILANCIA.map((caso) => (
+              {CASOS_FARMACOVIGILANCIA
+                .filter(caso => {
+                  // Se nenhum filtro específico está ativo, mostra todos os casos
+                  if (!filtroAtivo || tipoFiltro !== 'farmacovigilancia') {
+                    return true;
+                  }
+                  // Se um submenu específico está ativo, filtra por ele
+                  return caso.submenu === filtroAtivo;
+                })
+                .map((caso) => (
                 <Card key={caso.id} className={`hover:shadow-md transition-shadow ${
                   filtroAtivo === 'graves' && tipoFiltro === 'eventos' 
                     ? 'border-l-4 border-l-red-500 bg-red-50/30' 
@@ -2169,12 +2473,12 @@ export default function CasosPendentes() {
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="space-y-3 flex-1">
-                        {/* Linha 1: ID e Nome */}
+                        {/* Linha 1: Protocolo e Gravidade */}
                         <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="text-xs font-mono">
-                            ID: {caso.id.replace(/[^0-9]/g, '')}
-                          </Badge>
-                          <h3 className="font-semibold text-lg">{caso.nome}</h3>
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-5 w-5 text-gray-600" />
+                            <h3 className="font-semibold text-lg">{caso.protocolo}</h3>
+                          </div>
                           <Badge className={getGravidadeColor(caso.status)}>
                             {caso.status}
                           </Badge>
@@ -2195,12 +2499,8 @@ export default function CasosPendentes() {
                           </Badge>
                         </div>
 
-                        {/* Linha 3: Protocolo, Data e Responsável */}
-                        <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4" />
-                            <span>{caso.protocolo}</span>
-                          </div>
+                        {/* Linha 3: Data e Responsável */}
+                        <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
                           <div className="flex items-center gap-2">
                             <CalendarIcon className="h-4 w-4" />
                             <span>{caso.dataHora}</span>
@@ -2227,32 +2527,48 @@ export default function CasosPendentes() {
               
               {/* Paginação */}
               <div className="flex items-center justify-between mt-6">
-                <p className="text-sm text-gray-600">
-                  Mostrando 1-{Math.min(itensPorPagina, CASOS_FARMACOVIGILANCIA.length)} de {CASOS_FARMACOVIGILANCIA.length} casos
-                </p>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPaginaAtual(Math.max(1, paginaAtual - 1))}
-                    disabled={paginaAtual === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    Anterior
-                  </Button>
-                  <span className="text-sm">
-                    Página {paginaAtual} de {Math.max(1, Math.ceil(CASOS_FARMACOVIGILANCIA.length / itensPorPagina))}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPaginaAtual(Math.min(Math.ceil(CASOS_FARMACOVIGILANCIA.length / itensPorPagina), paginaAtual + 1))}
-                    disabled={paginaAtual >= Math.ceil(CASOS_FARMACOVIGILANCIA.length / itensPorPagina)}
-                  >
-                    Próximo
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </div>
+                {(() => {
+                  const casosFiltrados = CASOS_FARMACOVIGILANCIA.filter(caso => {
+                    if (!filtroAtivo || tipoFiltro !== 'farmacovigilancia') {
+                      return true;
+                    }
+                    return caso.submenu === filtroAtivo;
+                  });
+                  const totalCasos = casosFiltrados.length;
+                  const inicio = (paginaAtual - 1) * itensPorPagina + 1;
+                  const fim = Math.min(paginaAtual * itensPorPagina, totalCasos);
+                  
+                  return (
+                    <>
+                      <p className="text-sm text-gray-600">
+                        Mostrando {totalCasos > 0 ? inicio : 0}-{fim} de {totalCasos} casos
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPaginaAtual(Math.max(1, paginaAtual - 1))}
+                          disabled={paginaAtual === 1}
+                        >
+                          <ChevronLeft className="h-4 w-4 mr-1" />
+                          Anterior
+                        </Button>
+                        <span className="text-sm">
+                          Página {paginaAtual} de {Math.max(1, Math.ceil(totalCasos / itensPorPagina))}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPaginaAtual(Math.min(Math.ceil(totalCasos / itensPorPagina), paginaAtual + 1))}
+                          disabled={paginaAtual >= Math.ceil(totalCasos / itensPorPagina)}
+                        >
+                          Próximo
+                          <ChevronRight className="h-4 w-4 ml-1" />
+                        </Button>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 
@@ -2291,7 +2607,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-yellow-100 border-2 border-yellow-300 text-yellow-800 hover:bg-yellow-200 hover:border-yellow-400 shadow-sm transition-all duration-200"
                                   onClick={() => setEventosStatus(prev => ({ ...prev, [`farmacovigilancia-${evento.id}`]: undefined }))}
                                   title="Marcar como pendente"
                                 >
@@ -2300,7 +2616,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-red-100 border-2 border-red-300 text-red-800 hover:bg-red-200 hover:border-red-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`farmacovigilancia-${evento.id}`, 'cancelado')}
                                 >
                                   ✕
@@ -2311,7 +2627,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-green-100 border-2 border-green-300 text-green-800 hover:bg-green-200 hover:border-green-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`farmacovigilancia-${evento.id}`, 'concluido')}
                                 >
                                   ✓
@@ -2319,7 +2635,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-yellow-100 border-2 border-yellow-300 text-yellow-800 hover:bg-yellow-200 hover:border-yellow-400 shadow-sm transition-all duration-200"
                                   onClick={() => setEventosStatus(prev => ({ ...prev, [`farmacovigilancia-${evento.id}`]: undefined }))}
                                   title="Marcar como pendente"
                                 >
@@ -2331,7 +2647,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-green-100 border-2 border-green-300 text-green-800 hover:bg-green-200 hover:border-green-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`farmacovigilancia-${evento.id}`, 'concluido')}
                                 >
                                   ✓
@@ -2339,7 +2655,7 @@ export default function CasosPendentes() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-6 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  className="h-6 px-2 text-xs font-semibold bg-red-100 border-2 border-red-300 text-red-800 hover:bg-red-200 hover:border-red-400 shadow-sm transition-all duration-200"
                                   onClick={() => handleEventoAction(`farmacovigilancia-${evento.id}`, 'cancelado')}
                                 >
                                   ✕
