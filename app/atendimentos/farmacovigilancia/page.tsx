@@ -457,25 +457,7 @@ export default function FarmacovigilanciaPage() {
                       <React.Fragment key={notificacao.id}>
                         <TableRow>
                           <TableCell className="font-medium">
-                            <div className="flex items-center gap-2">
-                              <span>{notificacao.id}</span>
-                              {notificacao.hasFup && (
-                                <Badge 
-                                  variant="secondary" 
-                                  className="bg-blue-50 text-blue-700 border-blue-200 text-xs px-2 py-1 cursor-pointer hover:bg-blue-100 transition-colors"
-                                  onClick={() => setExpandedRow(expandedRow === notificacao.id ? null : notificacao.id)}
-                                >
-                                  <div className="flex items-center gap-1">
-                                    {expandedRow === notificacao.id ? (
-                                      <ChevronDown className="h-3 w-3" />
-                                    ) : (
-                                      <ChevronRight className="h-3 w-3" />
-                                    )}
-                                    Ver Follow-ups
-                                  </div>
-                                </Badge>
-                              )}
-                            </div>
+                             <span>{notificacao.id}</span>
                           </TableCell>
                         <TableCell>{notificacao.data}</TableCell>
                         <TableCell>
@@ -510,15 +492,20 @@ export default function FarmacovigilanciaPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            {/* Botão de Criar Follow Up - sempre presente */}
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
-                              title="Criar Follow Up"
-                            >
-                              <ClipboardPlus className="h-4 w-4" />
-                            </Button>
+                             {/* Botão de Ver Follow Up - sempre presente */}
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               className={`h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 ${
+                                 notificacao.followUps && notificacao.followUps.length > 0 
+                                   ? 'text-green-600 hover:text-green-600' 
+                                   : ''
+                               }`}
+                               title="Ver follow-up"
+                               onClick={() => setExpandedRow(expandedRow === notificacao.id ? null : notificacao.id)}
+                             >
+                               <ClipboardPlus className="h-4 w-4" />
+                             </Button>
                             
                             {/* Botão de Editar/Visualizar - condicional baseado no status */}
                             {notificacao.status === "Concluído" ? (
@@ -567,77 +554,105 @@ export default function FarmacovigilanciaPage() {
                         </TableCell>
                       </TableRow>
                       
-                      {/* Linha do acordeon com follow-ups */}
-                      {expandedRow === notificacao.id && notificacao.hasFup && notificacao.followUps && (
+                       {/* Linha do acordeon com follow-ups */}
+                       {expandedRow === notificacao.id && (
                         <TableRow>
                           <TableCell colSpan={7} className="bg-gradient-to-br from-gray-50 to-slate-50 p-6 border-l-4 border-green-400">
                             <div className="space-y-4">
-                              <div className="flex items-center gap-2 mb-4">
-                                <div className="p-2 bg-green-100 rounded-lg">
-                                  <FileText className="h-5 w-5 text-green-600" />
-                                </div>
-                                <h4 className="font-semibold text-gray-800 text-lg">Follow-ups Registrados</h4>
-                                <Badge variant="secondary" className="ml-auto bg-green-100 text-green-700">
-                                  {notificacao.followUps.length} {notificacao.followUps.length === 1 ? 'registro' : 'registros'}
-                                </Badge>
-                              </div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {notificacao.followUps.map((followUp, index) => (
-                                  <div
-                                    key={followUp.id}
-                                    className="group relative bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg hover:border-gray-300 transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
-                                    onMouseEnter={() => setHoveredFollowUp(followUp.id)}
-                                    onMouseLeave={() => setHoveredFollowUp(null)}
-                                  >
-                                    <div className="flex items-start justify-between">
-                                      <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-2">
-                                          <div className="p-1.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg">
-                                            <ClipboardPlus className="h-4 w-4 text-white" />
-                                          </div>
-                                          <span className="font-semibold text-gray-900 text-sm">{followUp.id}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                                          <CalendarIcon className="h-4 w-4 text-gray-400" />
-                                          <span>{followUp.data}</span>
-                                        </div>
+                               <div className="flex items-center gap-2 mb-4">
+                                 <div className="p-2 bg-green-100 rounded-lg">
+                                   <FileText className="h-5 w-5 text-green-600" />
+                                 </div>
+                                 <h4 className="font-semibold text-gray-800 text-lg">Follow-ups Registrados</h4>
+                                 {notificacao.followUps && notificacao.followUps.length > 0 && (
+                                   <Badge variant="secondary" className="ml-auto bg-green-100 text-green-700">
+                                     {notificacao.followUps.length} {notificacao.followUps.length === 1 ? 'registro' : 'registros'}
+                                   </Badge>
+                                 )}
+                               </div>
+                               
+                               {notificacao.followUps && notificacao.followUps.length > 0 ? (
+                                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                   {notificacao.followUps.map((followUp, index) => (
+                                     <div
+                                       key={followUp.id}
+                                       className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg hover:border-gray-300 transition-all duration-300"
+                                     >
+                                       {/* Linha superior: Ícone + ID + Warning */}
+                                       <div className="flex items-center justify-between mb-3">
+                                         <div className="flex items-center gap-2">
+                                           <div className="p-1.5 bg-green-500 rounded-lg">
+                                             <ClipboardPlus className="h-4 w-4 text-white" />
+                                           </div>
+                                           <span className="font-semibold text-gray-900 text-sm">{followUp.id}</span>
+                                         </div>
+                                         <div className="p-1">
+                                           <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                         </div>
+                                       </div>
 
-                                      </div>
-                                      {hoveredFollowUp === followUp.id && (
-                                        <div className="flex items-center gap-2">
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="h-8 px-3 text-xs bg-white hover:bg-gray-50 hover:text-gray-600 hover:border-gray-400 border-gray-300 shadow-sm transition-all duration-200"
-                                            title="Ver detalhes do follow-up"
-                                          >
-                                            <ExternalLink className="h-3 w-3 mr-1" />
-                                            Ver detalhes
-                                          </Button>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="h-8 w-8 p-0 bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-400 border-gray-300 shadow-sm transition-all duration-200"
-                                            title="Excluir follow-up"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              // Aqui você pode adicionar a lógica de exclusão
-                                              toast({
-                                                title: "Follow-up excluído",
-                                                description: `O follow-up ${followUp.id} foi excluído com sucesso.`,
-                                                duration: 3000,
-                                              });
-                                            }}
-                                          >
-                                            <Trash2 className="h-3 w-3" />
-                                          </Button>
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="absolute inset-0 bg-gradient-to-r from-gray-500/5 to-slate-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                                  </div>
-                                ))}
-                              </div>
+                                       {/* Linha do meio: Data + Botões */}
+                                       <div className="flex items-center justify-between mb-3">
+                                         <div className="flex items-center gap-2 text-sm text-gray-600">
+                                           <CalendarIcon className="h-4 w-4 text-gray-400" />
+                                           <span>{followUp.data}</span>
+                                         </div>
+                                         <div className="flex items-center gap-2">
+                                           <Button
+                                             variant="outline"
+                                             size="sm"
+                                             className="h-8 w-8 p-0 bg-white border-gray-300 hover:bg-gray-50 hover:border-gray-400 shadow-sm"
+                                             title="Ver detalhes do follow-up"
+                                           >
+                                             <Eye className="h-3 w-3 text-gray-600" />
+                                           </Button>
+                                           <Button
+                                             variant="outline"
+                                             size="sm"
+                                             className="h-8 w-8 p-0 bg-white border-red-300 hover:bg-red-50 hover:border-red-400 shadow-sm"
+                                             title="Excluir follow-up"
+                                             onClick={(e) => {
+                                               e.stopPropagation();
+                                               toast({
+                                                 title: "Follow-up excluído",
+                                                 description: `O follow-up ${followUp.id} foi excluído com sucesso.`,
+                                                 duration: 3000,
+                                               });
+                                             }}
+                                           >
+                                             <Trash2 className="h-3 w-3 text-red-600" />
+                                           </Button>
+                                         </div>
+                                       </div>
+
+                                       {/* Linha inferior: Criado por */}
+                                       <div className="text-sm text-gray-600">
+                                         Criado por: Administrador
+                                       </div>
+                                     </div>
+                                   ))}
+                                   
+                                   {/* Botão Novo Follow-up */}
+                                   <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl p-4 hover:bg-gray-200 hover:border-gray-400 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center min-h-[140px]">
+                                     <div className="w-12 h-12 bg-gray-200 border border-gray-400 rounded-lg flex items-center justify-center mb-3">
+                                       <Plus className="h-6 w-6 text-gray-600" />
+                                     </div>
+                                     <span className="text-sm font-medium text-gray-700 text-center">Novo Follow-up</span>
+                                   </div>
+                                 </div>
+                               ) : (
+                                 /* Quando não há follow-ups, mostrar mensagem e botão centralizados */
+                                 <div className="flex flex-col items-center justify-center py-12">
+                                   <p className="text-gray-500 text-sm mb-4">Não há registros de Follow-ups criados</p>
+                                   <Button
+                                     variant="outline"
+                                     className="bg-gray-100 border-2 border-dashed border-gray-300 hover:bg-gray-200 hover:border-gray-400 transition-all duration-300"
+                                   >
+                                     <Plus className="h-4 w-4 mr-2" />
+                                     Novo Follow-Up
+                                   </Button>
+                                 </div>
+                               )}
                             </div>
                           </TableCell>
                         </TableRow>
