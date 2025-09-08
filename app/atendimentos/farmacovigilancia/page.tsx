@@ -557,7 +557,11 @@ export default function FarmacovigilanciaPage() {
                        {/* Linha do acordeon com follow-ups */}
                        {expandedRow === notificacao.id && (
                         <TableRow>
-                          <TableCell colSpan={7} className="bg-gradient-to-br from-gray-50 to-slate-50 p-6 border-l-4 border-green-400">
+                          <TableCell colSpan={7} className={`bg-gradient-to-br from-gray-50 to-slate-50 p-6 border-l-4 ${
+                            notificacao.followUps && notificacao.followUps.length > 0 
+                              ? 'border-green-400' 
+                              : 'border-gray-400'
+                          }`}>
                             <div className="space-y-4">
                                <div className="flex items-center gap-2 mb-4">
                                  <div className="p-2 bg-green-100 rounded-lg">
