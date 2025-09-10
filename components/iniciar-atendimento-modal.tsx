@@ -107,12 +107,19 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
   const [subCategoriaSelecionada, setSubCategoriaSelecionada] = useState<string>("")
   const [detalheSelecionado, setDetalheSelecionado] = useState<string>("")
   const [currentStep, setCurrentStep] = useState<"info" | "contato">("info")
+  // Estrutura para múltiplos produtos e lotes
+  const [produtosLotes, setProdutosLotes] = useState<Array<{
+    id: string
+    produto: typeof PRODUTOS_MOCK[0] | null
+    lote: string
+    isDivergente: boolean
+  }>>([{ id: "1", produto: null, lote: "", isDivergente: false }])
+  
   const [produtoSearchTerm, setProdutoSearchTerm] = useState("")
-  const [selectedProdutos, setSelectedProdutos] = useState<Array<typeof PRODUTOS_MOCK[0]>>([])
   const [showProdutosList, setShowProdutosList] = useState(false)
   const [loteSearchTerm, setLoteSearchTerm] = useState("")
-  const [selectedLotes, setSelectedLotes] = useState<string[]>([])
   const [showLotesList, setShowLotesList] = useState(false)
+  const [activeProdutoLoteIndex, setActiveProdutoLoteIndex] = useState(0)
   const [formData, setFormData] = useState({
     tipoContato: "telefone",
     motivo: "",
@@ -183,16 +190,46 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     categoria: string
   }
 
-  const handleProdutoSelect = (produto: Produto) => {
-    const isAlreadySelected = selectedProdutos.some(p => p.id === produto.id)
-    if (!isAlreadySelected) {
-      setSelectedProdutos(prev => [...prev, produto])
-      setProdutoSearchTerm("")
+  const handleProdutoSelect = (produto: Produto, index: number) => {
+    setProdutosLotes(prev => prev.map((item, i) => 
+      i === index 
+        ? { 
+            ...item, 
+            produto, 
+            isDivergente: Boolean(item.lote && !produto.lote.includes(item.lote))
+          }
+        : item
+    ))
+    setProdutoSearchTerm("")
+    setShowProdutosList(false)
+  }
+
+  const handleLoteChange = (lote: string, index: number) => {
+    setProdutosLotes(prev => prev.map((item, i) => 
+      i === index 
+        ? { 
+            ...item, 
+            lote, 
+            isDivergente: Boolean(lote && item.produto && !item.produto.lote.includes(lote))
+          }
+        : item
+    ))
+  }
+
+  const handleRemoveProdutoLote = (index: number) => {
+    if (produtosLotes.length > 1) {
+      setProdutosLotes(prev => prev.filter((_, i) => i !== index))
     }
   }
 
-  const handleRemoveProduto = (produtoId: string) => {
-    setSelectedProdutos(prev => prev.filter(p => p.id !== produtoId))
+  const handleAddProdutoLote = () => {
+    const newId = (produtosLotes.length + 1).toString()
+    setProdutosLotes(prev => [...prev, { 
+      id: newId, 
+      produto: null, 
+      lote: "", 
+      isDivergente: false 
+    }])
   }
 
   // Função para filtrar produtos
@@ -205,7 +242,8 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     )
   })
 
-  const handleProdutoSearchFocus = () => {
+  const handleProdutoSearchFocus = (index: number) => {
+    setActiveProdutoLoteIndex(index)
     setShowProdutosList(true)
   }
 
@@ -256,11 +294,11 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     setDetalheSelecionado("")
     setCurrentStep("info")
     setProdutoSearchTerm("")
-    setSelectedProdutos([])
+    setProdutosLotes([{ id: "1", produto: null, lote: "", isDivergente: false }])
     setShowProdutosList(false)
     setLoteSearchTerm("")
     setShowLotesList(false)
-    setSelectedLotes([])
+    setActiveProdutoLoteIndex(0)
     setFormData({
       tipoContato: "telefone",
       motivo: "",
@@ -496,37 +534,18 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     return produto.lote.toLowerCase().includes(searchTerm)
   })
 
-  const handleLoteSelect = (produto: Produto) => {
-    const isAlreadySelected = selectedLotes.includes(produto.lote)
-    if (!isAlreadySelected) {
-      setSelectedLotes(prev => [...prev, produto.lote])
-      setLoteSearchTerm("")
-      setFormData(prev => ({
-        ...prev,
-        lote: [...selectedLotes, produto.lote].join(", ")
-      }))
-    }
-  }
-
-  const handleRemoveLote = (lote: string) => {
-    setSelectedLotes(prev => {
-      const newLotes = prev.filter(l => l !== lote)
-      setFormData(prev => ({
-        ...prev,
-        lote: newLotes.join(", ")
-      }))
-      return newLotes
-    })
-  }
-
-  const handleLoteSearchFocus = () => {
-    setShowLotesList(true)
-  }
-
-  const handleLoteSearchBlur = () => {
-    setTimeout(() => {
-      setShowLotesList(false)
-    }, 200)
+  const handleLoteSelect = (produto: Produto, index: number) => {
+    setProdutosLotes(prev => prev.map((item, i) => 
+      i === index 
+        ? { 
+            ...item, 
+            lote: produto.lote,
+            isDivergente: Boolean(item.produto && !item.produto.lote.includes(produto.lote))
+          }
+        : item
+    ))
+    setLoteSearchTerm("")
+    setShowLotesList(false)
   }
 
   const validarDados = () => {
@@ -552,12 +571,10 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     }
 
     // Validação de produto para motivos específicos
-    if (["queixa-tecnica", "evento-adverso", "farmacovigilancia"].includes(motivoSelecionado)) {
-      if (!selectedProdutos.length) {
-        errors.push("Selecione pelo menos um produto")
-      }
-      if (!formData.lote.trim()) {
-        errors.push("Informe o lote do produto")
+    if (["queixa", "evento", "farmacovigilancia"].includes(motivoSelecionado)) {
+      const hasValidProdutoLote = produtosLotes.some(item => item.produto && item.lote.trim())
+      if (!hasValidProdutoLote) {
+        errors.push("Selecione pelo menos um produto e informe seu lote")
       }
     }
 
@@ -1517,224 +1534,176 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                 </div>
               </div>
 
-              {/* Seção 4: Produto */}
+              {/* Seção 4: Produtos e Lotes */}
               <div className="bg-gray-50 p-5 rounded-lg shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
                 <div className="flex items-center gap-2 mb-3">
                   <Package className="h-5 w-5 text-teal-600" />
-                  <h3 className="font-medium text-lg text-gray-800">Produto</h3>
+                  <h3 className="font-medium text-lg text-gray-800">Produtos e Lotes</h3>
                 </div>
 
                 <div className="space-y-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm">
-                  {/* Campo de busca por produto */}
-                  <div className="space-y-2">
-                    <Label htmlFor="busca-produto" className="font-medium">
-                      Buscar Produto
-                    </Label>
-                    <div className="space-y-2">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
-                          id="busca-produto"
-                          type="text"
-                          placeholder="Buscar produto por nome ou EAN"
-                          className="h-11 pl-10"
-                          value={produtoSearchTerm}
-                          onChange={(e) => setProdutoSearchTerm(e.target.value)}
-                          onFocus={handleProdutoSearchFocus}
-                          onBlur={handleProdutoSearchBlur}
-                        />
-                        {showProdutosList && (
-                          <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
-                            {filteredProdutos.length > 0 ? (
-                              <>
-                                {filteredProdutos.map((produto, index) => (
-                                  <button
-                                    key={produto.id}
-                                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
-                                      index !== filteredProdutos.length - 1 ? "border-b" : ""
-                                    }`}
-                                    onClick={() => handleProdutoSelect(produto)}
-                                  >
-                                    <div className="font-medium text-gray-900">{produto.nome}</div>
-                                    <div className="text-sm text-gray-500">
-                                      EAN: {produto.ean}
+                  {produtosLotes.map((item, index) => (
+                    <div key={item.id} className="space-y-4 p-4 border border-gray-200 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-gray-800">
+                          Produto e Lote {index + 1}
+                        </h4>
+                        {produtosLotes.length > 1 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveProdutoLote(index)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Campo de busca por produto */}
+                        <div className="space-y-2">
+                          <Label className="font-medium">
+                            Produto
+                          </Label>
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                            <Input
+                              type="text"
+                              placeholder="Buscar produto por nome ou EAN"
+                              className="h-11 pl-10"
+                              value={item.produto ? item.produto.nome : produtoSearchTerm}
+                              onChange={(e) => setProdutoSearchTerm(e.target.value)}
+                              onFocus={() => handleProdutoSearchFocus(index)}
+                              onBlur={handleProdutoSearchBlur}
+                            />
+                            {showProdutosList && activeProdutoLoteIndex === index && (
+                              <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
+                                {filteredProdutos.length > 0 ? (
+                                  <>
+                                    {filteredProdutos.map((produto, prodIndex) => (
+                                      <button
+                                        key={produto.id}
+                                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
+                                          prodIndex !== filteredProdutos.length - 1 ? "border-b" : ""
+                                        }`}
+                                        onClick={() => handleProdutoSelect(produto, index)}
+                                      >
+                                        <div className="font-medium text-gray-900">{produto.nome}</div>
+                                        <div className="text-sm text-gray-500">
+                                          EAN: {produto.ean} | Lote: {produto.lote}
+                                        </div>
+                                      </button>
+                                    ))}
+                                    <div className="border-t">
+                                      <button
+                                        className="w-full text-left px-4 py-3 hover:bg-teal-50 focus:bg-teal-50 focus:outline-none text-teal-600 font-medium flex items-center"
+                                        onClick={() => {
+                                          const novoProduto = {
+                                            id: `NOVO-${Date.now()}`,
+                                            nome: produtoSearchTerm,
+                                            ean: "",
+                                            lote: "",
+                                            categoria: "Não Cadastrado"
+                                          };
+                                          handleProdutoSelect(novoProduto, index);
+                                        }}
+                                      >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Adicionar "{produtoSearchTerm}" como novo produto
+                                      </button>
                                     </div>
-                                  </button>
-                                ))}
-                                <div className="border-t">
-                                  <button
-                                    className="w-full text-left px-4 py-3 hover:bg-teal-50 focus:bg-teal-50 focus:outline-none text-teal-600 font-medium flex items-center"
-                                    onClick={() => {
-                                      const novoProduto = {
-                                        id: `NOVO-${Date.now()}`,
-                                        nome: produtoSearchTerm,
-                                        ean: "",
-                                        lote: "",
-                                        categoria: "Não Cadastrado"
-                                      };
-                                      handleProdutoSelect(novoProduto);
-                                    }}
-                                  >
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    Adicionar "{produtoSearchTerm}" como novo produto
-                                  </button>
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div className="px-4 py-3 text-sm text-gray-500">
-                                  Nenhum produto encontrado
-                                </div>
-                                <div className="border-t">
-                                  <button
-                                    className="w-full text-left px-4 py-3 hover:bg-teal-50 focus:bg-teal-50 focus:outline-none text-teal-600 font-medium flex items-center"
-                                    onClick={() => {
-                                      const novoProduto = {
-                                        id: `NOVO-${Date.now()}`,
-                                        nome: produtoSearchTerm,
-                                        ean: "",
-                                        lote: "",
-                                        categoria: "Não Cadastrado"
-                                      };
-                                      handleProdutoSelect(novoProduto);
-                                    }}
-                                  >
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    Adicionar "{produtoSearchTerm}" como novo produto
-                                  </button>
-                                </div>
-                              </>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className="px-4 py-3 text-sm text-gray-500">
+                                      Nenhum produto encontrado
+                                    </div>
+                                    <div className="border-t">
+                                      <button
+                                        className="w-full text-left px-4 py-3 hover:bg-teal-50 focus:bg-teal-50 focus:outline-none text-teal-600 font-medium flex items-center"
+                                        onClick={() => {
+                                          const novoProduto = {
+                                            id: `NOVO-${Date.now()}`,
+                                            nome: produtoSearchTerm,
+                                            ean: "",
+                                            lote: "",
+                                            categoria: "Não Cadastrado"
+                                          };
+                                          handleProdutoSelect(novoProduto, index);
+                                        }}
+                                      >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Adicionar "{produtoSearchTerm}" como novo produto
+                                      </button>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
                             )}
                           </div>
-                        )}
+                        </div>
+
+                        {/* Campo de lote */}
+                        <div className="space-y-2">
+                          <Label className="font-medium">
+                            Lote
+                          </Label>
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                            <Input
+                              type="text"
+                              placeholder="Digite o lote"
+                              className="h-11 pl-10"
+                              value={item.lote}
+                              onChange={(e) => handleLoteChange(e.target.value, index)}
+                            />
+                            {item.isDivergente && (
+                              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <Badge className="bg-orange-100 text-orange-800 border-orange-200">
+                                  Divergente
+                                </Badge>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Lista de produtos selecionados */}
-                      {selectedProdutos.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {selectedProdutos.map((produto) => (
-                            <div
-                              key={produto.id}
-                              className="inline-flex items-center gap-1 px-3 py-1 bg-teal-50 text-teal-700 rounded-full border border-teal-200"
-                            >
-                              <span className="text-sm font-medium">{produto.nome}</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-4 w-4 p-0 hover:bg-teal-100"
-                                onClick={() => handleRemoveProduto(produto.id)}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
+                      {/* Produto selecionado com tag de divergência */}
+                      {item.produto && (
+                        <div className="flex items-center gap-2 p-3 bg-teal-50 rounded-lg border border-teal-200">
+                          <div className="flex-1">
+                            <div className="font-medium text-teal-900">{item.produto.nome}</div>
+                            <div className="text-sm text-teal-700 flex items-center gap-2">
+                              <span>EAN: {item.produto.ean}</span>
+                              {item.lote && (
+                                <>
+                                  <span>| Lote escolhido: {item.lote}</span>
+                                  {item.isDivergente && (
+                                    <Badge className="bg-orange-100 text-orange-800 border-orange-200 text-xs">
+                                      Divergente
+                                    </Badge>
+                                  )}
+                                </>
+                              )}
                             </div>
-                          ))}
+                          </div>
                         </div>
                       )}
                     </div>
-                  </div>
+                  ))}
 
-                  {/* Campo de busca por lote */}
-                  <div className="space-y-2">
-                    <Label htmlFor="busca-lote" className="font-medium">
-                      Buscar Lote
-                    </Label>
-                    <div className="space-y-2">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
-                          id="busca-lote"
-                          type="text"
-                          placeholder="Buscar por lote"
-                          className="h-11 pl-10"
-                          value={loteSearchTerm}
-                          onChange={(e) => setLoteSearchTerm(e.target.value)}
-                          onFocus={handleLoteSearchFocus}
-                          onBlur={handleLoteSearchBlur}
-                        />
-                        {showLotesList && (
-                          <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
-                            {filteredProdutosByLote.length > 0 ? (
-                              <>
-                                {filteredProdutosByLote.map((produto, index) => (
-                                  <button
-                                    key={produto.id}
-                                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${
-                                      index !== filteredProdutosByLote.length - 1 ? "border-b" : ""
-                                    }`}
-                                    onClick={() => handleLoteSelect(produto)}
-                                  >
-                                    <div className="font-medium text-gray-900">Lote: {produto.lote}</div>
-                                    <div className="text-sm text-gray-500">{produto.nome}</div>
-                                  </button>
-                                ))}
-                                <div className="border-t">
-                                  <button
-                                    className="w-full text-left px-4 py-3 hover:bg-teal-50 focus:bg-teal-50 focus:outline-none text-teal-600 font-medium flex items-center"
-                                    onClick={() => {
-                                      const novoLote = loteSearchTerm;
-                                      setSelectedLotes(prev => [...prev, novoLote]);
-                                      setFormData(prev => ({
-                                        ...prev,
-                                        lote: [...prev.lote.split(", ").filter(l => l), novoLote].join(", ")
-                                      }));
-                                      setLoteSearchTerm("");
-                                    }}
-                                  >
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    Adicionar "{loteSearchTerm}" como novo lote
-                                  </button>
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div className="px-4 py-3 text-sm text-gray-500">
-                                  Nenhum lote encontrado
-                                </div>
-                                <div className="border-t">
-                                  <button
-                                    className="w-full text-left px-4 py-3 hover:bg-teal-50 focus:bg-teal-50 focus:outline-none text-teal-600 font-medium flex items-center"
-                                    onClick={() => {
-                                      const novoLote = loteSearchTerm;
-                                      setSelectedLotes(prev => [...prev, novoLote]);
-                                      setFormData(prev => ({
-                                        ...prev,
-                                        lote: [...prev.lote.split(", ").filter(l => l), novoLote].join(", ")
-                                      }));
-                                      setLoteSearchTerm("");
-                                    }}
-                                  >
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    Adicionar "{loteSearchTerm}" como novo lote
-                                  </button>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Lista de lotes selecionados */}
-                      {selectedLotes.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {selectedLotes.map((lote) => (
-                            <div
-                              key={lote}
-                              className="inline-flex items-center gap-1 px-3 py-1 bg-gray-50 text-gray-700 rounded-full border border-gray-200"
-                            >
-                              <span className="text-sm font-medium">Lote: {lote}</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-4 w-4 p-0 hover:bg-gray-100"
-                                onClick={() => handleRemoveLote(lote)}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                  {/* Botão para adicionar novo produto e lote */}
+                  <div className="flex justify-center pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleAddProdutoLote}
+                      className="flex items-center gap-2 border-dashed border-2 border-teal-300 text-teal-600 hover:bg-teal-50 hover:border-teal-400"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Adicionar Produto e Lote
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -1780,6 +1749,47 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Produtos e Lotes Selecionados */}
+              {produtosLotes.some(item => item.produto || item.lote) && (
+                <Card className="border-gray-200">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <Package className="h-5 w-5 text-teal-600" />
+                      <h3 className="text-lg font-medium">Produtos e Lotes</h3>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {produtosLotes.map((item, index) => (
+                        (item.produto || item.lote) && (
+                          <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border">
+                            <div className="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center">
+                              <Package className="h-4 w-4 text-teal-600" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium text-gray-900">
+                                {item.produto ? item.produto.nome : "Produto não selecionado"}
+                              </div>
+                              <div className="text-sm text-gray-600 flex items-center gap-2">
+                                {item.produto && (
+                                  <span>EAN: {item.produto.ean}</span>
+                                )}
+                                <span>Lote: {item.lote || "Não informado"}</span>
+                                {item.isDivergente && (
+                                  <Badge className="bg-orange-100 text-orange-800 border-orange-200 text-xs">
+                                    Divergente
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Informações do Contato */}
               <Card className="border-gray-200">
