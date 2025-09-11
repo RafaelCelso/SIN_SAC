@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar, Mail, Clock, Pencil, UserX, MessageSquare, PhoneIncoming, Bell } from "lucide-react"
+import { Search, UserPlus, User, FileText, Clipboard, Phone, Info, MapPin, Package, Check, X, Plus, Calendar, Mail, Clock, Pencil, UserX, MessageSquare, PhoneIncoming, Bell, Instagram, Facebook, Linkedin, Share2, MessageCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -139,6 +139,9 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     motivoResolucao: "",
     detalhe: "",
   })
+
+  // Estado para controlar a rede social selecionada
+  const [redeSocialSelecionada, setRedeSocialSelecionada] = useState<string>("")
 
   // Campos para cliente sem registro
   const [nomeSemRegistro, setNomeSemRegistro] = useState("")
@@ -299,6 +302,7 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
     setLoteSearchTerm("")
     setShowLotesList(false)
     setActiveProdutoLoteIndex(0)
+    setRedeSocialSelecionada("")
     setFormData({
       tipoContato: "telefone",
       motivo: "",
@@ -437,6 +441,16 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
         })
         return
       }
+    }
+
+    // Validar rede social se tipo de contato for "rede-social"
+    if (formData.tipoContato === "rede-social" && !redeSocialSelecionada) {
+      toast({
+        title: "Erro",
+        description: "Selecione uma rede social",
+        variant: "destructive",
+      })
+      return
     }
 
     // Gerar número de protocolo
@@ -586,6 +600,11 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
       if (!formData.horaRetorno) {
         errors.push("Hora de retorno é obrigatória")
       }
+    }
+
+    // Validação da rede social
+    if (formData.tipoContato === "rede-social" && !redeSocialSelecionada) {
+      errors.push("Selecione uma rede social")
     }
 
     if (errors.length > 0) {
@@ -1814,10 +1833,10 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                       </Button>
                       <Button
                         variant={formData.tipoContato === "whatsapp" ? "default" : "outline"}
-                        className={`flex items-center gap-2 ${formData.tipoContato === "whatsapp" ? "bg-teal-600 hover:bg-teal-700" : ""}`}
+                        className={`flex items-center gap-2 ${formData.tipoContato === "whatsapp" ? "bg-green-600 hover:bg-green-700" : ""}`}
                         onClick={() => setFormData(prev => ({ ...prev, tipoContato: "whatsapp" }))}
                       >
-                        <MessageSquare className="h-4 w-4" />
+                        <MessageCircle className="h-4 w-4" />
                         WhatsApp
                       </Button>
                       <Button
@@ -1836,7 +1855,59 @@ export function IniciarAtendimentoModal({ open, onOpenChange }: IniciarAtendimen
                         <MapPin className="h-4 w-4" />
                         Presencial
                       </Button>
+                      <Button
+                        variant={formData.tipoContato === "rede-social" ? "default" : "outline"}
+                        className={`flex items-center gap-2 ${formData.tipoContato === "rede-social" ? "bg-teal-600 hover:bg-teal-700" : ""}`}
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, tipoContato: "rede-social" }))
+                          setRedeSocialSelecionada("")
+                        }}
+                      >
+                        <Share2 className="h-4 w-4" />
+                        Rede Social
+                      </Button>
                     </div>
+
+                    {/* Seleção da Rede Social - aparece apenas quando tipo de contato for "rede-social" */}
+                    {formData.tipoContato === "rede-social" && (
+                      <div className="space-y-2 mt-4">
+                        <Label className="font-medium">Rede Social <span className="text-red-500">*</span></Label>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          <Button
+                            variant={redeSocialSelecionada === "instagram" ? "default" : "outline"}
+                            className={`flex flex-col items-center gap-1 h-14 ${redeSocialSelecionada === "instagram" ? "bg-gradient-to-br from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white" : "hover:bg-pink-50 hover:border-pink-200"}`}
+                            onClick={() => setRedeSocialSelecionada("instagram")}
+                          >
+                            <Instagram className="h-4 w-4" />
+                            <span className="text-xs font-medium">Instagram</span>
+                          </Button>
+                          <Button
+                            variant={redeSocialSelecionada === "facebook" ? "default" : "outline"}
+                            className={`flex flex-col items-center gap-1 h-14 ${redeSocialSelecionada === "facebook" ? "bg-blue-600 hover:bg-blue-700 text-white" : "hover:bg-blue-50 hover:border-blue-200"}`}
+                            onClick={() => setRedeSocialSelecionada("facebook")}
+                          >
+                            <Facebook className="h-4 w-4" />
+                            <span className="text-xs font-medium">Facebook</span>
+                          </Button>
+                          <Button
+                            variant={redeSocialSelecionada === "linkedin" ? "default" : "outline"}
+                            className={`flex flex-col items-center gap-1 h-14 ${redeSocialSelecionada === "linkedin" ? "bg-blue-700 hover:bg-blue-800 text-white" : "hover:bg-blue-50 hover:border-blue-200"}`}
+                            onClick={() => setRedeSocialSelecionada("linkedin")}
+                          >
+                            <Linkedin className="h-4 w-4" />
+                            <span className="text-xs font-medium">LinkedIn</span>
+                          </Button>
+                          <Button
+                            variant={redeSocialSelecionada === "x" ? "default" : "outline"}
+                            className={`flex flex-col items-center gap-1 h-14 ${redeSocialSelecionada === "x" ? "bg-black hover:bg-gray-800 text-white" : "hover:bg-gray-50 hover:border-gray-200"}`}
+                            onClick={() => setRedeSocialSelecionada("x")}
+                          >
+                            <X className="h-4 w-4" />
+                            <span className="text-xs font-medium">X</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Tipo de Contato */}
                     <div className="space-y-2 mt-4">
