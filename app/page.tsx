@@ -23,7 +23,13 @@ import {
   ChevronDown,
   ChevronUp,
   Check,
-  Plus
+  Plus,
+  Loader,
+  CircleCheckBig,
+  OctagonX,
+  ClipboardPen,
+  CornerDownLeft,
+  ClipboardPlus
 } from "lucide-react"
 import Link from "next/link"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -1320,7 +1326,7 @@ export default function CasosPendentes() {
           case 'followup':
             return 'Follow-up'
           case 'followup-pendente':
-            return 'Follow-up pendente de aprovação'
+            return 'Pendente de Aprovação'
           case 'aberto':
             return 'Aberto'
           case 'rejeitado':
@@ -1330,6 +1336,95 @@ export default function CasosPendentes() {
         }
       default:
         return submenu
+    }
+  }
+
+  // Obtém as classes CSS para cores de status
+  const getStatusClasses = (status: string): string => {
+    const s = (status || '').toLowerCase()
+    switch (s) {
+      case 'aberto':
+        return 'bg-blue-50 text-blue-700 border-blue-200'
+      case 'em andamento':
+        return 'bg-yellow-50 text-yellow-700 border-yellow-200'
+      case 'concluído':
+      case 'concluido':
+        return 'bg-green-50 text-green-700 border-green-200'
+      case 'revisão':
+      case 'revisao':
+        return 'text-white border-transparent'
+      case 'rejeitado':
+        return 'bg-red-50 text-red-700 border-red-200'
+      case 'farmacovigilância':
+      case 'farmacovigilancia':
+      case 'qualidade':
+        return 'text-white border-transparent'
+      case 'retornado':
+      case 'em análise':
+      case 'em analise':
+      case 'pendente de aprovação':
+        return 'text-white border-transparent'
+      case 'follow-up':
+        return 'text-white border-transparent'
+      default:
+        return 'bg-gray-100 text-gray-700 border-gray-200'
+    }
+  }
+
+  // Obtém o ícone correto baseado no status
+  const getStatusIcon = (status: string) => {
+    const s = (status || '').toLowerCase()
+    switch (s) {
+      case 'aberto':
+        return <Loader className="h-3 w-3" />
+      case 'em andamento':
+        return <Clock className="h-3 w-3" />
+      case 'concluído':
+      case 'concluido':
+        return <CircleCheckBig className="h-3 w-3" />
+      case 'revisão':
+      case 'revisao':
+        return <Eye className="h-3 w-3" />
+      case 'rejeitado':
+        return <OctagonX className="h-3 w-3" />
+      case 'farmacovigilância':
+      case 'farmacovigilancia':
+      case 'qualidade':
+        return <ClipboardPen className="h-3 w-3" />
+      case 'retornado':
+        return <CornerDownLeft className="h-3 w-3" />
+      case 'pendente de aprovação':
+        return <Clock className="h-3 w-3" />
+      case 'em análise':
+      case 'em analise':
+        return <Clock className="h-3 w-3" />
+      case 'follow-up':
+        return <ClipboardPlus className="h-3 w-3" />
+      default:
+        return <Loader className="h-3 w-3" />
+    }
+  }
+
+  // Obtém o estilo inline para cores customizadas
+  const getStatusStyle = (status: string): React.CSSProperties => {
+    const s = (status || '').toLowerCase()
+    switch (s) {
+      case 'revisão':
+      case 'revisao':
+        return { backgroundColor: '#F3E8FF', color: '#7C3AED', borderColor: '#E9D5FF' }
+      case 'farmacovigilância':
+      case 'farmacovigilancia':
+      case 'qualidade':
+        return { backgroundColor: '#EEF2FF', color: '#4F46E5', borderColor: '#E0E7FF' }
+      case 'retornado':
+      case 'em análise':
+      case 'em analise':
+      case 'pendente de aprovação':
+        return { backgroundColor: '#FEF3C7', color: '#D97706', borderColor: '#FDE68A' }
+      case 'follow-up':
+        return { backgroundColor: '#D1FAE5', color: '#059669', borderColor: '#A7F3D0' }
+      default:
+        return {}
     }
   }
 
@@ -1566,7 +1661,12 @@ export default function CasosPendentes() {
                           <span className="font-semibold text-lg">{caso.protocolo}</span>
                         </div>
                         {filtroAtivo && tipoFiltro && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge 
+                            variant="outline" 
+                            className={`text-xs flex items-center gap-1 ${getStatusClasses(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}`}
+                            style={getStatusStyle(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}
+                          >
+                            {getStatusIcon(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}
                             {getFiltroStatusLabel(filtroAtivo, tipoFiltro)}
                           </Badge>
                         )}
@@ -1988,7 +2088,12 @@ export default function CasosPendentes() {
                             <span className="font-semibold text-lg">{caso.protocolo}</span>
                           </div>
                           {filtroAtivo && tipoFiltro && (
-                            <Badge variant="outline" className="text-xs">
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs flex items-center gap-1 ${getStatusClasses(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}`}
+                              style={getStatusStyle(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}
+                            >
+                              {getStatusIcon(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}
                               {getFiltroStatusLabel(filtroAtivo, tipoFiltro)}
                             </Badge>
                           )}
@@ -2277,7 +2382,12 @@ export default function CasosPendentes() {
                               <h3 className="font-semibold text-lg">{caso.protocolo}</h3>
                             </div>
                             {filtroAtivo && tipoFiltro && (
-                              <Badge variant="outline" className="text-xs">
+                              <Badge 
+                                variant="outline" 
+                                className={`text-xs flex items-center gap-1 ${getStatusClasses(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}`}
+                                style={getStatusStyle(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}
+                              >
+                                {getStatusIcon(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}
                                 {getFiltroStatusLabel(filtroAtivo, tipoFiltro)}
                               </Badge>
                             )}
@@ -2547,7 +2657,12 @@ export default function CasosPendentes() {
                             <h3 className="font-semibold text-lg">{caso.protocolo}</h3>
                           </div>
                           {filtroAtivo && tipoFiltro && (
-                            <Badge variant="outline" className="text-xs">
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs flex items-center gap-1 ${getStatusClasses(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}`}
+                              style={getStatusStyle(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}
+                            >
+                              {getStatusIcon(getFiltroStatusLabel(filtroAtivo, tipoFiltro))}
                               {getFiltroStatusLabel(filtroAtivo, tipoFiltro)}
                             </Badge>
                           )}

@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Search, Eye, Trash, Filter, Clock, CheckCircle, AlertTriangle, CalendarIcon, Plus } from "lucide-react"
+import { Search, Eye, Trash, Filter, Clock, CheckCircle, AlertTriangle, CalendarIcon, Plus, Loader, CircleCheckBig } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
@@ -198,6 +198,20 @@ export default function ProtocolosPage() {
     }
   }
 
+  const getStatusIcon = (status: string) => {
+    const label = getStatusLabel(status)
+    switch (label) {
+      case "Aberto":
+        return <Loader className="h-3 w-3" />
+      case "Em andamento":
+        return <Clock className="h-3 w-3" />
+      case "Concluído":
+        return <CircleCheckBig className="h-3 w-3" />
+      default:
+        return <Loader className="h-3 w-3" />
+    }
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -367,7 +381,8 @@ export default function ProtocolosPage() {
                         </TableCell>
                         <TableCell>{protocolo.tipo}</TableCell>
                         <TableCell>
-                          <Badge variant="outline" className={getStatusClasses(protocolo.status)}>
+                          <Badge variant="outline" className={`text-xs flex items-center gap-1 w-fit ${getStatusClasses(protocolo.status)}`}>
+                            {getStatusIcon(protocolo.status)}
                             {getStatusLabel(protocolo.status)}
                           </Badge>
                         </TableCell>
