@@ -3,10 +3,11 @@
 import { useState } from "react"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Search, FileText, Filter, Clock, CheckCircle, AlertTriangle, CalendarIcon, Plus } from "lucide-react"
+import { Search, Eye, Trash, Filter, Clock, CheckCircle, AlertTriangle, CalendarIcon, Plus } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
@@ -126,7 +127,7 @@ const PRODUTOS = [
   "Dispositivo Médico X",
   "Dispositivo Médico Y",
 ]
-const STATUS = ["Concluído", "Em análise", "Pendente", "Respondido"]
+const STATUS = ["Aberto", "Em andamento", "Concluído"]
 
 export default function ProtocolosPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -161,7 +162,7 @@ export default function ProtocolosPage() {
     const matchesProduto = !produtoFiltro || protocolo.produto === produtoFiltro
 
     // Filtro de status
-    const matchesStatus = !statusFiltro || protocolo.status === statusFiltro
+    const matchesStatus = !statusFiltro || statusFiltro === "all" || getStatusLabel(protocolo.status) === statusFiltro
 
     return matchesSearch && matchesDataInicio && matchesDataFim && matchesTipo && matchesProduto && matchesStatus
   })
@@ -173,6 +174,28 @@ export default function ProtocolosPage() {
     setTipoFiltro("")
     setProdutoFiltro("")
     setStatusFiltro("")
+  }
+
+  const getStatusLabel = (status: string) => {
+    const s = (status || "").toLowerCase()
+    if (s === "pendente" || s === "aberto") return "Aberto"
+    if (s === "em análise" || s === "em analise" || s === "em andamento") return "Em andamento"
+    if (s === "concluído" || s === "concluido" || s === "respondido") return "Concluído"
+    return status || "Aberto"
+  }
+
+  const getStatusClasses = (status: string) => {
+    const label = getStatusLabel(status)
+    switch (label) {
+      case "Aberto":
+        return "bg-blue-50 text-blue-700 border-blue-200"
+      case "Em andamento":
+        return "bg-yellow-50 text-yellow-700 border-yellow-200"
+      case "Concluído":
+        return "bg-green-50 text-green-700 border-green-200"
+      default:
+        return "bg-gray-100 text-gray-700 border-gray-200"
+    }
   }
 
   return (
@@ -325,10 +348,10 @@ export default function ProtocolosPage() {
                     <TableHead>Protocolo</TableHead>
                     <TableHead>Data</TableHead>
                     <TableHead>Cliente</TableHead>
-                    <TableHead>Telefone</TableHead>
                     <TableHead>Motivo</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Produto</TableHead>
-                    <TableHead className="text-right">Ação</TableHead>
+                    <TableHead className="text-right"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -342,21 +365,38 @@ export default function ProtocolosPage() {
                             {protocolo.cliente}
                           </Link>
                         </TableCell>
-                        <TableCell>{protocolo.telefone}</TableCell>
                         <TableCell>{protocolo.tipo}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={getStatusClasses(protocolo.status)}>
+                            {getStatusLabel(protocolo.status)}
+                          </Badge>
+                        </TableCell>
                         <TableCell>{protocolo.produto}</TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200"
-                            asChild
-                          >
-                            <Link href={`/clientes/${protocolo.clienteId}?tab=protocolos&protocolo=${protocolo.id}`}>
-                              <FileText className="h-4 w-4 mr-2" />
-                              Ver detalhes
-                            </Link>
-                          </Button>
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 h-8 w-8 p-0"
+                              asChild
+                              title="Ver detalhes"
+                              aria-label="Ver detalhes"
+                            >
+                              <Link href={`/clientes/${protocolo.clienteId}?tab=protocolos&protocolo=${protocolo.id}`}>
+                                <Eye className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="hover:bg-red-50 text-red-600 hover:text-red-700 hover:border-red-300 h-8 w-8 p-0"
+                              title="Excluir"
+                              aria-label="Excluir"
+                              onClick={() => { /* ação de excluir */ }}
+                            >
+                              <Trash className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))

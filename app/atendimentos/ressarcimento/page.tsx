@@ -389,7 +389,6 @@ export default function RessarcimentoPage() {
                     <TableHead>Ressarcimento</TableHead>
                     <TableHead>Data</TableHead>
                     <TableHead>Cliente</TableHead>
-                    <TableHead>Telefone</TableHead>
                     <TableHead>Motivo</TableHead>
                     <TableHead>Produto</TableHead>
                     <TableHead>Tipo</TableHead>
@@ -408,7 +407,6 @@ export default function RessarcimentoPage() {
                             {item.cliente}
                           </Link>
                         </TableCell>
-                        <TableCell>{item.telefone}</TableCell>
                         <TableCell>{item.motivo}</TableCell>
                         <TableCell>{item.produto}</TableCell>
                         <TableCell>
@@ -465,7 +463,7 @@ export default function RessarcimentoPage() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-6">
+                      <TableCell colSpan={8} className="text-center py-6">
                         Nenhum ressarcimento encontrado com os critérios de filtro.
                       </TableCell>
                     </TableRow>
