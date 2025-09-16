@@ -565,7 +565,7 @@ const CASOS_QUALIDADE = [
 
 const CASOS_FARMACOVIGILANCIA = [
   {
-    id: "FV01",
+    id: "31",
     nome: "Ana Reação Silva",
     prioridade: "Evento Adverso Grave",
     protocolo: "FV-2023-0001",
@@ -580,7 +580,7 @@ const CASOS_FARMACOVIGILANCIA = [
     submenu: "revisao"
   },
   {
-    id: "FV02",
+    id: "241",
     nome: "Pedro Alergia Costa",
     prioridade: "Reação Alérgica",
     protocolo: "FV-2023-0002",
@@ -595,7 +595,7 @@ const CASOS_FARMACOVIGILANCIA = [
     submenu: "revisao"
   },
   {
-    id: "FV03",
+    id: "32",
     nome: "Lucia Eficácia Lima",
     prioridade: "Falta de Eficácia",
     protocolo: "FV-2023-0003",
@@ -611,7 +611,7 @@ const CASOS_FARMACOVIGILANCIA = [
   },
   // Casos para Follow-up pendente de aprovação
   {
-    id: "FV04",
+    id: "34",
     nome: "Maria Follow-up Santos",
     prioridade: "Follow-up Pendente",
     protocolo: "FV-2023-0004",
@@ -626,7 +626,7 @@ const CASOS_FARMACOVIGILANCIA = [
     submenu: "followup-pendente"
   },
   {
-    id: "FV05",
+    id: "35",
     nome: "Roberto Acompanhamento Lima",
     prioridade: "Acompanhamento Médico",
     protocolo: "FV-2023-0005",
@@ -641,7 +641,7 @@ const CASOS_FARMACOVIGILANCIA = [
     submenu: "followup-pendente"
   },
   {
-    id: "FV06",
+    id: "36",
     nome: "Carla Monitoramento Costa",
     prioridade: "Monitoramento Contínuo",
     protocolo: "FV-2023-0006",
@@ -656,7 +656,7 @@ const CASOS_FARMACOVIGILANCIA = [
     submenu: "followup-pendente"
   },
   {
-    id: "FV07",
+    id: "45",
     nome: "Antonio Reação Severa",
     prioridade: "Reação Adversa Grave",
     protocolo: "FV-2023-0007",
@@ -671,7 +671,7 @@ const CASOS_FARMACOVIGILANCIA = [
     submenu: "followup-pendente"
   },
   {
-    id: "FV08",
+    id: "54",
     nome: "Silvia Eficácia Duvidosa",
     prioridade: "Eficácia Questionável",
     protocolo: "FV-2023-0008",
@@ -686,7 +686,7 @@ const CASOS_FARMACOVIGILANCIA = [
     submenu: "followup-pendente"
   },
   {
-    id: "FV09",
+    id: "55",
     nome: "Ricardo Interação Medicamentosa",
     prioridade: "Interação Medicamentosa",
     protocolo: "FV-2023-0009",
@@ -701,7 +701,7 @@ const CASOS_FARMACOVIGILANCIA = [
     submenu: "followup-pendente"
   },
   {
-    id: "FV10",
+    id: "64",
     nome: "Patricia Tolerabilidade",
     prioridade: "Problema de Tolerabilidade",
     protocolo: "FV-2023-0010",
@@ -717,7 +717,7 @@ const CASOS_FARMACOVIGILANCIA = [
   },
   // Casos para Follow-up
   {
-    id: "FV11",
+    id: "63",
     nome: "Carlos Acompanhamento Silva",
     prioridade: "Acompanhamento Ativo",
     protocolo: "FV-2023-0011",
@@ -732,7 +732,7 @@ const CASOS_FARMACOVIGILANCIA = [
     submenu: "followup"
   },
   {
-    id: "FV12",
+    id: "62",
     nome: "Mariana Eficácia Costa",
     prioridade: "Avaliação de Eficácia",
     protocolo: "FV-2023-0012",
@@ -747,7 +747,7 @@ const CASOS_FARMACOVIGILANCIA = [
     submenu: "followup"
   },
   {
-    id: "FV13",
+    id: "87",
     nome: "Roberto Tolerabilidade Lima",
     prioridade: "Monitoramento de Tolerabilidade",
     protocolo: "FV-2023-0013",
@@ -1281,6 +1281,58 @@ export default function CasosPendentes() {
     }
   }
 
+  // Mapeia o filtro ativo do sidebar para um rótulo de status exibido no card
+  const getFiltroStatusLabel = (submenu: string, tipo: string | null): string => {
+    if (!submenu || !tipo) return ''
+    switch (tipo) {
+      case 'contatos':
+        switch (submenu) {
+          case 'motivo-cliente':
+            return 'Aberto'
+          case 'motivo-interno':
+            return 'Em andamento'
+          case 'primeira':
+            return 'Primeira tentativa'
+          case 'reagendamento':
+            return 'Reagendamento'
+          default:
+            return submenu
+        }
+      case 'queixas':
+        switch (submenu) {
+          case 'revisao':
+            return abaAtiva === 'qualidade' ? 'Qualidade' : 'Revisão'
+          case 'retornado':
+            return abaAtiva === 'qualidade' ? 'Em análise' : 'Retornado'
+          case 'aberto':
+            return 'Aberto'
+          case 'rejeitado':
+            return 'Rejeitado'
+          default:
+            return submenu
+        }
+      case 'farmacovigilancia':
+        switch (submenu) {
+          case 'revisao':
+            return abaAtiva === 'farmacovigilancia' ? 'Farmacovigilância' : 'Revisão'
+          case 'retornado':
+            return 'Retornado'
+          case 'followup':
+            return 'Follow-up'
+          case 'followup-pendente':
+            return 'Follow-up pendente de aprovação'
+          case 'aberto':
+            return 'Aberto'
+          case 'rejeitado':
+            return 'Rejeitado'
+          default:
+            return submenu
+        }
+      default:
+        return submenu
+    }
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -1513,6 +1565,11 @@ export default function CasosPendentes() {
                           <FileText className="h-4 w-4 text-gray-600" />
                           <span className="font-semibold text-lg">{caso.protocolo}</span>
                         </div>
+                        {filtroAtivo && tipoFiltro && (
+                          <Badge variant="outline" className="text-xs">
+                            {getFiltroStatusLabel(filtroAtivo, tipoFiltro)}
+                          </Badge>
+                        )}
                         {/* Exibir tag de gravidade apenas para submenus específicos de Farmacovigilância */}
                         {tipoFiltro === 'farmacovigilancia' && (filtroAtivo === 'revisao' || filtroAtivo === 'retornado' || filtroAtivo === 'followup-pendente') && (
                           <Badge className={getGravidadeColor(caso.status)}>
@@ -1573,7 +1630,7 @@ export default function CasosPendentes() {
                             variant="outline" 
                             size="sm" 
                             className="text-blue-600 hover:text-blue-700 hover:bg-blue-50" 
-                            title="Adicionar motivo"
+                            title="Adicionar Justificativa"
                             onClick={() => handleOpenModalMotivo(caso)}
                           >
                             <Plus className="h-4 w-4" />
@@ -1930,6 +1987,11 @@ export default function CasosPendentes() {
                             <FileText className="h-4 w-4 text-gray-600" />
                             <span className="font-semibold text-lg">{caso.protocolo}</span>
                           </div>
+                          {filtroAtivo && tipoFiltro && (
+                            <Badge variant="outline" className="text-xs">
+                              {getFiltroStatusLabel(filtroAtivo, tipoFiltro)}
+                            </Badge>
+                          )}
                           {/* Tag de Gravidade apenas para Farmacovigilância */}
                           {caso.categoria === 'farmacovigilancia' && (
                             <Badge className={`text-xs ${getGravidadeColor(caso.status)}`}>
@@ -2214,6 +2276,11 @@ export default function CasosPendentes() {
                               <FileText className="h-5 w-5 text-gray-600" />
                               <h3 className="font-semibold text-lg">{caso.protocolo}</h3>
                             </div>
+                            {filtroAtivo && tipoFiltro && (
+                              <Badge variant="outline" className="text-xs">
+                                {getFiltroStatusLabel(filtroAtivo, tipoFiltro)}
+                              </Badge>
+                            )}
                           </div>
 
                           {/* Linha 2: Motivo Principal, Subcategoria e Detalhe */}
@@ -2479,6 +2546,11 @@ export default function CasosPendentes() {
                             <FileText className="h-5 w-5 text-gray-600" />
                             <h3 className="font-semibold text-lg">{caso.protocolo}</h3>
                           </div>
+                          {filtroAtivo && tipoFiltro && (
+                            <Badge variant="outline" className="text-xs">
+                              {getFiltroStatusLabel(filtroAtivo, tipoFiltro)}
+                            </Badge>
+                          )}
                           <Badge className={getGravidadeColor(caso.status)}>
                             {caso.status}
                           </Badge>

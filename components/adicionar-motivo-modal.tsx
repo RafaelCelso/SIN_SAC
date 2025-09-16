@@ -59,25 +59,25 @@ export function AdicionarMotivoModal({ isOpen, onClose, onSubmit }: AdicionarMot
 
   const handleTipoMotivoChange = (value: string) => {
     setTipoMotivo(value)
-    setMotivoSelecionado("") // Reset do motivo selecionado ao trocar o tipo
+    setMotivoSelecionado("") // Reset da justificativa selecionada ao trocar o tipo
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Adicionar Motivo</DialogTitle>
+          <DialogTitle>Adicionar Justificativa</DialogTitle>
           <DialogDescription>
-            Selecione o tipo de motivo e a opção específica para justificar o status do protocolo.
+            Selecione o tipo de justificativa e a opção específica para justificar o status do protocolo.
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="tipo-motivo">Tipo de Motivo *</Label>
+            <Label htmlFor="tipo-motivo">Tipo de Justificativa *</Label>
             <Select value={tipoMotivo} onValueChange={handleTipoMotivoChange}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecione o tipo de motivo" />
+                <SelectValue placeholder="Selecione o tipo de justificativa" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Interno">Interno</SelectItem>
@@ -88,10 +88,10 @@ export function AdicionarMotivoModal({ isOpen, onClose, onSubmit }: AdicionarMot
 
           {tipoMotivo && (
             <div className="grid gap-2">
-              <Label htmlFor="motivo-especifico">Motivo {tipoMotivo} *</Label>
+              <Label htmlFor="motivo-especifico">Justificativa {tipoMotivo} *</Label>
               <Select value={motivoSelecionado} onValueChange={setMotivoSelecionado}>
                 <SelectTrigger>
-                  <SelectValue placeholder={`Selecione o motivo ${tipoMotivo.toLowerCase()}`} />
+                  <SelectValue placeholder={`Selecione a Justificativa ${tipoMotivo.toLowerCase()}`} />
                 </SelectTrigger>
                 <SelectContent>
                   {tipoMotivo === "Interno" 
