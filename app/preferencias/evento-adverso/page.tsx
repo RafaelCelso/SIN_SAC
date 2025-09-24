@@ -31,6 +31,7 @@ interface EventoAdverso {
   id: string;
   nome: string;
   status: "Ativo" | "Inativo";
+  gravidade: "Grave" | "Moderado" | "Leve";
 }
 
 export default function EventoAdversoPage() {
@@ -49,8 +50,10 @@ export default function EventoAdversoPage() {
   // Estados para os formulários
   const [newEventoNome, setNewEventoNome] = useState("");
   const [newEventoStatus, setNewEventoStatus] = useState<"Ativo" | "Inativo">("Ativo");
+  const [newEventoGravidade, setNewEventoGravidade] = useState<"Grave" | "Moderado" | "Leve">("Leve");
   const [editEventoNome, setEditEventoNome] = useState("");
   const [editEventoStatus, setEditEventoStatus] = useState<"Ativo" | "Inativo">("Ativo");
+  const [editEventoGravidade, setEditEventoGravidade] = useState<"Grave" | "Moderado" | "Leve">("Leve");
 
   // Mock de dados - Substituir por dados reais da API
   const [eventosAdversos, setEventosAdversos] = useState<EventoAdverso[]>([
@@ -58,36 +61,43 @@ export default function EventoAdversoPage() {
       id: "129",
       nome: "Elogios",
       status: "Ativo",
+      gravidade: "Leve",
     },
     {
       id: "116",
       nome: "Sugestão",
       status: "Ativo",
+      gravidade: "Leve",
     },
     {
       id: "105",
       nome: "Reclamação",
       status: "Ativo",
+      gravidade: "Moderado",
     },
     {
       id: "98",
       nome: "Denúncia",
       status: "Ativo",
+      gravidade: "Moderado",
     },
     {
       id: "97",
       nome: "Outros",
       status: "Ativo",
+      gravidade: "Leve",
     },
     {
       id: "96",
       nome: "Suspeita de Transmissão de Agente Infeccioso",
       status: "Ativo",
+      gravidade: "Grave",
     },
     {
       id: "95",
       nome: "Uso off-label",
       status: "Ativo",
+      gravidade: "Moderado",
     },
   ]);
 
@@ -106,11 +116,13 @@ export default function EventoAdversoPage() {
       id: (Date.now()).toString(),
       nome: newEventoNome.trim(),
       status: newEventoStatus,
+      gravidade: newEventoGravidade,
     };
 
     setEventosAdversos(prev => [...prev, newEvento]);
     setNewEventoNome("");
     setNewEventoStatus("Ativo");
+    setNewEventoGravidade("Leve");
     setIsAddModalOpen(false);
     
     toast({
@@ -134,7 +146,7 @@ export default function EventoAdversoPage() {
     setEventosAdversos(prev => 
       prev.map(evento => 
         evento.id === editingEvento.id 
-          ? { ...evento, nome: editEventoNome.trim(), status: editEventoStatus }
+          ? { ...evento, nome: editEventoNome.trim(), status: editEventoStatus, gravidade: editEventoGravidade }
           : evento
       )
     );
@@ -152,6 +164,7 @@ export default function EventoAdversoPage() {
     setEditingEvento(evento);
     setEditEventoNome(evento.nome);
     setEditEventoStatus(evento.status);
+    setEditEventoGravidade(evento.gravidade);
     setIsEditModalOpen(true);
   };
 
@@ -242,6 +255,7 @@ export default function EventoAdversoPage() {
                         </div>
                       </div>
                     </TableHead>
+                    <TableHead>Gravidade</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="w-[120px]"></TableHead>
                   </TableRow>
@@ -251,6 +265,20 @@ export default function EventoAdversoPage() {
                     <TableRow key={evento.id}>
                       <TableCell className="font-medium">{evento.id}</TableCell>
                       <TableCell>{evento.nome}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={
+                            evento.gravidade === "Grave"
+                              ? "bg-red-50 text-red-700 border-red-200"
+                              : evento.gravidade === "Moderado"
+                              ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                              : "bg-green-50 text-green-700 border-green-200"
+                          }
+                        >
+                          {evento.gravidade}
+                        </Badge>
+                      </TableCell>
                       <TableCell>
                         <Badge 
                           variant="outline" 
@@ -351,6 +379,21 @@ export default function EventoAdversoPage() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="gravidade" className="text-right">
+                Gravidade
+              </Label>
+              <Select value={newEventoGravidade} onValueChange={(value: "Grave" | "Moderado" | "Leve") => setNewEventoGravidade(value)}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Selecione a gravidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Grave">Grave</SelectItem>
+                  <SelectItem value="Moderado">Moderado</SelectItem>
+                  <SelectItem value="Leve">Leve</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
@@ -393,6 +436,21 @@ export default function EventoAdversoPage() {
                 <SelectContent>
                   <SelectItem value="Ativo">Ativo</SelectItem>
                   <SelectItem value="Inativo">Inativo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="edit-gravidade" className="text-right">
+                Gravidade
+              </Label>
+              <Select value={editEventoGravidade} onValueChange={(value: "Grave" | "Moderado" | "Leve") => setEditEventoGravidade(value)}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Selecione a gravidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Grave">Grave</SelectItem>
+                  <SelectItem value="Moderado">Moderado</SelectItem>
+                  <SelectItem value="Leve">Leve</SelectItem>
                 </SelectContent>
               </Select>
             </div>
