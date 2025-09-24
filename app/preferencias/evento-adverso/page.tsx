@@ -40,6 +40,7 @@ export default function EventoAdversoPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [gravidadeFilter, setGravidadeFilter] = useState<"Grave" | "Moderado" | "Leve" | null>(null);
   const itemsPerPage = 15;
 
   // Estados para os modais
@@ -179,7 +180,8 @@ export default function EventoAdversoPage() {
   const filteredEventos = eventosAdversos.filter((evento) => {
     const matchesSearch = evento.nome.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter ? evento.status === statusFilter : true;
-    return matchesSearch && matchesStatus;
+    const matchesGravidade = gravidadeFilter ? evento.gravidade === gravidadeFilter : true;
+    return matchesSearch && matchesStatus && matchesGravidade;
   });
 
   const totalPages = Math.ceil(filteredEventos.length / itemsPerPage);
@@ -228,6 +230,17 @@ export default function EventoAdversoPage() {
                   <SelectItem value="todos">Todos os Status</SelectItem>
                   <SelectItem value="Ativo">Ativo</SelectItem>
                   <SelectItem value="Inativo">Inativo</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={gravidadeFilter || "todas"} onValueChange={(value) => setGravidadeFilter(value === "todas" ? null : (value as "Grave" | "Moderado" | "Leve"))}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Todas as Gravidades" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todas">Todas as Gravidades</SelectItem>
+                  <SelectItem value="Grave">Grave</SelectItem>
+                  <SelectItem value="Moderado">Moderado</SelectItem>
+                  <SelectItem value="Leve">Leve</SelectItem>
                 </SelectContent>
               </Select>
             </div>
