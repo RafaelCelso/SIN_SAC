@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import {
   FileText,
   Calendar as CalendarIcon,
@@ -28,6 +29,7 @@ import {
   CircleCheckBig,
   OctagonX,
   ClipboardPen,
+  X,
   CornerDownLeft,
   ClipboardPlus
 } from "lucide-react"
@@ -1010,6 +1012,82 @@ const EVENTOS_POR_DIA = {
   ]
 }
 
+// Eventos passados (últimos 7 dias)
+const EVENTOS_PASSADOS = [
+  {
+    id: 1,
+    titulo: "Auditoria de Qualidade",
+    data: "15/01/2024",
+    horario: "08:30",
+    tipo: "Auditoria",
+    participantes: "Auditores Externos",
+    status: "pendente"
+  },
+  {
+    id: 2,
+    titulo: "Reunião de Farmacovigilância",
+    data: "14/01/2024",
+    horario: "15:00",
+    tipo: "Reunião",
+    participantes: "Equipe Farmacovigilância",
+    status: "pendente"
+  },
+  {
+    id: 3,
+    titulo: "Workshop de Atendimento",
+    data: "13/01/2024",
+    horario: "10:00",
+    tipo: "Workshop",
+    participantes: "Equipe de Atendimento",
+    status: "pendente"
+  },
+  {
+    id: 4,
+    titulo: "Análise de Casos Pendentes",
+    data: "12/01/2024",
+    horario: "14:00",
+    tipo: "Análise",
+    participantes: "Equipe Técnica",
+    status: "pendente"
+  },
+  {
+    id: 5,
+    titulo: "Treinamento de Protocolos",
+    data: "11/01/2024",
+    horario: "09:00",
+    tipo: "Treinamento",
+    participantes: "Nova Colaboradora",
+    status: "pendente"
+  },
+  {
+    id: 6,
+    titulo: "Reunião de Supervisores",
+    data: "10/01/2024",
+    horario: "16:00",
+    tipo: "Reunião",
+    participantes: "Equipe Supervisão",
+    status: "pendente"
+  },
+  {
+    id: 7,
+    titulo: "Revisão de Documentos",
+    data: "09/01/2024",
+    horario: "11:00",
+    tipo: "Revisão",
+    participantes: "Equipe de Qualidade",
+    status: "pendente"
+  },
+  {
+    id: 8,
+    titulo: "Capacitação de Novos Colaboradores",
+    data: "08/01/2024",
+    horario: "13:30",
+    tipo: "Treinamento",
+    participantes: "RH e Supervisores",
+    status: "pendente"
+  }
+]
+
 export default function CasosPendentes() {
   const [paginaAtual, setPaginaAtual] = useState(1)
   const itensPorPagina = 5
@@ -1097,7 +1175,23 @@ export default function CasosPendentes() {
   const [tipoFiltro, setTipoFiltro] = useState<string | null>(null)
   
   // Estado para controlar status dos eventos
-  const [eventosStatus, setEventosStatus] = useState<{[key: string]: 'pendente' | 'concluido' | 'cancelado'}>({})
+  const [eventosStatus, setEventosStatus] = useState<{[key: string]: 'pendente' | 'concluido' | 'cancelado' | undefined}>({})
+  
+  // Estado para controlar status dos eventos pendentes
+  const [eventosPendentesStatus, setEventosPendentesStatus] = useState<{[key: string]: 'pendente' | 'concluido' | 'cancelado' | undefined}>({})
+  
+  // Estado para controlar o modal de confirmação
+  const [modalConfirmacao, setModalConfirmacao] = useState<{
+    isOpen: boolean;
+    eventoId: string | null;
+    acao: 'concluido' | 'cancelado' | null;
+    tituloEvento: string;
+  }>({
+    isOpen: false,
+    eventoId: null,
+    acao: null,
+    tituloEvento: ''
+  })
   
   // Estado para controlar qual aba de perfil está ativa
   const [abaAtiva, setAbaAtiva] = useState('supervisor')
@@ -1210,6 +1304,54 @@ export default function CasosPendentes() {
       ...prev,
       [eventoId]: action
     }))
+  }
+
+  // Função para abrir modal de confirmação
+  const handleEventoPendenteAction = (eventoId: string, action: 'concluido' | 'cancelado', tituloEvento: string) => {
+    setModalConfirmacao({
+      isOpen: true,
+      eventoId,
+      acao: action,
+      tituloEvento
+    })
+  }
+
+  // Função para confirmar a ação do evento pendente
+  const confirmarEventoPendenteAction = () => {
+    if (modalConfirmacao.eventoId && modalConfirmacao.acao) {
+      setEventosPendentesStatus(prev => ({
+        ...prev,
+        [modalConfirmacao.eventoId!]: modalConfirmacao.acao!
+      }))
+    }
+    setModalConfirmacao({
+      isOpen: false,
+      eventoId: null,
+      acao: null,
+      tituloEvento: ''
+    })
+  }
+
+  // Função para cancelar a ação
+  const cancelarEventoPendenteAction = () => {
+    setModalConfirmacao({
+      isOpen: false,
+      eventoId: null,
+      acao: null,
+      tituloEvento: ''
+    })
+  }
+
+  // Função para controlar o estado do modal
+  const handleModalOpenChange = (open: boolean) => {
+    if (!open) {
+      setModalConfirmacao({
+        isOpen: false,
+        eventoId: null,
+        acao: null,
+        tituloEvento: ''
+      })
+    }
   }
 
   // Função para obter classes CSS baseadas no status do evento
@@ -1904,6 +2046,66 @@ export default function CasosPendentes() {
                     </div>
                   )
                 })}
+              </CardContent>
+            </Card>
+
+            {/* Quadro de Eventos Passados */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <CalendarIcon className="h-5 w-5" />
+                  Eventos Pendentes de Conclusão
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 max-h-[400px] overflow-y-auto">
+                {EVENTOS_PASSADOS
+                  .filter(evento => 
+                    evento.status === 'pendente' && 
+                    eventosPendentesStatus[`pendente-${evento.id}`] !== 'concluido' &&
+                    eventosPendentesStatus[`pendente-${evento.id}`] !== 'cancelado'
+                  )
+                  .slice(0, 5)
+                  .map((evento) => (
+                    <div key={evento.id} className="group border-l-4 border-amber-200 pl-3 py-2">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1 flex-1">
+                          <h4 className="font-medium text-sm text-gray-700">{evento.titulo}</h4>
+                          <p className="text-xs text-gray-500">{evento.participantes}</p>
+                          <p className="text-xs text-gray-400">{evento.data} às {evento.horario}</p>
+                        </div>
+                        <div className="text-right flex flex-col items-end gap-2">
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-6 px-2 text-xs font-semibold bg-green-100 border-2 border-green-300 text-green-800 hover:bg-green-200 hover:border-green-400 shadow-sm transition-all duration-200"
+                              onClick={() => handleEventoPendenteAction(`pendente-${evento.id}`, 'concluido', evento.titulo)}
+                            >
+                              ✓
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-6 px-2 text-xs font-semibold bg-red-100 border-2 border-red-300 text-red-800 hover:bg-red-200 hover:border-red-400 shadow-sm transition-all duration-200"
+                              onClick={() => handleEventoPendenteAction(`pendente-${evento.id}`, 'cancelado', evento.titulo)}
+                            >
+                              ✕
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                {EVENTOS_PASSADOS.filter(evento => 
+                  evento.status === 'pendente' && 
+                  eventosPendentesStatus[`pendente-${evento.id}`] !== 'concluido' &&
+                  eventosPendentesStatus[`pendente-${evento.id}`] !== 'cancelado'
+                ).length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                    <p className="text-sm">Nenhum evento pendente encontrado</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -2867,6 +3069,37 @@ export default function CasosPendentes() {
         onClose={() => setIsModalMotivoOpen(false)}
         onSubmit={handleSubmitMotivo}
       />
+
+      {/* Modal de Confirmação para Eventos Pendentes */}
+      <AlertDialog open={modalConfirmacao.isOpen} onOpenChange={handleModalOpenChange}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {modalConfirmacao.acao === 'concluido' ? 'Confirmar Conclusão' : 'Confirmar Não Conclusão'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {modalConfirmacao.acao === 'concluido' 
+                ? `Tem certeza que deseja marcar o evento "${modalConfirmacao.tituloEvento}" como concluído?`
+                : `Tem certeza que deseja marcar o evento "${modalConfirmacao.tituloEvento}" como não concluído?`
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelarEventoPendenteAction}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmarEventoPendenteAction}
+              className={modalConfirmacao.acao === 'concluido' 
+                ? 'bg-green-600 hover:bg-green-700' 
+                : 'bg-red-600 hover:bg-red-700'
+              }
+            >
+              Confirmar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   )
 }
