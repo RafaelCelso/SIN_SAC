@@ -228,6 +228,12 @@ export function Sidebar() {
               href="/atendimentos/ressarcimento"
               active={pathname.includes("/atendimentos/ressarcimento")}
             />
+            <SidebarItem
+              icon={<Image src="/gestacao.png" alt="Gestação" width={20} height={20} />}
+              label="Gestação"
+              href="/atendimentos/gestacao"
+              active={pathname.includes("/atendimentos/gestacao")}
+            />
           </div>
         </div>
 
