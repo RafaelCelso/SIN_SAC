@@ -871,15 +871,15 @@ export default function GestacaoPage() {
                                        {/* Linha superior: Ícone + ID + Warning */}
                                        <div className="flex items-center justify-between mb-3">
                                          <div className="flex items-center gap-2">
-                                           <div className="p-1.5 bg-green-500 rounded-lg">
-                                             {followUp.id.startsWith('GA') ? (
-                                               <ClipboardPenLine className="h-4 w-4 text-white" />
-                                             ) : followUp.id.startsWith('GN') ? (
-                                               <Baby className="h-4 w-4 text-white" />
-                                             ) : (
-                                               <FilePlus className="h-4 w-4 text-white" />
-                                             )}
-                                           </div>
+                                          <div className="p-1.5 bg-[#DCFCE7] rounded-lg">
+                                            {followUp.id.startsWith('GA') ? (
+                                              <ClipboardPenLine className="h-4 w-4 text-[#16A34A]" />
+                                            ) : followUp.id.startsWith('GN') ? (
+                                              <Baby className="h-4 w-4 text-[#16A34A]" />
+                                            ) : (
+                                              <FilePlus className="h-4 w-4 text-[#16A34A]" />
+                                            )}
+                                          </div>
                                            <span className="font-semibold text-gray-900 text-sm">{followUp.id}</span>
                                          </div>
                                          <div className="p-1">
