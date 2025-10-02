@@ -26,6 +26,8 @@ import {
   RotateCcw,
   Check,
   LogOut,
+  ClipboardPenLine,
+  Baby,
 } from "lucide-react";
 import {
   Popover,
@@ -310,8 +312,6 @@ export function NovaFarmacovigilanciaForm({
     dataRecebimento: string;
     narrativa: string;
     anexos: File[];
-    relatorEhPaciente: "sim" | "nao";
-    relatorNome: string;
     dataNascimento: string;
     altura: string;
     peso: string;
@@ -320,6 +320,40 @@ export function NovaFarmacovigilanciaForm({
     idadeGestacional: string;
     ultimoPeriodoMenstrual: string;
     tipoDataUltimoPeriodoMenstrual: "mes-ano" | "dia-mes-ano";
+    // Novos campos para gestação
+    iniciais: string;
+    idade: string;
+    gestacaoAnterior: "sim" | "nao" | "nao-informado" | "";
+    desfechosGestacoes: Array<{
+      id: string;
+      desfecho: string;
+      observacao: string;
+    }>;
+    // Campos do pai
+    dataNascimentoPai: string;
+    idadePai: string;
+    alturaPai: string;
+    pesoPai: string;
+    // Campos da gestação
+    dataUltimaMenstruacao: string;
+    dataEstimadaParto: string;
+    quantidadeFetos: string;
+    gravidezConfirmadaVia: {
+      ultrassom: boolean;
+      exameSangue: boolean;
+      testeUrina: boolean;
+      testeAmniocentese: boolean;
+    };
+    dataConfirmacaoGravidez: {
+      ultrassom: string;
+      exameSangue: string;
+      testeUrina: string;
+      testeAmniocentese: string;
+    };
+    // Campos de entorpecentes
+    usoEntorpecentes: "sim" | "nao" | "nao-informado" | "";
+    quaisEntorpecentes: string;
+    aindaFazUso: "sim" | "nao" | "nao-informado" | "";
     produtoSuspeito: string;
     eanSuspeito: string;
     loteSuspeito: string;
@@ -368,8 +402,6 @@ export function NovaFarmacovigilanciaForm({
     dataRecebimento: "",
     narrativa: "",
     anexos: [],
-    relatorEhPaciente: "sim",
-    relatorNome: "",
     dataNascimento: "",
     altura: "",
     peso: "",
@@ -378,6 +410,32 @@ export function NovaFarmacovigilanciaForm({
     idadeGestacional: "",
     ultimoPeriodoMenstrual: "",
     tipoDataUltimoPeriodoMenstrual: "dia-mes-ano",
+    iniciais: "",
+    idade: "",
+    gestacaoAnterior: "",
+    desfechosGestacoes: [],
+    dataNascimentoPai: "",
+    idadePai: "",
+    alturaPai: "",
+    pesoPai: "",
+    dataUltimaMenstruacao: "",
+    dataEstimadaParto: "",
+    quantidadeFetos: "",
+    gravidezConfirmadaVia: {
+      ultrassom: false,
+      exameSangue: false,
+      testeUrina: false,
+      testeAmniocentese: false,
+    },
+    dataConfirmacaoGravidez: {
+      ultrassom: "",
+      exameSangue: "",
+      testeUrina: "",
+      testeAmniocentese: "",
+    },
+    usoEntorpecentes: "",
+    quaisEntorpecentes: "",
+    aindaFazUso: "",
     produtoSuspeito: "",
     eanSuspeito: "",
     loteSuspeito: "",
@@ -428,8 +486,6 @@ export function NovaFarmacovigilanciaForm({
     dataRecebimento: string;
     narrativa: string;
     anexos: File[];
-    relatorEhPaciente: "sim" | "nao";
-    relatorNome: string;
     dataNascimento: string;
     altura: string;
     peso: string;
@@ -438,6 +494,40 @@ export function NovaFarmacovigilanciaForm({
     idadeGestacional: string;
     ultimoPeriodoMenstrual: string;
     tipoDataUltimoPeriodoMenstrual: "mes-ano" | "dia-mes-ano";
+    // Novos campos para gestação
+    iniciais: string;
+    idade: string;
+    gestacaoAnterior: "sim" | "nao" | "nao-informado" | "";
+    desfechosGestacoes: Array<{
+      id: string;
+      desfecho: string;
+      observacao: string;
+    }>;
+    // Campos do pai
+    dataNascimentoPai: string;
+    idadePai: string;
+    alturaPai: string;
+    pesoPai: string;
+    // Campos da gestação
+    dataUltimaMenstruacao: string;
+    dataEstimadaParto: string;
+    quantidadeFetos: string;
+    gravidezConfirmadaVia: {
+      ultrassom: boolean;
+      exameSangue: boolean;
+      testeUrina: boolean;
+      testeAmniocentese: boolean;
+    };
+    dataConfirmacaoGravidez: {
+      ultrassom: string;
+      exameSangue: string;
+      testeUrina: string;
+      testeAmniocentese: string;
+    };
+    // Campos de entorpecentes
+    usoEntorpecentes: "sim" | "nao" | "nao-informado" | "";
+    quaisEntorpecentes: string;
+    aindaFazUso: "sim" | "nao" | "nao-informado" | "";
     produtoSuspeito: string;
     eanSuspeito: string;
     loteSuspeito: string;
@@ -486,8 +576,6 @@ export function NovaFarmacovigilanciaForm({
     dataRecebimento: "",
     narrativa: "",
     anexos: [],
-    relatorEhPaciente: "sim",
-    relatorNome: "",
     dataNascimento: "",
     altura: "",
     peso: "",
@@ -496,6 +584,32 @@ export function NovaFarmacovigilanciaForm({
     idadeGestacional: "",
     ultimoPeriodoMenstrual: "",
     tipoDataUltimoPeriodoMenstrual: "dia-mes-ano",
+    iniciais: "",
+    idade: "",
+    gestacaoAnterior: "",
+    desfechosGestacoes: [],
+    dataNascimentoPai: "",
+    idadePai: "",
+    alturaPai: "",
+    pesoPai: "",
+    dataUltimaMenstruacao: "",
+    dataEstimadaParto: "",
+    quantidadeFetos: "",
+    gravidezConfirmadaVia: {
+      ultrassom: false,
+      exameSangue: false,
+      testeUrina: false,
+      testeAmniocentese: false,
+    },
+    dataConfirmacaoGravidez: {
+      ultrassom: "",
+      exameSangue: "",
+      testeUrina: "",
+      testeAmniocentese: "",
+    },
+    usoEntorpecentes: "",
+    quaisEntorpecentes: "",
+    aindaFazUso: "",
     produtoSuspeito: "",
     eanSuspeito: "",
     loteSuspeito: "",
@@ -546,6 +660,7 @@ export function NovaFarmacovigilanciaForm({
 
   const [clienteSearch, setClienteSearch] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [tipoFormulario, setTipoFormulario] = useState<"inicial" | "atualizacao" | "nascimento">("inicial");
   const filteredClientes = CLIENTES_MOCK.filter(
     (c) =>
       c.nome.toLowerCase().includes(clienteSearch.toLowerCase()) ||
@@ -1487,86 +1602,103 @@ export function NovaFarmacovigilanciaForm({
                   </CardContent>
                 </Card>
 
+                {/* Formulário */}
+                <Card>
+                  <CardHeader className="bg-gray-50 border-b">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-7 w-7 text-teal-600" />
+                      <span className="text-xl font-bold">
+                        Formulário
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <div className="space-y-4">
+                      <Label htmlFor="tipo-formulario">
+                        Tipo <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <Button
+                          type="button"
+                          variant={tipoFormulario === "inicial" ? "default" : "outline"}
+                          className={`h-16 flex flex-col items-center justify-center gap-2 ${
+                            tipoFormulario === "inicial" 
+                              ? "bg-teal-600 hover:bg-teal-700 text-white" 
+                              : "hover:bg-gray-50"
+                          }`}
+                          onClick={() => setTipoFormulario("inicial")}
+                        >
+                          <img 
+                            src="/gestacao.png" 
+                            alt="Gestação" 
+                            className="w-6 h-6"
+                          />
+                          <span className="text-sm font-medium">Inicial</span>
+                        </Button>
+                        
+                        <Button
+                          type="button"
+                          variant={tipoFormulario === "atualizacao" ? "default" : "outline"}
+                          className={`h-16 flex flex-col items-center justify-center gap-2 ${
+                            tipoFormulario === "atualizacao" 
+                              ? "bg-teal-600 hover:bg-teal-700 text-white" 
+                              : "hover:bg-gray-50"
+                          }`}
+                          onClick={() => setTipoFormulario("atualizacao")}
+                        >
+                          <ClipboardPenLine className="w-6 h-6" />
+                          <span className="text-sm font-medium">Atualização</span>
+                        </Button>
+                        
+                        <Button
+                          type="button"
+                          variant={tipoFormulario === "nascimento" ? "default" : "outline"}
+                          className={`h-16 flex flex-col items-center justify-center gap-2 ${
+                            tipoFormulario === "nascimento" 
+                              ? "bg-teal-600 hover:bg-teal-700 text-white" 
+                              : "hover:bg-gray-50"
+                          }`}
+                          onClick={() => setTipoFormulario("nascimento")}
+                        >
+                          <Baby className="w-6 h-6" />
+                          <span className="text-sm font-medium">Nascimento</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Dados do Relator */}
                 <Card>
                   <CardHeader className="bg-gray-50 border-b">
                     <div className="flex items-center gap-2">
                       <ClipboardList className="h-7 w-7 text-teal-600" />
                       <span className="text-xl font-bold">
-                        Dados do Paciente
+                        Dados da Mãe
                       </span>
                     </div>
                   </CardHeader>
                   <CardContent className="p-4 space-y-4">
-                    <div>
-                      <Label className="font-medium">
-                        Relator é o paciente?
-                      </Label>
-                      <div className="flex gap-6 mt-2">
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            id="relator-sim"
-                            name="relatorEhPaciente"
-                            value="sim"
-                            checked={form.relatorEhPaciente === "sim"}
-                            onChange={() =>
-                              setForm((f) => ({
-                                ...f,
-                                relatorEhPaciente: "sim",
-                                relatorNome: "",
-                              }))
-                            }
-                            className="accent-teal-600 h-4 w-4"
-                          />
-                          <Label htmlFor="relator-sim">Sim</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            id="relator-nao"
-                            name="relatorEhPaciente"
-                            value="nao"
-                            checked={form.relatorEhPaciente === "nao"}
-                            onChange={() =>
-                              setForm((f) => ({
-                                ...f,
-                                relatorEhPaciente: "nao",
-                              }))
-                            }
-                            className="accent-teal-600 h-4 w-4"
-                          />
-                          <Label htmlFor="relator-nao">Não</Label>
-                        </div>
-                      </div>
-                    </div>
-                    {form.relatorEhPaciente === "nao" && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-teal-50/60 border border-teal-100 rounded-lg p-5">
-                        <div className="space-y-2">
-                          <Label htmlFor="relator-nome">
-                            Nome completo do Paciente{" "}
-                            <span className="text-red-500">*</span>
-                          </Label>
-                          <Input
-                            id="relator-nome"
-                            placeholder="Digite o nome do paciente"
-                            value={form.relatorNome || ""}
-                            onChange={(e) =>
-                              setForm((f) => ({
-                                ...f,
-                                relatorNome: e.target.value,
-                              }))
-                            }
-                            required
-                            className="h-11"
-                          />
-                        </div>
-                      </div>
-                    )}
 
                     {/* Dados do Paciente */}
                     <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="iniciais">Iniciais</Label>
+                          <Input
+                            id="iniciais"
+                            placeholder="Digite as iniciais"
+                            value={form.iniciais}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                iniciais: e.target.value,
+                              }))
+                            }
+                            className="h-11"
+                          />
+                        </div>
+
                         <div className="space-y-2">
                           <Label htmlFor="data-nascimento">
                             Data de Nascimento
@@ -1594,67 +1726,173 @@ export function NovaFarmacovigilanciaForm({
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="sexo">Sexo</Label>
-                          <div className="flex gap-6 mt-2">
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="radio"
-                                id="sexo-masculino"
-                                name="sexo"
-                                value="masculino"
-                                checked={form.sexo === "masculino"}
-                                onChange={() =>
-                                  setForm((f) => ({
-                                    ...f,
-                                    sexo: "masculino",
-                                    gestante: "",
-                                    idadeGestacional: "",
-                                    ultimoPeriodoMenstrual: "",
-                                  }))
-                                }
-                                className="accent-teal-600 h-4 w-4"
-                              />
-                              <Label htmlFor="sexo-masculino">Masculino</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="radio"
-                                id="sexo-feminino"
-                                name="sexo"
-                                value="feminino"
-                                checked={form.sexo === "feminino"}
-                                onChange={() =>
-                                  setForm((f) => ({ ...f, sexo: "feminino" }))
-                                }
-                                className="accent-teal-600 h-4 w-4"
-                              />
-                              <Label htmlFor="sexo-feminino">Feminino</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="radio"
-                                id="sexo-nao-informado"
-                                name="sexo"
-                                value="nao-informado"
-                                checked={form.sexo === "nao-informado"}
-                                onChange={() =>
-                                  setForm((f) => ({
-                                    ...f,
-                                    sexo: "nao-informado",
-                                    gestante: "",
-                                    idadeGestacional: "",
-                                    ultimoPeriodoMenstrual: "",
-                                  }))
-                                }
-                                className="accent-teal-600 h-4 w-4"
-                              />
-                              <Label htmlFor="sexo-nao-informado">
-                                Não informado
-                              </Label>
-                            </div>
+                          <Label htmlFor="idade">Idade</Label>
+                          <Input
+                            id="idade"
+                            type="number"
+                            placeholder="Digite a idade"
+                            value={form.idade}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                idade: e.target.value,
+                              }))
+                            }
+                            className="h-11"
+                          />
+                        </div>
+
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="font-medium">Gestação anterior</Label>
+                        <div className="flex gap-6 mt-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="gestacao-anterior-sim"
+                              name="gestacaoAnterior"
+                              value="sim"
+                              checked={form.gestacaoAnterior === "sim"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, gestacaoAnterior: "sim" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="gestacao-anterior-sim">Sim</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="gestacao-anterior-nao"
+                              name="gestacaoAnterior"
+                              value="nao"
+                              checked={form.gestacaoAnterior === "nao"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, gestacaoAnterior: "nao" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="gestacao-anterior-nao">Não</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="gestacao-anterior-nao-informado"
+                              name="gestacaoAnterior"
+                              value="nao-informado"
+                              checked={form.gestacaoAnterior === "nao-informado"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, gestacaoAnterior: "nao-informado" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="gestacao-anterior-nao-informado">
+                              Não informado
+                            </Label>
                           </div>
                         </div>
                       </div>
+
+                      {form.gestacaoAnterior === "sim" && (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-lg font-semibold text-gray-800">
+                              Desfecho de Gestações
+                            </h4>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const novoDesfecho = {
+                                  id: Date.now().toString(),
+                                  desfecho: "",
+                                  observacao: "",
+                                };
+                                setForm((f) => ({
+                                  ...f,
+                                  desfechosGestacoes: [...f.desfechosGestacoes, novoDesfecho],
+                                }));
+                              }}
+                              className="h-9 text-blue-600 border-blue-300 hover:bg-blue-50"
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Adicionar Desfecho
+                            </Button>
+                          </div>
+                          
+                          {form.desfechosGestacoes.map((desfecho, index) => (
+                            <div key={desfecho.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 bg-white rounded border relative">
+                              <div className="space-y-2">
+                                <Label htmlFor={`desfecho-${desfecho.id}`}>Desfecho</Label>
+                                <select
+                                  id={`desfecho-${desfecho.id}`}
+                                  value={desfecho.desfecho}
+                                  onChange={(e) => {
+                                    const novosDesfechos = [...form.desfechosGestacoes];
+                                    novosDesfechos[index] = {
+                                      ...novosDesfechos[index],
+                                      desfecho: e.target.value,
+                                    };
+                                    setForm((f) => ({
+                                      ...f,
+                                      desfechosGestacoes: novosDesfechos,
+                                    }));
+                                  }}
+                                  className="w-full h-11 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                                >
+                                  <option value="">Selecione o desfecho</option>
+                                  <option value="crianca-viva">Criança Viva</option>
+                                  <option value="natimorto">Natimorto</option>
+                                  <option value="aborto">Aborto</option>
+                                  <option value="aborto-espontaneo">Aborto Espontâneo</option>
+                                  <option value="nao-informado">Não Informado</option>
+                                </select>
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <Label htmlFor={`observacao-${desfecho.id}`}>Observação</Label>
+                                <Input
+                                  id={`observacao-${desfecho.id}`}
+                                  placeholder="Digite observações"
+                                  value={desfecho.observacao}
+                                  onChange={(e) => {
+                                    const novosDesfechos = [...form.desfechosGestacoes];
+                                    novosDesfechos[index] = {
+                                      ...novosDesfechos[index],
+                                      observacao: e.target.value,
+                                    };
+                                    setForm((f) => ({
+                                      ...f,
+                                      desfechosGestacoes: novosDesfechos,
+                                    }));
+                                  }}
+                                  className="h-11"
+                                />
+                              </div>
+                              
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const novosDesfechos = form.desfechosGestacoes.filter(
+                                    (d) => d.id !== desfecho.id
+                                  );
+                                  setForm((f) => ({
+                                    ...f,
+                                    desfechosGestacoes: novosDesfechos,
+                                  }));
+                                }}
+                                className="absolute top-2 right-2 h-8 w-8 p-0 text-red-600 hover:bg-red-50"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
                       {form.sexo === "feminino" && (
                         <div className="space-y-4 bg-pink-50/60 border border-pink-100 rounded-lg p-4">
@@ -1874,6 +2112,478 @@ export function NovaFarmacovigilanciaForm({
                           />
                         </div>
                       </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Dados do Pai */}
+                <Card>
+                  <CardHeader className="bg-gray-50 border-b">
+                    <div className="flex items-center gap-2">
+                      <User className="h-7 w-7 text-teal-600" />
+                      <span className="text-xl font-bold">
+                        Dados do Pai
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-4 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="data-nascimento-pai">
+                          Data de Nascimento
+                        </Label>
+                        <div className="relative">
+                          <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="data-nascimento-pai"
+                            type="date"
+                            value={form.dataNascimentoPai}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                dataNascimentoPai: e.target.value,
+                              }))
+                            }
+                            className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="idade-pai">Idade</Label>
+                        <Input
+                          id="idade-pai"
+                          type="number"
+                          placeholder="Digite a idade"
+                          value={form.idadePai}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              idadePai: e.target.value,
+                            }))
+                          }
+                          className="h-11"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="altura-pai">Altura (cm)</Label>
+                        <Input
+                          id="altura-pai"
+                          type="number"
+                          placeholder="Digite a altura"
+                          value={form.alturaPai}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              alturaPai: e.target.value,
+                            }))
+                          }
+                          className="h-11"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="peso-pai">Peso (kg)</Label>
+                        <Input
+                          id="peso-pai"
+                          type="number"
+                          placeholder="Digite o peso"
+                          value={form.pesoPai}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              pesoPai: e.target.value,
+                            }))
+                          }
+                          className="h-11"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Dados da Gestação */}
+                <Card>
+                  <CardHeader className="bg-gray-50 border-b">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-7 w-7 text-teal-600" />
+                      <span className="text-xl font-bold">
+                        Dados da Gestação
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-4 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="data-ultima-menstruacao">
+                          Data da última menstruação (DUM)
+                        </Label>
+                        <div className="relative">
+                          <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="data-ultima-menstruacao"
+                            type="date"
+                            value={form.dataUltimaMenstruacao}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                dataUltimaMenstruacao: e.target.value,
+                              }))
+                            }
+                            className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="data-estimada-parto">
+                          Data estimada para o parto
+                        </Label>
+                        <div className="relative">
+                          <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="data-estimada-parto"
+                            type="date"
+                            value={form.dataEstimadaParto}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                dataEstimadaParto: e.target.value,
+                              }))
+                            }
+                            className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="quantidade-fetos">Quantidade de fetos</Label>
+                        <Input
+                          id="quantidade-fetos"
+                          type="number"
+                          placeholder="Ex: 1, 2, 3..."
+                          value={form.quantidadeFetos}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              quantidadeFetos: e.target.value,
+                            }))
+                          }
+                          className="h-11"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label className="font-medium">Gravidez confirmada via</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="ultrassom"
+                              checked={form.gravidezConfirmadaVia.ultrassom}
+                              onChange={(e) =>
+                                setForm((f) => ({
+                                  ...f,
+                                  gravidezConfirmadaVia: {
+                                    ...f.gravidezConfirmadaVia,
+                                    ultrassom: e.target.checked,
+                                  },
+                                }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="ultrassom">Ultrassom</Label>
+                          </div>
+                          {form.gravidezConfirmadaVia.ultrassom && (
+                            <div className="ml-6">
+                              <Label htmlFor="data-ultrassom" className="text-sm text-gray-600">
+                                Data do ultrassom
+                              </Label>
+                              <div className="relative">
+                                <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  id="data-ultrassom"
+                                  type="date"
+                                  value={form.dataConfirmacaoGravidez.ultrassom}
+                                  onChange={(e) =>
+                                    setForm((f) => ({
+                                      ...f,
+                                      dataConfirmacaoGravidez: {
+                                        ...f.dataConfirmacaoGravidez,
+                                        ultrassom: e.target.value,
+                                      },
+                                    }))
+                                  }
+                                  className="pl-8 h-9 text-sm [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="exame-sangue"
+                              checked={form.gravidezConfirmadaVia.exameSangue}
+                              onChange={(e) =>
+                                setForm((f) => ({
+                                  ...f,
+                                  gravidezConfirmadaVia: {
+                                    ...f.gravidezConfirmadaVia,
+                                    exameSangue: e.target.checked,
+                                  },
+                                }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="exame-sangue">Exame de Sangue</Label>
+                          </div>
+                          {form.gravidezConfirmadaVia.exameSangue && (
+                            <div className="ml-6">
+                              <Label htmlFor="data-exame-sangue" className="text-sm text-gray-600">
+                                Data do exame
+                              </Label>
+                              <div className="relative">
+                                <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  id="data-exame-sangue"
+                                  type="date"
+                                  value={form.dataConfirmacaoGravidez.exameSangue}
+                                  onChange={(e) =>
+                                    setForm((f) => ({
+                                      ...f,
+                                      dataConfirmacaoGravidez: {
+                                        ...f.dataConfirmacaoGravidez,
+                                        exameSangue: e.target.value,
+                                      },
+                                    }))
+                                  }
+                                  className="pl-8 h-9 text-sm [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="teste-urina"
+                              checked={form.gravidezConfirmadaVia.testeUrina}
+                              onChange={(e) =>
+                                setForm((f) => ({
+                                  ...f,
+                                  gravidezConfirmadaVia: {
+                                    ...f.gravidezConfirmadaVia,
+                                    testeUrina: e.target.checked,
+                                  },
+                                }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="teste-urina">Teste de Urina</Label>
+                          </div>
+                          {form.gravidezConfirmadaVia.testeUrina && (
+                            <div className="ml-6">
+                              <Label htmlFor="data-teste-urina" className="text-sm text-gray-600">
+                                Data do teste
+                              </Label>
+                              <div className="relative">
+                                <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  id="data-teste-urina"
+                                  type="date"
+                                  value={form.dataConfirmacaoGravidez.testeUrina}
+                                  onChange={(e) =>
+                                    setForm((f) => ({
+                                      ...f,
+                                      dataConfirmacaoGravidez: {
+                                        ...f.dataConfirmacaoGravidez,
+                                        testeUrina: e.target.value,
+                                      },
+                                    }))
+                                  }
+                                  className="pl-8 h-9 text-sm [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="teste-amniocentese"
+                              checked={form.gravidezConfirmadaVia.testeAmniocentese}
+                              onChange={(e) =>
+                                setForm((f) => ({
+                                  ...f,
+                                  gravidezConfirmadaVia: {
+                                    ...f.gravidezConfirmadaVia,
+                                    testeAmniocentese: e.target.checked,
+                                  },
+                                }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="teste-amniocentese">Teste de Amniocentese</Label>
+                          </div>
+                          {form.gravidezConfirmadaVia.testeAmniocentese && (
+                            <div className="ml-6">
+                              <Label htmlFor="data-teste-amniocentese" className="text-sm text-gray-600">
+                                Data do teste
+                              </Label>
+                              <div className="relative">
+                                <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  id="data-teste-amniocentese"
+                                  type="date"
+                                  value={form.dataConfirmacaoGravidez.testeAmniocentese}
+                                  onChange={(e) =>
+                                    setForm((f) => ({
+                                      ...f,
+                                      dataConfirmacaoGravidez: {
+                                        ...f.dataConfirmacaoGravidez,
+                                        testeAmniocentese: e.target.value,
+                                      },
+                                    }))
+                                  }
+                                  className="pl-8 h-9 text-sm [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="font-medium">Uso de Entorpecentes</Label>
+                        <div className="flex gap-6 mt-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="uso-entorpecentes-sim"
+                              name="usoEntorpecentes"
+                              value="sim"
+                              checked={form.usoEntorpecentes === "sim"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, usoEntorpecentes: "sim" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="uso-entorpecentes-sim">Sim</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="uso-entorpecentes-nao"
+                              name="usoEntorpecentes"
+                              value="nao"
+                              checked={form.usoEntorpecentes === "nao"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, usoEntorpecentes: "nao" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="uso-entorpecentes-nao">Não</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="uso-entorpecentes-nao-informado"
+                              name="usoEntorpecentes"
+                              value="nao-informado"
+                              checked={form.usoEntorpecentes === "nao-informado"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, usoEntorpecentes: "nao-informado" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="uso-entorpecentes-nao-informado">
+                              Não informado
+                            </Label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {form.usoEntorpecentes === "sim" && (
+                        <div className="space-y-2">
+                          <Label htmlFor="quais-entorpecentes">Qual/Quais</Label>
+                          <Input
+                            id="quais-entorpecentes"
+                            placeholder="Digite quais entorpecentes"
+                            value={form.quaisEntorpecentes}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                quaisEntorpecentes: e.target.value,
+                              }))
+                            }
+                            className="h-11"
+                          />
+                        </div>
+                      )}
+
+                      {form.usoEntorpecentes === "sim" && (
+                        <div className="space-y-2">
+                          <Label className="font-medium">Ainda faz uso?</Label>
+                          <div className="flex gap-6 mt-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="ainda-faz-uso-sim"
+                                name="aindaFazUso"
+                                value="sim"
+                                checked={form.aindaFazUso === "sim"}
+                                onChange={() =>
+                                  setForm((f) => ({ ...f, aindaFazUso: "sim" }))
+                                }
+                                className="accent-teal-600 h-4 w-4"
+                              />
+                              <Label htmlFor="ainda-faz-uso-sim">Sim</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="ainda-faz-uso-nao"
+                                name="aindaFazUso"
+                                value="nao"
+                                checked={form.aindaFazUso === "nao"}
+                                onChange={() =>
+                                  setForm((f) => ({ ...f, aindaFazUso: "nao" }))
+                                }
+                                className="accent-teal-600 h-4 w-4"
+                              />
+                              <Label htmlFor="ainda-faz-uso-nao">Não</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="ainda-faz-uso-nao-informado"
+                                name="aindaFazUso"
+                                value="nao-informado"
+                                checked={form.aindaFazUso === "nao-informado"}
+                                onChange={() =>
+                                  setForm((f) => ({ ...f, aindaFazUso: "nao-informado" }))
+                                }
+                                className="accent-teal-600 h-4 w-4"
+                              />
+                              <Label htmlFor="ainda-faz-uso-nao-informado">
+                                Não informado
+                              </Label>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -2143,239 +2853,6 @@ export function NovaFarmacovigilanciaForm({
                       ))}
                     </div>
 
-                    {/* Divider com mais espaçamento */}
-                    <div className="border-t border-gray-200 my-10"></div>
-
-                    {/* Exames Laboratoriais */}
-                    <div className="space-y-6">
-                      <div className="mb-6 flex items-center justify-between">
-                        <div>
-                          <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-3">
-                            <FileText className="h-6 w-6 text-teal-600" />
-                            Exames Laboratoriais
-                          </h3>
-                          <p className="text-sm text-gray-500 mt-2">
-                            Adicione informações sobre exames laboratoriais
-                            relevantes
-                          </p>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="flex items-center gap-2 text-teal-600 border-teal-300 hover:bg-teal-50"
-                          onClick={adicionarExameLaboratorial}
-                        >
-                          <Plus className="h-4 w-4" />
-                          Adicionar Exame
-                        </Button>
-                      </div>
-
-                      {/* Lista de Exames */}
-                      <div className="space-y-8">
-                        {examesLaboratoriais.map((exame, index) => (
-                          <div
-                            key={exame.id}
-                            className="border border-gray-200 rounded-lg p-6 bg-gray-50/50"
-                          >
-                            <div className="flex items-center justify-between mb-6">
-                              <h4 className="font-semibold text-gray-900 text-lg">
-                                Exame {index + 1}
-                              </h4>
-                              {examesLaboratoriais.length > 1 && (
-                                <Button
-                                  type="button"
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() =>
-                                    removerExameLaboratorial(exame.id)
-                                  }
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </div>
-
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                              {/* Nome do Exame */}
-                              <div className="space-y-3">
-                                <Label className="font-medium text-gray-700">
-                                  Nome do Exame
-                                </Label>
-                                <Input
-                                  placeholder="Ex: Hemograma completo"
-                                  value={exame.nomeExame}
-                                  onChange={(e) =>
-                                    atualizarExamesLaboratoriais(
-                                      exame.id,
-                                      "nomeExame",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="h-11"
-                                />
-                              </div>
-
-                              {/* Resultado */}
-                              <div className="space-y-3">
-                                <Label className="font-medium text-gray-700">
-                                  Resultado
-                                </Label>
-                                <Input
-                                  placeholder="Ex: 4.5"
-                                  value={exame.resultado}
-                                  onChange={(e) =>
-                                    atualizarExamesLaboratoriais(
-                                      exame.id,
-                                      "resultado",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="h-11"
-                                />
-                              </div>
-
-                              {/* Unidade */}
-                              <div className="space-y-3">
-                                <Label className="font-medium text-gray-700">
-                                  Unidade
-                                </Label>
-                                <Input
-                                  placeholder="Ex: mg/dL"
-                                  value={exame.unidade}
-                                  onChange={(e) =>
-                                    atualizarExamesLaboratoriais(
-                                      exame.id,
-                                      "unidade",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="h-11"
-                                />
-                              </div>
-                            </div>
-
-                            {/* Segunda linha com Faixa de Referência e Data do Exame */}
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                              {/* Faixa de Referência */}
-                              <div className="space-y-3">
-                                <Label className="font-medium text-gray-700">
-                                  Faixa de Referência
-                                </Label>
-                                <div className="grid grid-cols-2 gap-2">
-                                  <div className="space-y-1">
-                                    <Label className="text-xs text-gray-600">
-                                      Baixo
-                                    </Label>
-                                    <Input
-                                      placeholder="Ex: 3,5"
-                                      value={exame.faixaReferenciaBaixo || ""}
-                                      onChange={(e) =>
-                                        atualizarExamesLaboratoriais(
-                                          exame.id,
-                                          "faixaReferenciaBaixo",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="h-11 text-sm"
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <Label className="text-xs text-gray-600">
-                                      Alto
-                                    </Label>
-                                    <Input
-                                      placeholder="Ex: 5,0"
-                                      value={exame.faixaReferenciaAlto || ""}
-                                      onChange={(e) =>
-                                        atualizarExamesLaboratoriais(
-                                          exame.id,
-                                          "faixaReferenciaAlto",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="h-11 text-sm"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Data do Exame */}
-                              <div className="space-y-3">
-                                <Label className="font-medium text-gray-700">
-                                  Data do Exame
-                                </Label>
-                                <div className="flex gap-2">
-                                  <Popover>
-                                    <PopoverTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        role="combobox"
-                                        className="w-28 justify-between h-11 text-xs border-gray-300"
-                                      >
-                                        <span>
-                                          {exame.tipoDataExame === "mes-ano"
-                                            ? "MM/AAAA"
-                                            : "DD/MM/AAAA"}
-                                        </span>
-                                      </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                      <Command>
-                                        <CommandGroup>
-                                          <CommandItem
-                                            value="dia-mes-ano"
-                                            onSelect={() =>
-                                              atualizarExamesLaboratoriais(
-                                                exame.id,
-                                                "tipoDataExame",
-                                                "dia-mes-ano"
-                                              )
-                                            }
-                                          >
-                                            DD/MM/AAAA
-                                          </CommandItem>
-                                          <CommandItem
-                                            value="mes-ano"
-                                            onSelect={() =>
-                                              atualizarExamesLaboratoriais(
-                                                exame.id,
-                                                "tipoDataExame",
-                                                "mes-ano"
-                                              )
-                                            }
-                                          >
-                                            MM/AAAA
-                                          </CommandItem>
-                                        </CommandGroup>
-                                      </Command>
-                                    </PopoverContent>
-                                  </Popover>
-                                  <div className="relative flex-1 min-w-0">
-                                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                      type={
-                                        exame.tipoDataExame === "mes-ano"
-                                          ? "month"
-                                          : "date"
-                                      }
-                                      value={exame.dataExame}
-                                      onChange={(e) =>
-                                        atualizarExamesLaboratoriais(
-                                          exame.id,
-                                          "dataExame",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
 
@@ -3193,1474 +3670,6 @@ export function NovaFarmacovigilanciaForm({
                   </Card>
                 )}
 
-                {/* Evento Adverso */}
-                <Card>
-                  <CardHeader className="bg-gray-50 border-b">
-                    <div className="flex items-center gap-2">
-                      <Info className="h-7 w-7 text-teal-600" />
-                      <span className="text-xl font-bold">Evento Adverso</span>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-8">
-                    {/* Cabeçalho com botão Adicionar Evento */}
-                    <div className="mb-6 flex items-center justify-between">
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-800">
-                          Eventos Adversos
-                        </h3>
-                        <p className="text-sm text-gray-500 mt-1">
-                          Adicione informações sobre eventos adversos
-                          relacionados ao medicamento
-                        </p>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="flex items-center gap-2 text-teal-600 border-teal-300 hover:bg-teal-50"
-                        onClick={adicionarEventoAdverso}
-                      >
-                        <Plus className="h-4 w-4" />
-                        Adicionar Evento
-                      </Button>
-                    </div>
-
-                    {/* Lista de Eventos Adversos */}
-                    <div className="space-y-8">
-                      {eventosAdversos.map((evento, index) => (
-                        <div
-                          key={evento.id}
-                          className="border border-gray-200 rounded-lg p-6 bg-gray-50/50"
-                        >
-                          <div className="flex items-center justify-between mb-6">
-                            <h4 className="font-semibold text-gray-900 text-lg">
-                              Evento {index + 1}
-                            </h4>
-                            {eventosAdversos.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => removerEventoAdverso(evento.id)}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-
-                          {/* Campos básicos do evento em grid */}
-                          <div
-                            className={`grid grid-cols-1 gap-6 mb-6 ${
-                              evento.resultadoEvento === "Recuperado"
-                                ? "lg:grid-cols-3"
-                                : "lg:grid-cols-2"
-                            }`}
-                          >
-                            {/* Evento adverso */}
-                            <div className="space-y-4">
-                              <div className="flex items-center gap-2">
-                                <Label className="font-medium text-gray-700 text-base">
-                                  Evento adverso
-                                </Label>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>
-                                      Selecione o evento adverso apresentado
-                                      pelo paciente
-                                    </p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    className="w-full justify-between h-12 text-base"
-                                  >
-                                    <span className="truncate">
-                                      {evento.eventoAdverso || "Selecione"}
-                                    </span>
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                  <Command>
-                                    <CommandInput placeholder="Buscar evento..." />
-                                    <CommandEmpty>
-                                      Nenhum evento encontrado.
-                                    </CommandEmpty>
-                                    <CommandGroup>
-                                      <CommandItem
-                                        value="Náusea"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "eventoAdverso",
-                                            "Náusea"
-                                          )
-                                        }
-                                      >
-                                        Náusea
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Vômito"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "eventoAdverso",
-                                            "Vômito"
-                                          )
-                                        }
-                                      >
-                                        Vômito
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Dor de cabeça"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "eventoAdverso",
-                                            "Dor de cabeça"
-                                          )
-                                        }
-                                      >
-                                        Dor de cabeça
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Erupção cutânea"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "eventoAdverso",
-                                            "Erupção cutânea"
-                                          )
-                                        }
-                                      >
-                                        Erupção cutânea
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Outro"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "eventoAdverso",
-                                            "Outro"
-                                          )
-                                        }
-                                      >
-                                        Outro
-                                      </CommandItem>
-                                    </CommandGroup>
-                                  </Command>
-                                </PopoverContent>
-                              </Popover>
-                            </div>
-
-                            {/* Data inicial */}
-                            <div className="space-y-4">
-                              <div className="flex items-center gap-2">
-                                <Label className="font-medium text-gray-700 text-base">
-                                  Data inicial
-                                </Label>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Data de início do evento adverso</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <div className="flex gap-3">
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      role="combobox"
-                                      className="w-32 justify-between h-12 text-sm border-gray-300"
-                                    >
-                                      <span>
-                                        {evento.tipoDataInicialEvento ===
-                                        "mes-ano"
-                                          ? "MM/AAAA"
-                                          : "DD/MM/AAAA"}
-                                      </span>
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                    <Command>
-                                      <CommandGroup>
-                                        <CommandItem
-                                          value="dia-mes-ano"
-                                          onSelect={() =>
-                                            atualizarEventoAdverso(
-                                              evento.id,
-                                              "tipoDataInicialEvento",
-                                              "dia-mes-ano"
-                                            )
-                                          }
-                                        >
-                                          DD/MM/AAAA
-                                        </CommandItem>
-                                        <CommandItem
-                                          value="mes-ano"
-                                          onSelect={() =>
-                                            atualizarEventoAdverso(
-                                              evento.id,
-                                              "tipoDataInicialEvento",
-                                              "mes-ano"
-                                            )
-                                          }
-                                        >
-                                          MM/AAAA
-                                        </CommandItem>
-                                      </CommandGroup>
-                                    </Command>
-                                  </PopoverContent>
-                                </Popover>
-                                <div className="relative flex-1 min-w-0">
-                                  <Calendar className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                                  <Input
-                                    type={
-                                      evento.tipoDataInicialEvento === "mes-ano"
-                                        ? "month"
-                                        : "date"
-                                    }
-                                    value={evento.dataInicialEvento || ""}
-                                    onChange={(e) =>
-                                      atualizarEventoAdverso(
-                                        evento.id,
-                                        "dataInicialEvento",
-                                        e.target.value
-                                      )
-                                    }
-                                    className="pl-10 h-12 text-base [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Data final */}
-                            <div className="space-y-4">
-                              <div className="flex items-center gap-2">
-                                <Label className="font-medium text-gray-700 text-base">
-                                  Data final
-                                </Label>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Data de término do evento adverso</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <div className="flex gap-3">
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      role="combobox"
-                                      className="w-32 justify-between h-12 text-sm border-gray-300"
-                                    >
-                                      <span>
-                                        {evento.tipoDataFinalEvento ===
-                                        "mes-ano"
-                                          ? "MM/AAAA"
-                                          : "DD/MM/AAAA"}
-                                      </span>
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                    <Command>
-                                      <CommandGroup>
-                                        <CommandItem
-                                          value="dia-mes-ano"
-                                          onSelect={() =>
-                                            atualizarEventoAdverso(
-                                              evento.id,
-                                              "tipoDataFinalEvento",
-                                              "dia-mes-ano"
-                                            )
-                                          }
-                                        >
-                                          DD/MM/AAAA
-                                        </CommandItem>
-                                        <CommandItem
-                                          value="mes-ano"
-                                          onSelect={() =>
-                                            atualizarEventoAdverso(
-                                              evento.id,
-                                              "tipoDataFinalEvento",
-                                              "mes-ano"
-                                            )
-                                          }
-                                        >
-                                          MM/AAAA
-                                        </CommandItem>
-                                      </CommandGroup>
-                                    </Command>
-                                  </PopoverContent>
-                                </Popover>
-                                <div className="relative flex-1 min-w-0">
-                                  <Calendar className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                                  <Input
-                                    type={
-                                      evento.tipoDataFinalEvento === "mes-ano"
-                                        ? "month"
-                                        : "date"
-                                    }
-                                    value={evento.dataFinalEvento || ""}
-                                    onChange={(e) =>
-                                      atualizarEventoAdverso(
-                                        evento.id,
-                                        "dataFinalEvento",
-                                        e.target.value
-                                      )
-                                    }
-                                    className="pl-10 h-12 text-base [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Segunda linha de campos */}
-                          <div
-                            className={`grid grid-cols-1 gap-6 mb-6 ${
-                              evento.resultadoEvento === "Recuperado"
-                                ? "lg:grid-cols-3"
-                                : "lg:grid-cols-2"
-                            }`}
-                          >
-                            {/* Resultado */}
-                            <div className="space-y-4">
-                              <div className="flex items-center gap-2">
-                                <Label className="font-medium text-gray-700 text-base">
-                                  Resultado
-                                </Label>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Resultado do evento adverso</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    className="w-full justify-between h-12 text-base"
-                                  >
-                                    <span className="truncate">
-                                      {evento.resultadoEvento || "Selecione"}
-                                    </span>
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                  <Command>
-                                    <CommandGroup>
-                                      <CommandItem
-                                        value="Recuperado"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "resultadoEvento",
-                                            "Recuperado"
-                                          )
-                                        }
-                                      >
-                                        Recuperado
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não recuperado"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "resultadoEvento",
-                                            "Não recuperado"
-                                          )
-                                        }
-                                      >
-                                        Não recuperado
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não informado"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "resultadoEvento",
-                                            "Não informado"
-                                          )
-                                        }
-                                      >
-                                        Não informado
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não se aplica"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "resultadoEvento",
-                                            "Não se aplica"
-                                          )
-                                        }
-                                      >
-                                        Não se aplica
-                                      </CommandItem>
-                                    </CommandGroup>
-                                  </Command>
-                                </PopoverContent>
-                              </Popover>
-                            </div>
-
-                            {/* Relação do medicamento */}
-                            <div className="space-y-4">
-                              <div className="flex items-center gap-2">
-                                <Label className="font-medium text-gray-700 text-base">
-                                  Relação do medicamento com o EA
-                                </Label>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>
-                                      Selecione a relação entre o evento adverso
-                                      e o medicamento suspeito
-                                    </p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    className="w-full justify-between h-12 text-base"
-                                  >
-                                    <span className="truncate">
-                                      {evento.relacaoEventoMedicamento ||
-                                        "Selecione"}
-                                    </span>
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                  <Command>
-                                    <CommandGroup>
-                                      <CommandItem
-                                        value="Muito provável"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "relacaoEventoMedicamento",
-                                            "Muito provável"
-                                          )
-                                        }
-                                      >
-                                        Muito provável
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Provável"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "relacaoEventoMedicamento",
-                                            "Provável"
-                                          )
-                                        }
-                                      >
-                                        Provável
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Duvidosa"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "relacaoEventoMedicamento",
-                                            "Duvidosa"
-                                          )
-                                        }
-                                      >
-                                        Duvidosa
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não se aplica"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "relacaoEventoMedicamento",
-                                            "Não se aplica"
-                                          )
-                                        }
-                                      >
-                                        Não se aplica
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não informado"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "relacaoEventoMedicamento",
-                                            "Não informado"
-                                          )
-                                        }
-                                      >
-                                        Não informado
-                                      </CommandItem>
-                                    </CommandGroup>
-                                  </Command>
-                                </PopoverContent>
-                              </Popover>
-                            </div>
-
-                            {/* Sequelas (condicional) */}
-                            {evento.resultadoEvento === "Recuperado" && (
-                              <div className="space-y-4">
-                                <div className="flex items-center gap-2">
-                                  <Label className="font-medium text-gray-700 text-base">
-                                    Sequelas
-                                  </Label>
-                                  <Tooltip>
-                                    <TooltipTrigger>
-                                      <HelpCircle className="h-4 w-4 text-gray-400" />
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>
-                                        O paciente apresentou sequelas após
-                                        recuperação?
-                                      </p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </div>
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      role="combobox"
-                                      className="w-full justify-between h-12 text-base"
-                                    >
-                                      <span className="truncate">
-                                        {evento.sequelas || "Selecione"}
-                                      </span>
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                    <Command>
-                                      <CommandGroup>
-                                        <CommandItem
-                                          value="Sim"
-                                          onSelect={() =>
-                                            atualizarEventoAdverso(
-                                              evento.id,
-                                              "sequelas",
-                                              "Sim"
-                                            )
-                                          }
-                                        >
-                                          Sim
-                                        </CommandItem>
-                                        <CommandItem
-                                          value="Não"
-                                          onSelect={() =>
-                                            atualizarEventoAdverso(
-                                              evento.id,
-                                              "sequelas",
-                                              "Não"
-                                            )
-                                          }
-                                        >
-                                          Não
-                                        </CommandItem>
-                                        <CommandItem
-                                          value="Não informado"
-                                          onSelect={() =>
-                                            atualizarEventoAdverso(
-                                              evento.id,
-                                              "sequelas",
-                                              "Não informado"
-                                            )
-                                          }
-                                        >
-                                          Não informado
-                                        </CommandItem>
-                                      </CommandGroup>
-                                    </Command>
-                                  </PopoverContent>
-                                </Popover>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Campos adicionais */}
-                          <div className="space-y-6">
-                            {/* Informou o médico */}
-                            <div className="space-y-4">
-                              <div className="flex items-center gap-2">
-                                <Label className="font-medium text-gray-700 text-base">
-                                  O paciente comunicou o evento adverso ao
-                                  profissional prescritor?
-                                </Label>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>
-                                      O paciente informou o médico sobre o
-                                      evento adverso?
-                                    </p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    className="w-full justify-between h-12 text-base"
-                                  >
-                                    <span>
-                                      {evento.informouMedico || "Selecione"}
-                                    </span>
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                  <Command>
-                                    <CommandGroup>
-                                      <CommandItem
-                                        value="Sim"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "informouMedico",
-                                            "Sim"
-                                          )
-                                        }
-                                      >
-                                        Sim
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "informouMedico",
-                                            "Não"
-                                          )
-                                        }
-                                      >
-                                        Não
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não informado"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "informouMedico",
-                                            "Não informado"
-                                          )
-                                        }
-                                      >
-                                        Não informado
-                                      </CommandItem>
-                                    </CommandGroup>
-                                  </Command>
-                                </PopoverContent>
-                              </Popover>
-                              {evento.informouMedico === "Sim" && (
-                                <div className="mt-4">
-                                  <Label className="font-medium text-gray-700 text-base">
-                                    Orientação médica
-                                  </Label>
-                                  <Input
-                                    placeholder="Descreva a orientação médica recebida"
-                                    value={evento.orientacaoMedica}
-                                    onChange={(e) =>
-                                      atualizarEventoAdverso(
-                                        evento.id,
-                                        "orientacaoMedica",
-                                        e.target.value
-                                      )
-                                    }
-                                    className="h-12 text-base mt-2"
-                                  />
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Ação tomada */}
-                            <div className="space-y-4">
-                              <div className="flex items-center gap-2">
-                                <Label className="font-medium text-gray-700 text-base">
-                                  Conduta adotada em relação ao uso do
-                                  medicamento após o evento adverso:
-                                </Label>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>
-                                      Selecione a ação tomada em relação ao
-                                      medicamento
-                                    </p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    className="w-full justify-between h-12 text-base"
-                                  >
-                                    <span>
-                                      {evento.acaoTomada || "Selecione"}
-                                    </span>
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                  <Command>
-                                    <CommandGroup>
-                                      <CommandItem
-                                        value="Dose mantida"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "acaoTomada",
-                                            "Dose mantida"
-                                          )
-                                        }
-                                      >
-                                        Dose mantida
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Dose aumentada"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "acaoTomada",
-                                            "Dose aumentada"
-                                          )
-                                        }
-                                      >
-                                        Dose aumentada
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Interrupção do tratamento"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "acaoTomada",
-                                            "Interrupção do tratamento"
-                                          )
-                                        }
-                                      >
-                                        Interrupção do tratamento
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não informado"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "acaoTomada",
-                                            "Não informado"
-                                          )
-                                        }
-                                      >
-                                        Não informado
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não se aplica"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "acaoTomada",
-                                            "Não se aplica"
-                                          )
-                                        }
-                                      >
-                                        Não se aplica
-                                      </CommandItem>
-                                    </CommandGroup>
-                                  </Command>
-                                </PopoverContent>
-                              </Popover>
-                              {evento.acaoTomada ===
-                                "Interrupção do tratamento" && (
-                                <div className="mt-4">
-                                  <div className="flex items-center gap-2">
-                                    <Label className="font-medium text-gray-700 text-base">
-                                      O evento adverso melhorou após a
-                                      descontinuação do medicamento?
-                                    </Label>
-                                    <Tooltip>
-                                      <TooltipTrigger>
-                                        <HelpCircle className="h-4 w-4 text-gray-400" />
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <p>
-                                          Selecione se houve melhora após a
-                                          retirada do medicamento
-                                        </p>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </div>
-                                  <Popover>
-                                    <PopoverTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        role="combobox"
-                                        className="w-full justify-between h-12 text-base mt-2"
-                                      >
-                                        <span>
-                                          {evento.melhorouAposRetirada ||
-                                            "Selecione"}
-                                        </span>
-                                      </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                      <Command>
-                                        <CommandGroup>
-                                          <CommandItem
-                                            value="Sim"
-                                            onSelect={() =>
-                                              atualizarEventoAdverso(
-                                                evento.id,
-                                                "melhorouAposRetirada",
-                                                "Sim"
-                                              )
-                                            }
-                                          >
-                                            Sim
-                                          </CommandItem>
-                                          <CommandItem
-                                            value="Não"
-                                            onSelect={() =>
-                                              atualizarEventoAdverso(
-                                                evento.id,
-                                                "melhorouAposRetirada",
-                                                "Não"
-                                              )
-                                            }
-                                          >
-                                            Não
-                                          </CommandItem>
-                                          <CommandItem
-                                            value="Não informado"
-                                            onSelect={() =>
-                                              atualizarEventoAdverso(
-                                                evento.id,
-                                                "melhorouAposRetirada",
-                                                "Não informado"
-                                              )
-                                            }
-                                          >
-                                            Não informado
-                                          </CommandItem>
-                                          <CommandItem
-                                            value="Não se aplica"
-                                            onSelect={() =>
-                                              atualizarEventoAdverso(
-                                                evento.id,
-                                                "melhorouAposRetirada",
-                                                "Não se aplica"
-                                              )
-                                            }
-                                          >
-                                            Não se aplica
-                                          </CommandItem>
-                                        </CommandGroup>
-                                      </Command>
-                                    </PopoverContent>
-                                  </Popover>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Voltou após retorno */}
-                            <div className="space-y-4">
-                              <div className="flex items-center gap-2">
-                                <Label className="font-medium text-gray-700 text-base">
-                                  O evento adverso retornou após a reintrodução
-                                  do medicamento?
-                                </Label>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>
-                                      Selecione se o evento adverso voltou após
-                                      o retorno do tratamento
-                                    </p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    className="w-full justify-between h-12 text-base"
-                                  >
-                                    <span>
-                                      {evento.voltouAposRetorno || "Selecione"}
-                                    </span>
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                  <Command>
-                                    <CommandGroup>
-                                      <CommandItem
-                                        value="Sim"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "voltouAposRetorno",
-                                            "Sim"
-                                          )
-                                        }
-                                      >
-                                        Sim
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "voltouAposRetorno",
-                                            "Não"
-                                          )
-                                        }
-                                      >
-                                        Não
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não informado"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "voltouAposRetorno",
-                                            "Não informado"
-                                          )
-                                        }
-                                      >
-                                        Não informado
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não se aplica"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "voltouAposRetorno",
-                                            "Não se aplica"
-                                          )
-                                        }
-                                      >
-                                        Não se aplica
-                                      </CommandItem>
-                                    </CommandGroup>
-                                  </Command>
-                                </PopoverContent>
-                              </Popover>
-                            </div>
-
-                            {/* Medicamento para tratamento */}
-                            <div className="space-y-4">
-                              <div className="flex items-center gap-2">
-                                <Label className="font-medium text-gray-700 text-base">
-                                  Foi utilizado medicamento para o tratamento do
-                                  Evento Adverso?
-                                </Label>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <HelpCircle className="h-4 w-4 text-gray-400" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>
-                                      Selecione se foi utilizado algum
-                                      medicamento para tratar o evento adverso
-                                    </p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </div>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    className="w-full justify-between h-12 text-base"
-                                  >
-                                    <span>
-                                      {evento.usouMedicamentoTratamento ||
-                                        "Selecione"}
-                                    </span>
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                  <Command>
-                                    <CommandGroup>
-                                      <CommandItem
-                                        value="Sim"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "usouMedicamentoTratamento",
-                                            "Sim"
-                                          )
-                                        }
-                                      >
-                                        Sim
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "usouMedicamentoTratamento",
-                                            "Não"
-                                          )
-                                        }
-                                      >
-                                        Não
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não informado"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "usouMedicamentoTratamento",
-                                            "Não informado"
-                                          )
-                                        }
-                                      >
-                                        Não informado
-                                      </CommandItem>
-                                      <CommandItem
-                                        value="Não se aplica"
-                                        onSelect={() =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "usouMedicamentoTratamento",
-                                            "Não se aplica"
-                                          )
-                                        }
-                                      >
-                                        Não se aplica
-                                      </CommandItem>
-                                    </CommandGroup>
-                                  </Command>
-                                </PopoverContent>
-                              </Popover>
-
-                              {/* Campos de medicamento para tratamento (condicionais) */}
-                              {evento.usouMedicamentoTratamento === "Sim" && (
-                                <div className="mt-6 p-4 bg-blue-50/60 border border-blue-100 rounded-lg">
-                                  <div className="flex items-center gap-2 mb-4">
-                                    <Pill className="h-5 w-5 text-blue-600" />
-                                    <Label className="text-base font-semibold text-blue-900">
-                                      Medicamento Utilizado para Tratamento
-                                    </Label>
-                                  </div>
-
-                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <Label className="text-sm font-medium text-gray-700">
-                                          Produto
-                                        </Label>
-                                        <Tooltip>
-                                          <TooltipTrigger>
-                                            <HelpCircle className="h-4 w-4 text-gray-400" />
-                                          </TooltipTrigger>
-                                          <TooltipContent>
-                                            <p>
-                                              Nome do medicamento utilizado para
-                                              tratar o evento adverso
-                                            </p>
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      </div>
-                                      <Input
-                                        placeholder="Nome do produto"
-                                        value={
-                                          evento.medicamentoTratamento.produto
-                                        }
-                                        onChange={(e) =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "medicamentoTratamento",
-                                            e.target.value,
-                                            "produto"
-                                          )
-                                        }
-                                        className="h-11"
-                                      />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <Label className="text-sm font-medium text-gray-700">
-                                          EAN
-                                        </Label>
-                                        <Tooltip>
-                                          <TooltipTrigger>
-                                            <HelpCircle className="h-4 w-4 text-gray-400" />
-                                          </TooltipTrigger>
-                                          <TooltipContent>
-                                            <p>
-                                              Código de barras EAN do produto
-                                            </p>
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      </div>
-                                      <Input
-                                        placeholder="Código EAN"
-                                        value={evento.medicamentoTratamento.ean}
-                                        onChange={(e) =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "medicamentoTratamento",
-                                            e.target.value,
-                                            "ean"
-                                          )
-                                        }
-                                        className="h-11"
-                                      />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <Label className="text-sm font-medium text-gray-700">
-                                          Lote
-                                        </Label>
-                                        <Tooltip>
-                                          <TooltipTrigger>
-                                            <HelpCircle className="h-4 w-4 text-gray-400" />
-                                          </TooltipTrigger>
-                                          <TooltipContent>
-                                            <p>Número do lote do medicamento</p>
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      </div>
-                                      <Input
-                                        placeholder="Número do lote"
-                                        value={
-                                          evento.medicamentoTratamento.lote
-                                        }
-                                        onChange={(e) =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "medicamentoTratamento",
-                                            e.target.value,
-                                            "lote"
-                                          )
-                                        }
-                                        className="h-11"
-                                      />
-                                    </div>
-                                  </div>
-
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <Label className="text-sm font-medium text-gray-700">
-                                          Dosagem
-                                        </Label>
-                                        <Tooltip>
-                                          <TooltipTrigger>
-                                            <HelpCircle className="h-4 w-4 text-gray-400" />
-                                          </TooltipTrigger>
-                                          <TooltipContent>
-                                            <p>
-                                              Dose administrada do medicamento
-                                              (ex: 500mg, 10ml)
-                                            </p>
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      </div>
-                                      <Input
-                                        placeholder="Ex: 500mg"
-                                        value={
-                                          evento.medicamentoTratamento.dosagem
-                                        }
-                                        onChange={(e) =>
-                                          atualizarEventoAdverso(
-                                            evento.id,
-                                            "medicamentoTratamento",
-                                            e.target.value,
-                                            "dosagem"
-                                          )
-                                        }
-                                        className="h-11"
-                                      />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <Label className="text-sm font-medium text-gray-700">
-                                          Via de Administração
-                                        </Label>
-                                        <Tooltip>
-                                          <TooltipTrigger>
-                                            <HelpCircle className="h-4 w-4 text-gray-400" />
-                                          </TooltipTrigger>
-                                          <TooltipContent>
-                                            <p>
-                                              Via pela qual o medicamento foi
-                                              administrado
-                                            </p>
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      </div>
-                                      <Popover>
-                                        <PopoverTrigger asChild>
-                                          <Button
-                                            variant="outline"
-                                            role="combobox"
-                                            className="w-full justify-between h-11"
-                                          >
-                                            <div className="flex items-center gap-2">
-                                              <Pill className="h-4 w-4 text-teal-600" />
-                                              <span>
-                                                {evento.medicamentoTratamento
-                                                  .viaAdministracao ||
-                                                  "Selecione a via de administração"}
-                                              </span>
-                                            </div>
-                                          </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                          <Command>
-                                            <CommandInput placeholder="Buscar via de administração..." />
-                                            <CommandEmpty>
-                                              Nenhuma via encontrada.
-                                            </CommandEmpty>
-                                            <CommandGroup>
-                                              <CommandItem
-                                                value="Oral"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Oral",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Oral
-                                              </CommandItem>
-                                              <CommandItem
-                                                value="Intravenosa"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Intravenosa",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Intravenosa
-                                              </CommandItem>
-                                              <CommandItem
-                                                value="Intramuscular"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Intramuscular",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Intramuscular
-                                              </CommandItem>
-                                              <CommandItem
-                                                value="Subcutânea"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Subcutânea",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Subcutânea
-                                              </CommandItem>
-                                              <CommandItem
-                                                value="Tópica"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Tópica",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Tópica
-                                              </CommandItem>
-                                              <CommandItem
-                                                value="Inalatória"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Inalatória",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Inalatória
-                                              </CommandItem>
-                                              <CommandItem
-                                                value="Retal"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Retal",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Retal
-                                              </CommandItem>
-                                              <CommandItem
-                                                value="Vaginal"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Vaginal",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Vaginal
-                                              </CommandItem>
-                                              <CommandItem
-                                                value="Oftálmica"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Oftálmica",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Oftálmica
-                                              </CommandItem>
-                                              <CommandItem
-                                                value="Otológica"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Otológica",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Otológica
-                                              </CommandItem>
-                                              <CommandItem
-                                                value="Nasal"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Nasal",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Nasal
-                                              </CommandItem>
-                                              <CommandItem
-                                                value="Outra"
-                                                onSelect={() =>
-                                                  atualizarEventoAdverso(
-                                                    evento.id,
-                                                    "medicamentoTratamento",
-                                                    "Outra",
-                                                    "viaAdministracao"
-                                                  )
-                                                }
-                                              >
-                                                <Pill className="mr-2 h-4 w-4" />
-                                                Outra
-                                              </CommandItem>
-                                            </CommandGroup>
-                                          </Command>
-                                        </PopoverContent>
-                                      </Popover>
-                                    </div>
-                                  </div>
-
-                                  <div className="space-y-2 mt-4">
-                                    <div className="flex items-center gap-2">
-                                      <Label className="text-sm font-medium text-gray-700">
-                                        Indicação
-                                      </Label>
-                                      <Tooltip>
-                                        <TooltipTrigger>
-                                          <HelpCircle className="h-4 w-4 text-gray-400" />
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <p>
-                                            Indicação terapêutica para qual o
-                                            medicamento foi utilizado
-                                          </p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </div>
-                                    <Input
-                                      placeholder="Indicação terapêutica"
-                                      value={
-                                        evento.medicamentoTratamento.indicacao
-                                      }
-                                      onChange={(e) =>
-                                        atualizarEventoAdverso(
-                                          evento.id,
-                                          "medicamentoTratamento",
-                                          e.target.value,
-                                          "indicacao"
-                                        )
-                                      }
-                                      className="h-11"
-                                    />
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
 
                 {/* Medicamento Concomitante */}
                 <Card>
@@ -5096,7 +4105,7 @@ export function NovaFarmacovigilanciaForm({
                 {/* Campos de farmacovigilância abaixo (mantidos) */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Dados de Farmacovigilância</CardTitle>
+                    <CardTitle>Dados do Relato</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     {/* Data do recebimento */}
@@ -5450,86 +4459,103 @@ export function NovaFarmacovigilanciaForm({
                   </CardContent>
                 </Card>
 
+                {/* Formulário - Follow Up-001 */}
+                <Card>
+                  <CardHeader className="bg-gray-50 border-b">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-7 w-7 text-teal-600" />
+                      <span className="text-xl font-bold">
+                        Formulário
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <div className="space-y-4">
+                      <Label htmlFor="tipo-formulario-fup">
+                        Tipo <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <Button
+                          type="button"
+                          variant={tipoFormulario === "inicial" ? "default" : "outline"}
+                          className={`h-16 flex flex-col items-center justify-center gap-2 ${
+                            tipoFormulario === "inicial" 
+                              ? "bg-teal-600 hover:bg-teal-700 text-white" 
+                              : "hover:bg-gray-50"
+                          }`}
+                          onClick={() => setTipoFormulario("inicial")}
+                        >
+                          <img 
+                            src="/gestacao.png" 
+                            alt="Gestação" 
+                            className="w-6 h-6"
+                          />
+                          <span className="text-sm font-medium">Inicial</span>
+                        </Button>
+                        
+                        <Button
+                          type="button"
+                          variant={tipoFormulario === "atualizacao" ? "default" : "outline"}
+                          className={`h-16 flex flex-col items-center justify-center gap-2 ${
+                            tipoFormulario === "atualizacao" 
+                              ? "bg-teal-600 hover:bg-teal-700 text-white" 
+                              : "hover:bg-gray-50"
+                          }`}
+                          onClick={() => setTipoFormulario("atualizacao")}
+                        >
+                          <ClipboardPenLine className="w-6 h-6" />
+                          <span className="text-sm font-medium">Atualização</span>
+                        </Button>
+                        
+                        <Button
+                          type="button"
+                          variant={tipoFormulario === "nascimento" ? "default" : "outline"}
+                          className={`h-16 flex flex-col items-center justify-center gap-2 ${
+                            tipoFormulario === "nascimento" 
+                              ? "bg-teal-600 hover:bg-teal-700 text-white" 
+                              : "hover:bg-gray-50"
+                          }`}
+                          onClick={() => setTipoFormulario("nascimento")}
+                        >
+                          <Baby className="w-6 h-6" />
+                          <span className="text-sm font-medium">Nascimento</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Dados do Relator - Follow Up-001 */}
                 <Card>
                   <CardHeader className="bg-gray-50 border-b">
                     <div className="flex items-center gap-2">
                       <ClipboardList className="h-7 w-7 text-teal-600" />
                       <span className="text-xl font-bold">
-                        Dados do Paciente
+                        Dados da Mãe
                       </span>
                     </div>
                   </CardHeader>
                   <CardContent className="p-4 space-y-4">
-                    <div>
-                      <Label className="font-medium">
-                        Relator é o paciente?
-                      </Label>
-                      <div className="flex gap-6 mt-2">
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            id="relator-sim-fup"
-                            name="relatorEhPacienteFup"
-                            value="sim"
-                            checked={form.relatorEhPaciente === "sim"}
-                            onChange={() =>
-                              setForm((f) => ({
-                                ...f,
-                                relatorEhPaciente: "sim",
-                                relatorNome: "",
-                              }))
-                            }
-                            className="accent-teal-600 h-4 w-4"
-                          />
-                          <Label htmlFor="relator-sim-fup">Sim</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            id="relator-nao-fup"
-                            name="relatorEhPacienteFup"
-                            value="nao"
-                            checked={form.relatorEhPaciente === "nao"}
-                            onChange={() =>
-                              setForm((f) => ({
-                                ...f,
-                                relatorEhPaciente: "nao",
-                              }))
-                            }
-                            className="accent-teal-600 h-4 w-4"
-                          />
-                          <Label htmlFor="relator-nao-fup">Não</Label>
-                        </div>
-                      </div>
-                    </div>
-                    {form.relatorEhPaciente === "nao" && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-teal-50/60 border border-teal-100 rounded-lg p-5">
-                        <div className="space-y-2">
-                          <Label htmlFor="relator-nome-fup">
-                            Nome completo do Paciente{" "}
-                            <span className="text-red-500">*</span>
-                          </Label>
-                          <Input
-                            id="relator-nome-fup"
-                            placeholder="Digite o nome do paciente"
-                            value={form.relatorNome || ""}
-                            onChange={(e) =>
-                              setForm((f) => ({
-                                ...f,
-                                relatorNome: e.target.value,
-                              }))
-                            }
-                            required
-                            className="h-11"
-                          />
-                        </div>
-                      </div>
-                    )}
 
                     {/* Dados do Paciente */}
                     <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="iniciais-fup">Iniciais</Label>
+                          <Input
+                            id="iniciais-fup"
+                            placeholder="Digite as iniciais"
+                            value={form.iniciais}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                iniciais: e.target.value,
+                              }))
+                            }
+                            className="h-11"
+                          />
+                        </div>
+
                         <div className="space-y-2">
                           <Label htmlFor="data-nascimento-fup">
                             Data de Nascimento
@@ -5557,71 +4583,172 @@ export function NovaFarmacovigilanciaForm({
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="sexo-fup">Sexo</Label>
-                          <div className="flex gap-6 mt-2">
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="radio"
-                                id="sexo-masculino-fup"
-                                name="sexoFup"
-                                value="masculino"
-                                checked={form.sexo === "masculino"}
-                                onChange={() =>
-                                  setForm((f) => ({
-                                    ...f,
-                                    sexo: "masculino",
-                                    gestante: "",
-                                    idadeGestacional: "",
-                                    ultimoPeriodoMenstrual: "",
-                                  }))
-                                }
-                                className="accent-teal-600 h-4 w-4"
-                              />
-                              <Label htmlFor="sexo-masculino-fup">
-                                Masculino
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="radio"
-                                id="sexo-feminino-fup"
-                                name="sexoFup"
-                                value="feminino"
-                                checked={form.sexo === "feminino"}
-                                onChange={() =>
-                                  setForm((f) => ({ ...f, sexo: "feminino" }))
-                                }
-                                className="accent-teal-600 h-4 w-4"
-                              />
-                              <Label htmlFor="sexo-feminino-fup">
-                                Feminino
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="radio"
-                                id="sexo-nao-informado-fup"
-                                name="sexoFup"
-                                value="nao-informado"
-                                checked={form.sexo === "nao-informado"}
-                                onChange={() =>
-                                  setForm((f) => ({
-                                    ...f,
-                                    sexo: "nao-informado",
-                                    gestante: "",
-                                    idadeGestacional: "",
-                                    ultimoPeriodoMenstrual: "",
-                                  }))
-                                }
-                                className="accent-teal-600 h-4 w-4"
-                              />
-                              <Label htmlFor="sexo-nao-informado-fup">
-                                Não informado
-                              </Label>
-                            </div>
+                          <Label htmlFor="idade-fup">Idade</Label>
+                          <Input
+                            id="idade-fup"
+                            type="number"
+                            placeholder="Digite a idade"
+                            value={form.idade}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                idade: e.target.value,
+                              }))
+                            }
+                            className="h-11"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="font-medium">Gestação anterior</Label>
+                        <div className="flex gap-6 mt-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="gestacao-anterior-sim-fup"
+                              name="gestacaoAnteriorFup"
+                              value="sim"
+                              checked={form.gestacaoAnterior === "sim"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, gestacaoAnterior: "sim" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="gestacao-anterior-sim-fup">Sim</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="gestacao-anterior-nao-fup"
+                              name="gestacaoAnteriorFup"
+                              value="nao"
+                              checked={form.gestacaoAnterior === "nao"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, gestacaoAnterior: "nao" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="gestacao-anterior-nao-fup">Não</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="gestacao-anterior-nao-informado-fup"
+                              name="gestacaoAnteriorFup"
+                              value="nao-informado"
+                              checked={form.gestacaoAnterior === "nao-informado"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, gestacaoAnterior: "nao-informado" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="gestacao-anterior-nao-informado-fup">
+                              Não informado
+                            </Label>
                           </div>
                         </div>
                       </div>
+
+                      {form.gestacaoAnterior === "sim" && (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-lg font-semibold text-gray-800">
+                              Desfecho de Gestações
+                            </h4>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const novoDesfecho = {
+                                  id: Date.now().toString(),
+                                  desfecho: "",
+                                  observacao: "",
+                                };
+                                setForm((f) => ({
+                                  ...f,
+                                  desfechosGestacoes: [...f.desfechosGestacoes, novoDesfecho],
+                                }));
+                              }}
+                              className="h-9 text-blue-600 border-blue-300 hover:bg-blue-50"
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Adicionar Desfecho
+                            </Button>
+                          </div>
+                          
+                          {form.desfechosGestacoes.map((desfecho, index) => (
+                            <div key={desfecho.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 bg-white rounded border relative">
+                              <div className="space-y-2">
+                                <Label htmlFor={`desfecho-fup-${desfecho.id}`}>Desfecho</Label>
+                                <select
+                                  id={`desfecho-fup-${desfecho.id}`}
+                                  value={desfecho.desfecho}
+                                  onChange={(e) => {
+                                    const novosDesfechos = [...form.desfechosGestacoes];
+                                    novosDesfechos[index] = {
+                                      ...novosDesfechos[index],
+                                      desfecho: e.target.value,
+                                    };
+                                    setForm((f) => ({
+                                      ...f,
+                                      desfechosGestacoes: novosDesfechos,
+                                    }));
+                                  }}
+                                  className="w-full h-11 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                                >
+                                  <option value="">Selecione o desfecho</option>
+                                  <option value="crianca-viva">Criança Viva</option>
+                                  <option value="natimorto">Natimorto</option>
+                                  <option value="aborto">Aborto</option>
+                                  <option value="aborto-espontaneo">Aborto Espontâneo</option>
+                                  <option value="nao-informado">Não Informado</option>
+                                </select>
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <Label htmlFor={`observacao-fup-${desfecho.id}`}>Observação</Label>
+                                <Input
+                                  id={`observacao-fup-${desfecho.id}`}
+                                  placeholder="Digite observações"
+                                  value={desfecho.observacao}
+                                  onChange={(e) => {
+                                    const novosDesfechos = [...form.desfechosGestacoes];
+                                    novosDesfechos[index] = {
+                                      ...novosDesfechos[index],
+                                      observacao: e.target.value,
+                                    };
+                                    setForm((f) => ({
+                                      ...f,
+                                      desfechosGestacoes: novosDesfechos,
+                                    }));
+                                  }}
+                                  className="h-11"
+                                />
+                              </div>
+                              
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const novosDesfechos = form.desfechosGestacoes.filter(
+                                    (d) => d.id !== desfecho.id
+                                  );
+                                  setForm((f) => ({
+                                    ...f,
+                                    desfechosGestacoes: novosDesfechos,
+                                  }));
+                                }}
+                                className="absolute top-2 right-2 h-8 w-8 p-0 text-red-600 hover:bg-red-50"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
                       {form.sexo === "feminino" && (
                         <div className="space-y-4 bg-pink-50/60 border border-pink-100 rounded-lg p-4">
@@ -5841,6 +4968,600 @@ export function NovaFarmacovigilanciaForm({
                           />
                         </div>
                       </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="font-medium">Uso de Entorpecentes</Label>
+                        <div className="flex gap-6 mt-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="uso-entorpecentes-sim"
+                              name="usoEntorpecentes"
+                              value="sim"
+                              checked={form.usoEntorpecentes === "sim"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, usoEntorpecentes: "sim" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="uso-entorpecentes-sim">Sim</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="uso-entorpecentes-nao"
+                              name="usoEntorpecentes"
+                              value="nao"
+                              checked={form.usoEntorpecentes === "nao"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, usoEntorpecentes: "nao" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="uso-entorpecentes-nao">Não</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="uso-entorpecentes-nao-informado"
+                              name="usoEntorpecentes"
+                              value="nao-informado"
+                              checked={form.usoEntorpecentes === "nao-informado"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, usoEntorpecentes: "nao-informado" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="uso-entorpecentes-nao-informado">
+                              Não informado
+                            </Label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {form.usoEntorpecentes === "sim" && (
+                        <div className="space-y-2">
+                          <Label htmlFor="quais-entorpecentes">Qual/Quais</Label>
+                          <Input
+                            id="quais-entorpecentes"
+                            placeholder="Digite quais entorpecentes"
+                            value={form.quaisEntorpecentes}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                quaisEntorpecentes: e.target.value,
+                              }))
+                            }
+                            className="h-11"
+                          />
+                        </div>
+                      )}
+
+                      {form.usoEntorpecentes === "sim" && (
+                        <div className="space-y-2">
+                          <Label className="font-medium">Ainda faz uso?</Label>
+                          <div className="flex gap-6 mt-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="ainda-faz-uso-sim"
+                                name="aindaFazUso"
+                                value="sim"
+                                checked={form.aindaFazUso === "sim"}
+                                onChange={() =>
+                                  setForm((f) => ({ ...f, aindaFazUso: "sim" }))
+                                }
+                                className="accent-teal-600 h-4 w-4"
+                              />
+                              <Label htmlFor="ainda-faz-uso-sim">Sim</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="ainda-faz-uso-nao"
+                                name="aindaFazUso"
+                                value="nao"
+                                checked={form.aindaFazUso === "nao"}
+                                onChange={() =>
+                                  setForm((f) => ({ ...f, aindaFazUso: "nao" }))
+                                }
+                                className="accent-teal-600 h-4 w-4"
+                              />
+                              <Label htmlFor="ainda-faz-uso-nao">Não</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="ainda-faz-uso-nao-informado"
+                                name="aindaFazUso"
+                                value="nao-informado"
+                                checked={form.aindaFazUso === "nao-informado"}
+                                onChange={() =>
+                                  setForm((f) => ({ ...f, aindaFazUso: "nao-informado" }))
+                                }
+                                className="accent-teal-600 h-4 w-4"
+                              />
+                              <Label htmlFor="ainda-faz-uso-nao-informado">
+                                Não informado
+                              </Label>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Dados do Pai */}
+                <Card>
+                  <CardHeader className="bg-gray-50 border-b">
+                    <div className="flex items-center gap-2">
+                      <User className="h-7 w-7 text-teal-600" />
+                      <span className="text-xl font-bold">
+                        Dados do Pai
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-4 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="data-nascimento-pai">
+                          Data de Nascimento
+                        </Label>
+                        <div className="relative">
+                          <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="data-nascimento-pai"
+                            type="date"
+                            value={form.dataNascimentoPai}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                dataNascimentoPai: e.target.value,
+                              }))
+                            }
+                            className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="idade-pai">Idade</Label>
+                        <Input
+                          id="idade-pai"
+                          type="number"
+                          placeholder="Digite a idade"
+                          value={form.idadePai}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              idadePai: e.target.value,
+                            }))
+                          }
+                          className="h-11"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="altura-pai">Altura (cm)</Label>
+                        <Input
+                          id="altura-pai"
+                          type="number"
+                          placeholder="Digite a altura"
+                          value={form.alturaPai}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              alturaPai: e.target.value,
+                            }))
+                          }
+                          className="h-11"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="peso-pai">Peso (kg)</Label>
+                        <Input
+                          id="peso-pai"
+                          type="number"
+                          placeholder="Digite o peso"
+                          value={form.pesoPai}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              pesoPai: e.target.value,
+                            }))
+                          }
+                          className="h-11"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Dados da Gestação */}
+                <Card>
+                  <CardHeader className="bg-gray-50 border-b">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-7 w-7 text-teal-600" />
+                      <span className="text-xl font-bold">
+                        Dados da Gestação
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-4 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="data-ultima-menstruacao">
+                          Data da última menstruação (DUM)
+                        </Label>
+                        <div className="relative">
+                          <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="data-ultima-menstruacao"
+                            type="date"
+                            value={form.dataUltimaMenstruacao}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                dataUltimaMenstruacao: e.target.value,
+                              }))
+                            }
+                            className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="data-estimada-parto">
+                          Data estimada para o parto
+                        </Label>
+                        <div className="relative">
+                          <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="data-estimada-parto"
+                            type="date"
+                            value={form.dataEstimadaParto}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                dataEstimadaParto: e.target.value,
+                              }))
+                            }
+                            className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="quantidade-fetos">Quantidade de fetos</Label>
+                        <Input
+                          id="quantidade-fetos"
+                          type="number"
+                          placeholder="Ex: 1, 2, 3..."
+                          value={form.quantidadeFetos}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              quantidadeFetos: e.target.value,
+                            }))
+                          }
+                          className="h-11"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label className="font-medium">Gravidez confirmada via</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="ultrassom"
+                              checked={form.gravidezConfirmadaVia.ultrassom}
+                              onChange={(e) =>
+                                setForm((f) => ({
+                                  ...f,
+                                  gravidezConfirmadaVia: {
+                                    ...f.gravidezConfirmadaVia,
+                                    ultrassom: e.target.checked,
+                                  },
+                                }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="ultrassom">Ultrassom</Label>
+                          </div>
+                          {form.gravidezConfirmadaVia.ultrassom && (
+                            <div className="ml-6">
+                              <Label htmlFor="data-ultrassom" className="text-sm text-gray-600">
+                                Data do ultrassom
+                              </Label>
+                              <div className="relative">
+                                <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  id="data-ultrassom"
+                                  type="date"
+                                  value={form.dataConfirmacaoGravidez.ultrassom}
+                                  onChange={(e) =>
+                                    setForm((f) => ({
+                                      ...f,
+                                      dataConfirmacaoGravidez: {
+                                        ...f.dataConfirmacaoGravidez,
+                                        ultrassom: e.target.value,
+                                      },
+                                    }))
+                                  }
+                                  className="pl-8 h-9 text-sm [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="exame-sangue"
+                              checked={form.gravidezConfirmadaVia.exameSangue}
+                              onChange={(e) =>
+                                setForm((f) => ({
+                                  ...f,
+                                  gravidezConfirmadaVia: {
+                                    ...f.gravidezConfirmadaVia,
+                                    exameSangue: e.target.checked,
+                                  },
+                                }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="exame-sangue">Exame de Sangue</Label>
+                          </div>
+                          {form.gravidezConfirmadaVia.exameSangue && (
+                            <div className="ml-6">
+                              <Label htmlFor="data-exame-sangue" className="text-sm text-gray-600">
+                                Data do exame
+                              </Label>
+                              <div className="relative">
+                                <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  id="data-exame-sangue"
+                                  type="date"
+                                  value={form.dataConfirmacaoGravidez.exameSangue}
+                                  onChange={(e) =>
+                                    setForm((f) => ({
+                                      ...f,
+                                      dataConfirmacaoGravidez: {
+                                        ...f.dataConfirmacaoGravidez,
+                                        exameSangue: e.target.value,
+                                      },
+                                    }))
+                                  }
+                                  className="pl-8 h-9 text-sm [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="teste-urina"
+                              checked={form.gravidezConfirmadaVia.testeUrina}
+                              onChange={(e) =>
+                                setForm((f) => ({
+                                  ...f,
+                                  gravidezConfirmadaVia: {
+                                    ...f.gravidezConfirmadaVia,
+                                    testeUrina: e.target.checked,
+                                  },
+                                }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="teste-urina">Teste de Urina</Label>
+                          </div>
+                          {form.gravidezConfirmadaVia.testeUrina && (
+                            <div className="ml-6">
+                              <Label htmlFor="data-teste-urina" className="text-sm text-gray-600">
+                                Data do teste
+                              </Label>
+                              <div className="relative">
+                                <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  id="data-teste-urina"
+                                  type="date"
+                                  value={form.dataConfirmacaoGravidez.testeUrina}
+                                  onChange={(e) =>
+                                    setForm((f) => ({
+                                      ...f,
+                                      dataConfirmacaoGravidez: {
+                                        ...f.dataConfirmacaoGravidez,
+                                        testeUrina: e.target.value,
+                                      },
+                                    }))
+                                  }
+                                  className="pl-8 h-9 text-sm [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="teste-amniocentese"
+                              checked={form.gravidezConfirmadaVia.testeAmniocentese}
+                              onChange={(e) =>
+                                setForm((f) => ({
+                                  ...f,
+                                  gravidezConfirmadaVia: {
+                                    ...f.gravidezConfirmadaVia,
+                                    testeAmniocentese: e.target.checked,
+                                  },
+                                }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="teste-amniocentese">Teste de Amniocentese</Label>
+                          </div>
+                          {form.gravidezConfirmadaVia.testeAmniocentese && (
+                            <div className="ml-6">
+                              <Label htmlFor="data-teste-amniocentese" className="text-sm text-gray-600">
+                                Data do teste
+                              </Label>
+                              <div className="relative">
+                                <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  id="data-teste-amniocentese"
+                                  type="date"
+                                  value={form.dataConfirmacaoGravidez.testeAmniocentese}
+                                  onChange={(e) =>
+                                    setForm((f) => ({
+                                      ...f,
+                                      dataConfirmacaoGravidez: {
+                                        ...f.dataConfirmacaoGravidez,
+                                        testeAmniocentese: e.target.value,
+                                      },
+                                    }))
+                                  }
+                                  className="pl-8 h-9 text-sm [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="font-medium">Uso de Entorpecentes</Label>
+                        <div className="flex gap-6 mt-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="uso-entorpecentes-sim"
+                              name="usoEntorpecentes"
+                              value="sim"
+                              checked={form.usoEntorpecentes === "sim"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, usoEntorpecentes: "sim" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="uso-entorpecentes-sim">Sim</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="uso-entorpecentes-nao"
+                              name="usoEntorpecentes"
+                              value="nao"
+                              checked={form.usoEntorpecentes === "nao"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, usoEntorpecentes: "nao" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="uso-entorpecentes-nao">Não</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="uso-entorpecentes-nao-informado"
+                              name="usoEntorpecentes"
+                              value="nao-informado"
+                              checked={form.usoEntorpecentes === "nao-informado"}
+                              onChange={() =>
+                                setForm((f) => ({ ...f, usoEntorpecentes: "nao-informado" }))
+                              }
+                              className="accent-teal-600 h-4 w-4"
+                            />
+                            <Label htmlFor="uso-entorpecentes-nao-informado">
+                              Não informado
+                            </Label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {form.usoEntorpecentes === "sim" && (
+                        <div className="space-y-2">
+                          <Label htmlFor="quais-entorpecentes">Qual/Quais</Label>
+                          <Input
+                            id="quais-entorpecentes"
+                            placeholder="Digite quais entorpecentes"
+                            value={form.quaisEntorpecentes}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                quaisEntorpecentes: e.target.value,
+                              }))
+                            }
+                            className="h-11"
+                          />
+                        </div>
+                      )}
+
+                      {form.usoEntorpecentes === "sim" && (
+                        <div className="space-y-2">
+                          <Label className="font-medium">Ainda faz uso?</Label>
+                          <div className="flex gap-6 mt-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="ainda-faz-uso-sim"
+                                name="aindaFazUso"
+                                value="sim"
+                                checked={form.aindaFazUso === "sim"}
+                                onChange={() =>
+                                  setForm((f) => ({ ...f, aindaFazUso: "sim" }))
+                                }
+                                className="accent-teal-600 h-4 w-4"
+                              />
+                              <Label htmlFor="ainda-faz-uso-sim">Sim</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="ainda-faz-uso-nao"
+                                name="aindaFazUso"
+                                value="nao"
+                                checked={form.aindaFazUso === "nao"}
+                                onChange={() =>
+                                  setForm((f) => ({ ...f, aindaFazUso: "nao" }))
+                                }
+                                className="accent-teal-600 h-4 w-4"
+                              />
+                              <Label htmlFor="ainda-faz-uso-nao">Não</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="ainda-faz-uso-nao-informado"
+                                name="aindaFazUso"
+                                value="nao-informado"
+                                checked={form.aindaFazUso === "nao-informado"}
+                                onChange={() =>
+                                  setForm((f) => ({ ...f, aindaFazUso: "nao-informado" }))
+                                }
+                                className="accent-teal-600 h-4 w-4"
+                              />
+                              <Label htmlFor="ainda-faz-uso-nao-informado">
+                                Não informado
+                              </Label>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -6110,239 +5831,6 @@ export function NovaFarmacovigilanciaForm({
                       ))}
                     </div>
 
-                    {/* Divider com mais espaçamento */}
-                    <div className="border-t border-gray-200 my-10"></div>
-
-                    {/* Exames Laboratoriais */}
-                    <div className="space-y-6">
-                      <div className="mb-6 flex items-center justify-between">
-                        <div>
-                          <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-3">
-                            <FileText className="h-6 w-6 text-teal-600" />
-                            Exames Laboratoriais
-                          </h3>
-                          <p className="text-sm text-gray-500 mt-2">
-                            Adicione informações sobre exames laboratoriais
-                            relevantes
-                          </p>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="flex items-center gap-2 text-teal-600 border-teal-300 hover:bg-teal-50"
-                          onClick={adicionarExameLaboratorial}
-                        >
-                          <Plus className="h-4 w-4" />
-                          Adicionar Exame
-                        </Button>
-                      </div>
-
-                      {/* Lista de Exames */}
-                      <div className="space-y-8">
-                        {examesLaboratoriais.map((exame, index) => (
-                          <div
-                            key={exame.id}
-                            className="border border-gray-200 rounded-lg p-6 bg-gray-50/50"
-                          >
-                            <div className="flex items-center justify-between mb-6">
-                              <h4 className="font-semibold text-gray-900 text-lg">
-                                Exame {index + 1}
-                              </h4>
-                              {examesLaboratoriais.length > 1 && (
-                                <Button
-                                  type="button"
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() =>
-                                    removerExameLaboratorial(exame.id)
-                                  }
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </div>
-
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                              {/* Nome do Exame */}
-                              <div className="space-y-3">
-                                <Label className="font-medium text-gray-700">
-                                  Nome do Exame
-                                </Label>
-                                <Input
-                                  placeholder="Ex: Hemograma completo"
-                                  value={exame.nomeExame}
-                                  onChange={(e) =>
-                                    atualizarExamesLaboratoriais(
-                                      exame.id,
-                                      "nomeExame",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="h-11"
-                                />
-                              </div>
-
-                              {/* Resultado */}
-                              <div className="space-y-3">
-                                <Label className="font-medium text-gray-700">
-                                  Resultado
-                                </Label>
-                                <Input
-                                  placeholder="Ex: 4.5"
-                                  value={exame.resultado}
-                                  onChange={(e) =>
-                                    atualizarExamesLaboratoriais(
-                                      exame.id,
-                                      "resultado",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="h-11"
-                                />
-                              </div>
-
-                              {/* Unidade */}
-                              <div className="space-y-3">
-                                <Label className="font-medium text-gray-700">
-                                  Unidade
-                                </Label>
-                                <Input
-                                  placeholder="Ex: mg/dL"
-                                  value={exame.unidade}
-                                  onChange={(e) =>
-                                    atualizarExamesLaboratoriais(
-                                      exame.id,
-                                      "unidade",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="h-11"
-                                />
-                              </div>
-                            </div>
-
-                            {/* Segunda linha com Faixa de Referência e Data do Exame */}
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                              {/* Faixa de Referência */}
-                              <div className="space-y-3">
-                                <Label className="font-medium text-gray-700">
-                                  Faixa de Referência
-                                </Label>
-                                <div className="grid grid-cols-2 gap-2">
-                                  <div className="space-y-1">
-                                    <Label className="text-xs text-gray-600">
-                                      Baixo
-                                    </Label>
-                                    <Input
-                                      placeholder="Ex: 3,5"
-                                      value={exame.faixaReferenciaBaixo || ""}
-                                      onChange={(e) =>
-                                        atualizarExamesLaboratoriais(
-                                          exame.id,
-                                          "faixaReferenciaBaixo",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="h-11 text-sm"
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <Label className="text-xs text-gray-600">
-                                      Alto
-                                    </Label>
-                                    <Input
-                                      placeholder="Ex: 5,0"
-                                      value={exame.faixaReferenciaAlto || ""}
-                                      onChange={(e) =>
-                                        atualizarExamesLaboratoriais(
-                                          exame.id,
-                                          "faixaReferenciaAlto",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="h-11 text-sm"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Data do Exame */}
-                              <div className="space-y-3">
-                                <Label className="font-medium text-gray-700">
-                                  Data do Exame
-                                </Label>
-                                <div className="flex gap-2">
-                                  <Popover>
-                                    <PopoverTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        role="combobox"
-                                        className="w-28 justify-between h-11 text-xs border-gray-300"
-                                      >
-                                        <span>
-                                          {exame.tipoDataExame === "mes-ano"
-                                            ? "MM/AAAA"
-                                            : "DD/MM/AAAA"}
-                                        </span>
-                                      </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                      <Command>
-                                        <CommandGroup>
-                                          <CommandItem
-                                            value="dia-mes-ano"
-                                            onSelect={() =>
-                                              atualizarExamesLaboratoriais(
-                                                exame.id,
-                                                "tipoDataExame",
-                                                "dia-mes-ano"
-                                              )
-                                            }
-                                          >
-                                            DD/MM/AAAA
-                                          </CommandItem>
-                                          <CommandItem
-                                            value="mes-ano"
-                                            onSelect={() =>
-                                              atualizarExamesLaboratoriais(
-                                                exame.id,
-                                                "tipoDataExame",
-                                                "mes-ano"
-                                              )
-                                            }
-                                          >
-                                            MM/AAAA
-                                          </CommandItem>
-                                        </CommandGroup>
-                                      </Command>
-                                    </PopoverContent>
-                                  </Popover>
-                                  <div className="relative flex-1 min-w-0">
-                                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                      type={
-                                        exame.tipoDataExame === "mes-ano"
-                                          ? "month"
-                                          : "date"
-                                      }
-                                      value={exame.dataExame}
-                                      onChange={(e) =>
-                                        atualizarExamesLaboratoriais(
-                                          exame.id,
-                                          "dataExame",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="pl-8 h-11 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
 
